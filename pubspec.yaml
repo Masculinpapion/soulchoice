@@ -1,0 +1,111 @@
+name: soulchoice
+description: "SoulChoice — Choose Your Night"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.6.3
+
+  # Supabase
+  supabase_flutter: ^2.8.4
+
+  # Firebase (Push notifications)
+  firebase_core: ^3.13.0
+  firebase_messaging: ^15.2.5
+
+  # Local auth (FaceID/TouchID)
+  local_auth: ^2.3.0
+
+  # Phone number validation
+  phone_numbers_parser: ^9.0.21
+
+  # Image picker & cropper
+  image_picker: ^1.1.2
+  image_cropper: ^9.0.0
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # Location
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+
+  # UI utils
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  lottie: ^3.3.1
+  flutter_svg: ^2.0.17
+
+  # Utilities
+  intl: ^0.20.2
+  shared_preferences: ^2.3.5
+  flutter_secure_storage: ^9.2.4
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.3.0
+  connectivity_plus: ^6.1.4
+
+  # Analytics & Monitoring
+  sentry_flutter: ^8.14.2
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.14
+  riverpod_generator: ^2.6.2
+  custom_lint: ^0.7.5
+  riverpod_lint: ^2.6.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/fonts/
+    - assets/lottie/
+    - assets/icons/
+
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Regular.ttf
+        - asset: assets/fonts/Fraunces-Italic.ttf
+          style: italic
+        - asset: assets/fonts/Fraunces-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Fraunces-BoldItalic.ttf
+          weight: 700
+          style: italic
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Manrope-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Manrope-ExtraLight.ttf
+          weight: 200
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700

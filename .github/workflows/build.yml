@@ -44,20 +44,20 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # 6. Release APK build et
+      # 6. Debug APK build et (signing gerekmez, telefona direkt kurulur)
       - name: Build APK
-        run: flutter build apk --release --no-pub
+        run: flutter build apk --debug --no-pub
 
-      # 7. APK'yı artifact olarak yükle (30 gün saklanır)
+      # 7. APK'yı artifact olarak yükle (7 gün saklanır)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: soulchoice-release-${{ github.run_number }}
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 30
+          name: soulchoice-debug-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
 
       # 8. Build bilgisi
       - name: Build summary
         run: |
           echo "✅ Build #${{ github.run_number }} tamamlandı"
-          echo "APK boyutu: $(du -sh build/app/outputs/flutter-apk/app-release.apk | cut -f1)"
+          echo "APK boyutu: $(du -sh build/app/outputs/flutter-apk/app-debug.apk | cut -f1)"

@@ -286,9 +286,9 @@ class _StoryAvatar extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: photoUrl!,
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => _AvatarFallback(),
+                        errorWidget: (_, __, ___) => _AvatarFallback(name: label),
                       )
-                    : _AvatarFallback(),
+                    : _AvatarFallback(name: label),
               ),
             ),
             if (isLive)
@@ -331,12 +331,36 @@ class _StoryAvatar extends StatelessWidget {
 }
 
 class _AvatarFallback extends StatelessWidget {
+  final String name;
+  const _AvatarFallback({this.name = ''});
+
   @override
-  Widget build(BuildContext context) => Container(
-        color: AppColors.glassBgMedium,
-        child: const Icon(Icons.person,
-            size: 24, color: AppColors.textTertiary),
-      );
+  Widget build(BuildContext context) {
+    final raw = name.trim();
+    final initials = raw.isEmpty
+        ? '✦'
+        : raw.split(' ').where((w) => w.isNotEmpty).map((w) => w[0]).take(2).join().toUpperCase();
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF6B21A8), Color(0xFFBE185D), Color(0xFFD4AF37)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: const TextStyle(
+            fontFamily: 'JetBrainsMono',
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -588,6 +612,7 @@ class _CategoryChips extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 8),
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: isSelected ? AppColors.primaryGradient : null,
                   color: isSelected ? null : AppColors.glassBg,
@@ -598,15 +623,24 @@ class _CategoryChips extends StatelessWidget {
                         : AppColors.glassBorder,
                   ),
                 ),
-                child: Text(
-                  '${c.emoji} ${c.label}',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.labelMedium.copyWith(
-                    color: isSelected
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary,
-                    fontSize: 12,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(c.emoji, style: const TextStyle(fontSize: 13, height: 1.2)),
+                    const SizedBox(width: 5),
+                    Text(
+                      c.label,
+                      style: AppTextStyles.labelMedium.copyWith(
+                        color: isSelected
+                            ? AppColors.textPrimary
+                            : AppColors.textSecondary,
+                        fontSize: 12,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -764,26 +798,53 @@ class InvitationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final glowColor = flowType == InvitationFlowType.invite
+        ? AppColors.primaryRed
+        : AppColors.primaryBlue;
+
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: SizedBox(
-          height: 420,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // ── 1. Tam boy dikey portre fotoğraf ───────────────────────
-              if (ownerPhotoUrl != null)
-                CachedNetworkImage(
-                  imageUrl: ownerPhotoUrl!,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  placeholder: (_, __) => _CardFallbackGradient(),
-                  errorWidget: (_, __, ___) => _CardFallbackGradient(),
-                )
-              else
-                _CardFallbackGradient(),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(46),
+          boxShadow: [
+            BoxShadow(
+              color: glowColor.withOpacity(0.28),
+              blurRadius: 36,
+              spreadRadius: 0,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.50),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+          gradient: flowType == InvitationFlowType.invite
+              ? AppColors.inviteGradient
+              : AppColors.requestGradient,
+        ),
+        padding: const EdgeInsets.all(1.5),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(45),
+          child: SizedBox(
+            height: 430,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // ── 1. Tam boy dikey portre fotoğraf ─────────────────────
+                if (ownerPhotoUrl != null)
+                  CachedNetworkImage(
+                    imageUrl: ownerPhotoUrl!,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    placeholder: (_, __) => _CardFallbackGradient(
+                        ownerName: ownerName, category: category),
+                    errorWidget: (_, __, ___) => _CardFallbackGradient(
+                        ownerName: ownerName, category: category),
+                  )
+                else
+                  _CardFallbackGradient(ownerName: ownerName, category: category),
 
               // ── 2. Üst hafif scrim ──────────────────────────────────────
               Container(
@@ -803,7 +864,7 @@ class InvitationCard extends StatelessWidget {
                 right: 0,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(28)),
+                      bottom: Radius.circular(45)),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                     child: Container(
@@ -970,13 +1031,9 @@ class InvitationCard extends StatelessWidget {
                                       imageUrl: ownerPhotoUrl!,
                                       fit: BoxFit.cover,
                                       errorWidget: (_, __, ___) =>
-                                          const Icon(Icons.person,
-                                              size: 16,
-                                              color: AppColors.textTertiary),
+                                          _AvatarFallback(name: ownerName),
                                     )
-                                  : const Icon(Icons.person,
-                                      size: 16,
-                                      color: AppColors.textTertiary),
+                                  : _AvatarFallback(name: ownerName),
                             ),
                           ),
                           const SizedBox(width: 9),
@@ -1032,7 +1089,8 @@ class InvitationCard extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }
 
@@ -1112,14 +1170,112 @@ class _ApplicantAvatars extends StatelessWidget {
 
 
 class _CardFallbackGradient extends StatelessWidget {
+  final String ownerName;
+  final InvitationCategory category;
+  const _CardFallbackGradient({this.ownerName = '', required this.category});
+
   @override
-  Widget build(BuildContext context) => Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A0608), Color(0xFF080F1A)],
-          ),
+  Widget build(BuildContext context) {
+    final raw = ownerName.trim();
+    final initials = raw.isEmpty
+        ? '✦'
+        : raw.split(' ').where((w) => w.isNotEmpty).map((w) => w[0]).take(2).join().toUpperCase();
+
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2D0B3A), Color(0xFF1A0812), Color(0xFF070B1A)],
+          stops: [0.0, 0.45, 1.0],
         ),
-      );
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Sıcak glow üst-sol
+          Positioned(
+            top: -60,
+            left: -60,
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFFBE185D).withOpacity(0.30),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Mavi glow sağ-alt
+          Positioned(
+            bottom: -40,
+            right: -40,
+            child: Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    const Color(0xFF4A90E2).withOpacity(0.20),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Kategori emoji — büyük arka plan ikonu
+          Positioned(
+            top: 60,
+            left: 0,
+            right: 0,
+            child: Text(
+              category.emoji,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 80),
+            ),
+          ),
+          // Baş harfli yuvarlak avatar — merkez-alt
+          Center(
+            child: Container(
+              width: 90,
+              height: 90,
+              margin: const EdgeInsets.only(top: 60),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6B21A8), Color(0xFFBE185D), Color(0xFFE63946)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFBE185D).withOpacity(0.50),
+                    blurRadius: 24,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

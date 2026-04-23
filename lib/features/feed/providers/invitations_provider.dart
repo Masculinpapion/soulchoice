@@ -9,7 +9,11 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
     var query = client
         .from('invitations')
-        .select('*, owner:users(id, name, age, gender, city_id, verified, photos:user_photos(url, is_primary, is_selfie, order_index))')
+        .select(
+          '*, '
+          'owner:users(id, name, age, gender, city_id, verified, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
+        )
         .eq('status', 'active')
         .eq('flow_type', filter.flowType.name)
         .gt('expires_at', DateTime.now().toIso8601String());
@@ -24,6 +28,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     final data = await query.order('created_at', ascending: false).limit(30);
 
     return (data as List).map((row) {
+      // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       final owner = ownerRow != null
           ? UserModel(
@@ -42,11 +47,35 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
           .cast<Map<String, dynamic>>()
           .where((p) => p['is_selfie'] == false)
           .toList()
-        ..sort((a, b) => (a['order_index'] as int? ?? 99).compareTo(b['order_index'] as int? ?? 99));
+        ..sort((a, b) =>
+            (a['order_index'] as int? ?? 99)
+                .compareTo(b['order_index'] as int? ?? 99));
       final ownerPhotoUrl = sortedPhotos.firstOrNull?['url'] as String?;
 
-      return InvitationModel.fromJson({...row, 'owner': null})
-          .copyWith(owner: owner, ownerPhotoUrl: ownerPhotoUrl);
+      // ── Applicant photos (up to 4 pending applicants) ─────────────────────
+      final apps = (row['applications'] as List<dynamic>?) ?? [];
+      final pendingApps = apps
+          .cast<Map<String, dynamic>>()
+          .where((a) => a['status'] == 'pending')
+          .toList();
+
+      final applicantPhotoUrls = pendingApps.expand<String>((a) {
+        final applicant = a['applicant'] as Map<String, dynamic>?;
+        if (applicant == null) return [];
+        final appPhotos = (applicant['photos'] as List<dynamic>?) ?? [];
+        return appPhotos
+            .cast<Map<String, dynamic>>()
+            .where((p) => p['is_selfie'] == false)
+            .map((p) => p['url'] as String)
+            .take(1);
+      }).take(4).toList();
+
+      return InvitationModel.fromJson({...row, 'owner': null}).copyWith(
+        owner: owner,
+        ownerPhotoUrl: ownerPhotoUrl,
+        applicationCount: pendingApps.length,
+        applicantPhotoUrls: applicantPhotoUrls,
+      );
     }).toList();
   },
 );

@@ -1,12 +1,13 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
-import '../../../shared/widgets/glass_card.dart';
 import '../providers/profile_provider.dart';
 
 class ProfileViewScreen extends ConsumerWidget {
@@ -31,14 +32,12 @@ class ProfileViewScreen extends ConsumerWidget {
               height: 30,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor:
-                    AlwaysStoppedAnimation(AppColors.gradientStart),
+                valueColor: AlwaysStoppedAnimation(AppColors.gradientStart),
               ),
             ),
           ),
           error: (e, _) => Center(
-            child: Text('$e',
-                style: AppTextStyles.bodyMedium),
+            child: Text('$e', style: AppTextStyles.bodyMedium),
           ),
           data: (user) {
             if (user == null) {
@@ -52,6 +51,8 @@ class ProfileViewScreen extends ConsumerWidget {
             final age = user['age'] as int? ?? 0;
             final verified = user['verified'] as bool? ?? false;
             final bio = user['bio'] as String?;
+            final job = user['job'] as String?;
+            final education = user['education'] as String?;
             final city = user['city'] as Map<String, dynamic>?;
             final cityName = city?['name'] as String? ?? '';
             final interests =
@@ -60,11 +61,15 @@ class ProfileViewScreen extends ConsumerWidget {
 
             return CustomScrollView(
               slivers: [
-                // ── Hero photo ────────────────────────────────────────────
+                // ── Hero photo (edge-to-edge, status bar overlap) ──────────
                 SliverAppBar(
                   expandedHeight: 540,
                   pinned: true,
                   backgroundColor: AppColors.bgBlack,
+                  systemOverlayStyle: const SystemUiOverlayStyle(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness: Brightness.light,
+                  ),
                   leading: Padding(
                     padding: const EdgeInsets.all(8),
                     child: _GlassIconButton(
@@ -73,6 +78,11 @@ class ProfileViewScreen extends ConsumerWidget {
                     ),
                   ),
                   actions: [
+                    if (!isOwnProfile && currentUid != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _FavoriteButton(targetUserId: userId),
+                      ),
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: isOwnProfile
@@ -118,26 +128,35 @@ class ProfileViewScreen extends ConsumerWidget {
                             ),
                           ),
 
-                          // ── Name / age / location ──────────────────────
+                          // ── Name / age / verified ──────────────────────
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                            padding:
+                                const EdgeInsets.fromLTRB(24, 20, 24, 0),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
+                                      // Name + age + verified badge
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            '$name, $age',
-                                            style: AppTextStyles.displayMedium
-                                                .copyWith(
-                                                    fontSize: 30,
-                                                    fontStyle:
-                                                        FontStyle.normal),
+                                          Flexible(
+                                            child: Text(
+                                              '$name, $age',
+                                              style: AppTextStyles
+                                                  .displayMedium
+                                                  .copyWith(
+                                                fontSize: 30,
+                                                fontStyle: FontStyle.normal,
+                                              ),
+                                              overflow:
+                                                  TextOverflow.ellipsis,
+                                            ),
                                           ),
                                           if (verified) ...[
                                             const SizedBox(width: 8),
@@ -153,20 +172,32 @@ class ProfileViewScreen extends ConsumerWidget {
                                           ],
                                         ],
                                       ),
-                                      if (cityName.isNotEmpty) ...[
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                                Icons.location_on_outlined,
-                                                size: 14,
-                                                color: AppColors.textTertiary),
-                                            const SizedBox(width: 4),
-                                            Text(cityName,
-                                                style: AppTextStyles.bodyMedium),
-                                          ],
-                                        ),
-                                      ],
+                                      const SizedBox(height: 8),
+                                      // Location + job + education
+                                      Wrap(
+                                        spacing: 14,
+                                        runSpacing: 4,
+                                        children: [
+                                          if (cityName.isNotEmpty)
+                                            _MetaItem(
+                                              icon: Icons
+                                                  .location_on_outlined,
+                                              text: cityName,
+                                            ),
+                                          if (job != null && job.isNotEmpty)
+                                            _MetaItem(
+                                              icon: Icons.work_outline,
+                                              text: job,
+                                            ),
+                                          if (education != null &&
+                                              education.isNotEmpty)
+                                            _MetaItem(
+                                              icon:
+                                                  Icons.school_outlined,
+                                              text: education,
+                                            ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -174,17 +205,77 @@ class ProfileViewScreen extends ConsumerWidget {
                             ),
                           ),
 
-                          // ── Bio ────────────────────────────────────────
+                          // ── Bio (plain text, no borders) ───────────────
                           if (bio != null && bio.isNotEmpty) ...[
                             Padding(
                               padding:
                                   const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                              child: GlassCard(
-                                padding: const EdgeInsets.all(18),
-                                child: Text(bio,
-                                    style: AppTextStyles.bodyLarge.copyWith(
-                                        color: AppColors.textSecondary,
-                                        height: 1.6)),
+                              child: Text(
+                                bio,
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  color: AppColors.textSecondary,
+                                  height: 1.7,
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          // ── Photo gallery strip ─────────────────────────
+                          if (photos.length > 1) ...[
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 24),
+                              child: Text(
+                                'FOTOĞRAFLAR',
+                                style: AppTextStyles.monoSmall.copyWith(
+                                  letterSpacing: 2,
+                                  color: AppColors.textTertiary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 100,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24),
+                                itemCount: photos.length,
+                                itemBuilder: (_, i) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(right: 10),
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          _openPhotoViewer(
+                                              context, photos, i),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(14),
+                                        child: SizedBox(
+                                          width: 80,
+                                          height: 100,
+                                          child: CachedNetworkImage(
+                                            imageUrl: photos[i]['url']
+                                                as String,
+                                            fit: BoxFit.cover,
+                                            alignment:
+                                                Alignment.topCenter,
+                                            errorWidget: (_, __, ___) =>
+                                                Container(
+                                              color: AppColors.glassBg,
+                                              child: const Icon(
+                                                  Icons.person_outline,
+                                                  color: AppColors
+                                                      .textTertiary),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -192,16 +283,19 @@ class ProfileViewScreen extends ConsumerWidget {
                           // ── Interests ──────────────────────────────────
                           if (interests.isNotEmpty) ...[
                             Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                              padding: const EdgeInsets.fromLTRB(
+                                  24, 24, 24, 0),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'İLGİ ALANLARI',
-                                    style: AppTextStyles.monoSmall.copyWith(
-                                        letterSpacing: 2,
-                                        color: AppColors.textTertiary),
+                                    style: AppTextStyles.monoSmall
+                                        .copyWith(
+                                            letterSpacing: 2,
+                                            color:
+                                                AppColors.textTertiary),
                                   ),
                                   const SizedBox(height: 12),
                                   Wrap(
@@ -217,7 +311,7 @@ class ProfileViewScreen extends ConsumerWidget {
                             ),
                           ],
 
-                          // ── Prompts ────────────────────────────────────
+                          // ── Prompts (no borders, Fraunces answers) ─────
                           promptsAsync.maybeWhen(
                             data: (prompts) {
                               if (prompts.isEmpty) {
@@ -225,46 +319,45 @@ class ProfileViewScreen extends ConsumerWidget {
                               }
                               return Padding(
                                 padding: const EdgeInsets.fromLTRB(
-                                    24, 24, 24, 0),
+                                    24, 28, 24, 0),
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'SORULAR',
-                                      style: AppTextStyles.monoSmall
-                                          .copyWith(
-                                              letterSpacing: 2,
-                                              color: AppColors.textTertiary),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    ...prompts.map((p) => Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 12),
-                                          child: _PromptCard(
-                                            question: _questionLabel(
-                                                p['question_key']
-                                                    as String),
-                                            answer: p['answer']
-                                                    as String? ??
-                                                '',
-                                          ),
-                                        )),
-                                  ],
+                                  children: prompts
+                                      .map((p) => Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                    bottom: 24),
+                                            child: _PromptItem(
+                                              question: _questionLabel(
+                                                  p['question_key']
+                                                      as String),
+                                              answer: p['answer']
+                                                      as String? ??
+                                                  '',
+                                            ),
+                                          ))
+                                      .toList(),
                                 ),
                               );
                             },
                             orElse: () => const SizedBox.shrink(),
                           ),
 
-                          // ── CTA ────────────────────────────────────────
+                          // ── CTA (context-aware) ────────────────────────
                           Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(24, 28, 24, 48),
-                            child: _GradientCTA(
-                              label: 'Gelmek isterim',
-                              onTap: () => context.pop(),
-                            ),
+                            padding: const EdgeInsets.fromLTRB(
+                                24, 28, 24, 48),
+                            child: isOwnProfile
+                                ? _OutlineCTA(
+                                    label: 'Profili Düzenle',
+                                    onTap: () =>
+                                        context.push('/profile/setup'),
+                                  )
+                                : _GradientCTA(
+                                    label: 'Gelmek isterim',
+                                    onTap: () => context.pop(),
+                                  ),
                           ),
                         ],
                       ),
@@ -289,6 +382,19 @@ class ProfileViewScreen extends ConsumerWidget {
     return labels[key] ?? key;
   }
 
+  void _openPhotoViewer(
+      BuildContext context, List<Map<String, dynamic>> photos, int index) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Colors.black.withOpacity(0.92),
+        pageBuilder: (_, __, ___) =>
+            _PhotoViewerPage(photos: photos, initialIndex: index),
+      ),
+    );
+  }
+
   void _showActionSheet(BuildContext context, String targetUserId) {
     showModalBottomSheet(
       context: context,
@@ -302,7 +408,66 @@ class ProfileViewScreen extends ConsumerWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sub-widgets
+// Meta info item (city / job / education)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MetaItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _MetaItem({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: AppColors.textTertiary),
+          const SizedBox(width: 4),
+          Text(text, style: AppTextStyles.bodyMedium),
+        ],
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Prompt item (no borders)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PromptItem extends StatelessWidget {
+  final String question;
+  final String answer;
+  const _PromptItem({required this.question, required this.answer});
+
+  @override
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question.toUpperCase(),
+            style: const TextStyle(
+              fontFamily: 'JetBrainsMono',
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textTertiary,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            answer,
+            style: const TextStyle(
+              fontFamily: 'Fraunces',
+              fontSize: 19,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: AppColors.textPrimary,
+              height: 1.4,
+            ),
+          ),
+        ],
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Glass Icon Button
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _GlassIconButton extends StatelessWidget {
@@ -331,14 +496,130 @@ class _GlassIconButton extends StatelessWidget {
       );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Favorite Button (glass circle, toggle with haptic + scale animation)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _FavoriteButton extends StatefulWidget {
+  final String targetUserId;
+  const _FavoriteButton({required this.targetUserId});
+
+  @override
+  State<_FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<_FavoriteButton>
+    with SingleTickerProviderStateMixin {
+  bool? _isFavorite;
+  late final AnimationController _scaleCtrl;
+  late final Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleCtrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 180));
+    _scaleAnim = Tween(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleCtrl, curve: Curves.elasticOut),
+    );
+    _scaleCtrl.value = 1.0;
+    _loadState();
+  }
+
+  @override
+  void dispose() {
+    _scaleCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadState() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    final result = await Supabase.instance.client
+        .from('favorites')
+        .select('id')
+        .eq('user_id', uid)
+        .eq('favorited_user_id', widget.targetUserId)
+        .maybeSingle();
+    if (mounted) setState(() => _isFavorite = result != null);
+  }
+
+  Future<void> _toggle() async {
+    if (_isFavorite == null) return;
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+
+    HapticFeedback.lightImpact();
+    _scaleCtrl.reverse().then((_) => _scaleCtrl.forward());
+
+    final next = !_isFavorite!;
+    setState(() => _isFavorite = next);
+
+    if (next) {
+      await Supabase.instance.client.from('favorites').insert({
+        'user_id': uid,
+        'favorited_user_id': widget.targetUserId,
+      });
+    } else {
+      await Supabase.instance.client
+          .from('favorites')
+          .delete()
+          .eq('user_id', uid)
+          .eq('favorited_user_id', widget.targetUserId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isFavorite == null) {
+      return const SizedBox(width: 40, height: 40);
+    }
+    return ScaleTransition(
+      scale: _scaleAnim,
+      child: GestureDetector(
+        onTap: _toggle,
+        child: ClipOval(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _isFavorite!
+                    ? AppColors.red.withOpacity(0.18)
+                    : AppColors.glassBgStrong,
+                border: Border.all(
+                  color: _isFavorite!
+                      ? AppColors.red.withOpacity(0.5)
+                      : AppColors.glassBorder,
+                ),
+              ),
+              child: Icon(
+                _isFavorite! ? Icons.star_rounded : Icons.star_outline_rounded,
+                color: _isFavorite! ? AppColors.red : AppColors.textSecondary,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Interest Chip
+// ─────────────────────────────────────────────────────────────────────────────
+
 class _InterestChip extends StatelessWidget {
   final String label;
   const _InterestChip({required this.label});
 
   @override
   Widget build(BuildContext context) => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: AppColors.glassBg,
           borderRadius: BorderRadius.circular(100),
@@ -350,26 +631,9 @@ class _InterestChip extends StatelessWidget {
       );
 }
 
-class _PromptCard extends StatelessWidget {
-  final String question;
-  final String answer;
-  const _PromptCard({required this.question, required this.answer});
-
-  @override
-  Widget build(BuildContext context) => GlassCard(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(question,
-                style: AppTextStyles.monoSmall
-                    .copyWith(color: AppColors.textTertiary)),
-            const SizedBox(height: 8),
-            Text(answer, style: AppTextStyles.bodyLarge),
-          ],
-        ),
-      );
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// CTAs
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _GradientCTA extends StatelessWidget {
   final String label;
@@ -394,11 +658,97 @@ class _GradientCTA extends StatelessWidget {
           ),
           child: Center(
             child: Text(label,
-                style: AppTextStyles.labelLarge
-                    .copyWith(color: Colors.white)),
+                style:
+                    AppTextStyles.labelLarge.copyWith(color: Colors.white)),
           ),
         ),
       );
+}
+
+class _OutlineCTA extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _OutlineCTA({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 58,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.glassBorderBright, width: 1.5),
+            color: AppColors.glassBg,
+          ),
+          child: Center(
+            child: Text(label,
+                style: AppTextStyles.labelLarge
+                    .copyWith(color: AppColors.textSecondary)),
+          ),
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Full-screen Photo Viewer
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PhotoViewerPage extends StatefulWidget {
+  final List<Map<String, dynamic>> photos;
+  final int initialIndex;
+  const _PhotoViewerPage(
+      {required this.photos, required this.initialIndex});
+
+  @override
+  State<_PhotoViewerPage> createState() => _PhotoViewerPageState();
+}
+
+class _PhotoViewerPageState extends State<_PhotoViewerPage> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController =
+        PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pop(context),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: PageView.builder(
+          controller: _pageController,
+          itemCount: widget.photos.length,
+          itemBuilder: (_, i) {
+            final url = widget.photos[i]['url'] as String;
+            return InteractiveViewer(
+              minScale: 0.8,
+              maxScale: 4.0,
+              child: Center(
+                child: CachedNetworkImage(
+                  imageUrl: url,
+                  fit: BoxFit.contain,
+                  errorWidget: (_, __, ___) => const Icon(
+                      Icons.broken_image_outlined,
+                      color: Colors.white54,
+                      size: 60),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -428,12 +778,11 @@ class _ActionSheet extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.flag_outlined, color: AppColors.error),
           title: Text('Şikayet et',
-              style: AppTextStyles.bodyLarge
-                  .copyWith(color: AppColors.error)),
+              style:
+                  AppTextStyles.bodyLarge.copyWith(color: AppColors.error)),
           onTap: () async {
             Navigator.pop(context);
-            final uid =
-                Supabase.instance.client.auth.currentUser?.id;
+            final uid = Supabase.instance.client.auth.currentUser?.id;
             if (uid == null) return;
             await Supabase.instance.client.from('reports').insert({
               'reporter_id': uid,
@@ -450,13 +799,12 @@ class _ActionSheet extends StatelessWidget {
           },
         ),
         ListTile(
-          leading: const Icon(Icons.block, color: AppColors.textSecondary),
-          title:
-              Text('Engelle', style: AppTextStyles.bodyLarge),
+          leading:
+              const Icon(Icons.block, color: AppColors.textSecondary),
+          title: Text('Engelle', style: AppTextStyles.bodyLarge),
           onTap: () async {
             Navigator.pop(context);
-            final uid =
-                Supabase.instance.client.auth.currentUser?.id;
+            final uid = Supabase.instance.client.auth.currentUser?.id;
             if (uid == null) return;
             await Supabase.instance.client.from('blocks').upsert({
               'blocker_id': uid,
@@ -477,7 +825,7 @@ class _ActionSheet extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Photo Carousel
+// Photo Carousel (hero)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _PhotoCarousel extends StatefulWidget {
@@ -523,7 +871,7 @@ class _PhotoCarouselState extends State<_PhotoCarousel> {
             );
           },
         ),
-        // Bottom gradient leading into the panel
+        // Bottom gradient into the panel
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -534,7 +882,7 @@ class _PhotoCarouselState extends State<_PhotoCarousel> {
             ),
           ),
         ),
-        // Photo indicator dots — top center (bar style)
+        // Photo indicator bars — top center
         if (widget.photos.length > 1)
           Positioned(
             top: 0,

@@ -1,0 +1,55 @@
+name: Flutter APK Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:   # Manuel tetikleme butonu
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Kodu çek
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Java kur (Gradle için)
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # 3. Flutter kur
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: stable
+          cache: true
+
+      # 4. Bağımlılıkları yükle
+      - name: Flutter pub get
+        run: flutter pub get
+
+      # 5. Release APK build et
+      - name: Build APK
+        run: flutter build apk --release --no-pub
+
+      # 6. APK'yı artifact olarak yükle (30 gün saklanır)
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: soulchoice-release-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      # 7. Build bilgisi
+      - name: Build summary
+        run: |
+          echo "✅ Build #${{ github.run_number }} tamamlandı"
+          echo "APK boyutu: $(du -sh build/app/outputs/flutter-apk/app-release.apk | cut -f1)"

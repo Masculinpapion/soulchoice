@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
-import '../../../shared/widgets/glass_card.dart';
 
 class PhoneScreen extends ConsumerStatefulWidget {
   const PhoneScreen({super.key});
@@ -33,16 +33,36 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
 
   Future<void> _sendOtp() async {
     final phone = '$_countryCode${_phoneController.text.trim()}';
+    debugPrint('[DBG] PHONE: _sendOtp called, phone=$phone');
     if (_phoneController.text.trim().isEmpty) {
       setState(() => _error = 'Telefon numarası girin');
       return;
     }
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
+      debugPrint('[DBG] PHONE: calling signInWithOtp...');
       await Supabase.instance.client.auth.signInWithOtp(phone: phone);
-      if (mounted) context.push('/auth/otp', extra: phone);
+      debugPrint('[DBG] PHONE: signInWithOtp success, mounted=$mounted');
+      if (mounted) {
+        debugPrint('[DBG] PHONE: pushing /auth/otp');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('[DBG] OTP gönderildi, /auth/otp açılıyor'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        context.go('/auth/otp', extra: phone);
+        debugPrint('[DBG] PHONE: push called');
+      }
     } on AuthException catch (e) {
+      debugPrint('[DBG] PHONE: AuthException: ${e.message}');
       setState(() => _error = e.message);
+    } catch (e) {
+      debugPrint('[DBG] PHONE: unexpected error: $e');
+      setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -61,54 +81,98 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       body: AmbientBackground(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
-                Text('Telefon\nnumaranı gir', style: AppTextStyles.displayMedium),
-                const SizedBox(height: 8),
+                const SizedBox(height: 32),
+                // Brand mark
+                ShaderMask(
+                  shaderCallback: (b) =>
+                      AppColors.primaryGradient.createShader(b),
+                  child: const Icon(Icons.phone_iphone,
+                      color: Colors.white, size: 36),
+                ),
+                const SizedBox(height: 24),
+                Text('Telefon\nnumaranı gir',
+                    style: AppTextStyles.displayMedium),
+                const SizedBox(height: 10),
                 Text(
                   'Sana bir doğrulama kodu göndereceğiz',
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: 40),
-                GlassCard(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: _showCountryPicker,
-                        child: Row(
-                          children: [
-                            Text(_countryCode, style: AppTextStyles.bodyLarge),
-                            const Icon(Icons.expand_more, color: AppColors.textSecondary, size: 20),
-                          ],
-                        ),
+                // Phone input field
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.glassBgMedium,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.glassBorder),
                       ),
-                      const SizedBox(width: 8),
-                      Container(width: 1, height: 28, color: AppColors.glassBorder),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          style: AppTextStyles.bodyLarge,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            hintText: '999 123 45 67',
-                            contentPadding: EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: _showCountryPicker,
+                            child: Row(
+                              children: [
+                                Text(_countryCode,
+                                    style: AppTextStyles.bodyLarge),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.expand_more,
+                                    color: AppColors.textSecondary,
+                                    size: 18),
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 10),
+                          Container(
+                              width: 1,
+                              height: 28,
+                              color: AppColors.glassBorder),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: TextField(
+                              controller: _phoneController,
+                              keyboardType: TextInputType.phone,
+                              style: AppTextStyles.bodyLarge,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                hintText: '999 123 45 67',
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Error message
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.error_outline,
+                          size: 14, color: AppColors.error),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: AppTextStyles.bodyMedium
+                              .copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
                   ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 12),
-                  Text(_error!, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error)),
                 ],
                 const Spacer(),
                 ScButton(
@@ -116,10 +180,10 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                   onPressed: _sendOtp,
                   isLoading: _isLoading,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 Center(
                   child: Text(
-                    'Devam ederek Kullanım Koşulları\'nı kabul etmiş olursunuz',
+                    'Devam ederek Kullanım Koşulları\'nı\nkabul etmiş olursunuz',
                     style: AppTextStyles.bodyMedium.copyWith(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
@@ -136,24 +200,38 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   void _showCountryPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF111114),
+      backgroundColor: AppColors.bgCard,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: AppColors.glassBorder, borderRadius: BorderRadius.circular(2))),
-          const SizedBox(height: 16),
-          ..._commonCountries.map((c) => ListTile(
-                title: Text(c.$2, style: AppTextStyles.bodyLarge),
-                trailing: Text(c.$1, style: AppTextStyles.mono),
-                onTap: () {
-                  setState(() => _countryCode = c.$1);
-                  Navigator.pop(context);
-                },
-              )),
+          const SizedBox(height: 14),
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.glassBorder,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ..._commonCountries.map(
+            (c) => ListTile(
+              leading: Text(c.$2.split(' ')[0],
+                  style: const TextStyle(fontSize: 24)),
+              title: Text(c.$2.split(' ').skip(1).join(' '),
+                  style: AppTextStyles.bodyLarge),
+              trailing: Text(c.$1, style: AppTextStyles.mono),
+              onTap: () {
+                setState(() => _countryCode = c.$1);
+                Navigator.pop(context);
+              },
+            ),
+          ),
           const SizedBox(height: 16),
         ],
       ),

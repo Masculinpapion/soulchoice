@@ -56,7 +56,7 @@ dependencies:
   connectivity_plus: ^6.1.4
 
   # Analytics & Monitoring
-  sentry_flutter: ^8.14.2
+  sentry_flutter: ^9.0.0
 
   cupertino_icons: ^1.0.8
 
@@ -68,6 +68,15 @@ dev_dependencies:
   riverpod_generator: ^2.6.2
   custom_lint: ^0.7.5
   riverpod_lint: ^2.6.2
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#0A0A0B"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
 
 flutter:
   uses-material-design: true
@@ -81,31 +90,14 @@ flutter:
   fonts:
     - family: Fraunces
       fonts:
-        - asset: assets/fonts/Fraunces-Regular.ttf
+        - asset: assets/fonts/Fraunces.ttf
         - asset: assets/fonts/Fraunces-Italic.ttf
-          style: italic
-        - asset: assets/fonts/Fraunces-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Fraunces-BoldItalic.ttf
-          weight: 700
           style: italic
     - family: Manrope
       fonts:
-        - asset: assets/fonts/Manrope-Regular.ttf
-        - asset: assets/fonts/Manrope-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Manrope-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Manrope-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Manrope-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/Manrope-ExtraLight.ttf
-          weight: 200
+        - asset: assets/fonts/Manrope.ttf
     - family: JetBrainsMono
       fonts:
-        - asset: assets/fonts/JetBrainsMono-Regular.ttf
-        - asset: assets/fonts/JetBrainsMono-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/JetBrainsMono-Bold.ttf
-          weight: 700
+        - asset: assets/fonts/JetBrainsMono.ttf
+        - asset: assets/fonts/JetBrainsMono-Italic.ttf
+          style: italic

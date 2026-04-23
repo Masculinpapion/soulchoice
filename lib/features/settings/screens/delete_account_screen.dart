@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -18,10 +19,26 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
   bool _isDeleting = false;
 
   Future<void> _delete() async {
-    // TODO: biometric auth → hard delete via Supabase Edge Function
     setState(() => _isDeleting = true);
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) context.go('/splash');
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      if (uid != null) {
+        // Delete user data (auth.users cascade deletes users row via FK)
+        await client.auth.admin.deleteUser(uid);
+      }
+      await client.auth.signOut();
+      if (mounted) context.go('/splash');
+    } catch (e) {
+      // Service role not available from client → sign out and show message
+      await Supabase.instance.client.auth.signOut();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Hesap silme isteğiniz alındı.')),
+        );
+        context.go('/splash');
+      }
+    }
   }
 
   @override

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/supabase_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -24,7 +26,8 @@ class _SelfieScreenState extends State<SelfieScreen> {
     final picked = await _picker.pickImage(
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
-      imageQuality: 90,
+      imageQuality: 80,
+      maxWidth: 1200,
     );
     if (picked != null) {
       setState(() => _selfie = File(picked.path));
@@ -33,9 +36,36 @@ class _SelfieScreenState extends State<SelfieScreen> {
 
   Future<void> _submit() async {
     setState(() => _isUploading = true);
-    // TODO: Upload selfie to Supabase Storage selfies bucket
-    await Future.delayed(const Duration(seconds: 1)); // placeholder
-    if (mounted) context.go('/permissions');
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser!.id;
+      final ext = _selfie!.path.split('.').last;
+      final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+      await client.storage
+          .from(SupabaseConstants.selfiesBucket)
+          .upload(path, _selfie!, fileOptions: const FileOptions(upsert: true));
+
+      final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);
+
+      await client.from('user_photos').insert({
+        'user_id': uid,
+        'url': url,
+        'is_primary': false,
+        'is_selfie': true,
+        'order_index': 0,
+        'moderation_status': 'pending',
+      });
+
+      if (mounted) context.go('/permissions');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+        );
+        setState(() => _isUploading = false);
+      }
+    }
   }
 
   @override

@@ -4,39 +4,42 @@ import 'app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  // Fraunces — headers, brand
+  // Fraunces — cinematic headers, brand
   static const TextStyle displayLarge = TextStyle(
     fontFamily: 'Fraunces',
-    fontSize: 40,
+    fontSize: 42,
     fontWeight: FontWeight.w700,
     fontStyle: FontStyle.italic,
     color: AppColors.textPrimary,
-    letterSpacing: -0.5,
+    letterSpacing: -1.0,
+    height: 1.1,
   );
 
   static const TextStyle displayMedium = TextStyle(
     fontFamily: 'Fraunces',
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic,
     color: AppColors.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
+    height: 1.15,
   );
 
   static const TextStyle headingLarge = TextStyle(
     fontFamily: 'Fraunces',
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
+    letterSpacing: -0.3,
   );
 
-  // Manrope — UI, buttons
+  // Manrope — UI, buttons, labels
   static const TextStyle titleLarge = TextStyle(
     fontFamily: 'Manrope',
     fontSize: 20,
     fontWeight: FontWeight.w800,
     color: AppColors.textPrimary,
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   );
 
   static const TextStyle titleMedium = TextStyle(
@@ -44,6 +47,7 @@ class AppTextStyles {
     fontSize: 17,
     fontWeight: FontWeight.w700,
     color: AppColors.textPrimary,
+    letterSpacing: -0.1,
   );
 
   static const TextStyle bodyLarge = TextStyle(
@@ -51,7 +55,7 @@ class AppTextStyles {
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: AppColors.textPrimary,
-    height: 1.5,
+    height: 1.6,
   );
 
   static const TextStyle bodyMedium = TextStyle(
@@ -75,6 +79,7 @@ class AppTextStyles {
     fontSize: 13,
     fontWeight: FontWeight.w600,
     color: AppColors.textSecondary,
+    letterSpacing: 0.05,
   );
 
   // JetBrains Mono — counters, timers, meta
@@ -102,15 +107,16 @@ class AppTextStyles {
     letterSpacing: 0.25,
   );
 
-  // Feed card title — Manrope 900 uppercase
+  // Feed card title — large, cinematic, uppercase
   static const TextStyle feedCardTitle = TextStyle(
     fontFamily: 'Manrope',
     fontSize: 22,
     fontWeight: FontWeight.w800,
     color: AppColors.textPrimary,
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     shadows: [
-      Shadow(color: Color(0xB3000000), offset: Offset(0, 2), blurRadius: 12),
+      Shadow(color: Color(0xCC000000), offset: Offset(0, 2), blurRadius: 12),
+      Shadow(color: Color(0x408B5CF6), offset: Offset(0, 0), blurRadius: 20),
     ],
   );
 }

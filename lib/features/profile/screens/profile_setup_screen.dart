@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -30,6 +31,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _educationController = TextEditingController();
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
+  bool _isSaving = false;
 
   static const _steps = [
     'Ad ve yaş',
@@ -64,7 +66,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     super.dispose();
   }
 
-  void _next() {
+  Future<void> _next() async {
     if (_step < _steps.length - 1) {
       setState(() => _step++);
       _pageController.nextPage(
@@ -72,7 +74,51 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      context.go('/profile/photos');
+      await _save();
+    }
+  }
+
+  Future<void> _save() async {
+    setState(() => _isSaving = true);
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser!.id;
+
+      final cityRow = _cityId != null
+          ? await client.from('cities').select('id').eq('name', _cityId!).maybeSingle()
+          : null;
+
+      await client.from('users').upsert({
+        'id': uid,
+        'phone': client.auth.currentUser!.phone,
+        'name': _nameController.text.trim(),
+        'age': _age,
+        'gender': _gender,
+        'city_id': cityRow?['id'],
+        'bio': _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
+        'job': _jobController.text.trim().isEmpty ? null : _jobController.text.trim(),
+        'education': _educationController.text.trim().isEmpty ? null : _educationController.text.trim(),
+        'interests': _interests.toList(),
+      });
+
+      if (_prompts.isNotEmpty) {
+        await client.from('user_prompts').upsert(
+          _prompts.entries
+              .where((e) => e.value.trim().isNotEmpty)
+              .map((e) => {'user_id': uid, 'question_key': e.key, 'answer': e.value.trim()})
+              .toList(),
+        );
+      }
+
+      if (mounted) context.go('/profile/photos');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
@@ -169,7 +215,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: ScButton(label: _step < _steps.length - 1 ? 'Devam' : 'Fotoğraf ekle', onPressed: _next),
+                child: ScButton(label: _step < _steps.length - 1 ? 'Devam' : 'Fotoğraf ekle', onPressed: _isSaving ? null : _next, isLoading: _isSaving),
               ),
             ],
           ),
@@ -285,11 +331,11 @@ class _StepCity extends StatelessWidget {
   const _StepCity({required this.selectedCityId, required this.onSelected});
 
   static const _cities = [
-    ('moscow', '🇷🇺 Moskova'),
-    ('istanbul', '🇹🇷 İstanbul'),
-    ('london', '🇬🇧 Londra'),
-    ('dubai', '🇦🇪 Dubai'),
-    ('berlin', '🇩🇪 Berlin'),
+    ('Moskova', '🇷🇺 Moskova'),
+    ('İstanbul', '🇹🇷 İstanbul'),
+    ('Londra', '🇬🇧 Londra'),
+    ('Dubai', '🇦🇪 Dubai'),
+    ('Berlin', '🇩🇪 Berlin'),
   ];
 
   @override

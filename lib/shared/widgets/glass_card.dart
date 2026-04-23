@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
+/// Premium frosted glass card with backdrop blur.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -9,6 +10,7 @@ class GlassCard extends StatelessWidget {
   final Color? borderColor;
   final double blurStrength;
   final VoidCallback? onTap;
+  final Color? backgroundColor;
 
   const GlassCard({
     super.key,
@@ -16,8 +18,9 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.borderRadius,
     this.borderColor,
-    this.blurStrength = 24,
+    this.blurStrength = 20,
     this.onTap,
+    this.backgroundColor,
   });
 
   @override
@@ -32,7 +35,7 @@ class GlassCard extends StatelessWidget {
           child: Container(
             padding: padding ?? const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.glassBg,
+              color: backgroundColor ?? AppColors.glassBgMedium,
               borderRadius: radius,
               border: Border.all(
                 color: borderColor ?? AppColors.glassBorder,

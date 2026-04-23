@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../core/providers/auth_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -26,8 +26,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     );
-    _fadeIn = CurvedAnimation(parent: _controller, curve: const Interval(0, 0.6, curve: Curves.easeOut));
-    _scale = Tween<double>(begin: 0.85, end: 1.0).animate(
+    _fadeIn = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0, 0.6, curve: Curves.easeOut));
+    _scale = Tween<double>(begin: 0.82, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
     _controller.forward();
@@ -37,10 +39,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _navigate() async {
     await Future.delayed(const Duration(milliseconds: 2600));
     if (!mounted) return;
-    final user = ref.read(authStateProvider).asData?.value;
-    if (user != null) {
-      context.go('/feed');
-    } else {
+
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    debugPrint('[DBG] SPLASH: _navigate, currentUser=${currentUser?.id}');
+
+    if (currentUser == null) {
+      debugPrint('[DBG] SPLASH: no session → /onboarding');
+      context.go('/onboarding');
+      return;
+    }
+
+    try {
+      final existing = await Supabase.instance.client
+          .from('users')
+          .select('id')
+          .eq('id', currentUser.id)
+          .maybeSingle();
+      if (!mounted) return;
+      if (existing != null) {
+        debugPrint('[DBG] SPLASH: profile exists → /feed');
+        context.go('/feed');
+      } else {
+        try {
+          await Supabase.instance.client.auth.refreshSession();
+          if (!mounted) return;
+          debugPrint('[DBG] SPLASH: session valid, no profile → /profile/setup');
+          context.go('/profile/setup');
+        } catch (_) {
+          await Supabase.instance.client.auth.signOut();
+          if (!mounted) return;
+          debugPrint('[DBG] SPLASH: stale session, signed out → /onboarding');
+          context.go('/onboarding');
+        }
+      }
+    } catch (e) {
+      debugPrint('[DBG] SPLASH: error $e → sign out → /onboarding');
+      await Supabase.instance.client.auth.signOut();
+      if (!mounted) return;
       context.go('/onboarding');
     }
   }
@@ -64,25 +99,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 3D Pill placeholders — replace with Lottie
+                  // Premium gradient pills
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _Pill(color: AppColors.red, glowColor: AppColors.redGlow),
-                      const SizedBox(width: 12),
-                      _Pill(color: AppColors.blue, glowColor: AppColors.blueGlow),
+                      _Pill(
+                        gradientColors: [
+                          AppColors.gradientStart,
+                          AppColors.gradientStart.withOpacity(0.6),
+                        ],
+                        glowColor: AppColors.gradientStart,
+                      ),
+                      const SizedBox(width: 14),
+                      _Pill(
+                        gradientColors: [
+                          AppColors.gradientEnd.withOpacity(0.6),
+                          AppColors.gradientEnd,
+                        ],
+                        glowColor: AppColors.gradientEnd,
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 32),
-                  Text(
-                    'SoulChoice',
-                    style: AppTextStyles.displayLarge,
+                  const SizedBox(height: 36),
+                  // Gradient brand name
+                  ShaderMask(
+                    shaderCallback: (bounds) =>
+                        AppColors.primaryGradient.createShader(bounds),
+                    child: Text(
+                      'SoulChoice',
+                      style: AppTextStyles.displayLarge
+                          .copyWith(color: Colors.white),
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
                     'CHOOSE YOUR NIGHT',
                     style: AppTextStyles.monoSmall.copyWith(
-                      letterSpacing: 4,
+                      letterSpacing: 5,
                       color: AppColors.textTertiary,
                     ),
                   ),
@@ -97,31 +150,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 }
 
 class _Pill extends StatelessWidget {
-  final Color color;
+  final List<Color> gradientColors;
   final Color glowColor;
 
-  const _Pill({required this.color, required this.glowColor});
+  const _Pill({required this.gradientColors, required this.glowColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 36,
-      height: 80,
+      width: 34,
+      height: 82,
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(color: glowColor.withOpacity(0.6), blurRadius: 24, spreadRadius: 4),
-        ],
+        borderRadius: BorderRadius.circular(17),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            color.withOpacity(0.9),
-            color,
-            color.withOpacity(0.7),
-          ],
+          colors: gradientColors,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: glowColor.withOpacity(0.45),
+            blurRadius: 28,
+            spreadRadius: 2,
+          ),
+        ],
       ),
     );
   }

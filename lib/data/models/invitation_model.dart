@@ -72,6 +72,7 @@ class InvitationModel {
   // Joined data
   final UserModel? owner;
   final int? applicationCount;
+  final String? ownerPhotoUrl;
 
   const InvitationModel({
     required this.id,
@@ -91,6 +92,7 @@ class InvitationModel {
     required this.expiresAt,
     this.owner,
     this.applicationCount,
+    this.ownerPhotoUrl,
   });
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
@@ -139,5 +141,31 @@ class InvitationModel {
         'slots_total': slotsTotal,
         'status': status.name,
       };
+
+  InvitationModel copyWith({
+    UserModel? owner,
+    int? applicationCount,
+    String? ownerPhotoUrl,
+  }) =>
+      InvitationModel(
+        id: id,
+        ownerId: ownerId,
+        flowType: flowType,
+        category: category,
+        title: title,
+        description: description,
+        venueName: venueName,
+        venueLat: venueLat,
+        venueLng: venueLng,
+        eventDate: eventDate,
+        cityId: cityId,
+        slotsTotal: slotsTotal,
+        status: status,
+        createdAt: createdAt,
+        expiresAt: expiresAt,
+        owner: owner ?? this.owner,
+        applicationCount: applicationCount ?? this.applicationCount,
+        ownerPhotoUrl: ownerPhotoUrl ?? this.ownerPhotoUrl,
+      );
 }
 

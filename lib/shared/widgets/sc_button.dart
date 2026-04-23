@@ -4,6 +4,7 @@ import '../../core/theme/app_text_styles.dart';
 
 enum ScButtonVariant { primary, secondary, ghost }
 
+/// Premium gradient button system.
 class ScButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -35,7 +36,7 @@ class ScButton extends StatelessWidget {
             width: 22,
             height: 22,
             child: CircularProgressIndicator(
-              strokeWidth: 2,
+              strokeWidth: 2.5,
               color: AppColors.textPrimary,
             ),
           )
@@ -43,51 +44,83 @@ class ScButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 20, color: _textColor),
+                Icon(icon, size: 20, color: AppColors.textPrimary),
                 const SizedBox(width: 8),
               ],
-              Text(label, style: AppTextStyles.labelLarge.copyWith(color: _textColor)),
+              Text(
+                label,
+                style: AppTextStyles.labelLarge.copyWith(color: AppColors.textPrimary),
+              ),
             ],
           );
 
     switch (variant) {
       case ScButtonVariant.primary:
-        return ElevatedButton(
-          onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.red,
-            foregroundColor: AppColors.textPrimary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            elevation: 0,
+        final isDisabled = onPressed == null && !isLoading;
+        return Opacity(
+          opacity: isDisabled ? 0.45 : 1.0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.gradientStart, AppColors.gradientEnd],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: isDisabled
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: AppColors.gradientStart.withOpacity(0.30),
+                        blurRadius: 24,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+              child: InkWell(
+                onTap: isLoading ? null : onPressed,
+                borderRadius: BorderRadius.circular(16),
+                splashColor: Colors.white.withOpacity(0.08),
+                highlightColor: Colors.white.withOpacity(0.04),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: content,
+                ),
+              ),
+            ),
           ),
-          child: content,
         );
+
       case ScButtonVariant.secondary:
-        return OutlinedButton(
-          onPressed: isLoading ? null : onPressed,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textPrimary,
-            side: const BorderSide(color: AppColors.glassBorder),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.glassBorderBright, width: 1),
+            color: AppColors.glassBg,
           ),
-          child: content,
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              onTap: isLoading ? null : onPressed,
+              borderRadius: BorderRadius.circular(16),
+              splashColor: AppColors.red.withOpacity(0.06),
+              child: Container(
+                alignment: Alignment.center,
+                child: content,
+              ),
+            ),
+          ),
         );
+
       case ScButtonVariant.ghost:
         return TextButton(
           onPressed: isLoading ? null : onPressed,
           child: content,
         );
-    }
-  }
-
-  Color get _textColor {
-    switch (variant) {
-      case ScButtonVariant.primary:
-        return AppColors.textPrimary;
-      case ScButtonVariant.secondary:
-        return AppColors.textPrimary;
-      case ScButtonVariant.ghost:
-        return AppColors.textSecondary;
     }
   }
 }

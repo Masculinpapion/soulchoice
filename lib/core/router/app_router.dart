@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/phone_screen.dart';
@@ -20,24 +22,54 @@ import '../../features/messaging/screens/chat_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/delete_account_screen.dart';
 import '../../features/admin/screens/admin_screen.dart';
-import '../providers/auth_provider.dart';
+
+class _AuthNotifier extends ChangeNotifier {
+  _AuthNotifier() {
+    _sub = Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+      notifyListeners();
+    });
+  }
+  late final StreamSubscription<AuthState> _sub;
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
+  final notifier = _AuthNotifier();
+  ref.onDispose(notifier.dispose);
 
   return GoRouter(
     initialLocation: '/splash',
+    refreshListenable: notifier,
     redirect: (context, state) {
-      final isAuthenticated = authState.asData?.value != null;
-      final isOnAuthRoute = state.matchedLocation.startsWith('/auth') ||
-          state.matchedLocation == '/splash' ||
-          state.matchedLocation == '/onboarding';
+      final loc = state.matchedLocation;
 
-      if (!isAuthenticated && !isOnAuthRoute) return '/splash';
-      if (isAuthenticated && isOnAuthRoute &&
-          state.matchedLocation != '/splash') {
+      // These routes always handle their own navigation.
+      if (loc == '/auth/otp' || loc == '/splash' || loc == '/onboarding' || loc == '/auth/phone') {
+        debugPrint('[R] loc=$loc → null (exempt)');
+        return null;
+      }
+
+      final isAuthenticated =
+          Supabase.instance.client.auth.currentUser != null;
+
+      // Authenticated users going back to /auth/phone — send to feed.
+      if (isAuthenticated && loc == '/auth/phone') {
+        debugPrint('[R] loc=$loc, auth=true → /feed');
         return '/feed';
       }
+
+      // Unauthenticated users trying to reach protected routes — send to splash.
+      if (!isAuthenticated) {
+        debugPrint('[R] loc=$loc, auth=false → /splash');
+        return '/splash';
+      }
+
+      debugPrint('[R] loc=$loc, auth=true → null');
       return null;
     },
     routes: [
@@ -57,14 +89,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/permissions', builder: (ctx, _) => const PermissionsScreen()),
       GoRoute(path: '/feed', builder: (ctx, _) => const FeedScreen()),
       GoRoute(
+        path: '/invitation/create',
+        builder: (ctx, _) => const CreateInvitationScreen(),
+      ),
+      GoRoute(
         path: '/invitation/:id',
         builder: (_, state) => InvitationDetailScreen(
           invitationId: state.pathParameters['id']!,
         ),
-      ),
-      GoRoute(
-        path: '/invitation/create',
-        builder: (ctx, _) => const CreateInvitationScreen(),
       ),
       GoRoute(
         path: '/invitation/:id/applicants',

@@ -86,7 +86,7 @@ create table invitations (
   slots_total int default 1 check (slots_total in (1, 2)),
   status text default 'active' check (status in ('active', 'matched', 'closed', 'cancelled')),
   created_at timestamptz default now(),
-  expires_at timestamptz generated always as (created_at + interval '24 hours') stored
+  expires_at timestamptz default (now() + interval '24 hours')
 );
 
 -- Applications

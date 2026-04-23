@@ -51,7 +51,7 @@ class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: AppColors.glassBg,
+          fillColor: AppColors.glassBgMedium,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: const BorderSide(color: AppColors.glassBorder),
@@ -90,11 +90,26 @@ class AppTheme {
         ),
         chipTheme: ChipThemeData(
           backgroundColor: AppColors.glassBg,
-          selectedColor: AppColors.red.withOpacity(0.2),
+          selectedColor: AppColors.red.withOpacity(0.15),
           side: const BorderSide(color: AppColors.glassBorder),
           labelStyle: AppTextStyles.labelMedium,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        ),
+        datePickerTheme: const DatePickerThemeData(
+          backgroundColor: AppColors.bgCard,
+          headerBackgroundColor: AppColors.bgCard,
+          headerForegroundColor: AppColors.textPrimary,
+          todayBorder: BorderSide(color: AppColors.red),
+        ),
+        timePickerTheme: const TimePickerThemeData(
+          backgroundColor: AppColors.bgCard,
+          hourMinuteColor: AppColors.glassBgMedium,
+          hourMinuteTextColor: AppColors.textPrimary,
+          dialBackgroundColor: AppColors.glassBg,
+          dialHandColor: AppColors.red,
+          dialTextColor: AppColors.textPrimary,
+          entryModeIconColor: AppColors.textSecondary,
         ),
       );
 }

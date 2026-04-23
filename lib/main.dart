@@ -29,7 +29,9 @@ class SoulChoiceApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
+    // routerProvider is stable — only read once, never rebuilt on auth changes.
+    // Auth-driven redirects are handled internally via GoRouter.refreshListenable.
+    final router = ref.read(routerProvider);
 
     return MaterialApp.router(
       title: 'SoulChoice',

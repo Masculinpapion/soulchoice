@@ -46,12 +46,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 onNotificationTap: () {},
               ),
               _StoryBar(),
-              _SanaOzel(
-                selected: _selectedCategory,
-                onSelected: (c) => setState(() {
-                  _selectedCategory = _selectedCategory == c ? null : c;
-                }),
-              ),
               _TabBar(controller: _tabController),
               _CategoryChips(
                 selected: _selectedCategory,
@@ -95,7 +89,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 10, 12, 4),
+      padding: const EdgeInsets.fromLTRB(16, 10, 12, 4),
       child: Row(
         children: [
           ShaderMask(
@@ -191,7 +185,7 @@ class _StoryBar extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
                 Text('Aktif Davetler',
@@ -346,181 +340,222 @@ class _AvatarFallback extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sana Özel (mood / time-slot cards)
+// Tab Bar — hap (pill) toggle, splash logo stilinde
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _MoodData {
-  final String time;
-  final String label;
-  final String emoji;
-  final InvitationCategory category;
-  final List<Color> colors;
-  const _MoodData(this.time, this.label, this.emoji, this.category, this.colors);
+class _TabBar extends StatefulWidget {
+  final TabController controller;
+  const _TabBar({required this.controller});
+
+  @override
+  State<_TabBar> createState() => _TabBarState();
 }
 
-const _moodList = [
-  _MoodData('12:00', 'Öğlen', '🍽', InvitationCategory.food,
-      [Color(0xFF9D4EDD), Color(0xFFFF6B35)]),
-  _MoodData('15:00', 'Kahve', '☕', InvitationCategory.coffee,
-      [Color(0xFF0891B2), Color(0xFF155E75)]),
-  _MoodData('19:00', 'Konser', '🎵', InvitationCategory.concert,
-      [Color(0xFF7C3AED), Color(0xFFDB2777)]),
-  _MoodData('21:00', 'Sinema', '🎬', InvitationCategory.cinema,
-      [Color(0xFF312E81), Color(0xFF7C3AED)]),
-  _MoodData('23:00', 'Gece', '🎨', InvitationCategory.culture,
-      [Color(0xFF4C1D95), Color(0xFF1E1B4B)]),
-];
+class _TabBarState extends State<_TabBar> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onTabChanged);
+  }
 
-class _SanaOzel extends StatelessWidget {
-  final InvitationCategory? selected;
-  final ValueChanged<InvitationCategory> onSelected;
-  const _SanaOzel({required this.selected, required this.onSelected});
+  void _onTabChanged() => setState(() {});
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onTabChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-          child: Row(
-            children: [
-              ShaderMask(
-                shaderCallback: (b) =>
-                    AppColors.primaryGradient.createShader(b),
-                child: const Text(
-                  'SANA ÖZEL',
-                  style: TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
-                  ),
-                ),
+    final isInvite = widget.controller.index == 0;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      child: Row(
+        children: [
+          // ── Kırmızı hap — Davetler ────────────────────────────────────────
+          Expanded(
+            child: GestureDetector(
+              onTap: () => widget.controller.animateTo(0),
+              child: _PillButton(
+                label: 'Davetler',
+                color: AppColors.primaryRed,
+                active: isInvite,
               ),
-            ],
+            ),
           ),
-        ),
-        SizedBox(
-          height: 130,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _moodList.length,
-            itemBuilder: (_, i) {
-              final mood = _moodList[i];
-              final isActive = selected == mood.category;
-              return Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () => onSelected(mood.category),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 92,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: mood.colors,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isActive
-                            ? Colors.white.withOpacity(0.6)
-                            : Colors.white.withOpacity(0.12),
-                        width: isActive ? 1.5 : 1,
-                      ),
-                      boxShadow: isActive
-                          ? [
-                              BoxShadow(
-                                color: mood.colors[0].withOpacity(0.45),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              )
-                            ]
-                          : [],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 14, 8, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            mood.time,
-                            style: const TextStyle(
-                              fontFamily: 'JetBrainsMono',
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            mood.emoji,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            mood.label,
-                            style: const TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
+          const SizedBox(width: 12),
+          // ── Mavi hap — İstekler ───────────────────────────────────────────
+          Expanded(
+            child: GestureDetector(
+              onTap: () => widget.controller.animateTo(1),
+              child: _PillButton(
+                label: 'İstekler',
+                color: AppColors.primaryBlue,
+                active: !isInvite,
+                glass: true,
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Tab Bar
-// ─────────────────────────────────────────────────────────────────────────────
+class _PillButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final bool active;
+  final bool glass;
 
-class _TabBar extends StatelessWidget {
-  final TabController controller;
-
-  const _TabBar({required this.controller});
+  const _PillButton({
+    required this.label,
+    required this.color,
+    required this.active,
+    this.glass = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+    const h = 46.0;
+    const radius = 23.0;
+
+    final dark = Color.lerp(color, Colors.black, 0.40)!;
+    final darkEdge = Color.lerp(color, Colors.black, 0.26)!;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      height: h,
       decoration: BoxDecoration(
-        color: AppColors.glassBg,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.glassBorder),
+        borderRadius: BorderRadius.circular(radius),
+        boxShadow: active
+            ? [
+                BoxShadow(
+                  color: color.withOpacity(0.50),
+                  blurRadius: 22,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 5),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.35),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.20),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
-      child: TabBar(
-        controller: controller,
-        indicator: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.gradientStart, AppColors.gradientEnd],
-          ),
-          borderRadius: BorderRadius.circular(12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // ── Silindirik gövde rengi (splash'taki 3D hap efekti) ──────────
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              decoration: BoxDecoration(
+                gradient: active
+                    ? LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [dark, color, color, darkEdge],
+                        stops: const [0.0, 0.28, 0.65, 1.0],
+                      )
+                    : LinearGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.04),
+                          Colors.white.withOpacity(0.08),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+              ),
+            ),
+            // ── Alt karartma ─────────────────────────────────────────────────
+            if (active)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(glass ? 0.16 : 0.28),
+                    ],
+                    stops: const [0.4, 1.0],
+                  ),
+                ),
+              ),
+            // ── Üst parlaklık şeridi ─────────────────────────────────────────
+            if (active)
+              Positioned(
+                top: 0,
+                left: 10,
+                right: 10,
+                child: Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.white.withOpacity(0.55),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            // ── Glass gövde parlaklığı (mavi hap) ───────────────────────────
+            if (active && glass)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.transparent,
+                      Colors.white.withOpacity(0.08),
+                      Colors.white.withOpacity(0.14),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.3, 0.7, 1.0],
+                  ),
+                ),
+              ),
+            // ── Inactive border ──────────────────────────────────────────────
+            if (!active)
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  border: Border.all(
+                    color: color.withOpacity(0.25),
+                    width: 1,
+                  ),
+                ),
+              ),
+            // ── Label ────────────────────────────────────────────────────────
+            Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: active
+                      ? Colors.white
+                      : color.withOpacity(0.55),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
         ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        labelStyle: AppTextStyles.labelLarge,
-        unselectedLabelStyle: AppTextStyles.labelMedium,
-        labelColor: AppColors.textPrimary,
-        unselectedLabelColor: AppColors.textTertiary,
-        tabs: const [
-          Tab(text: 'Davetler'),
-          Tab(text: 'İstekler'),
-        ],
       ),
     );
   }
@@ -539,10 +574,10 @@ class _CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
         children: InvitationCategory.values.map((c) {
           final isSelected = selected == c;
           return Padding(
@@ -565,6 +600,7 @@ class _CategoryChips extends StatelessWidget {
                 ),
                 child: Text(
                   '${c.emoji} ${c.label}',
+                  textAlign: TextAlign.center,
                   style: AppTextStyles.labelMedium.copyWith(
                     color: isSelected
                         ? AppColors.textPrimary
@@ -655,6 +691,7 @@ class _InvitationList extends ConsumerWidget {
                   applicationCount: inv.applicationCount ?? 0,
                   applicantPhotoUrls: inv.applicantPhotoUrls,
                   eventDate: inv.eventDate,
+                  flowType: flowType,
                   onTap: () => context.push('/invitation/${inv.id}'),
                 ),
               );
@@ -682,6 +719,7 @@ class InvitationCard extends StatelessWidget {
   final List<String> applicantPhotoUrls;
   final DateTime? eventDate;
   final VoidCallback onTap;
+  final InvitationFlowType flowType;
 
   const InvitationCard({
     super.key,
@@ -696,6 +734,7 @@ class InvitationCard extends StatelessWidget {
     this.applicantPhotoUrls = const [],
     this.eventDate,
     required this.onTap,
+    this.flowType = InvitationFlowType.invite,
   });
 
   String _formatTimer(Duration d) {
@@ -730,11 +769,11 @@ class InvitationCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
         child: SizedBox(
-          height: 310,
+          height: 420,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // ── 1. Background photo ─────────────────────────────────────
+              // ── 1. Tam boy dikey portre fotoğraf ───────────────────────
               if (ownerPhotoUrl != null)
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
@@ -746,192 +785,246 @@ class InvitationCard extends StatelessWidget {
               else
                 _CardFallbackGradient(),
 
-              // ── 2. Top scrim ────────────────────────────────────────────
+              // ── 2. Üst hafif scrim ──────────────────────────────────────
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
-                    end: Alignment.center,
-                    colors: [Color(0xB0000000), Colors.transparent],
+                    end: Alignment(0, 0.0),
+                    colors: [Color(0x99000000), Colors.transparent],
                   ),
                 ),
               ),
 
-              // ── 3. Bottom content scrim ─────────────────────────────────
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.center,
-                    colors: [Color(0xF0000000), Colors.transparent],
-                  ),
-                ),
-              ),
-
-              // ── 4. Top-left: Owner avatar + name ────────────────────────
-              Positioned(
-                top: 16,
-                left: 16,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: AppColors.glassBorderBright, width: 1.5),
-                      ),
-                      child: ClipOval(
-                        child: ownerPhotoUrl != null
-                            ? CachedNetworkImage(
-                                imageUrl: ownerPhotoUrl!,
-                                fit: BoxFit.cover,
-                                errorWidget: (_, __, ___) => const Icon(
-                                    Icons.person,
-                                    size: 20,
-                                    color: AppColors.textTertiary),
-                              )
-                            : const Icon(Icons.person,
-                                size: 20, color: AppColors.textTertiary),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '$ownerName, $ownerAge',
-                          style: AppTextStyles.labelMedium.copyWith(
-                              color: AppColors.textPrimary, fontSize: 13),
-                        ),
-                        Text(
-                          venueName.isNotEmpty
-                              ? venueName
-                              : category.label,
-                          style: AppTextStyles.monoSmall
-                              .copyWith(color: AppColors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // ── 5. Top-right: Countdown timer pill ──────────────────────
-              Positioned(
-                top: 16,
-                right: 16,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.glassBgStrong,
-                        borderRadius: BorderRadius.circular(100),
-                        border:
-                            Border.all(color: AppColors.glassBorderBright),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ShaderMask(
-                            shaderCallback: (b) =>
-                                AppColors.primaryGradient.createShader(b),
-                            child: const Icon(Icons.timer_outlined,
-                                size: 12, color: Colors.white),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            _formatTimer(timeRemaining),
-                            style: AppTextStyles.monoSmall.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              // ── 6. Bottom content ───────────────────────────────────────
+              // ── 3. Alt glassmorphism panel ──────────────────────────────
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title
-                      Text(
-                        title.toUpperCase(),
-                        style: AppTextStyles.feedCardTitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      // Event date
-                      if (eventDate != null) ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.calendar_today_outlined,
-                                size: 11,
-                                color: AppColors.textSecondary),
-                            const SizedBox(width: 4),
-                            Text(
-                              _formatEventDate(eventDate!),
-                              style: AppTextStyles.monoSmall.copyWith(
-                                  color: AppColors.textSecondary),
-                            ),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(28)),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.15),
+                            Colors.black.withOpacity(0.60),
                           ],
                         ),
-                      ],
-                      const SizedBox(height: 10),
-                      Row(
+                        border: Border(
+                          top: BorderSide(
+                              color: Colors.white.withOpacity(0.10),
+                              width: 0.8),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Overlapping applicant avatars + text
-                          _ApplicantAvatars(
-                            photoUrls: applicantPhotoUrls,
-                            label: _applicantText(),
-                            count: applicationCount,
+                          // Başlık — tek satır, kompakt
+                          Text(
+                            title.toUpperCase(),
+                            style: AppTextStyles.feedCardTitle.copyWith(
+                              fontSize: 20,
+                              height: 1.15,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const Spacer(),
-                          // CTA Button
+                          const SizedBox(height: 8),
+                          // Alt satır: geri sayım + başvuranlar + CTA
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Geri sayım pill
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 9, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: timeRemaining.inHours < 2
+                                      ? const Color(0xFFEF4444)
+                                      : const Color(0xCCFF6D00),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 5,
+                                      height: 5,
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      _formatTimer(timeRemaining),
+                                      style: const TextStyle(
+                                        fontFamily: 'JetBrainsMono',
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (applicationCount > 0) ...[
+                                const SizedBox(width: 8),
+                                const Icon(Icons.group_outlined,
+                                    size: 12,
+                                    color: AppColors.textSecondary),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '$applicationCount',
+                                  style: const TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 11,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                              const Spacer(),
+                              // CTA
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 13, vertical: 6),
+                                decoration: BoxDecoration(
+                                  gradient: flowType == InvitationFlowType.invite
+                                      ? AppColors.inviteGradient
+                                      : AppColors.requestGradient,
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: (flowType == InvitationFlowType.invite
+                                              ? AppColors.primaryRed
+                                              : AppColors.primaryBlue)
+                                          .withOpacity(0.38),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  flowType == InvitationFlowType.invite
+                                      ? 'Gelmek isterim'
+                                      : 'Katılmak istiyorum',
+                                  style: const TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── 4. Üst glass pill: avatar + isim + yaş ──────────────────
+              Positioned(
+                top: 14,
+                left: 14,
+                right: 14,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(6, 5, 12, 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.38),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.18),
+                            width: 0.8),
+                      ),
+                      child: Row(
+                        children: [
+                          // Avatar
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                            width: 32,
+                            height: 32,
                             decoration: BoxDecoration(
-                              gradient: AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.gradientStart
-                                      .withOpacity(0.35),
-                                  blurRadius: 16,
-                                  offset: const Offset(0, 4),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.white.withOpacity(0.30),
+                                  width: 1.5),
+                            ),
+                            child: ClipOval(
+                              child: ownerPhotoUrl != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: ownerPhotoUrl!,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) =>
+                                          const Icon(Icons.person,
+                                              size: 16,
+                                              color: AppColors.textTertiary),
+                                    )
+                                  : const Icon(Icons.person,
+                                      size: 16,
+                                      color: AppColors.textTertiary),
+                            ),
+                          ),
+                          const SizedBox(width: 9),
+                          // İsim + venue/kategori
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '$ownerName, $ownerAge',
+                                  style: const TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  venueName.isNotEmpty
+                                      ? venueName
+                                      : category.label,
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 9,
+                                    color: Colors.white.withOpacity(0.60),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
+                          ),
+                          // Kategori emoji badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
                             child: Text(
-                              'Gelmek isterim',
-                              style: AppTextStyles.monoSmall.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 12,
-                              ),
+                              category.emoji,
+                              style: const TextStyle(fontSize: 13),
                             ),
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -980,7 +1073,7 @@ class _ApplicantAvatars extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: const Color(0xFF070B14), width: 2),
+                          color: AppColors.bgBlack, width: 2),
                     ),
                     child: ClipOval(
                       child: CachedNetworkImage(
@@ -1025,7 +1118,7 @@ class _CardFallbackGradient extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF1A0A2E), Color(0xFF0A1A2E)],
+            colors: [Color(0xFF1A0608), Color(0xFF080F1A)],
           ),
         ),
       );

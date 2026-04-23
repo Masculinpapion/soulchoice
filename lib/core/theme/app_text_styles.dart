@@ -116,7 +116,7 @@ class AppTextStyles {
     letterSpacing: 1.2,
     shadows: [
       Shadow(color: Color(0xCC000000), offset: Offset(0, 2), blurRadius: 12),
-      Shadow(color: Color(0x408B5CF6), offset: Offset(0, 0), blurRadius: 20),
+      Shadow(color: Color(0x40E63946), offset: Offset(0, 0), blurRadius: 20),
     ],
   );
 }

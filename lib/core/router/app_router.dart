@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -201,7 +202,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/profile/me',
+                path: '/my-profile',
                 builder: (ctx, _) {
                   final uid =
                       Supabase.instance.client.auth.currentUser?.id ?? '';
@@ -214,7 +215,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
-      backgroundColor: const Color(0xFF070B14),
+      backgroundColor: AppColors.bgBlack,
       body: Center(
         child: Text(
           'Sayfa bulunamadı',

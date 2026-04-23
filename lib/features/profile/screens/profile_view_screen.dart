@@ -877,7 +877,7 @@ class _PhotoCarouselState extends State<_PhotoCarousel> {
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.center,
-              colors: [Color(0xFF070B14), Colors.transparent],
+              colors: [AppColors.bgBlack, Colors.transparent],
               stops: [0.0, 0.6],
             ),
           ),

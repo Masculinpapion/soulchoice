@@ -630,8 +630,8 @@ class _StepDateTime extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0x128B5CF6),
-                      Color(0x0806B6D4),
+                      Color(0x12E63946),
+                      Color(0x084A90E2),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(14),

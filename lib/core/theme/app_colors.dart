@@ -3,26 +3,26 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ─── Brand Accent: Violet → Cyan ─────────────────────────────────────────
-  /// Primary accent — premium violet (kept as 'red' for legacy refs)
-  static const Color red = Color(0xFF8B5CF6);
-  static const Color redGlow = Color(0xFFA78BFA);
+  // ─── Brand: Red (Ismarlıyorum) ↔ Blue (İstiyorum) ────────────────────────
+  static const Color primaryRed  = Color(0xFFE63946);
+  static const Color red         = primaryRed;
+  static const Color redGlow     = Color(0xFFFF6B7A);
 
-  /// Secondary accent — electric cyan (kept as 'blue' for legacy refs)
-  static const Color blue = Color(0xFF06B6D4);
-  static const Color blueGlow = Color(0xFF22D3EE);
+  static const Color primaryBlue = Color(0xFF4A90E2);
+  static const Color blue        = primaryBlue;
+  static const Color blueGlow    = Color(0xFF74B3F5);
 
-  /// Warm gold — verified badges
-  static const Color gold = Color(0xFFDDB77B);
+  static const Color accentGold  = Color(0xFFD4AF37);
+  static const Color gold        = Color(0xFFD4AF37);
 
   // ─── Backgrounds ──────────────────────────────────────────────────────────
-  static const Color bgBlack = Color(0xFF070B14);   // deep space blue-black
-  static const Color bgDeep  = Color(0xFF040709);   // absolute depth
-  static const Color bgCard  = Color(0xFF0D1424);   // elevated surface
+  static const Color bgBlack = Color(0xFF0A0A0B);
+  static const Color bgDeep  = Color(0xFF050506);
+  static const Color bgCard  = Color(0xFF121218);
 
   // ─── Gradient ─────────────────────────────────────────────────────────────
-  static const Color gradientStart = Color(0xFF8B5CF6);  // violet
-  static const Color gradientEnd   = Color(0xFF06B6D4);  // cyan
+  static const Color gradientStart = Color(0xFFE63946);
+  static const Color gradientEnd   = Color(0xFF4A90E2);
 
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [gradientStart, gradientEnd],
@@ -40,6 +40,22 @@ class AppColors {
     colors: [gradientStart, gradientEnd],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
+  );
+
+  /// "Ismarlıyorum" akışı — kırmızı dominant (%70 red)
+  static const LinearGradient inviteGradient = LinearGradient(
+    colors: [gradientStart, gradientStart, gradientEnd],
+    stops: [0.0, 0.65, 1.0],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+  /// "İstiyorum" akışı — mavi dominant (%70 blue)
+  static const LinearGradient requestGradient = LinearGradient(
+    colors: [gradientEnd, gradientEnd, gradientStart],
+    stops: [0.0, 0.65, 1.0],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
   );
 
   // ─── Text ─────────────────────────────────────────────────────────────────

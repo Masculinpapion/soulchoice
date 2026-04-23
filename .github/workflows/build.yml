@@ -23,6 +23,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
 
       # 3. Flutter kur
       - name: Set up Flutter
@@ -31,15 +32,23 @@ jobs:
           channel: stable
           cache: true
 
-      # 4. Bağımlılıkları yükle
+      # 4. Pub cache
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-
+
+      # 5. Bağımlılıkları yükle
       - name: Flutter pub get
         run: flutter pub get
 
-      # 5. Release APK build et
+      # 6. Release APK build et
       - name: Build APK
         run: flutter build apk --release --no-pub
 
-      # 6. APK'yı artifact olarak yükle (30 gün saklanır)
+      # 7. APK'yı artifact olarak yükle (30 gün saklanır)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -47,7 +56,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
-      # 7. Build bilgisi
+      # 8. Build bilgisi
       - name: Build summary
         run: |
           echo "✅ Build #${{ github.run_number }} tamamlandı"

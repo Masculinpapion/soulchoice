@@ -76,7 +76,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         applicationCount: pendingApps.length,
         applicantPhotoUrls: applicantPhotoUrls,
       );
-    }).toList();
+    }).where((inv) => inv.ownerPhotoUrl != null).toList();
   },
 );
 

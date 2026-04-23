@@ -33,7 +33,6 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
 
   Future<void> _sendOtp() async {
     final phone = '$_countryCode${_phoneController.text.trim()}';
-    debugPrint('[DBG] PHONE: _sendOtp called, phone=$phone');
     if (_phoneController.text.trim().isEmpty) {
       setState(() => _error = 'Telefon numarası girin');
       return;
@@ -43,25 +42,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       _error = null;
     });
     try {
-      debugPrint('[DBG] PHONE: calling signInWithOtp...');
       await Supabase.instance.client.auth.signInWithOtp(phone: phone);
-      debugPrint('[DBG] PHONE: signInWithOtp success, mounted=$mounted');
-      if (mounted) {
-        debugPrint('[DBG] PHONE: pushing /auth/otp');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('[DBG] OTP gönderildi, /auth/otp açılıyor'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        context.go('/auth/otp', extra: phone);
-        debugPrint('[DBG] PHONE: push called');
-      }
+      if (mounted) context.go('/auth/otp', extra: phone);
     } on AuthException catch (e) {
-      debugPrint('[DBG] PHONE: AuthException: ${e.message}');
       setState(() => _error = e.message);
     } catch (e) {
-      debugPrint('[DBG] PHONE: unexpected error: $e');
       setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -116,10 +101,13 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                         border: Border.all(color: AppColors.glassBorder),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: _showCountryPicker,
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(_countryCode,
                                     style: AppTextStyles.bodyLarge),
@@ -141,12 +129,17 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               style: AppTextStyles.bodyLarge,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.transparent,
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 hintText: '999 123 45 67',
-                                contentPadding: EdgeInsets.symmetric(
+                                hintStyle: AppTextStyles.bodyLarge.copyWith(
+                                  color: AppColors.textTertiary,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
                                     vertical: 16),
                               ),
                             ),

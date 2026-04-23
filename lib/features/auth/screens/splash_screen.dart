@@ -41,10 +41,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     final currentUser = Supabase.instance.client.auth.currentUser;
-    debugPrint('[DBG] SPLASH: _navigate, currentUser=${currentUser?.id}');
 
     if (currentUser == null) {
-      debugPrint('[DBG] SPLASH: no session → /onboarding');
       context.go('/onboarding');
       return;
     }
@@ -57,23 +55,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           .maybeSingle();
       if (!mounted) return;
       if (existing != null) {
-        debugPrint('[DBG] SPLASH: profile exists → /feed');
         context.go('/feed');
       } else {
         try {
           await Supabase.instance.client.auth.refreshSession();
           if (!mounted) return;
-          debugPrint('[DBG] SPLASH: session valid, no profile → /profile/setup');
           context.go('/profile/setup');
         } catch (_) {
           await Supabase.instance.client.auth.signOut();
           if (!mounted) return;
-          debugPrint('[DBG] SPLASH: stale session, signed out → /onboarding');
           context.go('/onboarding');
         }
       }
     } catch (e) {
-      debugPrint('[DBG] SPLASH: error $e → sign out → /onboarding');
       await Supabase.instance.client.auth.signOut();
       if (!mounted) return;
       context.go('/onboarding');

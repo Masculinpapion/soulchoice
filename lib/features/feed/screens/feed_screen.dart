@@ -176,7 +176,10 @@ class _StoryBar extends ConsumerWidget {
     final filter = InvitationFilter(flowType: InvitationFlowType.invite);
     final async = ref.watch(invitationsProvider(filter));
 
-    final invitations = async.asData?.value ?? [];
+    // Sadece fotoğrafı olan davetler story'de görünsün
+    final invitations = (async.asData?.value ?? [])
+        .where((inv) => inv.ownerPhotoUrl != null)
+        .toList();
     if (invitations.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
@@ -225,12 +228,9 @@ class _StoryBar extends ConsumerWidget {
                         .difference(inv.createdAt)
                         .inHours <
                     1;
-                final storyLabel = (inv.venueName != null &&
-                        inv.venueName!.isNotEmpty)
-                    ? (inv.venueName!.length > 10
-                        ? inv.venueName!.substring(0, 10)
-                        : inv.venueName!)
-                    : (inv.owner?.name ?? '—').split(' ').first;
+                // Her zaman isim göster
+                final ownerName = inv.owner?.name ?? '—';
+                final storyLabel = ownerName.split(' ').first;
 
                 return Padding(
                   padding: const EdgeInsets.only(right: 14),

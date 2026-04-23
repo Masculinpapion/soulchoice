@@ -806,25 +806,16 @@ class InvitationCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(46),
+          borderRadius: BorderRadius.circular(45),
           boxShadow: [
             BoxShadow(
-              color: glowColor.withOpacity(0.28),
-              blurRadius: 36,
+              color: Colors.black.withOpacity(0.45),
+              blurRadius: 28,
               spreadRadius: 0,
               offset: const Offset(0, 10),
             ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.50),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
           ],
-          gradient: flowType == InvitationFlowType.invite
-              ? AppColors.inviteGradient
-              : AppColors.requestGradient,
         ),
-        padding: const EdgeInsets.all(1.5),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(45),
           child: SizedBox(

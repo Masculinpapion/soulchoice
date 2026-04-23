@@ -829,8 +829,6 @@ class InvitationCard extends StatelessWidget {
                     imageUrl: ownerPhotoUrl!,
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
-                    placeholder: (_, __) => _CardFallbackGradient(
-                        ownerName: ownerName, category: category),
                     errorWidget: (_, __, ___) => _CardFallbackGradient(
                         ownerName: ownerName, category: category),
                   )
@@ -1181,86 +1179,40 @@ class _CardFallbackGradient extends StatelessWidget {
           stops: [0.0, 0.45, 1.0],
         ),
       ),
-      child: Stack(
-        fit: StackFit.expand,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Sıcak glow üst-sol
-          Positioned(
-            top: -60,
-            left: -60,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFBE185D).withOpacity(0.30),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+          Text(
+            category.emoji,
+            style: const TextStyle(fontSize: 80),
           ),
-          // Mavi glow sağ-alt
-          Positioned(
-            bottom: -40,
-            right: -40,
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFF4A90E2).withOpacity(0.20),
-                    Colors.transparent,
-                  ],
-                ),
+          const SizedBox(height: 28),
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6B21A8), Color(0xFFBE185D), Color(0xFFE63946)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ),
-          ),
-          // Kategori emoji — büyük arka plan ikonu
-          Positioned(
-            top: 60,
-            left: 0,
-            right: 0,
-            child: Text(
-              category.emoji,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 80),
-            ),
-          ),
-          // Baş harfli yuvarlak avatar — merkez-alt
-          Center(
-            child: Container(
-              width: 90,
-              height: 90,
-              margin: const EdgeInsets.only(top: 60),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6B21A8), Color(0xFFBE185D), Color(0xFFE63946)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFBE185D).withOpacity(0.50),
+                  blurRadius: 24,
+                  spreadRadius: 4,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFBE185D).withOpacity(0.50),
-                    blurRadius: 24,
-                    spreadRadius: 4,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  initials,
-                  style: const TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                initials,
+                style: const TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),

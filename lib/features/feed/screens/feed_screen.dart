@@ -829,6 +829,8 @@ class InvitationCard extends StatelessWidget {
                     imageUrl: ownerPhotoUrl!,
                     fit: BoxFit.cover,
                     alignment: Alignment.topCenter,
+                    placeholder: (_, __) => _CardFallbackGradient(
+                        ownerName: ownerName, category: category),
                     errorWidget: (_, __, ___) => _CardFallbackGradient(
                         ownerName: ownerName, category: category),
                   )

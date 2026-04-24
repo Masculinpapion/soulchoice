@@ -196,9 +196,16 @@ class _StoryBar extends ConsumerWidget {
     final filter = InvitationFilter(flowType: InvitationFlowType.invite);
     final async = ref.watch(invitationsProvider(filter));
 
-    // Sadece fotoğrafı olan davetler story'de görünsün
+    // Her sahipten sadece 1 davet — tekrar eden yüzler story'de gözükmesin
+    final seen = <String>{};
     final invitations = (async.asData?.value ?? [])
-        .where((inv) => inv.ownerPhotoUrl != null)
+        .where((inv) {
+          if (inv.ownerPhotoUrl == null) return false;
+          final ownerId = inv.owner?.id ?? '';
+          if (seen.contains(ownerId)) return false;
+          seen.add(ownerId);
+          return true;
+        })
         .toList();
     if (invitations.isEmpty) return const SizedBox.shrink();
 

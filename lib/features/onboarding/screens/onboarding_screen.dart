@@ -62,52 +62,55 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemBuilder: (_, i) => _OnboardingPage(data: pages[i]),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    // Dots
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        pages.length,
-                        (i) => AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          width: _currentPage == i ? 24 : 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: _currentPage == i
-                                ? AppColors.red
-                                : AppColors.glassBorder,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
+              Column(
+                children: [
+                  // Dots
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      pages.length,
+                      (i) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: _currentPage == i ? 24 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: _currentPage == i
+                              ? AppColors.red
+                              : AppColors.glassBorder,
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    if (_currentPage < pages.length - 1)
-                      ScButton(
-                        label: l10n.btn_continue,
-                        onPressed: () => _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        ),
-                      )
-                    else
-                      ScButton(
-                        label: l10n.onboarding_start_button,
-                        onPressed: () => context.go('/auth/phone'),
-                      ),
+                  ),
+                  const SizedBox(height: 32),
+                  // Gradient buton — horizontal: 24 padding
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _currentPage < pages.length - 1
+                        ? ScButton(
+                            label: l10n.btn_continue,
+                            onPressed: () => _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            ),
+                          )
+                        : ScButton(
+                            label: l10n.onboarding_start_button,
+                            onPressed: () => context.go('/auth/phone'),
+                          ),
+                  ),
+                  // Atla — sadece ilk 2 sayfada göster
+                  if (_currentPage < pages.length - 1) ...[
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () => context.go('/auth/phone'),
                       child: Text(l10n.onboarding_skip,
                           style: AppTextStyles.bodyMedium),
                     ),
-                    const SizedBox(height: 8),
                   ],
-                ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ],
           ),

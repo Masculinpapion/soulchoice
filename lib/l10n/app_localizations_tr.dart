@@ -14,14 +14,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Beğendiğin bir restoran, bir konser, bir sergi. Davetini aç, kimin ilgilendiğini gör.';
+      'Bir restoran, bir konser, bir sergi. Davet aç, ısmarla — kiminle gitmek istediğini sen seç.';
 
   @override
-  String get onboarding_2_title => 'İlgini çeken bir davet gördüğünde, başvur';
+  String get onboarding_2_title =>
+      'Gitmek istediğin yeri söyle, biri seni davet etsin';
 
   @override
   String get onboarding_2_desc =>
-      'Profilin sahibinin seçimine kalsın. Güç dengesi her zaman karşılıklı.';
+      'Coffeemania, Bolşoy, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.';
 
   @override
   String get onboarding_3_title => 'Doğrulanmış profiller, sakin bir topluluk';

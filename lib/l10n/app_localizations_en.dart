@@ -14,14 +14,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'A restaurant, a concert, an exhibition. Open an invitation and see who\'s interested.';
+      'A restaurant, a concert, an exhibition. Open an invitation and treat — you choose who comes along.';
 
   @override
-  String get onboarding_2_title => 'See an invitation you like? Apply.';
+  String get onboarding_2_title =>
+      'Say where you want to go, let someone invite you';
 
   @override
   String get onboarding_2_desc =>
-      'The host chooses from applicants. The decision is always mutual.';
+      'Coffeemania, Bolshoi, a concert. Share your wish and wait for someone to treat and take you there.';
 
   @override
   String get onboarding_3_title => 'Verified profiles, a calm community';

@@ -111,19 +111,19 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_1_desc.
   ///
   /// In tr, this message translates to:
-  /// **'Beğendiğin bir restoran, bir konser, bir sergi. Davetini aç, kimin ilgilendiğini gör.'**
+  /// **'Bir restoran, bir konser, bir sergi. Davet aç, ısmarla — kiminle gitmek istediğini sen seç.'**
   String get onboarding_1_desc;
 
   /// No description provided for @onboarding_2_title.
   ///
   /// In tr, this message translates to:
-  /// **'İlgini çeken bir davet gördüğünde, başvur'**
+  /// **'Gitmek istediğin yeri söyle, biri seni davet etsin'**
   String get onboarding_2_title;
 
   /// No description provided for @onboarding_2_desc.
   ///
   /// In tr, this message translates to:
-  /// **'Profilin sahibinin seçimine kalsın. Güç dengesi her zaman karşılıklı.'**
+  /// **'Coffeemania, Bolşoy, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.'**
   String get onboarding_2_desc;
 
   /// No description provided for @onboarding_3_title.

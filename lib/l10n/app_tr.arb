@@ -1,9 +1,9 @@
 {
   "@@locale": "tr",
   "onboarding_1_title": "Planın hazır, eksik olan birlikte gidecek biri",
-  "onboarding_1_desc": "Beğendiğin bir restoran, bir konser, bir sergi. Davetini aç, kimin ilgilendiğini gör.",
-  "onboarding_2_title": "İlgini çeken bir davet gördüğünde, başvur",
-  "onboarding_2_desc": "Profilin sahibinin seçimine kalsın. Güç dengesi her zaman karşılıklı.",
+  "onboarding_1_desc": "Bir restoran, bir konser, bir sergi. Davet aç, ısmarla — kiminle gitmek istediğini sen seç.",
+  "onboarding_2_title": "Gitmek istediğin yeri söyle, biri seni davet etsin",
+  "onboarding_2_desc": "Coffeemania, Bolşoy, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.",
   "onboarding_3_title": "Doğrulanmış profiller, sakin bir topluluk",
   "onboarding_3_desc": "Her kullanıcı selfie ile onaylanır. Güven, SoulChoice'un temelidir.",
   "onboarding_start_button": "Başla",

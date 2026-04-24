@@ -14,14 +14,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Любимый ресторан, концерт, выставка. Открой приглашение и посмотри, кому это интересно.';
+      'Ресторан, концерт, выставка. Открой приглашение и угости — ты выбираешь, с кем пойдёшь.';
 
   @override
-  String get onboarding_2_title => 'Увидел приглашение по душе — откликнись';
+  String get onboarding_2_title =>
+      'Скажи, куда хочешь пойти — и тебя пригласят';
 
   @override
   String get onboarding_2_desc =>
-      'Пусть автор сам выберет. Решение всегда остаётся взаимным.';
+      'Coffeemania, Большой, концерт. Поделись желанием и жди того, кто угостит и сводит тебя туда.';
 
   @override
   String get onboarding_3_title => 'Проверенные профили, спокойное сообщество';

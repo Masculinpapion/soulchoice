@@ -1,9 +1,9 @@
 {
   "@@locale": "en",
   "onboarding_1_title": "You have the plan. Now find someone to go with.",
-  "onboarding_1_desc": "A restaurant, a concert, an exhibition. Open an invitation and see who's interested.",
-  "onboarding_2_title": "See an invitation you like? Apply.",
-  "onboarding_2_desc": "The host chooses from applicants. The decision is always mutual.",
+  "onboarding_1_desc": "A restaurant, a concert, an exhibition. Open an invitation and treat — you choose who comes along.",
+  "onboarding_2_title": "Say where you want to go, let someone invite you",
+  "onboarding_2_desc": "Coffeemania, Bolshoi, a concert. Share your wish and wait for someone to treat and take you there.",
   "onboarding_3_title": "Verified profiles, a calm community",
   "onboarding_3_desc": "Every user is verified through a selfie. Trust is the foundation of SoulChoice.",
   "onboarding_start_button": "Start",

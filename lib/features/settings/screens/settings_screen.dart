@@ -1,20 +1,23 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _selfieStatus = 'none';
 
   @override
@@ -37,8 +40,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  String _currentLanguageLabel(BuildContext context) {
+    final locale = ref.read(localeProvider);
+    if (locale == null) return AppLocalizations.of(context)!.settings_language_system;
+    switch (locale.languageCode) {
+      case 'tr': return 'Türkçe';
+      case 'ru': return 'Русский';
+      case 'en': return 'English';
+      case 'de': return 'Deutsch';
+      default: return AppLocalizations.of(context)!.settings_language_system;
+    }
+  }
+
+  void _showLanguagePicker(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentLocale = ref.read(localeProvider);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.glassBgMedium,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border(
+                    top: BorderSide(color: AppColors.glassBorder)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.glassBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(l10n.settings_language,
+                        style: AppTextStyles.titleMedium),
+                    const SizedBox(height: 16),
+                    ...[
+                      ('tr', '🇹🇷', 'Türkçe'),
+                      ('ru', '🇷🇺', 'Русский'),
+                      ('en', '🇬🇧', 'English'),
+                      ('de', '🇩🇪', 'Deutsch'),
+                    ].map((entry) {
+                      final (code, flag, name) = entry;
+                      final isSelected = currentLocale?.languageCode == code;
+                      return _LangTile(
+                        flag: flag,
+                        name: name,
+                        isSelected: isSelected,
+                        onTap: () {
+                          ref
+                              .read(localeProvider.notifier)
+                              .setLocale(code);
+                          Navigator.of(context).pop();
+                          setState(() {});
+                        },
+                      );
+                    }),
+                    _LangTile(
+                      flag: '🌐',
+                      name: l10n.settings_language_system,
+                      isSelected: currentLocale == null,
+                      onTap: () {
+                        ref
+                            .read(localeProvider.notifier)
+                            .useSystemLocale();
+                        Navigator.of(context).pop();
+                        setState(() {});
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       appBar: AppBar(
@@ -53,7 +151,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            // Verification status card
             _VerificationCard(
               selfieStatus: _selfieStatus,
               onRetake: () {
@@ -74,8 +171,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ]),
             const SizedBox(height: 20),
+            // ── Dil ─────────────────────────────────────────────────────────
             _Section(
-                title: 'Bildirimler',
+                title: l10n.settings_language,
+                icon: Icons.language_outlined,
+                items: [
+                  _SettingsTile(
+                    icon: Icons.language_outlined,
+                    label: l10n.settings_language,
+                    value: _currentLanguageLabel(context),
+                    onTap: () => _showLanguagePicker(context),
+                  ),
+                ]),
+            const SizedBox(height: 20),
+            _Section(
+                title: l10n.settings_notifications,
                 icon: Icons.notifications_outlined,
                 items: [
                   _SettingsTile(
@@ -91,15 +201,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ]),
             const SizedBox(height: 20),
             _Section(
-                title: 'Hesap',
+                title: l10n.settings_account,
                 icon: Icons.manage_accounts_outlined,
                 items: [
-                  _SettingsTile(
-                    icon: Icons.language_outlined,
-                    label: 'Dil',
-                    value: 'Türkçe',
-                    onTap: () {},
-                  ),
                   _SettingsTile(
                     icon: Icons.devices_outlined,
                     label: 'Aktif cihazlar',
@@ -144,20 +248,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ]),
             const SizedBox(height: 28),
-            // Sign out
             _DangerButton(
               icon: Icons.logout,
-              label: 'Çıkış yap',
+              label: l10n.settings_logout,
               onTap: () async {
                 await Supabase.instance.client.auth.signOut();
                 if (context.mounted) context.go('/splash');
               },
             ),
             const SizedBox(height: 12),
-            // Delete account
             _DangerButton(
               icon: Icons.delete_forever_outlined,
-              label: 'Hesabı sil',
+              label: l10n.settings_delete_account,
               onTap: () => context.push('/settings/delete-account'),
             ),
             const SizedBox(height: 40),
@@ -166,6 +268,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Language Tile
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _LangTile extends StatelessWidget {
+  final String flag;
+  final String name;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _LangTile({
+    required this.flag,
+    required this.name,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          child: Row(
+            children: [
+              Text(flag, style: const TextStyle(fontSize: 22)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(name, style: AppTextStyles.bodyLarge),
+              ),
+              if (isSelected)
+                ShaderMask(
+                  shaderCallback: (b) =>
+                      AppColors.primaryGradient.createShader(b),
+                  child: const Icon(Icons.check_rounded,
+                      color: Colors.white, size: 20),
+                ),
+            ],
+          ),
+        ),
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -278,8 +423,7 @@ class _SettingsTile extends StatelessWidget {
                   child: Text(label, style: AppTextStyles.bodyLarge),
                 ),
                 if (value != null) ...[
-                  Text(value!,
-                      style: AppTextStyles.bodyMedium),
+                  Text(value!, style: AppTextStyles.bodyMedium),
                   const SizedBox(width: 6),
                 ],
                 const Icon(Icons.arrow_forward_ios,
@@ -342,7 +486,8 @@ class _DangerButton extends StatelessWidget {
 class _VerificationCard extends StatelessWidget {
   final String selfieStatus;
   final VoidCallback onRetake;
-  const _VerificationCard({required this.selfieStatus, required this.onRetake});
+  const _VerificationCard(
+      {required this.selfieStatus, required this.onRetake});
 
   @override
   Widget build(BuildContext context) {

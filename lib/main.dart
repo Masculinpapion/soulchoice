@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'core/constants/supabase_constants.dart';
+import 'core/providers/locale_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -31,15 +34,27 @@ class SoulChoiceApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // routerProvider is stable — only read once, never rebuilt on auth changes.
-    // Auth-driven redirects are handled internally via GoRouter.refreshListenable.
     final router = ref.read(routerProvider);
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       title: 'SoulChoice',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       routerConfig: router,
+      locale: locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('tr'),
+        Locale('ru'),
+        Locale('en'),
+        Locale('de'),
+      ],
     );
   }
 }

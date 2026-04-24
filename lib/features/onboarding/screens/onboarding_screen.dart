@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -16,27 +17,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _currentPage = 0;
 
-  static const _pages = [
-    _OnboardingPage(
-      pillColor: AppColors.red,
-      pillGlow: AppColors.redGlow,
-      title: 'Davetini aç,\nbir geceyi paylaş',
-      subtitle: 'Yemek, konser, seyahat — 24 saatlik davetler aç ve birlikte git.',
-    ),
-    _OnboardingPage(
-      pillColor: AppColors.blue,
-      pillGlow: AppColors.blueGlow,
-      title: 'Sen seçiyorsun,\nsen karar veriyorsun',
-      subtitle: 'Başvuranların profillerini gör, kimi götüreceğine kendin karar ver.',
-    ),
-    _OnboardingPage(
-      pillColor: AppColors.gold,
-      pillGlow: AppColors.gold,
-      title: 'Güvenli buluşma,\ngerçek deneyim',
-      subtitle: 'Doğrulanmış profiller, biyometrik onay, birlikte gidilen gerçek anlar.',
-    ),
-  ];
-
   @override
   void dispose() {
     _pageController.dispose();
@@ -45,6 +25,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final pages = [
+      _OnboardingPageData(
+        pillColor: AppColors.red,
+        pillGlow: AppColors.redGlow,
+        title: l10n.onboarding_1_title,
+        subtitle: l10n.onboarding_1_desc,
+      ),
+      _OnboardingPageData(
+        pillColor: AppColors.blue,
+        pillGlow: AppColors.blueGlow,
+        title: l10n.onboarding_2_title,
+        subtitle: l10n.onboarding_2_desc,
+      ),
+      _OnboardingPageData(
+        pillColor: AppColors.gold,
+        pillGlow: AppColors.gold,
+        title: l10n.onboarding_3_title,
+        subtitle: l10n.onboarding_3_desc,
+      ),
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       body: AmbientBackground(
@@ -55,34 +58,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: (i) => setState(() => _currentPage = i),
-                  itemCount: _pages.length,
-                  itemBuilder: (_, i) => _pages[i],
+                  itemCount: pages.length,
+                  itemBuilder: (_, i) => _OnboardingPage(data: pages[i]),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
+                    // Dots
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                        _pages.length,
+                        pages.length,
                         (i) => AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           margin: const EdgeInsets.symmetric(horizontal: 3),
                           width: _currentPage == i ? 24 : 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: _currentPage == i ? AppColors.red : AppColors.glassBorder,
+                            color: _currentPage == i
+                                ? AppColors.red
+                                : AppColors.glassBorder,
                             borderRadius: BorderRadius.circular(3),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
-                    if (_currentPage < _pages.length - 1)
+                    if (_currentPage < pages.length - 1)
                       ScButton(
-                        label: 'Devam',
+                        label: l10n.btn_continue,
                         onPressed: () => _pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
@@ -90,13 +96,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       )
                     else
                       ScButton(
-                        label: 'Başla',
+                        label: l10n.onboarding_start_button,
                         onPressed: () => context.go('/auth/phone'),
                       ),
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () => context.go('/auth/phone'),
-                      child: Text('Atla', style: AppTextStyles.bodyMedium),
+                      child: Text(l10n.onboarding_skip,
+                          style: AppTextStyles.bodyMedium),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -110,31 +117,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-class _OnboardingPage extends StatelessWidget {
+// ─── Data model ──────────────────────────────────────────────────────────────
+
+class _OnboardingPageData {
   final Color pillColor;
   final Color pillGlow;
   final String title;
   final String subtitle;
 
-  const _OnboardingPage({
+  const _OnboardingPageData({
     required this.pillColor,
     required this.pillGlow,
     required this.title,
     required this.subtitle,
   });
+}
+
+// ─── Page widget ─────────────────────────────────────────────────────────────
+
+class _OnboardingPage extends StatelessWidget {
+  final _OnboardingPageData data;
+  const _OnboardingPage({required this.data});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Pill3D(color: pillColor),
+          _Pill3D(color: data.pillColor),
           const SizedBox(height: 48),
-          Text(title, style: AppTextStyles.displayMedium, textAlign: TextAlign.center),
-          const SizedBox(height: 16),
-          Text(subtitle, style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
+            child: Text(
+              data.title,
+              style: AppTextStyles.displayMedium,
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
+            child: Text(
+              data.subtitle,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
@@ -153,10 +191,10 @@ class _Pill3D extends StatelessWidget {
     const h = 114.0;
     const radius = 24.0;
 
-    final dark     = Color.lerp(color, Colors.black, 0.42)!;
+    final dark = Color.lerp(color, Colors.black, 0.42)!;
     final darkEdge = Color.lerp(color, Colors.black, 0.28)!;
-    final isBlue   = color == AppColors.blue;
-    final isGold   = color == AppColors.gold;
+    final isBlue = color == AppColors.blue;
+    final isGold = color == AppColors.gold;
 
     return Container(
       width: w,
@@ -181,7 +219,6 @@ class _Pill3D extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: Stack(
           children: [
-            // 1. Silindir vücut
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -194,7 +231,6 @@ class _Pill3D extends StatelessWidget {
                 ),
               ),
             ),
-            // 2. Alt karartma
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -210,7 +246,6 @@ class _Pill3D extends StatelessWidget {
                 ),
               ),
             ),
-            // 3. Cam iç parlaklık (mavi + gold için)
             if (isBlue || isGold)
               Positioned.fill(
                 child: Container(
@@ -229,7 +264,6 @@ class _Pill3D extends StatelessWidget {
                   ),
                 ),
               ),
-            // 4. Sol speküler highlight
             Positioned(
               left: w * 0.13,
               top: h * 0.09,
@@ -249,7 +283,6 @@ class _Pill3D extends StatelessWidget {
                 ),
               ),
             ),
-            // 5. Üst parlak nokta
             Positioned(
               left: w * 0.15,
               top: h * 0.055,

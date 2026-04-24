@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -28,10 +29,6 @@ class MainShell extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Glass Nav Bar
-// ─────────────────────────────────────────────────────────────────────────────
-
 class _GlassNavBar extends StatelessWidget {
   final int currentBranchIndex;
   final ValueChanged<int> onBranchTap;
@@ -45,6 +42,7 @@ class _GlassNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
     return ClipRect(
@@ -61,19 +59,17 @@ class _GlassNavBar extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Feed
               _NavItem(
                 icon: Icons.home_outlined,
                 activeIcon: Icons.home_rounded,
-                label: 'Ana Sayfa',
+                label: l10n.nav_home,
                 isActive: currentBranchIndex == 0,
                 onTap: () => onBranchTap(0),
               ),
-              // Discover
               _NavItem(
                 icon: Icons.explore_outlined,
                 activeIcon: Icons.explore_rounded,
-                label: 'Keşfet',
+                label: l10n.nav_discover,
                 isActive: currentBranchIndex == 1,
                 onTap: () => onBranchTap(1),
               ),
@@ -110,19 +106,17 @@ class _GlassNavBar extends StatelessWidget {
                   ),
                 ),
               ),
-              // Messages
               _NavItem(
                 icon: Icons.chat_bubble_outline_rounded,
                 activeIcon: Icons.chat_bubble_rounded,
-                label: 'Mesajlar',
+                label: l10n.nav_messages,
                 isActive: currentBranchIndex == 2,
                 onTap: () => onBranchTap(2),
               ),
-              // Profile
               _NavItem(
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,
-                label: 'Profil',
+                label: l10n.nav_profile,
                 isActive: currentBranchIndex == 3,
                 onTap: () => onBranchTap(3),
               ),
@@ -133,10 +127,6 @@ class _GlassNavBar extends StatelessWidget {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Nav Item
-// ─────────────────────────────────────────────────────────────────────────────
 
 class _NavItem extends StatelessWidget {
   final IconData icon;

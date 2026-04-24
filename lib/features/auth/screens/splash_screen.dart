@@ -93,14 +93,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 3D glossy pills — kırmızı (Ismarlıyorum) + mavi cam (İstiyorum)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _Pill(color: AppColors.primaryRed),
-                      const SizedBox(width: 16),
-                      _Pill(color: AppColors.primaryBlue, glass: true),
-                    ],
+                  Image.asset(
+                    'assets/icon/app_icon.png',
+                    width: 120,
+                    height: 120,
                   ),
                   const SizedBox(height: 36),
                   // Gradient brand name
@@ -131,133 +127,4 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 }
 
-class _Pill extends StatelessWidget {
-  final Color color;
-  final bool glass;
-
-  const _Pill({required this.color, this.glass = false});
-
-  @override
-  Widget build(BuildContext context) {
-    const w = 42.0;
-    const h = 104.0;
-    const radius = 21.0;
-
-    final dark = Color.lerp(color, Colors.black, 0.42)!;
-    final darkEdge = Color.lerp(color, Colors.black, 0.28)!;
-
-    return Container(
-      width: w,
-      height: h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.55),
-            blurRadius: 26,
-            spreadRadius: 0,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.40),
-            blurRadius: 14,
-            offset: const Offset(3, 9),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Stack(
-          children: [
-            // 1. Silindir vücut: sol koyu → merkez parlak → sağ koyu
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [dark, color, color, darkEdge],
-                    stops: const [0.0, 0.28, 0.62, 1.0],
-                  ),
-                ),
-              ),
-            ),
-            // 2. Alt karartma
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(glass ? 0.18 : 0.32),
-                    ],
-                    stops: const [0.45, 1.0],
-                  ),
-                ),
-              ),
-            ),
-            // 3. Cam gövde parlaklığı (mavi hap için)
-            if (glass)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Colors.transparent,
-                        Colors.white.withOpacity(0.10),
-                        Colors.white.withOpacity(0.07),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.20, 0.44, 0.66, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-            // 4. Sol speküler highlight şeridi
-            Positioned(
-              left: w * 0.13,
-              top: h * 0.09,
-              width: w * 0.19,
-              height: h * 0.63,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(w * 0.10),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Colors.white.withOpacity(glass ? 0.75 : 0.58),
-                      Colors.white.withOpacity(0.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // 5. Üst parlak nokta
-            Positioned(
-              left: w * 0.15,
-              top: h * 0.055,
-              width: w * 0.22,
-              height: w * 0.22,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.white.withOpacity(glass ? 0.95 : 0.88),
-                      Colors.white.withOpacity(0.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

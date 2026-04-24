@@ -5,9 +5,37 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/glass_card.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _selfieStatus = 'none';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelfieStatus();
+  }
+
+  Future<void> _loadSelfieStatus() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    final row = await Supabase.instance.client
+        .from('users')
+        .select('selfie_status')
+        .eq('id', uid)
+        .maybeSingle();
+    if (mounted) {
+      setState(() =>
+          _selfieStatus = row?['selfie_status'] as String? ?? 'none');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +53,14 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            // Verification status card
+            _VerificationCard(
+              selfieStatus: _selfieStatus,
+              onRetake: () {
+                context.push('/profile/selfie').then((_) => _loadSelfieStatus());
+              },
+            ),
+            const SizedBox(height: 20),
             _Section(title: 'Profil', icon: Icons.person_outline, items: [
               _SettingsTile(
                 icon: Icons.edit_outlined,
@@ -297,4 +333,85 @@ class _DangerButton extends StatelessWidget {
           ),
         ),
       );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Verification Status Card
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _VerificationCard extends StatelessWidget {
+  final String selfieStatus;
+  final VoidCallback onRetake;
+  const _VerificationCard({required this.selfieStatus, required this.onRetake});
+
+  @override
+  Widget build(BuildContext context) {
+    String emoji;
+    String label;
+    Color color;
+    bool showRetake = false;
+
+    switch (selfieStatus) {
+      case 'pending':
+        emoji = '⏳';
+        label = 'Selfie inceleniyor';
+        color = AppColors.warning;
+      case 'approved':
+        emoji = '✅';
+        label = 'Doğrulanmış hesap';
+        color = AppColors.blue;
+      case 'rejected':
+        emoji = '❌';
+        label = 'Selfie reddedildi — yeniden yükle';
+        color = AppColors.error;
+        showRetake = true;
+      default:
+        emoji = '🔲';
+        label = 'Henüz selfie yüklenmedi';
+        color = AppColors.textTertiary;
+        showRetake = true;
+    }
+
+    return GlassCard(
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 22)),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Doğrulama durumu',
+                    style: AppTextStyles.labelLarge.copyWith(fontSize: 13)),
+                const SizedBox(height: 2),
+                Text(label,
+                    style:
+                        AppTextStyles.bodyMedium.copyWith(color: color)),
+              ],
+            ),
+          ),
+          if (showRetake)
+            GestureDetector(
+              onTap: onRetake,
+              child: Text(
+                'Yeniden Yükle',
+                style: AppTextStyles.monoSmall.copyWith(
+                  color: AppColors.gradientStart,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

@@ -49,7 +49,9 @@ class ProfileViewScreen extends ConsumerWidget {
 
             final name = user['name'] as String? ?? '—';
             final age = user['age'] as int? ?? 0;
-            final verified = user['verified'] as bool? ?? false;
+            final selfieStatus = user['selfie_status'] as String? ?? 'none';
+            final verified = selfieStatus == 'approved' ||
+                (user['verified'] as bool? ?? false);
             final bio = user['bio'] as String?;
             final job = user['job'] as String?;
             final education = user['education'] as String?;
@@ -402,7 +404,7 @@ class ProfileViewScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) => _ActionSheet(targetUserId: targetUserId),
+      builder: (_) => _ActionSheet(targetUserId: targetUserId, targetName: null),
     );
   }
 }
@@ -757,7 +759,54 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
 
 class _ActionSheet extends StatelessWidget {
   final String targetUserId;
-  const _ActionSheet({required this.targetUserId});
+  final String? targetName;
+  const _ActionSheet({required this.targetUserId, this.targetName});
+
+  Future<void> _block(BuildContext ctx) async {
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Kullanıcıyı engelle',
+            style: AppTextStyles.titleMedium),
+        content: Text(
+          'Bu kullanıcıyı engellemek istediğine emin misin? Engelli kullanıcı seni göremez, mesaj atamaz.',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Vazgeç',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.textTertiary)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Engelle',
+                style: AppTextStyles.labelMedium
+                    .copyWith(color: AppColors.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !ctx.mounted) return;
+
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    await Supabase.instance.client.from('blocks').upsert({
+      'blocker_id': uid,
+      'blocked_id': targetUserId,
+    });
+    if (ctx.mounted) {
+      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+        content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
+        backgroundColor: AppColors.success,
+      ));
+      ctx.pop(); // close sheet
+      ctx.pop(); // go back from profile
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -775,48 +824,29 @@ class _ActionSheet extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 8),
         ListTile(
-          leading: const Icon(Icons.flag_outlined, color: AppColors.error),
-          title: Text('Şikayet et',
-              style:
-                  AppTextStyles.bodyLarge.copyWith(color: AppColors.error)),
-          onTap: () async {
+          leading: const Icon(Icons.block, color: AppColors.error),
+          title: Text('🚫 Kullanıcıyı engelle',
+              style: AppTextStyles.bodyLarge),
+          onTap: () {
             Navigator.pop(context);
-            final uid = Supabase.instance.client.auth.currentUser?.id;
-            if (uid == null) return;
-            await Supabase.instance.client.from('reports').insert({
-              'reporter_id': uid,
-              'reported_user_id': targetUserId,
-              'reason': 'user_report',
-              'status': 'pending',
-            });
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Şikayetiniz alındı, inceleniyor.')),
-              );
-            }
+            _block(context);
           },
         ),
         ListTile(
           leading:
-              const Icon(Icons.block, color: AppColors.textSecondary),
-          title: Text('Engelle', style: AppTextStyles.bodyLarge),
-          onTap: () async {
+              const Icon(Icons.flag_outlined, color: AppColors.warning),
+          title: Text('⚠️ Rapor et', style: AppTextStyles.bodyLarge),
+          onTap: () {
             Navigator.pop(context);
-            final uid = Supabase.instance.client.auth.currentUser?.id;
-            if (uid == null) return;
-            await Supabase.instance.client.from('blocks').upsert({
-              'blocker_id': uid,
-              'blocked_id': targetUserId,
-            });
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kullanıcı engellendi.')),
-              );
-              context.pop();
-            }
+            context.push('/report/$targetUserId');
           },
+        ),
+        ListTile(
+          leading: const Icon(Icons.close, color: AppColors.textTertiary),
+          title: Text('İptal', style: AppTextStyles.bodyMedium),
+          onTap: () => Navigator.pop(context),
         ),
         const SizedBox(height: 24),
       ],

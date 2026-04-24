@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitations_provider.dart';
+import '../../notifications/providers/notifications_provider.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -43,7 +44,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
             children: [
               _Header(
                 onCityTap: () {},
-                onNotificationTap: () {},
+                onNotificationTap: () => context.push('/notifications'),
               ),
               _StoryBar(),
               _TabBar(controller: _tabController),
@@ -80,14 +81,15 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 // Header
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _Header extends StatelessWidget {
+class _Header extends ConsumerWidget {
   final VoidCallback onCityTap;
   final VoidCallback onNotificationTap;
 
   const _Header({required this.onCityTap, required this.onNotificationTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 10, 12, 4),
       child: Row(
@@ -117,9 +119,39 @@ class _Header extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          _IconBtn(
-            icon: Icons.notifications_outlined,
-            onTap: onNotificationTap,
+          // Notification bell with badge
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined,
+                    color: AppColors.textPrimary, size: 22),
+                onPressed: onNotificationTap,
+              ),
+              if (unreadCount > 0)
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(3),
+                    constraints:
+                        const BoxConstraints(minWidth: 16, minHeight: 16),
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      unreadCount > 99 ? '99+' : '$unreadCount',
+                      style: AppTextStyles.monoSmall.copyWith(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -151,18 +183,6 @@ class _GlassChip extends StatelessWidget {
             ),
           ),
         ),
-      );
-}
-
-class _IconBtn extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _IconBtn({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => IconButton(
-        icon: Icon(icon, color: AppColors.textPrimary, size: 22),
-        onPressed: onTap,
       );
 }
 

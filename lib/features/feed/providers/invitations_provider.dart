@@ -2,10 +2,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
+import '../../../core/providers/auth_provider.dart';
 
 final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationModel>, _InvitationFilter>(
   (ref, filter) async {
     final client = Supabase.instance.client;
+    final currentUserId = ref.read(currentUserIdProvider);
+
+    // Fetch blocked user IDs
+    List<String> blockedIds = [];
+    if (currentUserId != null) {
+      final blocks = await client
+          .from('blocks')
+          .select('blocked_id')
+          .eq('blocker_id', currentUserId);
+      blockedIds = (blocks as List)
+          .map((b) => b['blocked_id'] as String)
+          .toList();
+    }
 
     var query = client
         .from('invitations')
@@ -23,6 +37,10 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     }
     if (filter.category != null) {
       query = query.eq('category', filter.category!.name);
+    }
+    // Exclude blocked users' invitations
+    if (blockedIds.isNotEmpty) {
+      query = query.not('user_id', 'in', '(${blockedIds.join(',')})');
     }
 
     final data = await query.order('created_at', ascending: false).limit(30);

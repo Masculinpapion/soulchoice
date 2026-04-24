@@ -25,6 +25,8 @@ import '../../features/messaging/screens/chat_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/delete_account_screen.dart';
 import '../../features/admin/screens/admin_screen.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
+import '../../features/profile/screens/report_user_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -164,6 +166,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/admin',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (ctx, _) => const AdminScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, _) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/report/:userId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (_, state) =>
+            ReportUserScreen(userId: state.pathParameters['userId']!),
       ),
 
       // ── Shell with bottom nav ───────────────────────────────────────────

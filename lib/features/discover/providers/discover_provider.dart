@@ -10,6 +10,17 @@ final discoverProvider =
   final currentUserId = ref.read(currentUserIdProvider);
   final client = Supabase.instance.client;
 
+  // Fetch blocked user IDs
+  List<String> blockedIds = [];
+  if (currentUserId != null) {
+    final blocks = await client
+        .from('blocks')
+        .select('blocked_id')
+        .eq('blocker_id', currentUserId);
+    blockedIds =
+        (blocks as List).map((b) => b['blocked_id'] as String).toList();
+  }
+
   var query = client.from('invitations').select(
         '*, '
         'owner:users(id, name, age, gender, verified, '
@@ -22,6 +33,9 @@ final discoverProvider =
 
   if (currentUserId != null) {
     query = query.neq('user_id', currentUserId);
+  }
+  if (blockedIds.isNotEmpty) {
+    query = query.not('user_id', 'in', '(${blockedIds.join(',')})');
   }
 
   final data = await query.order('created_at', ascending: false).limit(50);

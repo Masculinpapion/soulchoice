@@ -22,11 +22,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final List<MessageModel> _messages = [];
   bool _loading = true;
   RealtimeChannel? _channel;
+
+  // Match meta
   Map<String, dynamic>? _matchInfo;
+  String? _currentUid;
+  bool _isUser1 = false;
+
+  // Derived from match
+  DateTime? _meetingDate;
+  DateTime? _archivedAt;
+  bool? _myConfirmation;
+  bool? _theirConfirmation;
 
   @override
   void initState() {
     super.initState();
+    _currentUid = Supabase.instance.client.auth.currentUser?.id;
     _loadMessages();
     _subscribeRealtime();
     _loadMatchInfo();
@@ -34,29 +45,63 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _loadMatchInfo() async {
     final client = Supabase.instance.client;
-    final matchRow = await client
-        .from('matches')
-        .select('user1_id, user2_id, invitation:invitations(title, venue_name, event_date)')
-        .eq('id', widget.matchId)
-        .maybeSingle();
+    final matchRow = await client.from('matches').select(
+          'user1_id, user2_id, meeting_date, archived_at, '
+          'meeting_confirmed_user1, meeting_confirmed_user2, '
+          'invitation:invitations(title, venue_name, event_date)',
+        ).eq('id', widget.matchId).maybeSingle();
     if (matchRow == null || !mounted) return;
 
-    final currentUid = client.auth.currentUser?.id;
-    final otherUserId = matchRow['user1_id'] == currentUid
-        ? matchRow['user2_id'] as String
-        : matchRow['user1_id'] as String;
+    final user1Id = matchRow['user1_id'] as String;
+    _isUser1 = user1Id == _currentUid;
+    final otherUserId =
+        _isUser1 ? matchRow['user2_id'] as String : user1Id;
 
     final otherUser = await client
         .from('users')
-        .select('name')
+        .select('name, age')
         .eq('id', otherUserId)
         .maybeSingle();
 
-    if (mounted) {
-      setState(() => _matchInfo = {
-            'invitation': matchRow['invitation'],
-            'other': otherUser,
-          });
+    final photoRow = await client
+        .from('user_photos')
+        .select('url')
+        .eq('user_id', otherUserId)
+        .eq('is_primary', true)
+        .maybeSingle();
+
+    if (!mounted) return;
+
+    final meetDate = matchRow['meeting_date'];
+    final archDate = matchRow['archived_at'];
+
+    setState(() {
+      _matchInfo = {
+        'invitation': matchRow['invitation'],
+        'other': otherUser,
+        'otherUserId': otherUserId,
+        'photoUrl': photoRow?['url'],
+      };
+      _meetingDate = meetDate != null ? DateTime.parse(meetDate) : null;
+      _archivedAt = archDate != null ? DateTime.parse(archDate) : null;
+      _myConfirmation = _isUser1
+          ? matchRow['meeting_confirmed_user1'] as bool?
+          : matchRow['meeting_confirmed_user2'] as bool?;
+      _theirConfirmation = _isUser1
+          ? matchRow['meeting_confirmed_user2'] as bool?
+          : matchRow['meeting_confirmed_user1'] as bool?;
+    });
+
+    // Auto-archive if meeting was >24h ago and not yet archived
+    if (_archivedAt == null &&
+        _meetingDate != null &&
+        DateTime.now()
+            .isAfter(_meetingDate!.add(const Duration(hours: 24)))) {
+      await client
+          .from('matches')
+          .update({'archived_at': DateTime.now().toIso8601String()})
+          .eq('id', widget.matchId);
+      if (mounted) setState(() => _archivedAt = DateTime.now());
     }
   }
 
@@ -66,17 +111,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         .select()
         .eq('match_id', widget.matchId)
         .order('created_at');
-    if (mounted) {
-      setState(() {
-        _messages.addAll((data as List).map((r) => MessageModel.fromJson(r)));
-        _loading = false;
-      });
-      _scrollToBottom();
-    }
+    if (!mounted) return;
+    setState(() {
+      _messages.addAll((data as List).map((r) => MessageModel.fromJson(r)));
+      _loading = false;
+    });
+    _scrollToBottom();
+    _markRead();
+  }
+
+  Future<void> _markRead() async {
+    await Supabase.instance.client
+        .from('messages')
+        .update({'read_at': DateTime.now().toIso8601String()})
+        .eq('match_id', widget.matchId)
+        .neq('sender_id', _currentUid ?? '')
+        .isFilter('read_at', null);
   }
 
   void _subscribeRealtime() {
-    final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
     _channel = Supabase.instance.client
         .channel('chat:${widget.matchId}')
         .onPostgresChanges(
@@ -90,11 +143,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           callback: (payload) {
             final newMsg = MessageModel.fromJson(payload.newRecord);
-            if (newMsg.senderId != uid) {
-              if (mounted) {
-                setState(() => _messages.add(newMsg));
-                _scrollToBottom();
-              }
+            if (newMsg.senderId != _currentUid && mounted) {
+              setState(() => _messages.add(newMsg));
+              _scrollToBottom();
+              _markRead();
             }
           },
         )
@@ -112,15 +164,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
+    if (_archivedAt != null) return;
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
     _messageController.clear();
 
-    final uid = Supabase.instance.client.auth.currentUser!.id;
     final optimistic = MessageModel(
       id: 'tmp_${DateTime.now().millisecondsSinceEpoch}',
       matchId: widget.matchId,
-      senderId: uid,
+      senderId: _currentUid!,
       content: text,
       createdAt: DateTime.now(),
     );
@@ -130,18 +182,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     try {
       await Supabase.instance.client.from('messages').insert({
         'match_id': widget.matchId,
-        'sender_id': uid,
+        'sender_id': _currentUid,
         'content': text,
       });
     } catch (e) {
       if (mounted) {
-        setState(() => _messages.removeWhere((m) => m.id == optimistic.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gönderilemedi: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        setState(() =>
+            _messages.removeWhere((m) => m.id == optimistic.id));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Gönderilemedi: $e'),
+          backgroundColor: AppColors.error,
+        ));
       }
     }
   }
@@ -158,13 +209,69 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
   }
 
+  // ── Attendance confirmation ────────────────────────────────────────────────
+
+  bool get _showAttendanceBanner {
+    if (_meetingDate == null) return false;
+    if (_myConfirmation != null) return false;
+    return DateTime.now().isAfter(_meetingDate!);
+  }
+
+  Future<void> _confirmAttendance(bool attended) async {
+    final col = _isUser1
+        ? 'meeting_confirmed_user1'
+        : 'meeting_confirmed_user2';
+
+    await Supabase.instance.client
+        .from('matches')
+        .update({col: attended})
+        .eq('id', widget.matchId);
+
+    if (!attended) {
+      // Increment no-show count for the other user
+      final otherUid = _matchInfo?['otherUserId'] as String?;
+      if (otherUid != null) {
+        await Supabase.instance.client.rpc('increment_no_show', params: {
+          'target_user_id': otherUid,
+        }).catchError((_) async {
+          // Fallback: manual increment
+          final row = await Supabase.instance.client
+              .from('users')
+              .select('no_show_count')
+              .eq('id', otherUid)
+              .maybeSingle();
+          final cur = (row?['no_show_count'] as int?) ?? 0;
+          final newCount = cur + 1;
+          await Supabase.instance.client.from('users').update({
+            'no_show_count': newCount,
+            if (newCount >= 2) ...{
+              'suspended_at': DateTime.now().toIso8601String(),
+              'suspension_reason': '2x no-show',
+            },
+          }).eq('id', otherUid);
+        });
+      }
+    }
+
+    if (mounted) {
+      setState(() => _myConfirmation = attended);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(attended ? 'Teşekkürler! Buluşma kaydedildi.' : 'Bildirim alındı.'),
+        backgroundColor: attended ? AppColors.success : AppColors.warning,
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
     final otherUser = _matchInfo?['other'] as Map<String, dynamic>?;
     final otherName = otherUser?['name'] as String? ?? '—';
     final invTitle = inv?['title'] as String? ?? '';
+    final isArchived = _archivedAt != null ||
+        (_meetingDate != null &&
+            DateTime.now()
+                .isAfter(_meetingDate!.add(const Duration(hours: 24))));
 
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
@@ -173,6 +280,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: _ChatAppBar(
           otherName: otherName,
           invTitle: invTitle,
+          photoUrl: _matchInfo?['photoUrl'] as String?,
           onBack: () => context.pop(),
         ),
       ),
@@ -180,8 +288,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Column(
           children: [
             // Event badge
-            if (inv != null)
-              _EventBadge(title: invTitle),
+            if (inv != null) _EventBadge(title: invTitle),
+
+            // Archived banner
+            if (isArchived) const _ArchivedBanner(),
+
+            // "Geldi mi?" banner
+            if (_showAttendanceBanner)
+              _AttendanceBanner(
+                onYes: () => _confirmAttendance(true),
+                onNo: () => _confirmAttendance(false),
+              ),
 
             // Messages
             Expanded(
@@ -206,18 +323,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           itemCount: _messages.length,
                           itemBuilder: (_, i) {
                             final msg = _messages[i];
-                            final isMe = msg.senderId == uid;
+                            final isMe = msg.senderId == _currentUid;
                             return _MessageBubble(
                                 message: msg, isMe: isMe);
                           },
                         ),
             ),
 
-            // Input bar
-            _InputBar(
-              controller: _messageController,
-              onSend: _sendMessage,
-            ),
+            // Input bar (only when not archived)
+            if (!isArchived)
+              _InputBar(
+                controller: _messageController,
+                onSend: _sendMessage,
+              ),
           ],
         ),
       ),
@@ -226,16 +344,143 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// App Bar
+// Archived Banner
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ArchivedBanner extends StatelessWidget {
+  const _ArchivedBanner();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.textTertiary.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.textTertiary.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.archive_outlined,
+                size: 16, color: AppColors.textTertiary),
+            const SizedBox(width: 8),
+            Text(
+              'Bu sohbet arşivlendi',
+              style: AppTextStyles.monoSmall
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Attendance Banner
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AttendanceBanner extends StatelessWidget {
+  final VoidCallback onYes;
+  final VoidCallback onNo;
+  const _AttendanceBanner({required this.onYes, required this.onNo});
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                  color: AppColors.warning.withOpacity(0.4)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.help_outline,
+                        size: 16, color: AppColors.warning),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Buluşmanız gerçekleşti mi?',
+                      style: AppTextStyles.labelLarge.copyWith(
+                          color: AppColors.warning, fontSize: 14),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _BannerButton(
+                        label: 'Evet, geldik',
+                        color: AppColors.success,
+                        onTap: onYes,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _BannerButton(
+                        label: 'Diğer taraf gelmedi',
+                        color: AppColors.error,
+                        onTap: onNo,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _BannerButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _BannerButton(
+      {required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.18),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withOpacity(0.5)),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.labelMedium
+                .copyWith(color: color, fontSize: 12),
+          ),
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Chat App Bar
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _ChatAppBar extends StatelessWidget {
   final String otherName;
   final String invTitle;
+  final String? photoUrl;
   final VoidCallback onBack;
   const _ChatAppBar({
     required this.otherName,
     required this.invTitle,
+    this.photoUrl,
     required this.onBack,
   });
 
@@ -254,17 +499,18 @@ class _ChatAppBar extends StatelessWidget {
                     color: AppColors.textPrimary, size: 20),
                 onPressed: onBack,
               ),
-              // Avatar
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
-                ),
-                child: const Icon(Icons.person,
-                    size: 20, color: Colors.white),
-              ),
+              if (photoUrl != null)
+                ClipOval(
+                  child: Image.network(
+                    photoUrl!,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
+                  ),
+                )
+              else
+                _DefaultAvatar(name: otherName),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -289,6 +535,28 @@ class _ChatAppBar extends StatelessWidget {
   }
 }
 
+class _DefaultAvatar extends StatelessWidget {
+  final String name;
+  const _DefaultAvatar({required this.name});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: AppColors.primaryGradient,
+        ),
+        child: Center(
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : '?',
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Event Badge
 // ─────────────────────────────────────────────────────────────────────────────
@@ -304,7 +572,8 @@ class _EventBadge extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.gradientStart.withOpacity(0.08),
               borderRadius: BorderRadius.circular(14),
@@ -316,7 +585,8 @@ class _EventBadge extends StatelessWidget {
                 ShaderMask(
                   shaderCallback: (b) =>
                       AppColors.primaryGradient.createShader(b),
-                  child: const Icon(Icons.event, size: 16, color: Colors.white),
+                  child: const Icon(Icons.event,
+                      size: 16, color: Colors.white),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -381,7 +651,9 @@ class _MessageBubble extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.72),
-          child: isMe ? _SentBubble(message: message, time: time) : _ReceivedBubble(message: message, time: time),
+          child: isMe
+              ? _SentBubble(message: message, time: time)
+              : _ReceivedBubble(message: message, time: time),
         ),
       ),
     );
@@ -395,7 +667,8 @@ class _SentBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           gradient: AppColors.primaryGradient,
           borderRadius: const BorderRadius.only(
@@ -421,9 +694,8 @@ class _SentBubble extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               time,
-              style: AppTextStyles.monoSmall.copyWith(
-                color: Colors.white.withOpacity(0.6),
-              ),
+              style: AppTextStyles.monoSmall
+                  .copyWith(color: Colors.white.withOpacity(0.6)),
             ),
           ],
         ),
@@ -489,10 +761,9 @@ class _InputBar extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.fromLTRB(
               16, 10, 16, MediaQuery.of(context).padding.bottom + 10),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.glassBg,
-            border: const Border(
-                top: BorderSide(color: AppColors.glassBorder)),
+            border: Border(top: BorderSide(color: AppColors.glassBorder)),
           ),
           child: Row(
             children: [

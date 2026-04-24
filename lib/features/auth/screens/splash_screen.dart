@@ -14,70 +14,30 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _logoController;
-  late AnimationController _sloganController;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   late Animation<double> _fadeIn;
   late Animation<double> _scale;
-  late Animation<double> _sloganFade;
-
-  int _sloganIndex = 0;
-
-  static const _slogans = [
-    'Davetini aç, bir geceyi paylaş',
-    'Sen seçiyorsun, sen karar veriyorsun',
-    'Güvenli buluşma, gerçek deneyim',
-  ];
 
   @override
   void initState() {
     super.initState();
-
-    // Logo animasyonu
-    _logoController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1800),
     );
     _fadeIn = CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0, 0.7, curve: Curves.easeOut));
+        parent: _controller,
+        curve: const Interval(0, 0.6, curve: Curves.easeOut));
     _scale = Tween<double>(begin: 0.82, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
-
-    // Slogan fade animasyonu
-    _sloganController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 350),
-    );
-    _sloganFade = CurvedAnimation(
-        parent: _sloganController, curve: Curves.easeInOut);
-
-    _logoController.forward();
-    _startSloganCycle();
+    _controller.forward();
     _navigate();
   }
 
-  void _startSloganCycle() async {
-    // Logo geldikten sonra sloganlar başlasın
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
-    _sloganController.forward();
-
-    // Her 700ms'de bir slogan değiştir
-    for (int i = 1; i < _slogans.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 700));
-      if (!mounted) return;
-      await _sloganController.reverse();
-      if (!mounted) return;
-      setState(() => _sloganIndex = i);
-      _sloganController.forward();
-    }
-  }
-
   Future<void> _navigate() async {
-    // Auth kontrolü için minimum görüntülenme süresi
-    await Future.delayed(const Duration(milliseconds: 2200));
+    await Future.delayed(const Duration(milliseconds: 2000));
     if (!mounted) return;
 
     final session = Supabase.instance.client.auth.currentSession;
@@ -87,14 +47,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
-    // Session var → direkt feed. Feed içinde profil yoksa /profile/setup'a yönlendirir.
     context.go('/feed');
   }
 
   @override
   void dispose() {
-    _logoController.dispose();
-    _sloganController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -111,7 +69,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 3D glossy pills — kırmızı + mavi cam
+                  // 3D glossy pills — kırmızı (Ismarlıyorum) + mavi cam (İstiyorum)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -129,27 +87,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       'SoulChoice',
                       style: AppTextStyles.displayLarge
                           .copyWith(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Dönen sloganlar
-                  SizedBox(
-                    height: 40,
-                    child: FadeTransition(
-                      opacity: _sloganFade,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          _slogans[_sloganIndex],
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                            height: 1.4,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 12),

@@ -40,7 +40,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     }
     // Exclude blocked users' invitations
     if (blockedIds.isNotEmpty) {
-      query = query.not('user_id', 'in', '(${blockedIds.join(',')})');
+      query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
     }
 
     final data = await query.order('created_at', ascending: false).limit(30);

@@ -32,10 +32,10 @@ final discoverProvider =
       .gt('expires_at', DateTime.now().toIso8601String());
 
   if (currentUserId != null) {
-    query = query.neq('user_id', currentUserId);
+    query = query.neq('owner_id', currentUserId);
   }
   if (blockedIds.isNotEmpty) {
-    query = query.not('user_id', 'in', '(${blockedIds.join(',')})');
+    query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
   }
 
   final data = await query.order('created_at', ascending: false).limit(50);

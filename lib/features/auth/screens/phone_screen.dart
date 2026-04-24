@@ -37,20 +37,10 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       setState(() => _error = 'Telefon numarası girin');
       return;
     }
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      await Supabase.instance.client.auth.signInWithOtp(phone: phone);
-      if (mounted) context.go('/auth/otp', extra: phone);
-    } on AuthException catch (e) {
-      setState(() => _error = e.message);
-    } catch (e) {
-      setState(() => _error = e.toString());
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    // Navigate immediately — don't wait for server response
+    if (mounted) context.go('/auth/otp', extra: phone);
+    // Fire OTP request in background; user can resend from OTP screen if needed
+    Supabase.instance.client.auth.signInWithOtp(phone: phone).ignore();
   }
 
   @override

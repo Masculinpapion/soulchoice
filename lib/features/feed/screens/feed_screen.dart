@@ -906,18 +906,34 @@ class InvitationCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Başlık — tek satır, kompakt
+                          // Başlık — Fraunces italic 24px
                           Text(
-                            title.toUpperCase(),
-                            style: AppTextStyles.feedCardTitle.copyWith(
-                              fontSize: 20,
-                              height: 1.15,
+                            title,
+                            style: const TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              height: 1.2,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 8),
-                          // Alt satır: geri sayım + başvuranlar + CTA
+                          if (eventDate != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatEventDate(eventDate!),
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 10),
+                          // Alt satır: geri sayım + CTA
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -956,21 +972,6 @@ class InvitationCard extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              if (applicationCount > 0) ...[
-                                const SizedBox(width: 8),
-                                const Icon(Icons.group_outlined,
-                                    size: 12,
-                                    color: AppColors.textSecondary),
-                                const SizedBox(width: 3),
-                                Text(
-                                  '$applicationCount',
-                                  style: const TextStyle(
-                                    fontFamily: 'JetBrainsMono',
-                                    fontSize: 11,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
                               const Spacer(),
                               // CTA
                               Container(

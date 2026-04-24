@@ -14,7 +14,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Bir restoran, bir konser, bir sergi. Davet aç, ısmarla — kiminle gitmek istediğini sen seç.';
+      'Bir restoran, bir konser, bir etkinlik. Davet aç, ısmarla ve kiminle gitmek istediğini sen seç.';
 
   @override
   String get onboarding_2_title =>
@@ -22,14 +22,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_2_desc =>
-      'Coffeemania, Bolşoy, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.';
+      'Bir kafe, bir tiyatro, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.';
 
   @override
-  String get onboarding_3_title => 'Doğrulanmış profiller, sakin bir topluluk';
+  String get onboarding_3_title =>
+      'Doğrulanmış profiller, sorumlu bir topluluk';
 
   @override
   String get onboarding_3_desc =>
-      'Her kullanıcı selfie ile onaylanır. Güven, SoulChoice\'un temelidir.';
+      'Her profil selfie ile onaylanır. Randevuya gelmeyen veya uygunsuz davranan kullanıcılar engellenir.';
 
   @override
   String get onboarding_start_button => 'Başla';

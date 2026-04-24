@@ -14,7 +14,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Ein Restaurant, ein Konzert, eine Ausstellung. Öffne eine Einladung und lade ein — du entscheidest, wer mitkommt.';
+      'Ein Restaurant, ein Konzert, ein Event. Öffne eine Einladung, lade ein und wähle, wer mitkommt.';
 
   @override
   String get onboarding_2_title =>
@@ -22,15 +22,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboarding_2_desc =>
-      'Coffeemania, Bolschoi, ein Konzert. Teile deinen Wunsch und warte darauf, eingeladen und hingeführt zu werden.';
+      'Ein Café, ein Theater, ein Konzert. Teile deinen Wunsch und warte, bis jemand dich einlädt.';
 
   @override
   String get onboarding_3_title =>
-      'Verifizierte Profile, eine ruhige Community';
+      'Verifizierte Profile, eine verantwortungsvolle Community';
 
   @override
   String get onboarding_3_desc =>
-      'Jeder Nutzer wird per Selfie verifiziert. Vertrauen ist das Fundament von SoulChoice.';
+      'Jedes Profil wird per Selfie verifiziert. Nutzer, die Treffen versäumen oder sich unangemessen verhalten, werden gesperrt.';
 
   @override
   String get onboarding_start_button => 'Starten';

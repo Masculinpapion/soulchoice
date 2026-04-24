@@ -14,7 +14,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Ресторан, концерт, выставка. Открой приглашение и угости — ты выбираешь, с кем пойдёшь.';
+      'Ресторан, концерт, мероприятие. Открой приглашение, угости и сам выбери, с кем пойдёшь.';
 
   @override
   String get onboarding_2_title =>
@@ -22,14 +22,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboarding_2_desc =>
-      'Coffeemania, Большой, концерт. Поделись желанием и жди того, кто угостит и сводит тебя туда.';
+      'Кафе, театр, концерт. Поделись желанием и жди того, кто угостит и сводит тебя.';
 
   @override
-  String get onboarding_3_title => 'Проверенные профили, спокойное сообщество';
+  String get onboarding_3_title =>
+      'Проверенные профили, ответственное сообщество';
 
   @override
   String get onboarding_3_desc =>
-      'Каждый пользователь подтверждается через селфи. Доверие — основа SoulChoice.';
+      'Каждый профиль подтверждается через селфи. Те, кто не приходит на встречу или ведёт себя неподобающе, блокируются.';
 
   @override
   String get onboarding_start_button => 'Начать';

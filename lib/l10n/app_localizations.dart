@@ -111,7 +111,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_1_desc.
   ///
   /// In tr, this message translates to:
-  /// **'Bir restoran, bir konser, bir sergi. Davet aç, ısmarla — kiminle gitmek istediğini sen seç.'**
+  /// **'Bir restoran, bir konser, bir etkinlik. Davet aç, ısmarla ve kiminle gitmek istediğini sen seç.'**
   String get onboarding_1_desc;
 
   /// No description provided for @onboarding_2_title.
@@ -123,19 +123,19 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_2_desc.
   ///
   /// In tr, this message translates to:
-  /// **'Coffeemania, Bolşoy, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.'**
+  /// **'Bir kafe, bir tiyatro, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.'**
   String get onboarding_2_desc;
 
   /// No description provided for @onboarding_3_title.
   ///
   /// In tr, this message translates to:
-  /// **'Doğrulanmış profiller, sakin bir topluluk'**
+  /// **'Doğrulanmış profiller, sorumlu bir topluluk'**
   String get onboarding_3_title;
 
   /// No description provided for @onboarding_3_desc.
   ///
   /// In tr, this message translates to:
-  /// **'Her kullanıcı selfie ile onaylanır. Güven, SoulChoice\'un temelidir.'**
+  /// **'Her profil selfie ile onaylanır. Randevuya gelmeyen veya uygunsuz davranan kullanıcılar engellenir.'**
   String get onboarding_3_desc;
 
   /// No description provided for @onboarding_start_button.

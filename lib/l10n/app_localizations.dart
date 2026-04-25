@@ -282,13 +282,52 @@ abstract class AppLocalizations {
   /// **'Hesabı sil'**
   String get settings_delete_account;
 
+  /// No description provided for @settings_title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlar'**
   String get settings_title;
+
+  /// No description provided for @settings_profile_section.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
   String get settings_profile_section;
+
+  /// No description provided for @settings_edit_profile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profili düzenle'**
   String get settings_edit_profile;
+
+  /// No description provided for @settings_edit_photos.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğrafları düzenle'**
   String get settings_edit_photos;
+
+  /// No description provided for @settings_notification_prefs.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim tercihleri'**
   String get settings_notification_prefs;
+
+  /// No description provided for @settings_do_not_disturb.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gece sessizliği'**
   String get settings_do_not_disturb;
+
+  /// No description provided for @settings_active_devices.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif cihazlar'**
   String get settings_active_devices;
+
+  /// No description provided for @settings_download_data.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerimi indir'**
   String get settings_download_data;
 }
 

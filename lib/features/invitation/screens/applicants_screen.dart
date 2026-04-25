@@ -164,6 +164,7 @@ class _SelectButtonState extends State<_SelectButton> {
           '/invitation/${widget.invitationId}/decision',
           extra: {
             'applicationId': widget.applicationId,
+            'applicantId': widget.applicantId,
             'applicantName': widget.applicantName,
           },
         );

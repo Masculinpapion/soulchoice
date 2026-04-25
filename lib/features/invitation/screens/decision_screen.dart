@@ -24,6 +24,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
   bool _isLoading = false;
 
   String? _applicationId;
+  String? _applicantId;
   String? _applicantName;
   String? _invitationTitle;
 
@@ -44,9 +45,10 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final extra = GoRouterState.of(context).extra as Map<String, String>?;
-    _applicationId = extra?['applicationId'];
-    _applicantName = extra?['applicantName'];
+    final extra = GoRouterState.of(context).extra as Map<String, dynamic>?;
+    _applicationId = extra?['applicationId'] as String?;
+    _applicantId = extra?['applicantId'] as String?;
+    _applicantName = extra?['applicantName'] as String?;
     _loadInvitationTitle();
   }
 
@@ -76,24 +78,16 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
   }
 
   Future<void> _accept() async {
-    if (_applicationId == null) return;
+    if (_applicationId == null || _applicantId == null) return;
     setState(() => _isLoading = true);
     try {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser!.id;
 
-      final invRow = await client
-          .from('invitations')
-          .select('owner_id')
-          .eq('id', widget.invitationId)
-          .maybeSingle();
-
-      final ownerId = invRow?['owner_id'] as String? ?? '';
-
       final matchRes = await client.from('matches').insert({
         'invitation_id': widget.invitationId,
-        'user1_id': ownerId,
-        'user2_id': uid,
+        'user1_id': uid,
+        'user2_id': _applicantId!,
       }).select('id').single();
 
       await client.from('applications').update({

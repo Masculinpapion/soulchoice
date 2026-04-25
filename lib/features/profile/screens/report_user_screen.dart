@@ -47,7 +47,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
       final uid = Supabase.instance.client.auth.currentUser!.id;
       await Supabase.instance.client.from('reports').insert({
         'reporter_id': uid,
-        'reported_id': widget.userId,
+        'reported_user_id': widget.userId,
         'reason': _reasons[_selectedReason!],
         'description': _descController.text.trim(),
         'status': 'pending',

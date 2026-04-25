@@ -800,11 +800,11 @@ class _ActionSheet extends StatelessWidget {
       'blocked_id': targetUserId,
     });
     if (ctx.mounted) {
+      ctx.pop(); // close bottom sheet
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
         backgroundColor: AppColors.success,
       ));
-      ctx.pop(); // close sheet
       ctx.pop(); // go back from profile
     }
   }
@@ -830,10 +830,7 @@ class _ActionSheet extends StatelessWidget {
           leading: const Icon(Icons.block, color: AppColors.error),
           title: Text('🚫 Kullanıcıyı engelle',
               style: AppTextStyles.bodyLarge),
-          onTap: () {
-            Navigator.pop(context);
-            _block(context);
-          },
+          onTap: () => _block(context),
         ),
         ListTile(
           leading:

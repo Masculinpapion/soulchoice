@@ -84,7 +84,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         return appPhotos
             .cast<Map<String, dynamic>>()
             .where((p) => p['is_selfie'] == false)
-            .map((p) => p['url'] as String)
+            .map((p) => p['url'] as String?).whereType<String>()
             .take(1);
       }).take(4).toList();
 

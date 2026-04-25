@@ -119,7 +119,7 @@ class InvitationModel {
         eventDate: json['event_date'] != null
             ? DateTime.parse(json['event_date'] as String)
             : null,
-        cityId: json['city_id'] as String,
+        cityId: json['city_id'] as String? ?? '',
         slotsTotal: json['slots_total'] as int? ?? 1,
         status: InvitationStatus.values.firstWhere(
           (s) => s.name == json['status'],

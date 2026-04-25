@@ -103,4 +103,28 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings_delete_account => 'Hesabı sil';
+
+  @override
+  String get settings_title => 'Ayarlar';
+
+  @override
+  String get settings_profile_section => 'Profil';
+
+  @override
+  String get settings_edit_profile => 'Profili düzenle';
+
+  @override
+  String get settings_edit_photos => 'Fotoğrafları düzenle';
+
+  @override
+  String get settings_notification_prefs => 'Bildirim tercihleri';
+
+  @override
+  String get settings_do_not_disturb => 'Gece sessizliği';
+
+  @override
+  String get settings_active_devices => 'Aktif cihazlar';
+
+  @override
+  String get settings_download_data => 'Verilerimi indir';
 }

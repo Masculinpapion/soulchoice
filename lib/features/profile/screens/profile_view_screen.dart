@@ -348,8 +348,9 @@ class ProfileViewScreen extends ConsumerWidget {
 
                           // ── CTA (context-aware) ────────────────────────
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                24, 28, 24, 48),
+                            padding: EdgeInsets.fromLTRB(
+                                24, 28, 24,
+                                MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 16),
                             child: isOwnProfile
                                 ? _OutlineCTA(
                                     label: 'Profili Düzenle',

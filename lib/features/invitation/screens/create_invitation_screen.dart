@@ -623,33 +623,6 @@ class _StepDateTime extends StatelessWidget {
                 ],
               ),
             ),
-            if (date != null) ...[
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0x12E63946),
-                      Color(0x084A90E2),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: AppColors.gradientStart.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle_outline,
-                        color: AppColors.gradientEnd, size: 18),
-                    const SizedBox(width: 10),
-                    Text(_format(date!),
-                        style: AppTextStyles.mono.copyWith(
-                            color: AppColors.textSecondary)),
-                  ],
-                ),
-              ),
-            ],
           ],
         ),
       );

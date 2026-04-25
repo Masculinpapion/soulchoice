@@ -29,5 +29,13 @@
   "settings_notifications": "Bildirimler",
   "settings_account": "Hesap",
   "settings_logout": "Çıkış yap",
-  "settings_delete_account": "Hesabı sil"
+  "settings_delete_account": "Hesabı sil",
+  "settings_title": "Ayarlar",
+  "settings_profile_section": "Profil",
+  "settings_edit_profile": "Profili düzenle",
+  "settings_edit_photos": "Fotoğrafları düzenle",
+  "settings_notification_prefs": "Bildirim tercihleri",
+  "settings_do_not_disturb": "Gece sessizliği",
+  "settings_active_devices": "Aktif cihazlar",
+  "settings_download_data": "Verilerimi indir"
 }

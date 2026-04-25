@@ -29,5 +29,13 @@
   "settings_notifications": "Benachrichtigungen",
   "settings_account": "Konto",
   "settings_logout": "Abmelden",
-  "settings_delete_account": "Konto löschen"
+  "settings_delete_account": "Konto löschen",
+  "settings_title": "Einstellungen",
+  "settings_profile_section": "Profil",
+  "settings_edit_profile": "Profil bearbeiten",
+  "settings_edit_photos": "Fotos bearbeiten",
+  "settings_notification_prefs": "Benachrichtigungseinstellungen",
+  "settings_do_not_disturb": "Nicht stören",
+  "settings_active_devices": "Aktive Geräte",
+  "settings_download_data": "Meine Daten herunterladen"
 }

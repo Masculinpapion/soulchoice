@@ -103,4 +103,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_delete_account => 'Удалить аккаунт';
+
+  @override
+  String get settings_title => 'Настройки';
+
+  @override
+  String get settings_profile_section => 'Профиль';
+
+  @override
+  String get settings_edit_profile => 'Редактировать профиль';
+
+  @override
+  String get settings_edit_photos => 'Редактировать фото';
+
+  @override
+  String get settings_notification_prefs => 'Настройки уведомлений';
+
+  @override
+  String get settings_do_not_disturb => 'Не беспокоить';
+
+  @override
+  String get settings_active_devices => 'Активные устройства';
+
+  @override
+  String get settings_download_data => 'Загрузить мои данные';
 }

@@ -281,6 +281,15 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hesabı sil'**
   String get settings_delete_account;
+
+  String get settings_title;
+  String get settings_profile_section;
+  String get settings_edit_profile;
+  String get settings_edit_photos;
+  String get settings_notification_prefs;
+  String get settings_do_not_disturb;
+  String get settings_active_devices;
+  String get settings_download_data;
 }
 
 class _AppLocalizationsDelegate

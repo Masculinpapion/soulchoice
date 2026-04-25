@@ -103,4 +103,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings_delete_account => 'Konto löschen';
+
+  @override
+  String get settings_title => 'Einstellungen';
+
+  @override
+  String get settings_profile_section => 'Profil';
+
+  @override
+  String get settings_edit_profile => 'Profil bearbeiten';
+
+  @override
+  String get settings_edit_photos => 'Fotos bearbeiten';
+
+  @override
+  String get settings_notification_prefs => 'Benachrichtigungseinstellungen';
+
+  @override
+  String get settings_do_not_disturb => 'Nicht stören';
+
+  @override
+  String get settings_active_devices => 'Aktive Geräte';
+
+  @override
+  String get settings_download_data => 'Meine Daten herunterladen';
 }

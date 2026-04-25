@@ -145,7 +145,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => context.pop(),
         ),
-        title: Text('Ayarlar', style: AppTextStyles.titleMedium),
+        title: Text(l10n.settings_title, style: AppTextStyles.titleMedium),
       ),
       body: AmbientBackground(
         child: ListView(
@@ -158,15 +158,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               },
             ),
             const SizedBox(height: 20),
-            _Section(title: 'Profil', icon: Icons.person_outline, items: [
+            _Section(title: l10n.settings_profile_section, icon: Icons.person_outline, items: [
               _SettingsTile(
                 icon: Icons.edit_outlined,
-                label: 'Profili düzenle',
+                label: l10n.settings_edit_profile,
                 onTap: () => context.push('/profile/setup'),
               ),
               _SettingsTile(
                 icon: Icons.add_photo_alternate_outlined,
-                label: 'Fotoğrafları düzenle',
+                label: l10n.settings_edit_photos,
                 onTap: () => context.push('/profile/photos'),
               ),
             ]),
@@ -190,12 +190,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 items: [
                   _SettingsTile(
                     icon: Icons.notifications_active_outlined,
-                    label: 'Bildirim tercihleri',
+                    label: l10n.settings_notification_prefs,
                     onTap: () {},
                   ),
                   _SettingsTile(
                     icon: Icons.do_not_disturb_on_outlined,
-                    label: 'Gece sessizliği',
+                    label: l10n.settings_do_not_disturb,
                     onTap: () {},
                   ),
                 ]),
@@ -206,12 +206,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 items: [
                   _SettingsTile(
                     icon: Icons.devices_outlined,
-                    label: 'Aktif cihazlar',
+                    label: l10n.settings_active_devices,
                     onTap: () {},
                   ),
                   _SettingsTile(
                     icon: Icons.download_outlined,
-                    label: 'Verilerimi indir',
+                    label: l10n.settings_download_data,
                     onTap: () {},
                   ),
                 ]),

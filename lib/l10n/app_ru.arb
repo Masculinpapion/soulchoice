@@ -29,5 +29,13 @@
   "settings_notifications": "Уведомления",
   "settings_account": "Аккаунт",
   "settings_logout": "Выйти",
-  "settings_delete_account": "Удалить аккаунт"
+  "settings_delete_account": "Удалить аккаунт",
+  "settings_title": "Настройки",
+  "settings_profile_section": "Профиль",
+  "settings_edit_profile": "Редактировать профиль",
+  "settings_edit_photos": "Редактировать фото",
+  "settings_notification_prefs": "Настройки уведомлений",
+  "settings_do_not_disturb": "Не беспокоить",
+  "settings_active_devices": "Активные устройства",
+  "settings_download_data": "Загрузить мои данные"
 }

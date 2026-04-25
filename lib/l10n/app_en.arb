@@ -29,5 +29,13 @@
   "settings_notifications": "Notifications",
   "settings_account": "Account",
   "settings_logout": "Log out",
-  "settings_delete_account": "Delete account"
+  "settings_delete_account": "Delete account",
+  "settings_title": "Settings",
+  "settings_profile_section": "Profile",
+  "settings_edit_profile": "Edit profile",
+  "settings_edit_photos": "Edit photos",
+  "settings_notification_prefs": "Notification preferences",
+  "settings_do_not_disturb": "Do not disturb",
+  "settings_active_devices": "Active devices",
+  "settings_download_data": "Download my data"
 }

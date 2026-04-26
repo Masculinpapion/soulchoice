@@ -24,12 +24,23 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   late TabController _tabController;
   InvitationCategory? _selectedCategory;
   String? _selectedCityId;
-  String? _selectedCityName;
+  String _selectedCityName = 'Moskova';
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadMoskovaCityId();
+  }
+
+  Future<void> _loadMoskovaCityId() async {
+    final data = await Supabase.instance.client
+        .from('cities')
+        .select('id')
+        .eq('name', 'Moskova')
+        .maybeSingle();
+    if (!mounted || data == null) return;
+    setState(() => _selectedCityId = data['id'] as String);
   }
 
   @override
@@ -39,19 +50,18 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   }
 
   Future<void> _showCityPicker() async {
-    final nav = Navigator.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => _CityPickerSheet(
+      builder: (sheetCtx) => _CityPickerSheet(
         selectedCityId: _selectedCityId,
         onCitySelected: (id, name) {
-          nav.pop();
+          Navigator.of(sheetCtx).pop();
           if (!mounted) return;
           setState(() {
             _selectedCityId = id;
-            _selectedCityName = name;
+            _selectedCityName = name ?? 'Tüm Şehirler';
           });
         },
       ),
@@ -67,7 +77,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           child: Column(
             children: [
               _Header(
-                cityName: _selectedCityName ?? 'Tüm Şehirler',
+                cityName: _selectedCityName,
                 onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
               ),

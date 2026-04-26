@@ -1053,16 +1053,15 @@ class InvitationCard extends StatelessWidget {
                                     ),
                                     if (ownerVerified) ...[
                                       const SizedBox(width: 3),
-                                      Icon(
-                                        Icons.verified_rounded,
-                                        size: 15,
-                                        color: AuroraTheme.auroraBlue,
-                                        shadows: [
-                                          Shadow(
-                                            color: AuroraTheme.auroraBlue,
-                                            blurRadius: 8,
-                                          ),
-                                        ],
+                                      ShaderMask(
+                                        blendMode: BlendMode.srcIn,
+                                        shaderCallback: (b) =>
+                                            AuroraTheme.redBlueGradient.createShader(b),
+                                        child: const Icon(
+                                          Icons.verified_rounded,
+                                          size: 15,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ],
                                   ],

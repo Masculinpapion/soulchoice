@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import 'dart:ui';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
-import '../../../shared/widgets/sc_button.dart';
 import '../providers/invitation_provider.dart';
 
 class InvitationDetailScreen extends ConsumerWidget {
@@ -23,30 +22,55 @@ class InvitationDetailScreen extends ConsumerWidget {
     final uid = Supabase.instance.client.auth.currentUser?.id;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: invAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.red)),
-          error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: AppColors.textSecondary))),
+          loading: () => Center(
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor:
+                    AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+              ),
+            ),
+          ),
+          error: (e, _) => Center(
+            child: Text('$e',
+                style: TextStyle(
+                    color: AuroraTheme.textSecondary,
+                    fontFamily: 'Manrope')),
+          ),
           data: (inv) {
             if (inv == null) {
-              return const Center(child: Text('Davet bulunamadı', style: TextStyle(color: AppColors.textSecondary)));
+              return Center(
+                child: Text('Davet bulunamadı',
+                    style: TextStyle(
+                        color: AuroraTheme.textSecondary,
+                        fontFamily: 'Manrope')),
+              );
             }
 
             final owner = inv['owner'] as Map<String, dynamic>?;
-            final ownerPhotos = (owner?['photos'] as List<dynamic>?) ?? [];
+            final ownerPhotos =
+                (owner?['photos'] as List<dynamic>?) ?? [];
             final sortedOwnerPhotos = ownerPhotos
                 .cast<Map<String, dynamic>>()
                 .where((p) => p['is_selfie'] == false)
                 .toList()
-              ..sort((a, b) => (a['order_index'] as int? ?? 99).compareTo(b['order_index'] as int? ?? 99));
-            final ownerPhotoUrl = sortedOwnerPhotos.firstOrNull?['url'] as String?;
+              ..sort((a, b) =>
+                  (a['order_index'] as int? ?? 99)
+                      .compareTo(b['order_index'] as int? ?? 99));
+            final ownerPhotoUrl =
+                sortedOwnerPhotos.firstOrNull?['url'] as String?;
             final isOwner = uid == inv['owner_id'];
             final category = InvitationCategory.values.firstWhere(
               (c) => c.name == inv['category'],
               orElse: () => InvitationCategory.food,
             );
-            final expiresAt = DateTime.parse(inv['expires_at'] as String);
+            final expiresAt =
+                DateTime.parse(inv['expires_at'] as String);
             final remaining = expiresAt.difference(DateTime.now());
             final hoursLeft = remaining.inHours;
 
@@ -54,20 +78,54 @@ class InvitationDetailScreen extends ConsumerWidget {
               children: [
                 CustomScrollView(
                   slivers: [
+                    // ── Hero ───────────────────────────────────────────
                     SliverAppBar(
-                      expandedHeight: 300,
+                      expandedHeight: 380,
                       pinned: true,
-                      backgroundColor: AppColors.bgBlack,
-                      leading: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new),
-                        onPressed: () => context.pop(),
+                      backgroundColor: AuroraTheme.bgDeep,
+                      leading: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: _GlassPill(
+                          onTap: () => context.pop(),
+                          child: const Icon(Icons.arrow_back_ios_new,
+                              size: 16, color: Colors.white),
+                        ),
                       ),
                       actions: [
                         if (isOwner)
-                          IconButton(
-                            icon: const Icon(Icons.people_outline),
-                            onPressed: () => context.push('/invitation/$invitationId/applicants'),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: _GlassPill(
+                              onTap: () => context.push(
+                                  '/invitation/$invitationId/applicants'),
+                              child: const Icon(Icons.people_outline,
+                                  size: 18, color: Colors.white),
+                            ),
                           ),
+                        // Kategori pill
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(right: 12, top: 8),
+                          child: _GlassPill(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(category.emoji,
+                                    style: const TextStyle(fontSize: 14)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  category.label,
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 10,
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                       flexibleSpace: FlexibleSpaceBar(
                         background: Stack(
@@ -81,7 +139,12 @@ class InvitationDetailScreen extends ConsumerWidget {
                                 errorWidget: (_, __, ___) => Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [AppColors.red.withOpacity(0.3), AppColors.blue.withOpacity(0.2)],
+                                      colors: [
+                                        AuroraTheme.auroraRed
+                                            .withOpacity(0.3),
+                                        AuroraTheme.auroraBlue
+                                            .withOpacity(0.2),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -90,94 +153,174 @@ class InvitationDetailScreen extends ConsumerWidget {
                               Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [AppColors.red.withOpacity(0.3), AppColors.blue.withOpacity(0.2)],
+                                    colors: [
+                                      AuroraTheme.auroraRed
+                                          .withOpacity(0.3),
+                                      AuroraTheme.auroraBlue
+                                          .withOpacity(0.2),
+                                    ],
                                   ),
                                 ),
                               ),
+                            // Alt gradient
                             Container(
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
-                                  colors: [Colors.transparent, Color(0xDD0A0A0B)],
-                                  stops: [0.4, 1.0],
+                                  colors: [
+                                    Colors.transparent,
+                                    AuroraTheme.bgDeep,
+                                  ],
+                                  stops: const [0.45, 1.0],
                                 ),
                               ),
                             ),
+                            // Başlık — Fraunces italic overlay
                             Positioned(
-                              bottom: 20,
+                              bottom: 24,
                               left: 20,
                               right: 20,
                               child: Text(
-                                (inv['title'] as String).toUpperCase(),
-                                style: AppTextStyles.feedCardTitle.copyWith(fontSize: 26),
+                                inv['title'] as String,
+                                style: const TextStyle(
+                                  fontFamily: 'Fraunces',
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  height: 1.2,
+                                ),
+                                maxLines: 3,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
+
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 140),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
+                          // ── Stats row ─────────────────────────────────
                           Row(
                             children: [
-                              _InfoChip(icon: Icons.category_outlined, label: '${category.emoji} ${category.label}'),
-                              const SizedBox(width: 8),
-                              _InfoChip(icon: Icons.timer_outlined, label: '${hoursLeft}s kaldı'),
-                              const SizedBox(width: 8),
-                              countAsync.maybeWhen(
-                                data: (n) => _InfoChip(icon: Icons.people_outline, label: '$n başvuru'),
-                                orElse: () => const SizedBox.shrink(),
+                              Expanded(
+                                child: _StatCard(
+                                  icon: '⏱',
+                                  label: 'KALAN',
+                                  value: hoursLeft >= 0
+                                      ? '${hoursLeft}s'
+                                      : 'Sona erdi',
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: countAsync.maybeWhen(
+                                  data: (n) => _StatCard(
+                                    icon: '👥',
+                                    label: 'BAŞVURU',
+                                    value: '$n kişi',
+                                  ),
+                                  orElse: () => _StatCard(
+                                    icon: '👥',
+                                    label: 'BAŞVURU',
+                                    value: '—',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _StatCard(
+                                  icon: '📍',
+                                  label: 'YER',
+                                  value: inv['venue_name'] as String? ??
+                                      category.label,
+                                  small: true,
+                                ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 14),
+
+                          // ── Açıklama ──────────────────────────────────
                           if (inv['description'] != null) ...[
-                            const SizedBox(height: 20),
+                            _SectionLabel('ETKİNLİK'),
+                            const SizedBox(height: 8),
                             GlassCard(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Etkinlik', style: AppTextStyles.monoSmall),
-                                  const SizedBox(height: 6),
-                                  Text(inv['description'] as String, style: AppTextStyles.bodyLarge),
-                                ],
+                              child: Text(
+                                inv['description'] as String,
+                                style: const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  height: 1.6,
+                                ),
                               ),
                             ),
+                            const SizedBox(height: 14),
                           ],
-                          if (inv['venue_name'] != null || inv['event_date'] != null) ...[
-                            const SizedBox(height: 12),
+
+                          // ── Yer & Zaman ───────────────────────────────
+                          if (inv['venue_name'] != null ||
+                              inv['event_date'] != null) ...[
+                            _SectionLabel('YER · ZAMAN'),
+                            const SizedBox(height: 8),
                             GlassCard(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                 children: [
-                                  Text('Yer & Zaman', style: AppTextStyles.monoSmall),
-                                  const SizedBox(height: 6),
                                   if (inv['venue_name'] != null)
                                     Row(children: [
-                                      const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
-                                      const SizedBox(width: 6),
-                                      Text(inv['venue_name'] as String, style: AppTextStyles.bodyMedium),
+                                      Icon(Icons.location_on_outlined,
+                                          size: 15,
+                                          color: AuroraTheme.auroraRed),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(
+                                          inv['venue_name'] as String,
+                                          style: const TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ]),
                                   if (inv['event_date'] != null) ...[
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 6),
                                     Row(children: [
-                                      const Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
-                                      const SizedBox(width: 6),
-                                      Text(_formatDate(DateTime.parse(inv['event_date'] as String)), style: AppTextStyles.bodyMedium),
+                                      Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 15,
+                                          color: AuroraTheme.auroraBlue),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _formatDate(DateTime.parse(
+                                            inv['event_date'] as String)),
+                                        style: const TextStyle(
+                                          fontFamily: 'Manrope',
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ]),
                                   ],
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 14),
                           ],
+
+                          // ── Davet sahibi ──────────────────────────────
                           if (owner != null) ...[
-                            const SizedBox(height: 20),
-                            Text('Davet sahibi', style: AppTextStyles.labelLarge),
-                            const SizedBox(height: 10),
+                            _SectionLabel('DAVET SAHİBİ'),
+                            const SizedBox(height: 8),
                             GlassCard(
-                              onTap: () => context.push('/profile/${owner['id']}'),
+                              onTap: () => context
+                                  .push('/profile/${owner['id']}'),
                               child: Row(
                                 children: [
                                   ClipOval(
@@ -188,33 +331,74 @@ class InvitationDetailScreen extends ConsumerWidget {
                                           ? CachedNetworkImage(
                                               imageUrl: ownerPhotoUrl,
                                               fit: BoxFit.cover,
-                                              alignment: Alignment.topCenter,
-                                              errorWidget: (_, __, ___) => Container(
-                                                color: AppColors.glassBg,
-                                                child: const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                                              alignment:
+                                                  Alignment.topCenter,
+                                              errorWidget: (_, __, ___) =>
+                                                  Container(
+                                                color: AuroraTheme
+                                                    .glassBg,
+                                                child: const Icon(
+                                                    Icons.person_outline,
+                                                    color: Colors.white54),
                                               ),
                                             )
                                           : Container(
-                                              color: AppColors.glassBg,
-                                              child: const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                                              color: AuroraTheme.glassBg,
+                                              child: const Icon(
+                                                  Icons.person_outline,
+                                                  color: Colors.white54),
                                             ),
                                     ),
                                   ),
                                   const SizedBox(width: 14),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(children: [
-                                        Text('${owner['name']}, ${owner['age']}', style: AppTextStyles.titleMedium),
-                                        if (owner['verified'] == true) ...[
-                                          const SizedBox(width: 4),
-                                          const Icon(Icons.verified, color: AppColors.gold, size: 16),
-                                        ],
-                                      ]),
-                                    ],
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(children: [
+                                          Text(
+                                            '${owner['name']}, ${owner['age']}',
+                                            style: const TextStyle(
+                                              fontFamily: 'Manrope',
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 15,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          if (owner['verified'] ==
+                                              true) ...[
+                                            const SizedBox(width: 6),
+                                            Container(
+                                              width: 18,
+                                              height: 18,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: AuroraTheme
+                                                    .auroraBlue,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: AuroraTheme
+                                                        .auroraBlue
+                                                        .withOpacity(0.5),
+                                                    blurRadius: 8,
+                                                  ),
+                                                ],
+                                              ),
+                                              child: const Icon(
+                                                  Icons.check,
+                                                  color: Colors.white,
+                                                  size: 11),
+                                            ),
+                                          ],
+                                        ]),
+                                      ],
+                                    ),
                                   ),
-                                  const Spacer(),
-                                  const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textTertiary),
+                                  Icon(Icons.arrow_forward_ios,
+                                      size: 14,
+                                      color:
+                                          Colors.white.withOpacity(0.25)),
                                 ],
                               ),
                             ),
@@ -224,32 +408,45 @@ class InvitationDetailScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+
+                // ── CTA buton ─────────────────────────────────────────
                 Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-                    decoration: const BoxDecoration(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [AppColors.bgBlack, Colors.transparent],
+                        colors: [
+                          AuroraTheme.bgDeep,
+                          AuroraTheme.bgDeep.withOpacity(0.0),
+                        ],
                       ),
                     ),
                     child: isOwner
-                        ? ScButton(
-                            label: 'Başvuranları gör',
+                        ? _AuroraCTA(
+                            label: 'Başvuranları Gör',
                             icon: Icons.people_outline,
-                            onPressed: () => context.push('/invitation/$invitationId/applicants'),
+                            onPressed: () => context.push(
+                                '/invitation/$invitationId/applicants'),
                           )
                         : myAppAsync.when(
-                            loading: () => const ScButton(label: 'Yükleniyor...', onPressed: null),
-                            error: (_, __) => const ScButton(label: 'Hata', onPressed: null),
+                            loading: () => const _AuroraCTA(
+                              label: 'Yükleniyor...',
+                              onPressed: null,
+                            ),
+                            error: (_, __) => const _AuroraCTA(
+                              label: 'Hata',
+                              onPressed: null,
+                            ),
                             data: (myApp) => _ApplyButton(
                               invitationId: invitationId,
                               existingApp: myApp,
-                              onApplied: () => ref.invalidate(myApplicationProvider(invitationId)),
+                              onApplied: () => ref.invalidate(
+                                  myApplicationProvider(invitationId)),
                             ),
                           ),
                   ),
@@ -263,21 +460,190 @@ class InvitationDetailScreen extends ConsumerWidget {
   }
 
   String _formatDate(DateTime dt) {
-    final now = DateTime.now();
-    final diff = dt.difference(now).inDays;
-    final timeStr = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-    if (diff == 0) return 'Bugün $timeStr';
-    if (diff == 1) return 'Yarın $timeStr';
-    return '${dt.day}/${dt.month} $timeStr';
+    const days = [
+      'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe',
+      'Cuma', 'Cumartesi', 'Pazar'
+    ];
+    final day = days[dt.weekday - 1];
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    return '$day, $h:$m';
   }
 }
+
+// ── Glass Pill ────────────────────────────────────────────────────────────────
+class _GlassPill extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  const _GlassPill({required this.child, this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(100),
+                border:
+                    Border.all(color: Colors.white.withOpacity(0.18)),
+              ),
+              child: child,
+            ),
+          ),
+        ),
+      );
+}
+
+// ── Section Label ─────────────────────────────────────────────────────────────
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) => Text(
+        text,
+        style: AuroraTheme.monoLabel,
+      );
+}
+
+// ── Stat Card ─────────────────────────────────────────────────────────────────
+class _StatCard extends StatelessWidget {
+  final String icon;
+  final String label;
+  final String value;
+  final bool small;
+
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.small = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AuroraTheme.glassBorder),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 20)),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: AuroraTheme.monoLabel
+                    .copyWith(fontSize: 8, letterSpacing: 1),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w700,
+                  fontSize: small ? 11 : 14,
+                  color: Colors.white,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Aurora CTA ────────────────────────────────────────────────────────────────
+class _AuroraCTA extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+
+  const _AuroraCTA(
+      {required this.label, required this.onPressed, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: onPressed != null
+            ? AuroraTheme.redBlueGradient
+            : const LinearGradient(
+                colors: [Color(0xFF444444), Color(0xFF333333)]),
+        borderRadius: BorderRadius.circular(100),
+        boxShadow: onPressed != null
+            ? [
+                BoxShadow(
+                  color: AuroraTheme.auroraRed.withOpacity(0.45),
+                  blurRadius: 28,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(100),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Apply Button (mevcut mantık korundu)
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _ApplyButton extends ConsumerStatefulWidget {
   final String invitationId;
   final Map<String, dynamic>? existingApp;
   final VoidCallback onApplied;
 
-  const _ApplyButton({required this.invitationId, this.existingApp, required this.onApplied});
+  const _ApplyButton(
+      {required this.invitationId,
+      this.existingApp,
+      required this.onApplied});
 
   @override
   ConsumerState<_ApplyButton> createState() => _ApplyButtonState();
@@ -304,7 +670,9 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+              content: Text('Hata: $e'),
+              backgroundColor: AuroraTheme.auroraRed),
         );
       }
     } finally {
@@ -316,44 +684,24 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   Widget build(BuildContext context) {
     final app = widget.existingApp;
     if (app == null) {
-      return ScButton(label: 'Gelmek isterim', onPressed: _loading ? null : _apply, isLoading: _loading);
+      return _AuroraCTA(
+        label: _loading ? 'Gönderiliyor...' : 'Gelmek isterim',
+        onPressed: _loading ? null : _apply,
+      );
     }
     final status = app['status'] as String;
     if (status == 'selected') {
-      return ScButton(
+      return _AuroraCTA(
         label: 'Seçildiniz — Kararınızı verin',
         icon: Icons.favorite_outline,
-        onPressed: () => context.push('/invitation/${widget.invitationId}/decision',
+        onPressed: () => context.push(
+            '/invitation/${widget.invitationId}/decision',
             extra: {'applicationId': app['id']}),
       );
     }
     if (status == 'accepted') {
-      return ScButton(label: '✓ Kabul edildi', onPressed: null, variant: ScButtonVariant.secondary);
+      return _AuroraCTA(label: '✓ Kabul edildi', onPressed: null);
     }
-    return ScButton(label: 'Başvurdunuz', onPressed: null, variant: ScButtonVariant.secondary);
+    return _AuroraCTA(label: 'Başvurdunuz', onPressed: null);
   }
-}
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _InfoChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppColors.glassBg,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: AppColors.glassBorder),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 13, color: AppColors.textSecondary),
-            const SizedBox(width: 5),
-            Text(label, style: AppTextStyles.monoSmall),
-          ],
-        ),
-      );
 }

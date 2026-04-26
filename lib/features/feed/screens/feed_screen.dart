@@ -39,7 +39,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   }
 
   Future<void> _showCityPicker() async {
-    final nav = Navigator.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -47,8 +46,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
       builder: (_) => _CityPickerSheet(
         selectedCityId: _selectedCityId,
         onCitySelected: (id, name) {
-          nav.pop();
-          if (!mounted) return;
           setState(() {
             _selectedCityId = id;
             _selectedCityName = name;
@@ -259,33 +256,9 @@ class _StoryBar extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                const _ActivePulse(),
-                const SizedBox(width: 8),
-                Text(
-                  '${invitations.length} KİŞİ AKTİF',
-                  style: const TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text('·', style: TextStyle(color: AuroraTheme.textMuted, fontSize: 10)),
-                const SizedBox(width: 8),
-                Text(
-                  'YENİLEME 24 SAAT',
-                  style: TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: 10,
-                    color: AuroraTheme.textMuted,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ],
+            child: Text(
+              'AKTİF ŞİMDİ  ·  24 SAAT',
+              style: AuroraTheme.monoLabel,
             ),
           ),
           const SizedBox(height: 8),
@@ -1387,13 +1360,19 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               name: 'Tüm Şehirler',
                               emoji: '🌍',
                               selected: widget.selectedCityId == null,
-                              onTap: () => widget.onCitySelected(null, null),
+                              onTap: () {
+                                widget.onCitySelected(null, null);
+                                Navigator.of(context).pop();
+                              },
                             ),
                           ...filtered.map((c) => _CityRow(
                                 name: c.name,
                                 emoji: _cityEmoji(c.name),
                                 selected: widget.selectedCityId == c.id,
-                                onTap: () => widget.onCitySelected(c.id, c.name),
+                                onTap: () {
+                                  widget.onCitySelected(c.id, c.name);
+                                  Navigator.of(context).pop();
+                                },
                               )),
                           if (filtered.isEmpty)
                             Padding(
@@ -1613,59 +1592,6 @@ class _PulsingDotState extends State<_PulsingDot>
               BoxShadow(
                 color: AuroraTheme.auroraGold.withOpacity(_anim.value * 0.7),
                 blurRadius: 6,
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Active Pulse — story bar header için 8×8 altın nokta
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _ActivePulse extends StatefulWidget {
-  const _ActivePulse();
-
-  @override
-  State<_ActivePulse> createState() => _ActivePulseState();
-}
-
-class _ActivePulseState extends State<_ActivePulse>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
-    _anim = Tween<double>(begin: 0.25, end: 1.0)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _anim,
-        builder: (_, __) => Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AuroraTheme.auroraGold.withOpacity(_anim.value),
-            boxShadow: [
-              BoxShadow(
-                color: AuroraTheme.auroraGold.withOpacity(_anim.value * 0.6),
-                blurRadius: 8,
               ),
             ],
           ),

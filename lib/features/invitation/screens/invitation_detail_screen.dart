@@ -451,6 +451,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                             data: (myApp) => _ApplyButton(
                               invitationId: invitationId,
                               existingApp: myApp,
+                              isRequestFlow: inv['flow_type'] == 'request',
                               onApplied: () => ref.invalidate(
                                   myApplicationProvider(invitationId)),
                             ),
@@ -644,11 +645,13 @@ class _AuroraCTA extends StatelessWidget {
 class _ApplyButton extends ConsumerStatefulWidget {
   final String invitationId;
   final Map<String, dynamic>? existingApp;
+  final bool isRequestFlow;
   final VoidCallback onApplied;
 
   const _ApplyButton(
       {required this.invitationId,
       this.existingApp,
+      this.isRequestFlow = false,
       required this.onApplied});
 
   @override
@@ -691,7 +694,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     final app = widget.existingApp;
     if (app == null) {
       return _AuroraCTA(
-        label: _loading ? 'Gönderiliyor...' : 'Gelmek isterim',
+        label: _loading ? 'Gönderiliyor...' : (widget.isRequestFlow ? 'Katılmak isterim' : 'Gelmek isterim'),
         onPressed: _loading ? null : _apply,
       );
     }

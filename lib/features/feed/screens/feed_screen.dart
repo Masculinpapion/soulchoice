@@ -1189,7 +1189,7 @@ class InvitationCard extends StatelessWidget {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          isInviteFlow ? 'Gelmek isterim' : 'Katılmak istiyorum',
+                          isInviteFlow ? 'Gelmek isterim' : 'Katılmak isterim',
                           style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
                         ),
                       ),

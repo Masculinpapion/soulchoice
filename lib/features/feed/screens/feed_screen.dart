@@ -733,7 +733,7 @@ class _CategoryChips extends StatelessWidget {
                       Text(
                         '♫',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           height: 1.2,
                           color: isSelected ? Colors.white : AuroraTheme.auroraRed,
                         ),

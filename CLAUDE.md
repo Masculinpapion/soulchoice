@@ -89,3 +89,10 @@ Her bug fix öncesi:
 3. str_replace ile düzelt
 4. kill -SIGUSR2 ile hot restart
 5. adb ile test et
+
+## EKRAN GÖRÜNTÜSÜ KURALI
+
+ASLA kullanıcı istemeden screenshot ALMA.
+Kullanıcı telefonu canlı görüyor, screenshot
+gereksiz kredi yakar. Sadece kullanıcı
+'screenshot al' derse al.

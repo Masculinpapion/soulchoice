@@ -111,8 +111,8 @@ class _Header extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          // City pill
+          const Spacer(),
+          // City pill — bell'in hemen solunda
           _GlassPill(
             onTap: onCityTap,
             child: Row(
@@ -132,7 +132,7 @@ class _Header extends ConsumerWidget {
               ],
             ),
           ),
-          const Spacer(),
+          const SizedBox(width: 8),
           // Notification bell
           Stack(
             clipBehavior: Clip.none,
@@ -768,11 +768,11 @@ class _InvitationList extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
               child: Row(
                 children: [
-                  Text('BUGÜNÜN DAVETLERİ', style: AuroraTheme.monoLabel),
+                  Text('GÜNÜN DAVETLERİ', style: AuroraTheme.monoLabel),
                   const SizedBox(width: 6),
                   ShaderMask(
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                    child: const Text('· KAYDIRDIR →',
+                    child: const Text('· KAYDIR →',
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
                   ),
                 ],

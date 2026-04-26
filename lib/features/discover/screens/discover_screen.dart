@@ -489,7 +489,13 @@ class _FilterChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 11)),
+                Text(
+                  emoji,
+                  style: TextStyle(
+                    fontSize: emoji == '♫' ? 15 : 11,
+                    color: emoji == '♫' ? (selected ? Colors.white : AuroraTheme.auroraRed) : null,
+                  ),
+                ),
                 const SizedBox(width: 5),
                 Text(
                   label,

@@ -31,7 +31,6 @@ class _CreateInvitationScreenState
   final _descriptionController = TextEditingController();
   final _venueController = TextEditingController();
   DateTime? _eventDate;
-  int _slots = 1;
   bool _isPublishing = false;
 
   static const _steps = [
@@ -41,7 +40,6 @@ class _CreateInvitationScreenState
     'Açıklama',
     'Yer',
     'Tarih & Saat',
-    'Kaç kişi',
   ];
 
   @override
@@ -136,7 +134,7 @@ class _CreateInvitationScreenState
             : _venueController.text.trim(),
         'event_date': _eventDate?.toIso8601String(),
         'city_id': cityId,
-        'slots_total': _slots,
+        'slots_total': 1,
         'status': 'active',
       });
 
@@ -221,10 +219,6 @@ class _CreateInvitationScreenState
                         date: _eventDate,
                         onSelected: (d) =>
                             setState(() => _eventDate = d)),
-                    _StepSlots(
-                        slots: _slots,
-                        onChanged: (v) =>
-                            setState(() => _slots = v)),
                   ],
                 ),
               ),
@@ -692,85 +686,3 @@ class _StepDateTime extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Step: Slots
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _StepSlots extends StatelessWidget {
-  final int slots;
-  final ValueChanged<int> onChanged;
-
-  const _StepSlots({required this.slots, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text('Kaç kişi?', style: AppTextStyles.displayMedium),
-            const SizedBox(height: 8),
-            Text('Kaç kişilik bir deneyim?',
-                style: AppTextStyles.bodyMedium),
-            const SizedBox(height: 48),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [1, 2].map((n) {
-                final isSelected = slots == n;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: GestureDetector(
-                    onTap: () => onChanged(n),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        gradient: isSelected
-                            ? AppColors.primaryGradient
-                            : null,
-                        color: isSelected ? null : AppColors.glassBgMedium,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.transparent
-                              : AppColors.glassBorder,
-                          width: isSelected ? 0 : 1,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: AppColors.gradientStart
-                                      .withOpacity(0.3),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 6),
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '$n',
-                            style: AppTextStyles.monoLarge.copyWith(
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          Text('kişi',
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                  color: isSelected
-                                      ? AppColors.textPrimary.withOpacity(0.8)
-                                      : AppColors.textSecondary)),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      );
-}

@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/locale_provider.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 
@@ -42,13 +41,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   String _currentLanguageLabel(BuildContext context) {
     final locale = ref.read(localeProvider);
-    if (locale == null) return AppLocalizations.of(context)!.settings_language_system;
+    if (locale == null) {
+      return AppLocalizations.of(context)!.settings_language_system;
+    }
     switch (locale.languageCode) {
       case 'tr': return 'Türkçe';
       case 'ru': return 'Русский';
       case 'en': return 'English';
       case 'de': return 'Deutsch';
-      default: return AppLocalizations.of(context)!.settings_language_system;
+      default:
+        return AppLocalizations.of(context)!.settings_language_system;
     }
   }
 
@@ -61,16 +63,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) {
         return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(28)),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.glassBgMedium,
+                color: const Color(0xFF0D0D12).withOpacity(0.85),
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
+                    const BorderRadius.vertical(top: Radius.circular(28)),
                 border: Border(
-                    top: BorderSide(color: AppColors.glassBorder)),
+                  top: BorderSide(color: AuroraTheme.glassBorder),
+                ),
               ),
               child: SafeArea(
                 child: Column(
@@ -81,13 +85,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       width: 36,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: AppColors.glassBorder,
+                        color: AuroraTheme.glassBorder,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(l10n.settings_language,
-                        style: AppTextStyles.titleMedium),
+                    Text(
+                      l10n.settings_language,
+                      style: const TextStyle(
+                        fontFamily: 'Fraunces',
+                        fontStyle: FontStyle.italic,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     ...[
                       ('tr', '🇹🇷', 'Türkçe'),
@@ -96,7 +107,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ('de', '🇩🇪', 'Deutsch'),
                     ].map((entry) {
                       final (code, flag, name) = entry;
-                      final isSelected = currentLocale?.languageCode == code;
+                      final isSelected =
+                          currentLocale?.languageCode == code;
                       return _LangTile(
                         flag: flag,
                         name: name,
@@ -138,136 +150,204 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(l10n.settings_title, style: AppTextStyles.titleMedium),
-      ),
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            _VerificationCard(
-              selfieStatus: _selfieStatus,
-              onRetake: () {
-                context.push('/profile/selfie').then((_) => _loadSelfieStatus());
-              },
-            ),
-            const SizedBox(height: 20),
-            _Section(title: l10n.settings_profile_section, icon: Icons.person_outline, items: [
-              _SettingsTile(
-                icon: Icons.edit_outlined,
-                label: l10n.settings_edit_profile,
-                onTap: () => context.push('/profile/setup'),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Başlık
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                child: Row(
+                  children: [
+                    _GlassPill(
+                      onTap: () => context.pop(),
+                      child: const Icon(Icons.arrow_back_ios_new,
+                          size: 16, color: Colors.white),
+                    ),
+                    const SizedBox(width: 14),
+                    ShaderMask(
+                      shaderCallback: (b) =>
+                          AuroraTheme.redBlueGradient.createShader(b),
+                      child: Text(
+                        l10n.settings_title,
+                        style: const TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              _SettingsTile(
-                icon: Icons.add_photo_alternate_outlined,
-                label: l10n.settings_edit_photos,
-                onTap: () => context.push('/profile/photos'),
+              // İçerik
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
+                  children: [
+                    // Doğrulama kartı
+                    _VerificationCard(
+                      selfieStatus: _selfieStatus,
+                      onRetake: () {
+                        context.push('/profile/selfie').then(
+                            (_) => _loadSelfieStatus());
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    // Profil
+                    _Section(
+                      title: l10n.settings_profile_section,
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.edit_outlined,
+                          label: l10n.settings_edit_profile,
+                          onTap: () => context.push('/profile/setup'),
+                        ),
+                        _SettingsTile(
+                          icon: Icons.add_photo_alternate_outlined,
+                          label: l10n.settings_edit_photos,
+                          onTap: () => context.push('/profile/photos'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Dil
+                    _Section(
+                      title: l10n.settings_language,
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.language_outlined,
+                          label: l10n.settings_language,
+                          value: _currentLanguageLabel(context),
+                          onTap: () => _showLanguagePicker(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Bildirimler
+                    _Section(
+                      title: l10n.settings_notifications,
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.notifications_active_outlined,
+                          label: l10n.settings_notification_prefs,
+                          onTap: () {},
+                        ),
+                        _SettingsTile(
+                          icon: Icons.do_not_disturb_on_outlined,
+                          label: l10n.settings_do_not_disturb,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Hesap
+                    _Section(
+                      title: l10n.settings_account,
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.devices_outlined,
+                          label: l10n.settings_active_devices,
+                          onTap: () {},
+                        ),
+                        _SettingsTile(
+                          icon: Icons.download_outlined,
+                          label: l10n.settings_download_data,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Gizlilik
+                    _Section(
+                      title: 'GİZLİLİK & GÜVENLİK',
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.location_on_outlined,
+                          label: 'Konum izni',
+                          onTap: () {},
+                        ),
+                        _SettingsTile(
+                          icon: Icons.camera_alt_outlined,
+                          label: 'Kamera izni',
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Destek
+                    _Section(
+                      title: 'DESTEK',
+                      items: [
+                        _SettingsTile(
+                          icon: Icons.help_outline,
+                          label: 'Yardım & Destek',
+                          onTap: () {},
+                        ),
+                        _SettingsTile(
+                          icon: Icons.info_outline,
+                          label: 'Hakkında',
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    // Çıkış yap
+                    _DangerButton(
+                      icon: Icons.logout,
+                      label: l10n.settings_logout,
+                      onTap: () async {
+                        await Supabase.instance.client.auth.signOut();
+                        if (context.mounted) context.go('/splash');
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _DangerButton(
+                      icon: Icons.delete_forever_outlined,
+                      label: l10n.settings_delete_account,
+                      onTap: () => context.push('/settings/delete-account'),
+                    ),
+                  ],
+                ),
               ),
-            ]),
-            const SizedBox(height: 20),
-            // ── Dil ─────────────────────────────────────────────────────────
-            _Section(
-                title: l10n.settings_language,
-                icon: Icons.language_outlined,
-                items: [
-                  _SettingsTile(
-                    icon: Icons.language_outlined,
-                    label: l10n.settings_language,
-                    value: _currentLanguageLabel(context),
-                    onTap: () => _showLanguagePicker(context),
-                  ),
-                ]),
-            const SizedBox(height: 20),
-            _Section(
-                title: l10n.settings_notifications,
-                icon: Icons.notifications_outlined,
-                items: [
-                  _SettingsTile(
-                    icon: Icons.notifications_active_outlined,
-                    label: l10n.settings_notification_prefs,
-                    onTap: () {},
-                  ),
-                  _SettingsTile(
-                    icon: Icons.do_not_disturb_on_outlined,
-                    label: l10n.settings_do_not_disturb,
-                    onTap: () {},
-                  ),
-                ]),
-            const SizedBox(height: 20),
-            _Section(
-                title: l10n.settings_account,
-                icon: Icons.manage_accounts_outlined,
-                items: [
-                  _SettingsTile(
-                    icon: Icons.devices_outlined,
-                    label: l10n.settings_active_devices,
-                    onTap: () {},
-                  ),
-                  _SettingsTile(
-                    icon: Icons.download_outlined,
-                    label: l10n.settings_download_data,
-                    onTap: () {},
-                  ),
-                ]),
-            const SizedBox(height: 20),
-            _Section(
-                title: 'Gizlilik & Güvenlik',
-                icon: Icons.shield_outlined,
-                items: [
-                  _SettingsTile(
-                    icon: Icons.location_on_outlined,
-                    label: 'Konum izni',
-                    onTap: () {},
-                  ),
-                  _SettingsTile(
-                    icon: Icons.camera_alt_outlined,
-                    label: 'Kamera izni',
-                    onTap: () {},
-                  ),
-                ]),
-            const SizedBox(height: 20),
-            _Section(
-                title: 'Destek',
-                icon: Icons.help_outline,
-                items: [
-                  _SettingsTile(
-                    icon: Icons.help_outline,
-                    label: 'Yardım & Destek',
-                    onTap: () {},
-                  ),
-                  _SettingsTile(
-                    icon: Icons.info_outline,
-                    label: 'Hakkında',
-                    onTap: () {},
-                  ),
-                ]),
-            const SizedBox(height: 28),
-            _DangerButton(
-              icon: Icons.logout,
-              label: l10n.settings_logout,
-              onTap: () async {
-                await Supabase.instance.client.auth.signOut();
-                if (context.mounted) context.go('/splash');
-              },
-            ),
-            const SizedBox(height: 12),
-            _DangerButton(
-              icon: Icons.delete_forever_outlined,
-              label: l10n.settings_delete_account,
-              onTap: () => context.push('/settings/delete-account'),
-            ),
-            const SizedBox(height: 40),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _GlassPill extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  const _GlassPill({required this.child, this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: AuroraTheme.glassBg,
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: AuroraTheme.glassBorder),
+              ),
+              child: child,
+            ),
+          ),
+        ),
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -298,12 +378,20 @@ class _LangTile extends StatelessWidget {
               Text(flag, style: const TextStyle(fontSize: 22)),
               const SizedBox(width: 16),
               Expanded(
-                child: Text(name, style: AppTextStyles.bodyLarge),
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
               ),
               if (isSelected)
                 ShaderMask(
                   shaderCallback: (b) =>
-                      AppColors.primaryGradient.createShader(b),
+                      AuroraTheme.redBlueGradient.createShader(b),
                   child: const Icon(Icons.check_rounded,
                       color: Colors.white, size: 20),
                 ),
@@ -319,10 +407,8 @@ class _LangTile extends StatelessWidget {
 
 class _Section extends StatelessWidget {
   final String title;
-  final IconData icon;
   final List<Widget> items;
-  const _Section(
-      {required this.title, required this.icon, required this.items});
+  const _Section({required this.title, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -330,31 +416,21 @@ class _Section extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 10),
-          child: Row(
-            children: [
-              ShaderMask(
-                shaderCallback: (b) =>
-                    AppColors.primaryGradient.createShader(b),
-                child: Icon(icon, color: Colors.white, size: 14),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title.toUpperCase(),
-                style: AppTextStyles.monoSmall.copyWith(letterSpacing: 1.5),
-              ),
-            ],
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: Text(
+            title.toUpperCase(),
+            style: AuroraTheme.monoLabel,
           ),
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(18),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+            filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.glassBgMedium,
+                color: AuroraTheme.glassBg,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.glassBorder),
+                border: Border.all(color: AuroraTheme.glassBorder),
               ),
               child: Column(
                 children: items.asMap().entries.map((e) {
@@ -365,8 +441,8 @@ class _Section extends StatelessWidget {
                       if (!isLast)
                         Container(
                           height: 1,
-                          margin: const EdgeInsets.only(left: 52),
-                          color: AppColors.glassBorder,
+                          margin: const EdgeInsets.only(left: 54),
+                          color: Colors.white.withOpacity(0.06),
                         ),
                     ],
                   );
@@ -404,30 +480,52 @@ class _SettingsTile extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 14),
+                horizontal: 16, vertical: 13),
             child: Row(
               children: [
                 Container(
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: AppColors.glassBg,
+                    gradient: LinearGradient(
+                      colors: [
+                        AuroraTheme.auroraRed.withOpacity(0.20),
+                        AuroraTheme.auroraBlue.withOpacity(0.20),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.glassBorder),
                   ),
-                  child: Icon(icon,
-                      color: AppColors.textSecondary, size: 18),
+                  child: Icon(icon, color: Colors.white70, size: 17),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
-                  child: Text(label, style: AppTextStyles.bodyLarge),
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
                 if (value != null) ...[
-                  Text(value!, style: AppTextStyles.bodyMedium),
+                  Text(
+                    value!,
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      color: AuroraTheme.textMuted,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                 ],
-                const Icon(Icons.arrow_forward_ios,
-                    size: 13, color: AppColors.textTertiary),
+                Icon(Icons.arrow_forward_ios,
+                    size: 13,
+                    color: Colors.white.withOpacity(0.25)),
               ],
             ),
           ),
@@ -452,24 +550,29 @@ class _DangerButton extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 18, vertical: 16),
+                  horizontal: 18, vertical: 15),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.06),
+                color: AuroraTheme.auroraRed.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: AppColors.error.withOpacity(0.2)),
+                    color: AuroraTheme.auroraRed.withOpacity(0.25)),
               ),
               child: Row(
                 children: [
-                  Icon(icon, color: AppColors.error, size: 20),
+                  Icon(icon,
+                      color: AuroraTheme.auroraRed, size: 20),
                   const SizedBox(width: 14),
                   Text(
                     label,
-                    style: AppTextStyles.bodyLarge
-                        .copyWith(color: AppColors.error),
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: AuroraTheme.auroraRed,
+                    ),
                   ),
                 ],
               ),
@@ -480,7 +583,7 @@ class _DangerButton extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Verification Status Card
+// Verification Card
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _VerificationCard extends StatelessWidget {
@@ -500,20 +603,20 @@ class _VerificationCard extends StatelessWidget {
       case 'pending':
         emoji = '⏳';
         label = 'Selfie inceleniyor';
-        color = AppColors.warning;
+        color = const Color(0xFFF59E0B);
       case 'approved':
         emoji = '✅';
         label = 'Doğrulanmış hesap';
-        color = AppColors.blue;
+        color = AuroraTheme.auroraBlue;
       case 'rejected':
         emoji = '❌';
         label = 'Selfie reddedildi — yeniden yükle';
-        color = AppColors.error;
+        color = AuroraTheme.auroraRed;
         showRetake = true;
       default:
         emoji = '🔲';
         label = 'Henüz selfie yüklenmedi';
-        color = AppColors.textTertiary;
+        color = Colors.white.withOpacity(0.35);
         showRetake = true;
     }
 
@@ -536,22 +639,37 @@ class _VerificationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Doğrulama durumu',
-                    style: AppTextStyles.labelLarge.copyWith(fontSize: 13)),
+                const Text(
+                  'Doğrulama durumu',
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Colors.white,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(label,
-                    style:
-                        AppTextStyles.bodyMedium.copyWith(color: color)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 12,
+                    color: color,
+                  ),
+                ),
               ],
             ),
           ),
           if (showRetake)
             GestureDetector(
               onTap: onRetake,
-              child: Text(
+              child: const Text(
                 'Yeniden Yükle',
-                style: AppTextStyles.monoSmall.copyWith(
-                  color: AppColors.gradientStart,
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 10,
+                  color: AuroraTheme.auroraRed,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),

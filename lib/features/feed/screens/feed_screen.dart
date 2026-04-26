@@ -262,10 +262,16 @@ class _StoryBar extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('AKTİF DAVETLER', style: AuroraTheme.monoLabel),
-                const SizedBox(width: 8),
+                Text(
+                  'AKTİF DAVETLER',
+                  style: AuroraTheme.monoLabel.copyWith(
+                    fontSize: 9,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
@@ -278,7 +284,7 @@ class _StoryBar extends ConsumerWidget {
                     '24 SAAT',
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
-                      fontSize: 10,
+                      fontSize: 9,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: 0.5,

@@ -5,8 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 
@@ -19,11 +18,12 @@ class ProfileViewScreen extends ConsumerWidget {
     final profileAsync = ref.watch(userProfileProvider(userId));
     final photosAsync = ref.watch(userPhotosProvider(userId));
     final promptsAsync = ref.watch(userPromptsProvider(userId));
-    final currentUid = Supabase.instance.client.auth.currentUser?.id;
+    final currentUid =
+        Supabase.instance.client.auth.currentUser?.id;
     final isOwnProfile = currentUid == userId;
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: profileAsync.when(
           loading: () => Center(
@@ -32,30 +32,38 @@ class ProfileViewScreen extends ConsumerWidget {
               height: 30,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(AppColors.gradientStart),
+                valueColor:
+                    AlwaysStoppedAnimation(AuroraTheme.auroraRed),
               ),
             ),
           ),
           error: (e, _) => Center(
-            child: Text('$e', style: AppTextStyles.bodyMedium),
+            child: Text('$e',
+                style: TextStyle(
+                    fontFamily: 'Manrope',
+                    color: AuroraTheme.textSecondary)),
           ),
           data: (user) {
             if (user == null) {
               return Center(
                 child: Text('Profil bulunamadı',
-                    style: AppTextStyles.bodyMedium),
+                    style: TextStyle(
+                        fontFamily: 'Manrope',
+                        color: AuroraTheme.textSecondary)),
               );
             }
 
             final name = user['name'] as String? ?? '—';
             final age = user['age'] as int? ?? 0;
-            final selfieStatus = user['selfie_status'] as String? ?? 'none';
+            final selfieStatus =
+                user['selfie_status'] as String? ?? 'none';
             final verified = selfieStatus == 'approved' ||
                 (user['verified'] as bool? ?? false);
             final bio = user['bio'] as String?;
             final job = user['job'] as String?;
             final education = user['education'] as String?;
-            final city = user['city'] as Map<String, dynamic>?;
+            final city =
+                user['city'] as Map<String, dynamic>?;
             final cityName = city?['name'] as String? ?? '';
             final interests =
                 (user['interests'] as List?)?.cast<String>() ?? [];
@@ -63,11 +71,11 @@ class ProfileViewScreen extends ConsumerWidget {
 
             return CustomScrollView(
               slivers: [
-                // ── Hero photo (edge-to-edge, status bar overlap) ──────────
+                // ── Hero foto carousel ─────────────────────────────────
                 SliverAppBar(
-                  expandedHeight: 540,
+                  expandedHeight: 500,
                   pinned: true,
-                  backgroundColor: AppColors.bgBlack,
+                  backgroundColor: AuroraTheme.bgDeep,
                   systemOverlayStyle: const SystemUiOverlayStyle(
                     statusBarColor: Colors.transparent,
                     statusBarIconBrightness: Brightness.light,
@@ -104,173 +112,185 @@ class ProfileViewScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // ── Floating glass panel ──────────────────────────────────
+                // ── Profil içerik ──────────────────────────────────────
                 SliverToBoxAdapter(
                   child: Transform.translate(
-                    offset: const Offset(0, -32),
+                    offset: const Offset(0, -28),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.bgBlack,
+                        color: AuroraTheme.bgDeep,
                         borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(32)),
+                            top: Radius.circular(28)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Drag indicator
+                          // Drag indicator — gradient
                           Center(
                             child: Container(
-                              margin: const EdgeInsets.only(top: 14),
-                              width: 40,
+                              margin: const EdgeInsets.only(top: 12),
+                              width: 36,
                               height: 4,
                               decoration: BoxDecoration(
-                                gradient: AppColors.primaryGradient,
+                                gradient: AuroraTheme.redBlueGradient,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
                           ),
 
-                          // ── Name / age / verified ──────────────────────
+                          // İsim / yaş / verified
                           Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            padding: const EdgeInsets.fromLTRB(
+                                22, 20, 22, 0),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Name + age + verified badge
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              '$name, $age',
-                                              style: AppTextStyles
-                                                  .displayMedium
-                                                  .copyWith(
-                                                fontSize: 30,
-                                                fontStyle: FontStyle.normal,
-                                              ),
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          if (verified) ...[
-                                            const SizedBox(width: 8),
-                                            ShaderMask(
-                                              shaderCallback: (b) =>
-                                                  AppColors.primaryGradient
-                                                      .createShader(b),
-                                              child: const Icon(
-                                                  Icons.verified,
-                                                  color: Colors.white,
-                                                  size: 22),
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        '$name, $age',
+                                        style: const TextStyle(
+                                          fontFamily: 'Fraunces',
+                                          fontStyle: FontStyle.italic,
+                                          fontSize: 34,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                          letterSpacing: -0.5,
+                                          height: 1.1,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (verified) ...[
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AuroraTheme.auroraBlue,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AuroraTheme
+                                                  .auroraBlue
+                                                  .withOpacity(0.5),
+                                              blurRadius: 12,
                                             ),
                                           ],
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // Location + job + education
-                                      Wrap(
-                                        spacing: 14,
-                                        runSpacing: 4,
-                                        children: [
-                                          if (cityName.isNotEmpty)
-                                            _MetaItem(
-                                              icon: Icons
-                                                  .location_on_outlined,
-                                              text: cityName,
-                                            ),
-                                          if (job != null && job.isNotEmpty)
-                                            _MetaItem(
-                                              icon: Icons.work_outline,
-                                              text: job,
-                                            ),
-                                          if (education != null &&
-                                              education.isNotEmpty)
-                                            _MetaItem(
-                                              icon:
-                                                  Icons.school_outlined,
-                                              text: education,
-                                            ),
-                                        ],
+                                        ),
+                                        child: const Icon(Icons.check,
+                                            color: Colors.white,
+                                            size: 14),
                                       ),
                                     ],
-                                  ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                // Meta pills row
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 6,
+                                  children: [
+                                    if (cityName.isNotEmpty)
+                                      _MetaPill(
+                                          icon: Icons.location_on_outlined,
+                                          text: cityName),
+                                    if (job != null && job.isNotEmpty)
+                                      _MetaPill(
+                                          icon: Icons.work_outline,
+                                          text: job),
+                                    if (education != null &&
+                                        education.isNotEmpty)
+                                      _MetaPill(
+                                          icon: Icons.school_outlined,
+                                          text: education),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
 
-                          // ── Bio (plain text, no borders) ───────────────
+                          // Bio — Fraunces tırnak
                           if (bio != null && bio.isNotEmpty) ...[
+                            const SizedBox(height: 20),
                             Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                              child: Text(
-                                bio,
-                                style: AppTextStyles.bodyLarge.copyWith(
-                                  color: AppColors.textSecondary,
-                                  height: 1.7,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 22),
+                              child: _GlassInfoCard(
+                                label: 'HAKKIMDA',
+                                child: Text(
+                                  '"$bio"',
+                                  style: const TextStyle(
+                                    fontFamily: 'Fraunces',
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    height: 1.55,
+                                  ),
                                 ),
                               ),
                             ),
                           ],
 
-                          // ── Photo gallery strip ─────────────────────────
+                          // Fotoğraflar
                           if (photos.length > 1) ...[
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 22),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 24),
+                              padding: const EdgeInsets.only(left: 22),
                               child: Text(
                                 'FOTOĞRAFLAR',
-                                style: AppTextStyles.monoSmall.copyWith(
-                                  letterSpacing: 2,
-                                  color: AppColors.textTertiary,
-                                ),
+                                style: AuroraTheme.monoLabel,
                               ),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 10),
                             SizedBox(
-                              height: 100,
+                              height: 110,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24),
+                                    horizontal: 22),
                                 itemCount: photos.length,
                                 itemBuilder: (_, i) {
                                   return Padding(
                                     padding:
                                         const EdgeInsets.only(right: 10),
                                     child: GestureDetector(
-                                      onTap: () =>
-                                          _openPhotoViewer(
-                                              context, photos, i),
+                                      onTap: () => _openPhotoViewer(
+                                          context, photos, i),
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(14),
-                                        child: SizedBox(
-                                          width: 80,
-                                          height: 100,
-                                          child: CachedNetworkImage(
-                                            imageUrl: photos[i]['url']
-                                                as String,
-                                            fit: BoxFit.cover,
-                                            alignment:
-                                                Alignment.topCenter,
-                                            errorWidget: (_, __, ___) =>
-                                                Container(
-                                              color: AppColors.glassBg,
-                                              child: const Icon(
-                                                  Icons.person_outline,
-                                                  color: AppColors
-                                                      .textTertiary),
+                                        child: Container(
+                                          width: 82,
+                                          height: 110,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                            border: Border.all(
+                                              color:
+                                                  AuroraTheme.glassBorder,
+                                            ),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(14),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  photos[i]['url'] as String,
+                                              fit: BoxFit.cover,
+                                              alignment:
+                                                  Alignment.topCenter,
+                                              errorWidget: (_, __, ___) =>
+                                                  Container(
+                                                color: AuroraTheme.glassBg,
+                                                child: const Icon(
+                                                    Icons.person_outline,
+                                                    color: Colors.white24),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -282,24 +302,21 @@ class ProfileViewScreen extends ConsumerWidget {
                             ),
                           ],
 
-                          // ── Interests ──────────────────────────────────
+                          // İlgi alanları
                           if (interests.isNotEmpty) ...[
+                            const SizedBox(height: 22),
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  24, 24, 24, 0),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 22),
                               child: Column(
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'İLGİ ALANLARI',
-                                    style: AppTextStyles.monoSmall
-                                        .copyWith(
-                                            letterSpacing: 2,
-                                            color:
-                                                AppColors.textTertiary),
+                                    style: AuroraTheme.monoLabel,
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 10),
                                   Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
@@ -313,7 +330,7 @@ class ProfileViewScreen extends ConsumerWidget {
                             ),
                           ],
 
-                          // ── Prompts (no borders, Fraunces answers) ─────
+                          // Prompts
                           promptsAsync.maybeWhen(
                             data: (prompts) {
                               if (prompts.isEmpty) {
@@ -321,43 +338,59 @@ class ProfileViewScreen extends ConsumerWidget {
                               }
                               return Padding(
                                 padding: const EdgeInsets.fromLTRB(
-                                    24, 28, 24, 0),
+                                    22, 22, 22, 0),
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
-                                  children: prompts
-                                      .map((p) => Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                    bottom: 24),
-                                            child: _PromptItem(
-                                              question: _questionLabel(
-                                                  p['question_key']
-                                                      as String),
-                                              answer: p['answer']
-                                                      as String? ??
-                                                  '',
+                                  children: [
+                                    Text(
+                                      'İFADELER',
+                                      style: AuroraTheme.monoLabel,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ...prompts.map((p) => Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 12),
+                                          child: _GlassInfoCard(
+                                            label: _questionLabel(
+                                                p['question_key']
+                                                    as String),
+                                            child: Text(
+                                              p['answer'] as String? ?? '',
+                                              style: const TextStyle(
+                                                fontFamily: 'Fraunces',
+                                                fontStyle: FontStyle.italic,
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                                height: 1.4,
+                                              ),
                                             ),
-                                          ))
-                                      .toList(),
+                                          ),
+                                        )),
+                                  ],
                                 ),
                               );
                             },
                             orElse: () => const SizedBox.shrink(),
                           ),
 
-                          // ── CTA (context-aware) ────────────────────────
+                          // CTA
                           Padding(
                             padding: EdgeInsets.fromLTRB(
-                                24, 28, 24,
-                                MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 16),
+                              22,
+                              28,
+                              22,
+                              MediaQuery.of(context).padding.bottom +
+                                  kBottomNavigationBarHeight +
+                                  16,
+                            ),
                             child: isOwnProfile
                                 ? _OutlineCTA(
                                     label: 'Profili Düzenle',
                                     onTap: () =>
                                         context.push('/profile/setup'),
                                   )
-                                : _GradientCTA(
+                                : _AuroraCTA(
                                     label: 'Gelmek isterim',
                                     onTap: () => context.pop(),
                                   ),
@@ -386,7 +419,9 @@ class ProfileViewScreen extends ConsumerWidget {
   }
 
   void _openPhotoViewer(
-      BuildContext context, List<Map<String, dynamic>> photos, int index) {
+      BuildContext context,
+      List<Map<String, dynamic>> photos,
+      int index) {
     Navigator.push(
       context,
       PageRouteBuilder(
@@ -401,78 +436,189 @@ class ProfileViewScreen extends ConsumerWidget {
   void _showActionSheet(BuildContext context, String targetUserId) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.bgCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => _ActionSheet(targetUserId: targetUserId, targetName: null),
+      backgroundColor: Colors.transparent,
+      builder: (_) =>
+          _ActionSheet(targetUserId: targetUserId, targetName: null),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Meta info item (city / job / education)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _MetaItem extends StatelessWidget {
+// ── Meta Pill ─────────────────────────────────────────────────────────────────
+class _MetaPill extends StatelessWidget {
   final IconData icon;
   final String text;
-  const _MetaItem({required this.icon, required this.text});
+  const _MetaPill({required this.icon, required this.text});
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: AppColors.textTertiary),
-          const SizedBox(width: 4),
-          Text(text, style: AppTextStyles.bodyMedium),
-        ],
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AuroraTheme.glassBg,
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(color: AuroraTheme.glassBorder),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 12, color: AuroraTheme.auroraRed),
+                const SizedBox(width: 4),
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AuroraTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Prompt item (no borders)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _PromptItem extends StatelessWidget {
-  final String question;
-  final String answer;
-  const _PromptItem({required this.question, required this.answer});
+// ── Glass Info Card ───────────────────────────────────────────────────────────
+class _GlassInfoCard extends StatelessWidget {
+  final String label;
+  final Widget child;
+  const _GlassInfoCard({required this.label, required this.child});
 
   @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            question.toUpperCase(),
-            style: const TextStyle(
-              fontFamily: 'JetBrainsMono',
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textTertiary,
-              letterSpacing: 1.2,
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius:
+            BorderRadius.circular(AuroraTheme.radiusInfoCard),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AuroraTheme.glassBg,
+              borderRadius:
+                  BorderRadius.circular(AuroraTheme.radiusInfoCard),
+              border: Border.all(color: AuroraTheme.glassBorder),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: AuroraTheme.monoLabel),
+                const SizedBox(height: 8),
+                child,
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            answer,
-            style: const TextStyle(
-              fontFamily: 'Fraunces',
-              fontSize: 19,
-              fontWeight: FontWeight.w400,
-              fontStyle: FontStyle.italic,
-              color: AppColors.textPrimary,
-              height: 1.4,
-            ),
-          ),
-        ],
+        ),
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Glass Icon Button
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Interest Chip ─────────────────────────────────────────────────────────────
+class _InterestChip extends StatelessWidget {
+  final String label;
+  const _InterestChip({required this.label});
 
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: AuroraTheme.auroraBlue.withOpacity(0.10),
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+              color: AuroraTheme.auroraBlue.withOpacity(0.35)),
+          boxShadow: [
+            BoxShadow(
+              color: AuroraTheme.auroraBlue.withOpacity(0.15),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: AuroraTheme.textSecondary,
+          ),
+        ),
+      );
+}
+
+// ── CTA'lar ───────────────────────────────────────────────────────────────────
+class _AuroraCTA extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _AuroraCTA({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: AuroraTheme.redBlueGradient,
+            borderRadius: BorderRadius.circular(100),
+            boxShadow: [
+              BoxShadow(
+                color: AuroraTheme.auroraRed.withOpacity(0.40),
+                blurRadius: 28,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
+class _OutlineCTA extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _OutlineCTA({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+                color: AuroraTheme.glassBorder, width: 1.5),
+            color: AuroraTheme.glassBg,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: AuroraTheme.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
+// ── Glass Icon Button ─────────────────────────────────────────────────────────
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -483,26 +629,24 @@ class _GlassIconButton extends StatelessWidget {
         onTap: onTap,
         child: ClipOval(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
             child: Container(
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.glassBgStrong,
-                border: Border.all(color: AppColors.glassBorder),
+                color: Colors.black.withOpacity(0.40),
+                border: Border.all(
+                    color: Colors.white.withOpacity(0.18)),
               ),
-              child: Icon(icon, size: 18, color: AppColors.textPrimary),
+              child: Icon(icon, size: 17, color: Colors.white),
             ),
           ),
         ),
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Favorite Button (glass circle, toggle with haptic + scale animation)
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ── Favorite Button ───────────────────────────────────────────────────────────
 class _FavoriteButton extends StatefulWidget {
   final String targetUserId;
   const _FavoriteButton({required this.targetUserId});
@@ -551,13 +695,10 @@ class _FavoriteButtonState extends State<_FavoriteButton>
     if (_isFavorite == null) return;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
-
     HapticFeedback.lightImpact();
     _scaleCtrl.reverse().then((_) => _scaleCtrl.forward());
-
     final next = !_isFavorite!;
     setState(() => _isFavorite = next);
-
     if (next) {
       await Supabase.instance.client.from('favorites').insert({
         'user_id': uid,
@@ -575,7 +716,7 @@ class _FavoriteButtonState extends State<_FavoriteButton>
   @override
   Widget build(BuildContext context) {
     if (_isFavorite == null) {
-      return const SizedBox(width: 40, height: 40);
+      return const SizedBox(width: 38, height: 38);
     }
     return ScaleTransition(
       scale: _scaleAnim,
@@ -583,26 +724,30 @@ class _FavoriteButtonState extends State<_FavoriteButton>
         onTap: _toggle,
         child: ClipOval(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 40,
-              height: 40,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _isFavorite!
-                    ? AppColors.red.withOpacity(0.18)
-                    : AppColors.glassBgStrong,
+                    ? AuroraTheme.auroraRed.withOpacity(0.20)
+                    : Colors.black.withOpacity(0.40),
                 border: Border.all(
                   color: _isFavorite!
-                      ? AppColors.red.withOpacity(0.5)
-                      : AppColors.glassBorder,
+                      ? AuroraTheme.auroraRed.withOpacity(0.6)
+                      : Colors.white.withOpacity(0.18),
                 ),
               ),
               child: Icon(
-                _isFavorite! ? Icons.star_rounded : Icons.star_outline_rounded,
-                color: _isFavorite! ? AppColors.red : AppColors.textSecondary,
-                size: 20,
+                _isFavorite!
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                color: _isFavorite!
+                    ? AuroraTheme.auroraRed
+                    : Colors.white.withOpacity(0.7),
+                size: 19,
               ),
             ),
           ),
@@ -612,90 +757,255 @@ class _FavoriteButtonState extends State<_FavoriteButton>
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Interest Chip
-// ─────────────────────────────────────────────────────────────────────────────
+// ── Action Sheet ──────────────────────────────────────────────────────────────
+class _ActionSheet extends StatelessWidget {
+  final String targetUserId;
+  final String? targetName;
+  const _ActionSheet(
+      {required this.targetUserId, this.targetName});
 
-class _InterestChip extends StatelessWidget {
-  final String label;
-  const _InterestChip({required this.label});
+  Future<void> _block(BuildContext ctx) async {
+    Navigator.pop(ctx); // sheet'i kapat
+    final confirmed = await showDialog<bool>(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF0D0D12),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Kullanıcıyı engelle',
+          style: TextStyle(
+              fontFamily: 'Fraunces',
+              fontStyle: FontStyle.italic,
+              fontSize: 18,
+              color: Colors.white),
+        ),
+        content: Text(
+          'Bu kullanıcıyı engellemek istediğine emin misin?',
+          style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 14,
+              color: AuroraTheme.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Vazgeç',
+                style: TextStyle(
+                    fontFamily: 'Manrope',
+                    color: AuroraTheme.textMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Engelle',
+                style: TextStyle(
+                    fontFamily: 'Manrope',
+                    color: AuroraTheme.auroraRed,
+                    fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !ctx.mounted) return;
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    await Supabase.instance.client.from('blocks').upsert({
+      'blocker_id': uid,
+      'blocked_id': targetUserId,
+    });
+    if (ctx.mounted) {
+      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+        content: Text(
+            '${targetName ?? 'Kullanıcı'} engellendi'),
+        backgroundColor: const Color(0xFF10B981),
+      ));
+      ctx.pop();
+    }
+  }
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-        decoration: BoxDecoration(
-          color: AppColors.glassBg,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: AppColors.glassBorder),
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius:
+          const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D0D12).withOpacity(0.90),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border(
+              top: BorderSide(color: AuroraTheme.glassBorder),
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AuroraTheme.glassBorder,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ListTile(
+                  leading: const Icon(Icons.block,
+                      color: AuroraTheme.auroraRed),
+                  title: const Text('🚫 Kullanıcıyı engelle',
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: Colors.white)),
+                  onTap: () => _block(context),
+                ),
+                ListTile(
+                  leading: Icon(Icons.flag_outlined,
+                      color: AuroraTheme.auroraGold),
+                  title: const Text('⚠️ Rapor et',
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/report/$targetUserId');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.close,
+                      color: AuroraTheme.textMuted),
+                  title: Text('İptal',
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: AuroraTheme.textSecondary)),
+                  onTap: () => Navigator.pop(context),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
         ),
-        child: Text(label,
-            style: AppTextStyles.labelMedium
-                .copyWith(color: AppColors.textSecondary, fontSize: 12)),
-      );
+      ),
+    );
+  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CTAs
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _GradientCTA extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _GradientCTA({required this.label, required this.onTap});
+// ── Photo Carousel ────────────────────────────────────────────────────────────
+class _PhotoCarousel extends StatefulWidget {
+  final List<Map<String, dynamic>> photos;
+  const _PhotoCarousel({required this.photos});
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 58,
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.gradientStart.withOpacity(0.30),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+  State<_PhotoCarousel> createState() => _PhotoCarouselState();
+}
+
+class _PhotoCarouselState extends State<_PhotoCarousel> {
+  int _current = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.photos.isEmpty) {
+      return Container(
+        color: AuroraTheme.bgDeep,
+        child: const Center(
+          child: Icon(Icons.person_outline,
+              size: 80, color: Colors.white12),
+        ),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        PageView.builder(
+          itemCount: widget.photos.length,
+          onPageChanged: (i) => setState(() => _current = i),
+          itemBuilder: (_, i) {
+            final url = widget.photos[i]['url'] as String;
+            return Image.network(
+              url,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              errorBuilder: (_, __, ___) => Container(
+                color: AuroraTheme.bgDeep,
+                child: const Icon(Icons.person_outline,
+                    size: 60, color: Colors.white12),
               ),
-            ],
-          ),
-          child: Center(
-            child: Text(label,
-                style:
-                    AppTextStyles.labelLarge.copyWith(color: Colors.white)),
-          ),
+            );
+          },
         ),
-      );
-}
-
-class _OutlineCTA extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _OutlineCTA({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          height: 58,
+        // Alt gradient
+        Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.glassBorderBright, width: 1.5),
-            color: AppColors.glassBg,
-          ),
-          child: Center(
-            child: Text(label,
-                style: AppTextStyles.labelLarge
-                    .copyWith(color: AppColors.textSecondary)),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.center,
+              colors: [AuroraTheme.bgDeep, Colors.transparent],
+              stops: const [0.0, 0.6],
+            ),
           ),
         ),
-      );
+        // Üst glow
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment(0, -0.3),
+              colors: [
+                AuroraTheme.auroraRed.withOpacity(0.15),
+                Colors.transparent,
+              ],
+            ),
+          ),
+        ),
+        // Photo dots
+        if (widget.photos.length > 1)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 10),
+                child: Row(
+                  children: List.generate(widget.photos.length, (i) {
+                    final isActive = i == _current;
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            right: i < widget.photos.length - 1 ? 4 : 0),
+                        child: Container(
+                          height: 3,
+                          decoration: BoxDecoration(
+                            gradient: isActive
+                                ? AuroraTheme.redBlueGradient
+                                : null,
+                            color: isActive
+                                ? null
+                                : Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Full-screen Photo Viewer
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ── Full-screen Photo Viewer ──────────────────────────────────────────────────
 class _PhotoViewerPage extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
   final int initialIndex;
@@ -712,8 +1022,7 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
   @override
   void initState() {
     super.initState();
-    _pageController =
-        PageController(initialPage: widget.initialIndex);
+    _pageController = PageController(initialPage: widget.initialIndex);
   }
 
   @override
@@ -750,203 +1059,6 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
           },
         ),
       ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Action Sheet
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _ActionSheet extends StatelessWidget {
-  final String targetUserId;
-  final String? targetName;
-  const _ActionSheet({required this.targetUserId, this.targetName});
-
-  Future<void> _block(BuildContext ctx) async {
-    final confirmed = await showDialog<bool>(
-      context: ctx,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Kullanıcıyı engelle',
-            style: AppTextStyles.titleMedium),
-        content: Text(
-          'Bu kullanıcıyı engellemek istediğine emin misin? Engelli kullanıcı seni göremez, mesaj atamaz.',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Vazgeç',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.textTertiary)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Engelle',
-                style: AppTextStyles.labelMedium
-                    .copyWith(color: AppColors.error)),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !ctx.mounted) return;
-
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    await Supabase.instance.client.from('blocks').upsert({
-      'blocker_id': uid,
-      'blocked_id': targetUserId,
-    });
-    if (ctx.mounted) {
-      ctx.pop(); // close bottom sheet
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
-        backgroundColor: AppColors.success,
-      ));
-      ctx.pop(); // go back from profile
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: 14),
-        Center(
-          child: Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.glassBorder,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        ListTile(
-          leading: const Icon(Icons.block, color: AppColors.error),
-          title: Text('🚫 Kullanıcıyı engelle',
-              style: AppTextStyles.bodyLarge),
-          onTap: () => _block(context),
-        ),
-        ListTile(
-          leading:
-              const Icon(Icons.flag_outlined, color: AppColors.warning),
-          title: Text('⚠️ Rapor et', style: AppTextStyles.bodyLarge),
-          onTap: () {
-            Navigator.pop(context);
-            context.push('/report/$targetUserId');
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.close, color: AppColors.textTertiary),
-          title: Text('İptal', style: AppTextStyles.bodyMedium),
-          onTap: () => Navigator.pop(context),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Photo Carousel (hero)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _PhotoCarousel extends StatefulWidget {
-  final List<Map<String, dynamic>> photos;
-  const _PhotoCarousel({required this.photos});
-
-  @override
-  State<_PhotoCarousel> createState() => _PhotoCarouselState();
-}
-
-class _PhotoCarouselState extends State<_PhotoCarousel> {
-  int _current = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.photos.isEmpty) {
-      return Container(
-        color: AppColors.bgCard,
-        child: const Center(
-          child: Icon(Icons.person_outline,
-              size: 80, color: AppColors.textTertiary),
-        ),
-      );
-    }
-
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        PageView.builder(
-          itemCount: widget.photos.length,
-          onPageChanged: (i) => setState(() => _current = i),
-          itemBuilder: (_, i) {
-            final url = widget.photos[i]['url'] as String;
-            return Image.network(
-              url,
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
-              errorBuilder: (_, __, ___) => Container(
-                color: AppColors.bgCard,
-                child: const Icon(Icons.person_outline,
-                    size: 60, color: AppColors.textTertiary),
-              ),
-            );
-          },
-        ),
-        // Bottom gradient into the panel
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.center,
-              colors: [AppColors.bgBlack, Colors.transparent],
-              stops: [0.0, 0.6],
-            ),
-          ),
-        ),
-        // Photo indicator bars — top center
-        if (widget.photos.length > 1)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 10),
-                child: Row(
-                  children: List.generate(widget.photos.length, (i) {
-                    final isActive = i == _current;
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            right: i < widget.photos.length - 1 ? 4 : 0),
-                        child: Container(
-                          height: 3,
-                          decoration: BoxDecoration(
-                            gradient: isActive
-                                ? AppColors.primaryGradient
-                                : null,
-                            color: isActive
-                                ? null
-                                : AppColors.glassBorderBright,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

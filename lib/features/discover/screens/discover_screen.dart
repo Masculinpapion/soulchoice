@@ -16,11 +16,18 @@ import '../providers/discover_provider.dart';
 double _cardAspect(String id) =>
     id.hashCode.abs() % 2 == 0 ? 0.72 : 0.88;
 
-class DiscoverScreen extends ConsumerWidget {
+class DiscoverScreen extends ConsumerStatefulWidget {
   const DiscoverScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DiscoverScreen> createState() => _DiscoverScreenState();
+}
+
+class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
+  InvitationCategory? _selectedCategory;
+
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(discoverProvider);
 
     return Scaffold(
@@ -51,13 +58,38 @@ class DiscoverScreen extends ConsumerWidget {
               ),
               // Mono label
               Padding(
-                padding:
-                    const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
                   'TÜM AKTİF DAVETLER',
                   style: AuroraTheme.monoLabel,
                 ),
               ),
+
+              // Filtre chip'leri
+              SizedBox(
+                height: 36,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    _FilterChip(
+                      label: 'Hepsi',
+                      emoji: '✦',
+                      selected: _selectedCategory == null,
+                      onTap: () => setState(() => _selectedCategory = null),
+                    ),
+                    ...InvitationCategory.values.map((cat) => _FilterChip(
+                          label: cat.label,
+                          emoji: cat.emoji,
+                          selected: _selectedCategory == cat,
+                          onTap: () => setState(() =>
+                              _selectedCategory =
+                                  _selectedCategory == cat ? null : cat),
+                        )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
 
               // İçerik
               Expanded(
@@ -65,7 +97,12 @@ class DiscoverScreen extends ConsumerWidget {
                   loading: () => const _LoadingGrid(),
                   error: (e, _) =>
                       _ErrorState(onRetry: () => ref.invalidate(discoverProvider)),
-                  data: (invitations) {
+                  data: (allInvitations) {
+                    final invitations = _selectedCategory == null
+                        ? allInvitations
+                        : allInvitations
+                            .where((inv) => inv.category == _selectedCategory)
+                            .toList();
                     if (invitations.isEmpty) {
                       return _EmptyState(
                         onCreateTap: () =>
@@ -400,4 +437,70 @@ class _ErrorState extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── Filtre Chip ───────────────────────────────────────────────────────────────
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final String emoji;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.emoji,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              gradient: selected
+                  ? const LinearGradient(
+                      colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                    )
+                  : null,
+              color: selected ? null : AuroraTheme.glassBg,
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: selected
+                    ? Colors.transparent
+                    : AuroraTheme.glassBorder,
+              ),
+              boxShadow: selected
+                  ? [
+                      BoxShadow(
+                        color: AuroraTheme.auroraRed.withOpacity(0.30),
+                        blurRadius: 10,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 11)),
+                const SizedBox(width: 5),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : AuroraTheme.textSecondary,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 }

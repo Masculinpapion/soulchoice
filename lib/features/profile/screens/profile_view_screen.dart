@@ -455,8 +455,8 @@ class _MetaPill extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            constraints: const BoxConstraints(maxWidth: 140),
             decoration: BoxDecoration(
               color: AuroraTheme.glassBg,
               borderRadius: BorderRadius.circular(100),
@@ -467,13 +467,17 @@ class _MetaPill extends StatelessWidget {
               children: [
                 Icon(icon, size: 12, color: AuroraTheme.auroraRed),
                 const SizedBox(width: 4),
-                Text(
-                  text,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AuroraTheme.textSecondary,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AuroraTheme.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -598,19 +602,24 @@ class _OutlineCTA extends StatelessWidget {
         child: Container(
           height: 56,
           decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AuroraTheme.auroraBlue.withOpacity(0.25),
+                AuroraTheme.auroraRed.withOpacity(0.25),
+              ],
+            ),
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
-                color: AuroraTheme.glassBorder, width: 1.5),
-            color: AuroraTheme.glassBg,
+                color: AuroraTheme.auroraBlue.withOpacity(0.40), width: 1.5),
           ),
           child: Center(
             child: Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Manrope',
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 fontSize: 15,
-                color: AuroraTheme.textSecondary,
+                color: Colors.white,
               ),
             ),
           ),

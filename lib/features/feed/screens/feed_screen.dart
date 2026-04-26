@@ -232,34 +232,9 @@ class _StoryBar extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Text(
-                  'AKTİF DAVETLER',
-                  style: AuroraTheme.monoLabel,
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
-                    ),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: const Text(
-                    '24 SAAT',
-                    style: TextStyle(
-                      fontFamily: 'JetBrainsMono',
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ],
+            child: Text(
+              'AKTİF ŞİMDİ  ·  24 SAAT',
+              style: AuroraTheme.monoLabel,
             ),
           ),
           const SizedBox(height: 8),
@@ -786,7 +761,25 @@ class _InvitationList extends ConsumerWidget {
             ),
           );
         }
-        return SizedBox(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: Row(
+                children: [
+                  Text('BUGÜNÜN DAVETLERİ', style: AuroraTheme.monoLabel),
+                  const SizedBox(width: 6),
+                  ShaderMask(
+                    shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+                    child: const Text('· KAYDIRDIR →',
+                        style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
           height: 496,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -813,6 +806,8 @@ class _InvitationList extends ConsumerWidget {
               );
             },
           ),
+        ),
+          ],
         );
       },
     );

@@ -200,7 +200,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                     ),
 
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 140),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 160),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
                           // ── Stats row ─────────────────────────────────
@@ -415,7 +415,8 @@ class InvitationDetailScreen extends ConsumerWidget {
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
+                    padding: EdgeInsets.fromLTRB(20, 14, 20,
+                        MediaQuery.of(context).viewPadding.bottom + 20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,

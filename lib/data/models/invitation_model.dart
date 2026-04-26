@@ -74,6 +74,7 @@ class InvitationModel {
   final int? applicationCount;
   final String? ownerPhotoUrl;
   final List<String> applicantPhotoUrls;
+  final String? cityName;
 
   const InvitationModel({
     required this.id,
@@ -95,6 +96,7 @@ class InvitationModel {
     this.applicationCount,
     this.ownerPhotoUrl,
     this.applicantPhotoUrls = const [],
+    this.cityName,
   });
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
@@ -149,6 +151,7 @@ class InvitationModel {
     int? applicationCount,
     String? ownerPhotoUrl,
     List<String>? applicantPhotoUrls,
+    String? cityName,
   }) =>
       InvitationModel(
         id: id,
@@ -170,6 +173,7 @@ class InvitationModel {
         applicationCount: applicationCount ?? this.applicationCount,
         ownerPhotoUrl: ownerPhotoUrl ?? this.ownerPhotoUrl,
         applicantPhotoUrls: applicantPhotoUrls ?? this.applicantPhotoUrls,
+        cityName: cityName ?? this.cityName,
       );
 }
 

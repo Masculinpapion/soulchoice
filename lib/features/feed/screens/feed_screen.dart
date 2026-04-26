@@ -794,6 +794,7 @@ class _InvitationList extends ConsumerWidget {
                       ownerName: inv.owner?.name ?? '—',
                       ownerAge: inv.owner?.age ?? 0,
                       ownerPhotoUrl: inv.ownerPhotoUrl,
+                      ownerCity: inv.cityName,
                       timeRemaining: inv.timeRemaining,
                       applicationCount: inv.applicationCount ?? 0,
                       applicantPhotoUrls: inv.applicantPhotoUrls,
@@ -823,6 +824,7 @@ class InvitationCard extends StatelessWidget {
   final String ownerName;
   final int ownerAge;
   final String? ownerPhotoUrl;
+  final String? ownerCity;
   final Duration timeRemaining;
   final int applicationCount;
   final List<String> applicantPhotoUrls;
@@ -838,6 +840,7 @@ class InvitationCard extends StatelessWidget {
     required this.ownerName,
     required this.ownerAge,
     this.ownerPhotoUrl,
+    this.ownerCity,
     required this.timeRemaining,
     required this.applicationCount,
     this.applicantPhotoUrls = const [],
@@ -964,7 +967,7 @@ class InvitationCard extends StatelessWidget {
                                   style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
                                 Text(
-                                  venueName.isNotEmpty ? venueName : category.label,
+                                  ownerCity?.isNotEmpty == true ? ownerCity! : category.label,
                                   style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white.withOpacity(0.60)),
                                   overflow: TextOverflow.ellipsis,
                                 ),

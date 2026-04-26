@@ -25,6 +25,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .from('invitations')
         .select(
           '*, '
+          'city:cities(name), '
           'owner:users(id, name, age, gender, city_id, verified, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
@@ -88,11 +89,15 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
             .take(1);
       }).take(4).toList();
 
-      return InvitationModel.fromJson({...row, 'owner': null}).copyWith(
+      final cityRow = row['city'] as Map<String, dynamic>?;
+      final cityName = cityRow?['name'] as String?;
+
+      return InvitationModel.fromJson({...row, 'owner': null, 'city': null}).copyWith(
         owner: owner,
         ownerPhotoUrl: ownerPhotoUrl,
         applicationCount: pendingApps.length,
         applicantPhotoUrls: applicantPhotoUrls,
+        cityName: cityName,
       );
     }).where((inv) => inv.ownerPhotoUrl != null).toList();
   },

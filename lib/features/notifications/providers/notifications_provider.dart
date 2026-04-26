@@ -50,7 +50,7 @@ class NotificationItem {
       case 'new_message':
         return Icons.chat_rounded;
       case 'new_application':
-        return Icons.person_add_rounded;
+        return Icons.waving_hand_rounded;
       case 'selfie_approved':
         return Icons.verified_user_rounded;
       case 'selfie_rejected':

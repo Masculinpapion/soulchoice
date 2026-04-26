@@ -92,7 +92,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       actions: [
-                        if (isOwner)
+                        if (isOwner) ...[
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: _GlassPill(
@@ -102,6 +102,60 @@ class InvitationDetailScreen extends ConsumerWidget {
                                   size: 18, color: Colors.white),
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: _GlassPill(
+                              onTap: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    backgroundColor: AuroraTheme.bgDeep,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20)),
+                                    title: const Text('Daveti sil',
+                                        style: TextStyle(
+                                            fontFamily: 'Fraunces',
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.white,
+                                            fontSize: 20)),
+                                    content: Text(
+                                        'Bu daveti silmek istiyor musun? Geri alınamaz.',
+                                        style: TextStyle(
+                                            fontFamily: 'Manrope',
+                                            color: AuroraTheme.textSecondary,
+                                            fontSize: 14)),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(ctx).pop(false),
+                                        child: Text('Vazgeç',
+                                            style: TextStyle(
+                                                fontFamily: 'JetBrainsMono',
+                                                color: AuroraTheme.textMuted)),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(ctx).pop(true),
+                                        child: const Text('Sil',
+                                            style: TextStyle(
+                                                fontFamily: 'JetBrainsMono',
+                                                color: AuroraTheme.auroraRed,
+                                                fontWeight: FontWeight.w700)),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true && context.mounted) {
+                                  await Supabase.instance.client
+                                      .from('invitations')
+                                      .delete()
+                                      .eq('id', invitationId);
+                                  if (context.mounted) context.pop();
+                                }
+                              },
+                              child: const Icon(Icons.delete_outline,
+                                  size: 18, color: AuroraTheme.auroraRed),
+                            ),
+                          ),
+                        ],
                         // Kategori pill
                         Padding(
                           padding:

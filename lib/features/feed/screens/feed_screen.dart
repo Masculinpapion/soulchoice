@@ -786,18 +786,16 @@ class _InvitationList extends ConsumerWidget {
             ),
           );
         }
-        return RefreshIndicator(
-          color: AuroraTheme.auroraRed,
-          backgroundColor: AuroraTheme.glassStrong,
-          onRefresh: () =>
-              ref.refresh(invitationsProvider(filter).future),
+        return SizedBox(
+          height: 496,
           child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: invitations.length,
             itemBuilder: (_, i) {
               final inv = invitations[i];
               return Padding(
-                padding: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.only(right: 14),
                 child: InvitationCard(
                   title: inv.title,
                   category: inv.category,
@@ -863,328 +861,206 @@ class InvitationCard extends StatelessWidget {
     return '$h:$m:$s';
   }
 
-  String _formatEventDate(DateTime dt) {
-    const days = [
-      'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe',
-      'Cuma', 'Cumartesi', 'Pazar'
-    ];
+  /// "SALI · 20:30 · VENUE" formatında mono caps meta satırı
+  String _metaLabel(DateTime dt) {
+    const days = ['PAZARTESİ', 'SALI', 'ÇARŞAMBA', 'PERŞEMBE', 'CUMA', 'CUMARTESİ', 'PAZAR'];
     final day = days[dt.weekday - 1];
-    final hour = dt.hour.toString().padLeft(2, '0');
-    final minute = dt.minute.toString().padLeft(2, '0');
-    return '$day $hour:$minute';
+    final h = dt.hour.toString().padLeft(2, '0');
+    final m = dt.minute.toString().padLeft(2, '0');
+    final venue = venueName.isNotEmpty ? venueName.toUpperCase() : category.label.toUpperCase();
+    return '$day · $h:$m · $venue';
   }
 
   @override
   Widget build(BuildContext context) {
     final isInviteFlow = flowType == InvitationFlowType.invite;
-    final glowColor =
-        isInviteFlow ? AuroraTheme.auroraRed : AuroraTheme.auroraBlue;
+    final glowColor = isInviteFlow ? AuroraTheme.auroraRed : AuroraTheme.auroraBlue;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: 280,
+        height: 480,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AuroraTheme.radiusCard + 4),
+          borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.50),
+              color: Colors.black.withOpacity(0.55),
               blurRadius: 40,
               offset: const Offset(0, 16),
             ),
             BoxShadow(
-              color: glowColor.withOpacity(0.15),
+              color: glowColor.withOpacity(0.20),
               blurRadius: 40,
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius:
-              BorderRadius.circular(AuroraTheme.radiusCard + 4),
-          child: SizedBox(
-            height: 440,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                // 1. Foto
-                if (ownerPhotoUrl != null)
-                  CachedNetworkImage(
-                    imageUrl: ownerPhotoUrl!,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                    placeholder: (_, __) =>
-                        _CardFallbackGradient(
-                            ownerName: ownerName, category: category),
-                    errorWidget: (_, __, ___) =>
-                        _CardFallbackGradient(
-                            ownerName: ownerName, category: category),
-                  )
-                else
-                  _CardFallbackGradient(
-                      ownerName: ownerName, category: category),
+          borderRadius: BorderRadius.circular(28),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
+              if (ownerPhotoUrl != null)
+                CachedNetworkImage(
+                  imageUrl: ownerPhotoUrl!,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
+                  errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
+                )
+              else
+                _CardFallbackGradient(ownerName: ownerName, category: category),
 
-                // 2. Üst scrim
-                Container(
-                  decoration: const BoxDecoration(
+              // 2. Gradient overlay — sadece alt %45, yüzü kapatmaz
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
-                      end: Alignment(0, 0.1),
-                      colors: [Color(0xAA000000), Colors.transparent],
+                      end: Alignment.bottomCenter,
+                      stops: const [0.0, 0.55, 1.0],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.40),
+                        Colors.black.withOpacity(0.96),
+                      ],
                     ),
                   ),
                 ),
+              ),
 
-                // 3. Alt glass panel
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(AuroraTheme.radiusCard + 4)),
-                    child: BackdropFilter(
-                      filter:
-                          ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.12),
-                              Colors.black.withOpacity(0.65),
-                            ],
-                          ),
-                          border: Border(
-                            top: BorderSide(
-                                color: Colors.white.withOpacity(0.10),
-                                width: 0.8),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Başlık — Fraunces italic
-                            Text(
-                              title,
-                              style: const TextStyle(
-                                fontFamily: 'Fraunces',
-                                fontStyle: FontStyle.italic,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                height: 1.2,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+              // 3. Üst glass pill — avatar + isim/yaş + kategori emoji
+              Positioned(
+                top: 14,
+                left: 14,
+                right: 14,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.38),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: Colors.white.withOpacity(0.18), width: 0.8),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white.withOpacity(0.30), width: 1.5),
                             ),
-                            if (eventDate != null) ...[
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatEventDate(eventDate!),
-                                style: const TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 10),
-                            // Timer + CTA
-                            Row(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.center,
+                            child: ClipOval(
+                              child: ownerPhotoUrl != null
+                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
+                                  : _AvatarFallback(name: ownerName),
+                            ),
+                          ),
+                          const SizedBox(width: 9),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Timer pill
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 9, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: timeRemaining.inHours < 2
-                                        ? AuroraTheme.auroraRed
-                                        : const Color(0xCCFF6D00),
-                                    borderRadius:
-                                        BorderRadius.circular(100),
-                                    boxShadow: timeRemaining.inHours < 2
-                                        ? [
-                                            BoxShadow(
-                                              color: AuroraTheme
-                                                  .auroraRed
-                                                  .withOpacity(0.5),
-                                              blurRadius: 12,
-                                            ),
-                                          ]
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        width: 5,
-                                        height: 5,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        _formatTimer(timeRemaining),
-                                        style: const TextStyle(
-                                          fontFamily: 'JetBrainsMono',
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                Text(
+                                  '$ownerName, $ownerAge',
+                                  style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
-                                const Spacer(),
-                                // CTA
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 7),
-                                  decoration: BoxDecoration(
-                                    gradient: isInviteFlow
-                                        ? const LinearGradient(
-                                            colors: [
-                                              AuroraTheme.auroraRed,
-                                              AuroraTheme.auroraBlue,
-                                            ],
-                                            stops: [0.0, 1.0],
-                                          )
-                                        : const LinearGradient(
-                                            colors: [
-                                              AuroraTheme.auroraBlue,
-                                              AuroraTheme.auroraRed,
-                                            ],
-                                            stops: [0.0, 1.0],
-                                          ),
-                                    borderRadius:
-                                        BorderRadius.circular(100),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color:
-                                            glowColor.withOpacity(0.4),
-                                        blurRadius: 14,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    isInviteFlow
-                                        ? 'Gelmek isterim'
-                                        : 'Katılmak istiyorum',
-                                    style: const TextStyle(
-                                      fontFamily: 'JetBrainsMono',
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                Text(
+                                  venueName.isNotEmpty ? venueName : category.label,
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white.withOpacity(0.60)),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(100)),
+                            child: Text(category.emoji, style: const TextStyle(fontSize: 13)),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
+              ),
 
-                // 4. Üst glass pill — avatar + isim/yaş + emoji
-                Positioned(
-                  top: 14,
-                  left: 14,
-                  right: 14,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: BackdropFilter(
-                      filter:
-                          ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              // 4. Alt içerik — timer + meta + başlık + full-width CTA
+              Positioned(
+                bottom: 18,
+                left: 16,
+                right: 16,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Timer pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: timeRemaining.inHours < 2 ? AuroraTheme.auroraRed : const Color(0xCCFF6D00),
+                        borderRadius: BorderRadius.circular(100),
+                        boxShadow: timeRemaining.inHours < 2
+                            ? [BoxShadow(color: AuroraTheme.auroraRed.withOpacity(0.5), blurRadius: 12)]
+                            : null,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(width: 5, height: 5, decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white)),
+                          const SizedBox(width: 4),
+                          Text(_formatTimer(timeRemaining), style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
+                    if (eventDate != null)
+                      Text(
+                        _metaLabel(eventDate!),
+                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
+                      ),
+                    const SizedBox(height: 5),
+                    // Fraunces italic başlık
+                    Text(
+                      title,
+                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white, height: 1.2),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    // Full-width gradient CTA
+                    GestureDetector(
+                      onTap: onTap,
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 13),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.38),
+                          gradient: LinearGradient(
+                            colors: isInviteFlow
+                                ? [AuroraTheme.auroraRed, AuroraTheme.auroraBlue]
+                                : [AuroraTheme.auroraBlue, AuroraTheme.auroraRed],
+                          ),
                           borderRadius: BorderRadius.circular(100),
-                          border: Border.all(
-                              color: Colors.white.withOpacity(0.18),
-                              width: 0.8),
+                          boxShadow: [BoxShadow(color: glowColor.withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 4))],
                         ),
-                        child: Row(
-                          children: [
-                            // Avatar
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: Colors.white.withOpacity(0.30),
-                                    width: 1.5),
-                              ),
-                              child: ClipOval(
-                                child: ownerPhotoUrl != null
-                                    ? CachedNetworkImage(
-                                        imageUrl: ownerPhotoUrl!,
-                                        fit: BoxFit.cover,
-                                        errorWidget: (_, __, ___) =>
-                                            _AvatarFallback(
-                                                name: ownerName),
-                                      )
-                                    : _AvatarFallback(name: ownerName),
-                              ),
-                            ),
-                            const SizedBox(width: 9),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '$ownerName, $ownerAge',
-                                    style: const TextStyle(
-                                      fontFamily: 'JetBrainsMono',
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    venueName.isNotEmpty
-                                        ? venueName
-                                        : category.label,
-                                    style: TextStyle(
-                                      fontFamily: 'JetBrainsMono',
-                                      fontSize: 9,
-                                      color: Colors.white.withOpacity(0.60),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Text(category.emoji,
-                                  style: const TextStyle(fontSize: 13)),
-                            ),
-                          ],
+                        alignment: Alignment.center,
+                        child: Text(
+                          isInviteFlow ? 'Gelmek isterim' : 'Katılmak istiyorum',
+                          style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -1100,11 +1100,22 @@ class _CityPickerSheet extends StatefulWidget {
 
 class _CityPickerSheetState extends State<_CityPickerSheet> {
   List<({String id, String name})>? _cities;
+  final _searchController = TextEditingController();
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
     _fetchCities();
+    _searchController.addListener(
+      () => setState(() => _query = _searchController.text.toLowerCase().trim()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchCities() async {
@@ -1120,95 +1131,12 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AuroraTheme.bgDeep.withOpacity(0.92),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            border: Border(
-              top: BorderSide(color: Colors.white.withOpacity(0.12), width: 0.8),
-            ),
-          ),
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Handle
-              const SizedBox(height: 12),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Başlık
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    ShaderMask(
-                      shaderCallback: (b) =>
-                          AuroraTheme.redBlueGradient.createShader(b),
-                      child: const Text(
-                        'Şehir Seç',
-                        style: TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              // "Tüm Şehirler" seçeneği
-              _CityRow(
-                name: 'Tüm Şehirler',
-                emoji: '🌍',
-                selected: widget.selectedCityId == null,
-                onTap: () => Navigator.of(context).pop((id: '', name: '')),
-              ),
-              const SizedBox(height: 4),
-              // Şehir listesi
-              if (_cities == null)
-                const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
-                    ),
-                  ),
-                )
-              else
-                ..._cities!.map((c) => _CityRow(
-                      name: c.name,
-                      emoji: _cityEmoji(c.name),
-                      selected: widget.selectedCityId == c.id,
-                      onTap: () => Navigator.of(context).pop(c),
-                    )),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
-    );
+  List<({String id, String name})> get _filtered {
+    if (_cities == null) return [];
+    if (_query.isEmpty) return _cities!;
+    return _cities!
+        .where((c) => c.name.toLowerCase().contains(_query))
+        .toList();
   }
 
   String _cityEmoji(String name) {
@@ -1220,7 +1148,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
       case 'petersburg':
         return '🇷🇺';
       case 'istanbul':
-      case 'İstanbul':
+      case 'i̇stanbul':
         return '🇹🇷';
       case 'londra':
       case 'london':
@@ -1232,6 +1160,175 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
       default:
         return '📍';
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final filtered = _filtered;
+    final bottomPad = MediaQuery.of(context).viewInsets.bottom;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: BoxDecoration(
+            color: AuroraTheme.bgDeep.withOpacity(0.94),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border(
+              top: BorderSide(
+                  color: Colors.white.withOpacity(0.12), width: 0.8),
+            ),
+          ),
+          child: Column(
+            children: [
+              // ── Handle ──
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // ── Başlık ──
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ShaderMask(
+                  shaderCallback: (b) =>
+                      AuroraTheme.redBlueGradient.createShader(b),
+                  child: const Text(
+                    'Şehir Seç',
+                    style: TextStyle(
+                      fontFamily: 'Fraunces',
+                      fontStyle: FontStyle.italic,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              // ── Arama kutusu ──
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: false,
+                      style: const TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: 'Şehir ara…',
+                        hintStyle: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                          color: AuroraTheme.textMuted,
+                        ),
+                        prefixIcon: Icon(Icons.search_rounded,
+                            color: AuroraTheme.textMuted, size: 20),
+                        suffixIcon: _query.isNotEmpty
+                            ? GestureDetector(
+                                onTap: () => _searchController.clear(),
+                                child: Icon(Icons.close_rounded,
+                                    color: AuroraTheme.textMuted, size: 18),
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.07),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.12),
+                              width: 0.8),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                              color: Colors.white.withOpacity(0.12),
+                              width: 0.8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(
+                              color: AuroraTheme.auroraRed, width: 1),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // ── Liste (kaydırılabilir) ──
+              Expanded(
+                child: _cities == null
+                    ? Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(
+                                AuroraTheme.auroraRed),
+                          ),
+                        ),
+                      )
+                    : ListView(
+                        padding: EdgeInsets.only(
+                            bottom: bottomPad + 24, top: 4),
+                        children: [
+                          // "Tüm Şehirler" yalnızca arama yokken
+                          if (_query.isEmpty)
+                            _CityRow(
+                              name: 'Tüm Şehirler',
+                              emoji: '🌍',
+                              selected: widget.selectedCityId == null,
+                              onTap: () => Navigator.of(context)
+                                  .pop((id: '', name: '')),
+                            ),
+                          ...filtered.map((c) => _CityRow(
+                                name: c.name,
+                                emoji: _cityEmoji(c.name),
+                                selected: widget.selectedCityId == c.id,
+                                onTap: () =>
+                                    Navigator.of(context).pop(c),
+                              )),
+                          if (filtered.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.all(32),
+                              child: Center(
+                                child: Text(
+                                  '"$_query" için şehir bulunamadı',
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 14,
+                                    color: AuroraTheme.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -9,12 +9,20 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 
-class ProfileViewScreen extends ConsumerWidget {
+class ProfileViewScreen extends ConsumerStatefulWidget {
   final String userId;
   const ProfileViewScreen({super.key, required this.userId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileViewScreen> createState() => _ProfileViewScreenState();
+}
+
+class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
+  int _photoIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final userId = widget.userId;
     final profileAsync = ref.watch(userProfileProvider(userId));
     final photosAsync = ref.watch(userPhotosProvider(userId));
     final promptsAsync = ref.watch(userPromptsProvider(userId));
@@ -108,7 +116,11 @@ class ProfileViewScreen extends ConsumerWidget {
                     ),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
-                    background: _PhotoCarousel(photos: photos),
+                    background: _PhotoCarousel(
+                      photos: photos,
+                      currentIndex: _photoIndex,
+                      onIndexChanged: (i) => setState(() => _photoIndex = i),
+                    ),
                   ),
                 ),
 
@@ -259,8 +271,7 @@ class ProfileViewScreen extends ConsumerWidget {
                                     padding:
                                         const EdgeInsets.only(right: 10),
                                     child: GestureDetector(
-                                      onTap: () => _openPhotoViewer(
-                                          context, photos, i),
+                                      onTap: () => setState(() => _photoIndex = i),
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(14),
@@ -908,14 +919,33 @@ class _ActionSheet extends StatelessWidget {
 // ── Photo Carousel ────────────────────────────────────────────────────────────
 class _PhotoCarousel extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
-  const _PhotoCarousel({required this.photos});
+  final int currentIndex;
+  final ValueChanged<int> onIndexChanged;
+
+  const _PhotoCarousel({
+    required this.photos,
+    required this.currentIndex,
+    required this.onIndexChanged,
+  });
 
   @override
   State<_PhotoCarousel> createState() => _PhotoCarouselState();
 }
 
 class _PhotoCarouselState extends State<_PhotoCarousel> {
-  int _current = 0;
+  Offset? _pointerDown;
+
+  void _goNext() {
+    if (widget.currentIndex < widget.photos.length - 1) {
+      widget.onIndexChanged(widget.currentIndex + 1);
+    }
+  }
+
+  void _goPrev() {
+    if (widget.currentIndex > 0) {
+      widget.onIndexChanged(widget.currentIndex - 1);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -923,22 +953,45 @@ class _PhotoCarouselState extends State<_PhotoCarousel> {
       return Container(
         color: AuroraTheme.bgDeep,
         child: const Center(
-          child: Icon(Icons.person_outline,
-              size: 80, color: Colors.white12),
+          child: Icon(Icons.person_outline, size: 80, color: Colors.white12),
         ),
       );
     }
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        PageView.builder(
-          itemCount: widget.photos.length,
-          onPageChanged: (i) => setState(() => _current = i),
-          itemBuilder: (_, i) {
-            final url = widget.photos[i]['url'] as String;
-            return Image.network(
+    final url = widget.photos[widget.currentIndex]['url'] as String;
+
+    return Listener(
+      onPointerDown: (e) => _pointerDown = e.localPosition,
+      onPointerUp: (e) {
+        if (_pointerDown == null) return;
+        final dx = e.localPosition.dx - _pointerDown!.dx;
+        final dy = e.localPosition.dy - _pointerDown!.dy;
+        _pointerDown = null;
+        // Dikey hareket baskınsa yoksay (scroll)
+        if (dy.abs() > dx.abs() && dy.abs() > 8) return;
+        if (dx.abs() < 12) {
+          // Tap — sol %35 geri, sağ %65 ileri
+          final width = MediaQuery.of(context).size.width;
+          if (e.localPosition.dx < width * 0.35) {
+            _goPrev();
+          } else {
+            _goNext();
+          }
+        } else if (dx < -40) {
+          _goNext(); // sola kaydır → ileri
+        } else if (dx > 40) {
+          _goPrev(); // sağa kaydır → geri
+        }
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Fotoğraf — AnimatedSwitcher ile geçiş
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 280),
+            child: Image.network(
               url,
+              key: ValueKey(url),
               fit: BoxFit.cover,
               alignment: Alignment.topCenter,
               errorBuilder: (_, __, ___) => Container(
@@ -946,70 +999,70 @@ class _PhotoCarouselState extends State<_PhotoCarousel> {
                 child: const Icon(Icons.person_outline,
                     size: 60, color: Colors.white12),
               ),
-            );
-          },
-        ),
-        // Alt gradient
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.center,
-              colors: [AuroraTheme.bgDeep, Colors.transparent],
-              stops: const [0.0, 0.6],
             ),
           ),
-        ),
-        // Üst glow
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment(0, -0.3),
-              colors: [
-                AuroraTheme.auroraRed.withOpacity(0.15),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        ),
-        // Photo dots
-        if (widget.photos.length > 1)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 10),
-                child: Row(
-                  children: List.generate(widget.photos.length, (i) {
-                    final isActive = i == _current;
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            right: i < widget.photos.length - 1 ? 4 : 0),
-                        child: Container(
-                          height: 3,
-                          decoration: BoxDecoration(
-                            gradient: isActive
-                                ? AuroraTheme.redBlueGradient
-                                : null,
-                            color: isActive
-                                ? null
-                                : Colors.white.withOpacity(0.25),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+          // Alt gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.center,
+                colors: [AuroraTheme.bgDeep, Colors.transparent],
+                stops: const [0.0, 0.6],
               ),
             ),
           ),
-      ],
+          // Üst glow
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: const Alignment(0, -0.3),
+                colors: [
+                  AuroraTheme.auroraRed.withOpacity(0.15),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          // Photo dots
+          if (widget.photos.length > 1)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 10),
+                  child: Row(
+                    children: List.generate(widget.photos.length, (i) {
+                      final isActive = i == widget.currentIndex;
+                      return Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              right: i < widget.photos.length - 1 ? 4 : 0),
+                          child: Container(
+                            height: 3,
+                            decoration: BoxDecoration(
+                              gradient: isActive
+                                  ? AuroraTheme.redBlueGradient
+                                  : null,
+                              color: isActive
+                                  ? null
+                                  : Colors.white.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

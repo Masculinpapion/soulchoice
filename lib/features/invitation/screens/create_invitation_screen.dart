@@ -51,7 +51,35 @@ class _CreateInvitationScreenState
     super.dispose();
   }
 
+  String? _validateCurrentStep() {
+    switch (_step) {
+      case 1:
+        if (_category == null) return 'Bir kategori seçmelisin';
+      case 2:
+        if (_titleController.text.trim().isEmpty) return 'Başlık boş bırakılamaz';
+      case 4:
+        if (_venueController.text.trim().isEmpty) return 'Mekan adı boş bırakılamaz';
+      case 5:
+        if (_eventDate == null) return 'Tarih ve saat seçmelisin';
+    }
+    return null;
+  }
+
   void _next() {
+    final error = _validateCurrentStep();
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error,
+              style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w600)),
+          backgroundColor: AuroraTheme.auroraRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        ),
+      );
+      return;
+    }
     if (_step < _steps.length - 1) {
       setState(() => _step++);
       _pageController.nextPage(
@@ -131,7 +159,10 @@ class _CreateInvitationScreenState
             : _fixCase(_descriptionController.text),
         'venue_name': _venueController.text.trim().isEmpty
             ? null
-            : _venueController.text.trim(),
+            : _venueController.text.trim().split(' ')
+                .where((w) => w.isNotEmpty)
+                .map((w) => w[0].toUpperCase() + w.substring(1))
+                .join(' '),
         'event_date': _eventDate?.toIso8601String(),
         'city_id': cityId,
         'slots_total': 1,
@@ -213,7 +244,9 @@ class _CreateInvitationScreenState
                         onSelected: (v) =>
                             setState(() => _category = v)),
                     _StepTitle(controller: _titleController),
-                    _StepDescription(controller: _descriptionController),
+                    _StepDescription(
+                        controller: _descriptionController,
+                        flowType: _flowType),
                     _StepVenue(controller: _venueController),
                     _StepDateTime(
                         date: _eventDate,
@@ -531,8 +564,7 @@ class _StepTitle extends StatelessWidget {
               controller: controller,
               maxLength: 60,
               style: AppTextStyles.feedCardTitle.copyWith(fontSize: 20),
-              textCapitalization: TextCapitalization.characters,
-              decoration: const InputDecoration(labelText: 'BAŞLIK'),
+              decoration: const InputDecoration(labelText: 'Başlık'),
             ),
           ],
         ),
@@ -545,10 +577,15 @@ class _StepTitle extends StatelessWidget {
 
 class _StepDescription extends StatelessWidget {
   final TextEditingController controller;
-  const _StepDescription({required this.controller});
+  final InvitationFlowType flowType;
+  const _StepDescription({required this.controller, required this.flowType});
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
+  Widget build(BuildContext context) {
+    final subtitle = flowType == InvitationFlowType.invite
+        ? 'Nereye gidiyorsun, Nasıl birini arıyorsun?'
+        : 'Nereye gitmek istiyorsun, Nasıl birini arıyorsun?';
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
@@ -557,8 +594,7 @@ class _StepDescription extends StatelessWidget {
             const SizedBox(height: 24),
             Text('Açıklama', style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Ne yapacaksınız? Kim arıyorsunuz?',
-                style: AppTextStyles.bodyMedium),
+            Text(subtitle, style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
@@ -573,6 +609,7 @@ class _StepDescription extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -592,13 +629,15 @@ class _StepVenue extends StatelessWidget {
             const SizedBox(height: 24),
             Text('Nerede?', style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Mekan adı veya adres', style: AppTextStyles.bodyMedium),
+            Text('Kısa bir mekan adı — kafe, restoran, park gibi',
+                style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
               style: AppTextStyles.bodyLarge,
               decoration: const InputDecoration(
                 labelText: 'Mekan adı',
+                hintText: 'Örn. White Rabbit, Gorki Park...',
                 prefixIcon: Icon(Icons.location_on_outlined,
                     color: AppColors.textTertiary),
               ),

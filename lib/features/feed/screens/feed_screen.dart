@@ -30,6 +30,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() => setState(() {}));
     _loadMoskovaCityId();
   }
 
@@ -81,7 +82,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
               ),
-              _StoryBar(),
+              _StoryBar(
+                flowType: _tabController.index == 0
+                    ? InvitationFlowType.invite
+                    : InvitationFlowType.request,
+              ),
               _TabBar(controller: _tabController),
               _CategoryChips(
                 selected: _selectedCategory,
@@ -245,9 +250,12 @@ class _GlassPill extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _StoryBar extends ConsumerWidget {
+  final InvitationFlowType flowType;
+  const _StoryBar({required this.flowType});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = InvitationFilter(flowType: InvitationFlowType.invite);
+    final filter = InvitationFilter(flowType: flowType);
     final async = ref.watch(invitationsProvider(filter));
 
     final seen = <String>{};
@@ -260,7 +268,11 @@ class _StoryBar extends ConsumerWidget {
           return true;
         })
         .toList();
-    if (invitations.isEmpty) return const SizedBox.shrink();
+    if (invitations.isEmpty) {
+      // Yükleme sırasında yüksekliği koru — layout zıplamasını engelle
+      if (async.isLoading) return const SizedBox(height: 118);
+      return const SizedBox.shrink();
+    }
 
     return SizedBox(
       height: 118,
@@ -273,7 +285,9 @@ class _StoryBar extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'AKTİF DAVETLER',
+                  flowType == InvitationFlowType.invite
+                      ? 'AKTİF DAVETLER'
+                      : 'AKTİF İSTEKLER',
                   style: AuroraTheme.monoLabel.copyWith(
                     fontSize: 9,
                     letterSpacing: 1.2,
@@ -283,8 +297,10 @@ class _StoryBar extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
+                    gradient: LinearGradient(
+                      colors: flowType == InvitationFlowType.invite
+                          ? [AuroraTheme.auroraRed, AuroraTheme.auroraViolet]
+                          : [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),

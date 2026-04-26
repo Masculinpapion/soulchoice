@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 
@@ -201,7 +202,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+          0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -274,7 +275,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 .isAfter(_meetingDate!.add(const Duration(hours: 24))));
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(64),
         child: _ChatAppBar(
@@ -287,8 +288,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: AmbientBackground(
         child: Column(
           children: [
-            // Event badge
-            if (inv != null) _EventBadge(title: invTitle),
+            // Event badge — sadece başlık doluysa göster
+            if (inv != null && invTitle.isNotEmpty) _EventBadge(title: invTitle),
 
             // Archived banner
             if (isArchived) const _ArchivedBanner(),
@@ -318,14 +319,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ? _EmptyState()
                       : ListView.builder(
                           controller: _scrollController,
+                          reverse: true,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           itemCount: _messages.length,
                           itemBuilder: (_, i) {
-                            final msg = _messages[i];
+                            final msg = _messages[_messages.length - 1 - i];
                             final isMe = msg.senderId == _currentUid;
-                            return _MessageBubble(
-                                message: msg, isMe: isMe);
+                            return _MessageBubble(message: msg, isMe: isMe);
                           },
                         ),
             ),
@@ -384,20 +385,19 @@ class _AttendanceBanner extends StatelessWidget {
   const _AttendanceBanner({required this.onYes, required this.onNo});
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color: AppColors.warning.withOpacity(0.4)),
-            ),
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.warning.withOpacity(0.4)),
+              ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -437,7 +437,8 @@ class _AttendanceBanner extends StatelessWidget {
             ),
           ),
         ),
-      );
+      ),
+    );
 }
 
 class _BannerButton extends StatelessWidget {
@@ -487,7 +488,7 @@ class _ChatAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.bgBlack,
+      color: AuroraTheme.bgDeep,
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -566,40 +567,41 @@ class _EventBadge extends StatelessWidget {
   const _EventBadge({required this.title});
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.gradientStart.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color: AppColors.gradientStart.withOpacity(0.25)),
-            ),
-            child: Row(
-              children: [
-                ShaderMask(
-                  shaderCallback: (b) =>
-                      AppColors.primaryGradient.createShader(b),
-                  child: const Icon(Icons.event,
-                      size: 16, color: Colors.white),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title.toUpperCase(),
-                    style: AppTextStyles.monoSmall.copyWith(
-                      color: AppColors.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.gradientStart.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                    color: AppColors.gradientStart.withOpacity(0.25)),
+              ),
+              child: Row(
+                children: [
+                  ShaderMask(
+                    shaderCallback: (b) =>
+                        AppColors.primaryGradient.createShader(b),
+                    child: const Icon(Icons.event,
+                        size: 16, color: Colors.white),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title.toUpperCase(),
+                      style: AppTextStyles.monoSmall.copyWith(
+                        color: AppColors.textSecondary,
+                        letterSpacing: 0.5,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -93,7 +93,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       actions: [
-                        if (isOwner) ...[
+                        if (isOwner)
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: _GlassPill(
@@ -103,8 +103,38 @@ class InvitationDetailScreen extends ConsumerWidget {
                                   size: 18, color: Colors.white),
                             ),
                           ),
+                        // Kategori pill
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(right: 8, top: 8),
+                          child: _GlassPill(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  category.emoji,
+                                  style: TextStyle(
+                                    fontSize: category == InvitationCategory.concert ? 18 : 14,
+                                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  category.label,
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    fontSize: 10,
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (isOwner)
                           Padding(
-                            padding: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.only(right: 12),
                             child: _GlassPill(
                               onTap: () async {
                                 final confirm = await showDialog<bool>(
@@ -158,36 +188,6 @@ class InvitationDetailScreen extends ConsumerWidget {
                                   size: 18, color: AuroraTheme.auroraRed),
                             ),
                           ),
-                        ],
-                        // Kategori pill
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(right: 12, top: 8),
-                          child: _GlassPill(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  category.emoji,
-                                  style: TextStyle(
-                                    fontSize: category == InvitationCategory.concert ? 18 : 14,
-                                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  category.label,
-                                  style: TextStyle(
-                                    fontFamily: 'JetBrainsMono',
-                                    fontSize: 10,
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
                       ],
                       flexibleSpace: FlexibleSpaceBar(
                         background: Stack(
@@ -296,7 +296,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                               Expanded(
                                 child: _StatCard(
                                   icon: '📍',
-                                  label: 'YER',
+                                  label: 'KONUM',
                                   value: inv['venue_name'] as String? ??
                                       category.label,
                                   small: true,
@@ -327,7 +327,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                           // ── Yer & Zaman ───────────────────────────────
                           if (inv['venue_name'] != null ||
                               inv['event_date'] != null) ...[
-                            _SectionLabel('YER · ZAMAN'),
+                            _SectionLabel('KONUM · ZAMAN'),
                             const SizedBox(height: 8),
                             GlassCard(
                               child: Column(

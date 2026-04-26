@@ -23,6 +23,7 @@ final discoverProvider =
 
   var query = client.from('invitations').select(
         '*, '
+        'city:cities(name), '
         'owner:users(id, name, age, gender, verified, '
         'photos:user_photos(url, is_primary, is_selfie, order_index))',
       );
@@ -63,9 +64,13 @@ final discoverProvider =
           .compareTo(b['order_index'] as int? ?? 99));
     final ownerPhotoUrl = sortedPhotos.firstOrNull?['url'] as String?;
 
-    return InvitationModel.fromJson({...row, 'owner': null}).copyWith(
+    final cityRow = row['city'] as Map<String, dynamic>?;
+    final cityName = cityRow?['name'] as String?;
+
+    return InvitationModel.fromJson({...row, 'owner': null, 'city': null}).copyWith(
       owner: owner,
       ownerPhotoUrl: ownerPhotoUrl,
+      cityName: cityName,
     );
   }).where((inv) => inv.ownerPhotoUrl != null).toList();
 

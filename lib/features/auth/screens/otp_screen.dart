@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -98,8 +99,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               color: AppColors.textPrimary),
@@ -155,6 +158,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                         }
                         if (_otp.length == 6) _verify();
                       },
+                      onBackspace: i > 0
+                          ? () {
+                              _controllers[i - 1].clear();
+                              _focusNodes[i - 1].requestFocus();
+                            }
+                          : null,
                     ),
                   ),
                 ),
@@ -222,11 +231,13 @@ class _OtpBox extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final ValueChanged<String> onChanged;
+  final VoidCallback? onBackspace;
 
   const _OtpBox({
     required this.controller,
     required this.focusNode,
     required this.onChanged,
+    this.onBackspace,
   });
 
   @override
@@ -238,6 +249,15 @@ class _OtpBoxState extends State<_OtpBox> {
   void initState() {
     super.initState();
     widget.focusNode.addListener(() => setState(() {}));
+    widget.focusNode.onKeyEvent = (node, event) {
+      if (event is KeyDownEvent &&
+          event.logicalKey == LogicalKeyboardKey.backspace &&
+          widget.controller.text.isEmpty) {
+        widget.onBackspace?.call();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    };
   }
 
   @override

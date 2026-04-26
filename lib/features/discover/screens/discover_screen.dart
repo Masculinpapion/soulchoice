@@ -240,7 +240,9 @@ class _DiscoverCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          timeago.format(inv.createdAt, locale: 'tr'),
+                          inv.cityName?.isNotEmpty == true
+                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: 'tr')}'
+                              : timeago.format(inv.createdAt, locale: 'tr'),
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,

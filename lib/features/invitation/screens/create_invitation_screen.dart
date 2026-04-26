@@ -548,8 +548,9 @@ class _StepDescription extends StatelessWidget {
   const _StepDescription({required this.controller});
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) => SingleChildScrollView(
         padding: const EdgeInsets.all(24),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -561,7 +562,7 @@ class _StepDescription extends StatelessWidget {
             const SizedBox(height: 32),
             TextField(
               controller: controller,
-              maxLines: 5,
+              maxLines: 4,
               maxLength: 300,
               style: AppTextStyles.bodyLarge,
               decoration: const InputDecoration(

@@ -9,6 +9,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../providers/invitation_provider.dart';
+import '../../feed/providers/invitations_provider.dart';
 
 class InvitationDetailScreen extends ConsumerWidget {
   final String invitationId;
@@ -148,6 +149,8 @@ class InvitationDetailScreen extends ConsumerWidget {
                                       .from('invitations')
                                       .delete()
                                       .eq('id', invitationId);
+                                  ref.invalidate(invitationProvider);
+                                  ref.invalidate(invitationsProvider);
                                   if (context.mounted) context.pop();
                                 }
                               },

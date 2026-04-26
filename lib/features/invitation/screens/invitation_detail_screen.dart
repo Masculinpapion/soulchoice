@@ -149,7 +149,7 @@ class InvitationDetailScreen extends ConsumerWidget {
                                       .from('invitations')
                                       .delete()
                                       .eq('id', invitationId);
-                                  ref.invalidate(invitationProvider);
+                                  ref.invalidate(invitationDetailProvider);
                                   ref.invalidate(invitationsProvider);
                                   if (context.mounted) context.pop();
                                 }

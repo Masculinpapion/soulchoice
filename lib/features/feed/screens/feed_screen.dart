@@ -39,6 +39,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   }
 
   Future<void> _showCityPicker() async {
+    final nav = Navigator.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -46,6 +47,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
       builder: (_) => _CityPickerSheet(
         selectedCityId: _selectedCityId,
         onCitySelected: (id, name) {
+          nav.pop();
+          if (!mounted) return;
           setState(() {
             _selectedCityId = id;
             _selectedCityName = name;
@@ -1360,19 +1363,13 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               name: 'Tüm Şehirler',
                               emoji: '🌍',
                               selected: widget.selectedCityId == null,
-                              onTap: () {
-                                widget.onCitySelected(null, null);
-                                Navigator.of(context).pop();
-                              },
+                              onTap: () => widget.onCitySelected(null, null),
                             ),
                           ...filtered.map((c) => _CityRow(
                                 name: c.name,
                                 emoji: _cityEmoji(c.name),
                                 selected: widget.selectedCityId == c.id,
-                                onTap: () {
-                                  widget.onCitySelected(c.id, c.name);
-                                  Navigator.of(context).pop();
-                                },
+                                onTap: () => widget.onCitySelected(c.id, c.name),
                               )),
                           if (filtered.isEmpty)
                             Padding(

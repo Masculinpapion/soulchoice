@@ -1103,7 +1103,13 @@ class InvitationCard extends StatelessWidget {
                         border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
                       ),
                       child: Center(
-                        child: Text(category.emoji, style: const TextStyle(fontSize: 14)),
+                        child: Text(
+                          category.emoji,
+                          style: TextStyle(
+                            fontSize: category == InvitationCategory.concert ? 18 : 14,
+                            color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -1548,7 +1554,13 @@ class _CardFallbackGradient extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(category.emoji, style: const TextStyle(fontSize: 80)),
+          Text(
+            category.emoji,
+            style: TextStyle(
+              fontSize: 80,
+              color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+            ),
+          ),
           const SizedBox(height: 28),
           Container(
             width: 90,

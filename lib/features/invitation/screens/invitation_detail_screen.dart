@@ -110,8 +110,13 @@ class InvitationDetailScreen extends ConsumerWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(category.emoji,
-                                    style: const TextStyle(fontSize: 14)),
+                                Text(
+                                  category.emoji,
+                                  style: TextStyle(
+                                    fontSize: category == InvitationCategory.concert ? 18 : 14,
+                                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                                  ),
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   category.label,

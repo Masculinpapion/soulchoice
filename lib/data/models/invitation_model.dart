@@ -37,7 +37,7 @@ extension InvitationCategoryExt on InvitationCategory {
       case InvitationCategory.food:
         return '🍽';
       case InvitationCategory.concert:
-        return '🎵';
+        return '♫';
       case InvitationCategory.travel:
         return '✈️';
       case InvitationCategory.culture:

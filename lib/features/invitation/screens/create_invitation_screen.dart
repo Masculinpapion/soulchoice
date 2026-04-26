@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../features/feed/providers/invitations_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -424,8 +425,13 @@ class _StepCategory extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(c.emoji,
-                          style: const TextStyle(fontSize: 28)),
+                      Text(
+                        c.emoji,
+                        style: TextStyle(
+                          fontSize: c == InvitationCategory.concert ? 34 : 28,
+                          color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         c.label,

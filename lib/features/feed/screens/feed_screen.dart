@@ -730,10 +730,13 @@ class _CategoryChips extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (c == InvitationCategory.concert)
-                      Icon(
-                        Icons.music_note,
-                        size: 14,
-                        color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                      Text(
+                        '♫',
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.2,
+                          color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                        ),
                       )
                     else
                       Text(c.emoji,

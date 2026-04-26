@@ -253,18 +253,42 @@ class _StoryBar extends ConsumerWidget {
     if (invitations.isEmpty) return const SizedBox.shrink();
 
     return SizedBox(
-      height: 100,
+      height: 118,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'AKTİF ŞİMDİ  ·  24 SAAT',
-              style: AuroraTheme.monoLabel,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('AKTİF DAVETLER', style: AuroraTheme.monoLabel),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AuroraTheme.auroraViolet, AuroraTheme.auroraBlue],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Text(
+                    '24 SAAT',
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -313,26 +337,19 @@ class _StoryAvatar extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Container(
-              width: 54,
-              height: 54,
-              padding: const EdgeInsets.all(2.5),
-              decoration: BoxDecoration(
-                gradient: isLive
-                    ? const LinearGradient(
-                        colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : const LinearGradient(
-                        colors: [
-                          AuroraTheme.auroraRed,
-                          AuroraTheme.auroraViolet,
-                          AuroraTheme.auroraBlue,
-                          AuroraTheme.auroraRed,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+              width: 66,
+              height: 66,
+              padding: const EdgeInsets.all(3),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AuroraTheme.auroraRed,
+                    AuroraTheme.auroraViolet,
+                    AuroraTheme.auroraBlue,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 shape: BoxShape.circle,
               ),
               child: Container(
@@ -387,12 +404,12 @@ class _StoryAvatar extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 7),
         Text(
           label,
           style: TextStyle(
             fontFamily: 'JetBrainsMono',
-            fontSize: 9,
+            fontSize: 10,
             color: AuroraTheme.textSecondary,
             fontWeight: FontWeight.w500,
           ),

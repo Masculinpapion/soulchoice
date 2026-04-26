@@ -6,19 +6,16 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart' show ScButton;
 import '../providers/discover_provider.dart';
 
-// ── Deterministik aspect ratio (her zaman dikey portre) ─────────────────────
-double _cardAspect(String id) {
-  return id.hashCode.abs() % 2 == 0 ? 0.75 : 0.9;
-}
+// Deterministik aspect ratio — hash bazlı, iki seçenek
+double _cardAspect(String id) =>
+    id.hashCode.abs() % 2 == 0 ? 0.72 : 0.88;
 
-// ── Ana ekran ────────────────────────────────────────────────────────────────
 class DiscoverScreen extends ConsumerWidget {
   const DiscoverScreen({super.key});
 
@@ -27,49 +24,64 @@ class DiscoverScreen extends ConsumerWidget {
     final async = ref.watch(discoverProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── AppBar ────────────────────────────────────────────────────
+              // Başlık
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  'Keşfet',
-                  style: AppTextStyles.displayLarge.copyWith(
-                    fontFamily: 'Fraunces',
-                    fontStyle: FontStyle.italic,
-                    fontSize: 28,
-                    color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: ShaderMask(
+                  shaderCallback: (b) =>
+                      AuroraTheme.redBlueGradient.createShader(b),
+                  child: const Text(
+                    'Keşfet',
+                    style: TextStyle(
+                      fontFamily: 'Fraunces',
+                      fontStyle: FontStyle.italic,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                 ),
               ),
+              // Mono label
+              Padding(
+                padding:
+                    const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Text(
+                  'TÜM AKTİF DAVETLER',
+                  style: AuroraTheme.monoLabel,
+                ),
+              ),
 
-              // ── İçerik ───────────────────────────────────────────────────
+              // İçerik
               Expanded(
                 child: async.when(
                   loading: () => const _LoadingGrid(),
-                  error: (e, _) => _ErrorState(
-                    onRetry: () => ref.invalidate(discoverProvider),
-                  ),
+                  error: (e, _) =>
+                      _ErrorState(onRetry: () => ref.invalidate(discoverProvider)),
                   data: (invitations) {
                     if (invitations.isEmpty) {
                       return _EmptyState(
-                        onCreateTap: () => context.push('/invitation/create'),
+                        onCreateTap: () =>
+                            context.push('/invitation/create'),
                       );
                     }
                     return RefreshIndicator(
-                      color: AppColors.primaryRed,
-                      backgroundColor: AppColors.bgCard,
+                      color: AuroraTheme.auroraRed,
+                      backgroundColor: AuroraTheme.glassStrong,
                       onRefresh: () async =>
                           ref.invalidate(discoverProvider),
                       child: MasonryGridView.count(
                         crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        padding: const EdgeInsets.all(16),
+                        mainAxisSpacing: 14,
+                        crossAxisSpacing: 14,
+                        padding: const EdgeInsets.fromLTRB(14, 0, 14, 110),
                         itemCount: invitations.length,
                         itemBuilder: (ctx, i) {
                           final inv = invitations[i];
@@ -114,160 +126,178 @@ class _DiscoverCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AspectRatio(
-        aspectRatio: aspect,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // ── Fotoğraf ──────────────────────────────────────────────────
-              photoUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: photoUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) =>
-                          Container(color: AppColors.bgCard),
-                      errorWidget: (_, __, ___) => Container(
-                        color: AppColors.bgCard,
-                        child: const Icon(Icons.image_not_supported,
-                            color: AppColors.textTertiary),
-                      ),
-                    )
-                  : Container(color: AppColors.bgCard),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AuroraTheme.radiusCard),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: AspectRatio(
+          aspectRatio: aspect,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AuroraTheme.radiusCard),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Fotoğraf
+                photoUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: photoUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                            color: Colors.white.withOpacity(0.05)),
+                        errorWidget: (_, __, ___) => Container(
+                          color: Colors.white.withOpacity(0.05),
+                          child: const Icon(Icons.image_not_supported,
+                              color: Colors.white24),
+                        ),
+                      )
+                    : Container(color: Colors.white.withOpacity(0.05)),
 
-              // ── Alt gradient overlay ───────────────────────────────────────
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.45, 1.0],
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.50),
-                        Colors.black.withOpacity(0.85),
+                // Alt gradient
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.0, 0.4, 1.0],
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.45),
+                          Colors.black.withOpacity(0.88),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Alt metin
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          inv.title,
+                          style: const TextStyle(
+                            fontFamily: 'Fraunces',
+                            fontStyle: FontStyle.italic,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          timeago.format(inv.createdAt, locale: 'tr'),
+                          style: TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 9,
+                            color: Colors.white.withOpacity(0.55),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-              ),
 
-              // ── Alt metin alanı ───────────────────────────────────────────
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        inv.title,
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          height: 1.2,
+                // Üst sol — glass pill (avatar + isim)
+                if (ownerName.isNotEmpty)
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    right: 44,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: BackdropFilter(
+                        filter:
+                            ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(5, 4, 10, 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.40),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.15),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(
+                                radius: 11,
+                                backgroundColor:
+                                    Colors.white.withOpacity(0.1),
+                                backgroundImage: photoUrl != null
+                                    ? CachedNetworkImageProvider(photoUrl)
+                                    : null,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  ownerAge > 0
+                                      ? '$ownerName, $ownerAge'
+                                      : ownerName,
+                                  style: const TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                    color: Colors.white,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        timeago.format(inv.createdAt, locale: 'tr'),
-                        style: const TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontSize: 10,
-                          color: Colors.white60,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // ── Üst sol — glass pill (avatar + isim/yaş) ─────────────────
-              if (ownerName.isNotEmpty)
+                // Üst sağ — kategori emoji
                 Positioned(
-                  top: 12,
-                  left: 12,
+                  top: 10,
+                  right: 10,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(16),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                       child: Container(
-                        padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+                        padding: const EdgeInsets.all(7),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.40),
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: Colors.white.withOpacity(0.15),
                             width: 0.8,
                           ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(
-                              radius: 12,
-                              backgroundColor: AppColors.bgCard,
-                              backgroundImage: photoUrl != null
-                                  ? CachedNetworkImageProvider(photoUrl)
-                                  : null,
-                            ),
-                            const SizedBox(width: 7),
-                            Text(
-                              ownerAge > 0
-                                  ? '$ownerName, $ownerAge'
-                                  : ownerName,
-                              style: const TextStyle(
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          inv.category.emoji,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
                     ),
                   ),
                 ),
-
-              // ── Üst sağ — kategori emoji (glass circle) ──────────────────
-              Positioned(
-                top: 12,
-                right: 12,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.40),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Text(
-                        inv.category.emoji,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -290,27 +320,28 @@ class _EmptyState extends StatelessWidget {
           children: [
             const Text('🎭', style: TextStyle(fontSize: 64)),
             const SizedBox(height: 24),
-            Text(
+            const Text(
               'Henüz aktif davet yok',
-              style: AppTextStyles.headingLarge.copyWith(
+              style: TextStyle(
                 fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
                 fontSize: 22,
+                color: Colors.white,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               'İlk davetini sen aç, burada görünsün',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            ScButton(
-              label: '+ Davet Aç',
-              onPressed: onCreateTap,
-            ),
+            ScButton(label: '+ Davet Aç', onPressed: onCreateTap),
           ],
         ),
       ),
@@ -318,24 +349,24 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-// ── Yükleme iskeleti ──────────────────────────────────────────────────────────
+// ── Loading skeleton ──────────────────────────────────────────────────────────
 class _LoadingGrid extends StatelessWidget {
   const _LoadingGrid();
 
   @override
   Widget build(BuildContext context) {
-    const aspects = [0.75, 0.9, 0.75, 0.9, 0.75, 0.9, 0.75, 0.9];
+    const aspects = [0.72, 0.88, 0.72, 0.88, 0.72, 0.88, 0.72, 0.88];
     return MasonryGridView.count(
       crossAxisCount: 2,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      padding: const EdgeInsets.all(16),
+      mainAxisSpacing: 14,
+      crossAxisSpacing: 14,
+      padding: const EdgeInsets.all(14),
       itemCount: 8,
       itemBuilder: (_, i) => AspectRatio(
         aspectRatio: aspects[i % aspects.length],
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Container(color: AppColors.bgCard),
+          borderRadius: BorderRadius.circular(AuroraTheme.radiusCard),
+          child: Container(color: Colors.white.withOpacity(0.06)),
         ),
       ),
     );
@@ -355,14 +386,15 @@ class _ErrorState extends StatelessWidget {
         children: [
           Text(
             'Bağlantı hatası',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: AppColors.textSecondary),
+            style: TextStyle(
+                fontFamily: 'Manrope',
+                color: AuroraTheme.textSecondary),
           ),
           const SizedBox(height: 16),
           TextButton(
             onPressed: onRetry,
             child: const Text('Tekrar dene',
-                style: TextStyle(color: AppColors.primaryRed)),
+                style: TextStyle(color: AuroraTheme.auroraRed)),
           ),
         ],
       ),

@@ -829,7 +829,12 @@ class _InvitationList extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
               child: Row(
                 children: [
-                  Text('GÜNÜN DAVETLERİ', style: AuroraTheme.monoLabel),
+                  Text(
+                    flowType == InvitationFlowType.invite
+                        ? 'GÜNÜN DAVETLERİ'
+                        : 'GÜNÜN İSTEKLERİ',
+                    style: AuroraTheme.monoLabel,
+                  ),
                   const SizedBox(width: 6),
                   ShaderMask(
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),

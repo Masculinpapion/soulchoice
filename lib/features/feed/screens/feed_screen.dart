@@ -268,7 +268,7 @@ class _StoryBar extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [AuroraTheme.auroraViolet, AuroraTheme.auroraBlue],
+                      colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),

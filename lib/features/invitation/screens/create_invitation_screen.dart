@@ -75,6 +75,41 @@ class _CreateInvitationScreenState
     }
   }
 
+  /// Metin güzelleştirme:
+  /// - Tümü küçük  → cümle başı büyük (. ! ? sonrası)
+  /// - TÜMÜ BÜYÜK  → önce küçült, sonra cümle başı büyük
+  /// - Karışık      → yalnızca ilk harf büyük ("White Rabbit" gibi proper noun'lar korunur)
+  String _fixCase(String text) {
+    final t = text.trim();
+    if (t.isEmpty) return t;
+
+    final letters = RegExp(r'\p{L}', unicode: true);
+    if (!letters.hasMatch(t)) return t;
+
+    final isAllLower = t == t.toLowerCase();
+    final isAllUpper = t == t.toUpperCase();
+
+    if (isAllLower || isAllUpper) {
+      final base = isAllUpper ? t.toLowerCase() : t;
+      final buf = StringBuffer();
+      bool capNext = true;
+      for (int i = 0; i < base.length; i++) {
+        final ch = base[i];
+        if (capNext && letters.hasMatch(ch)) {
+          buf.write(ch.toUpperCase());
+          capNext = false;
+        } else {
+          buf.write(ch);
+        }
+        if (ch == '.' || ch == '!' || ch == '?') capNext = true;
+      }
+      return buf.toString();
+    }
+
+    // Karışık — sadece ilk harf büyük garantisi
+    return t[0].toUpperCase() + t.substring(1);
+  }
+
   Future<void> _publish() async {
     setState(() => _isPublishing = true);
     try {
@@ -92,10 +127,10 @@ class _CreateInvitationScreenState
         'owner_id': uid,
         'flow_type': _flowType.name,
         'category': _category?.name ?? InvitationCategory.food.name,
-        'title': _titleController.text.trim(),
+        'title': _fixCase(_titleController.text),
         'description': _descriptionController.text.trim().isEmpty
             ? null
-            : _descriptionController.text.trim(),
+            : _fixCase(_descriptionController.text),
         'venue_name': _venueController.text.trim().isEmpty
             ? null
             : _venueController.text.trim(),

@@ -763,7 +763,6 @@ class _InvitationList extends ConsumerWidget {
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
@@ -779,34 +778,33 @@ class _InvitationList extends ConsumerWidget {
                 ],
               ),
             ),
-            SizedBox(
-          height: 496,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: invitations.length,
-            itemBuilder: (_, i) {
-              final inv = invitations[i];
-              return Padding(
-                padding: const EdgeInsets.only(right: 14),
-                child: InvitationCard(
-                  title: inv.title,
-                  category: inv.category,
-                  venueName: inv.venueName ?? '',
-                  ownerName: inv.owner?.name ?? '—',
-                  ownerAge: inv.owner?.age ?? 0,
-                  ownerPhotoUrl: inv.ownerPhotoUrl,
-                  timeRemaining: inv.timeRemaining,
-                  applicationCount: inv.applicationCount ?? 0,
-                  applicantPhotoUrls: inv.applicantPhotoUrls,
-                  eventDate: inv.eventDate,
-                  flowType: flowType,
-                  onTap: () => context.push('/invitation/${inv.id}'),
-                ),
-              );
-            },
-          ),
-        ),
+            Expanded(
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: invitations.length,
+                itemBuilder: (_, i) {
+                  final inv = invitations[i];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 14),
+                    child: InvitationCard(
+                      title: inv.title,
+                      category: inv.category,
+                      venueName: inv.venueName ?? '',
+                      ownerName: inv.owner?.name ?? '—',
+                      ownerAge: inv.owner?.age ?? 0,
+                      ownerPhotoUrl: inv.ownerPhotoUrl,
+                      timeRemaining: inv.timeRemaining,
+                      applicationCount: inv.applicationCount ?? 0,
+                      applicantPhotoUrls: inv.applicantPhotoUrls,
+                      eventDate: inv.eventDate,
+                      flowType: flowType,
+                      onTap: () => context.push('/invitation/${inv.id}'),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         );
       },
@@ -875,7 +873,6 @@ class InvitationCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 280,
-        height: 480,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           boxShadow: [

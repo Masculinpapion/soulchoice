@@ -39,18 +39,20 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   }
 
   Future<void> _showCityPicker() async {
-    final result = await showModalBottomSheet<({String id, String name})>(
+    showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => _CityPickerSheet(selectedCityId: _selectedCityId),
+      builder: (_) => _CityPickerSheet(
+        selectedCityId: _selectedCityId,
+        onCitySelected: (id, name) {
+          setState(() {
+            _selectedCityId = id;
+            _selectedCityName = name;
+          });
+        },
+      ),
     );
-    if (result != null) {
-      setState(() {
-        _selectedCityId = result.id.isEmpty ? null : result.id;
-        _selectedCityName = result.id.isEmpty ? null : result.name;
-      });
-    }
   }
 
   @override
@@ -818,6 +820,7 @@ class _InvitationList extends ConsumerWidget {
                       ownerAge: inv.owner?.age ?? 0,
                       ownerPhotoUrl: inv.ownerPhotoUrl,
                       ownerCity: inv.cityName,
+                      ownerVerified: inv.owner?.verified ?? false,
                       timeRemaining: inv.timeRemaining,
                       applicationCount: inv.applicationCount ?? 0,
                       applicantPhotoUrls: inv.applicantPhotoUrls,
@@ -848,6 +851,7 @@ class InvitationCard extends StatelessWidget {
   final int ownerAge;
   final String? ownerPhotoUrl;
   final String? ownerCity;
+  final bool ownerVerified;
   final Duration timeRemaining;
   final int applicationCount;
   final List<String> applicantPhotoUrls;
@@ -864,6 +868,7 @@ class InvitationCard extends StatelessWidget {
     required this.ownerAge,
     this.ownerPhotoUrl,
     this.ownerCity,
+    this.ownerVerified = false,
     required this.timeRemaining,
     required this.applicationCount,
     this.applicantPhotoUrls = const [],
@@ -948,11 +953,11 @@ class InvitationCard extends StatelessWidget {
                 ),
               ),
 
-              // 3. Üst glass pill — avatar + isim/yaş + kategori emoji
+              // 3. Üst glass pill — avatar + isim/yaş (kategori badge ayrı)
               Positioned(
                 top: 14,
                 left: 14,
-                right: 14,
+                right: 54,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: BackdropFilter(
@@ -985,9 +990,36 @@ class InvitationCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  '$ownerName, $ownerAge',
-                                  style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                // İsim + verified tik
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        '$ownerName, $ownerAge',
+                                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (ownerVerified) ...[
+                                      const SizedBox(width: 4),
+                                      Container(
+                                        width: 14,
+                                        height: 14,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AuroraTheme.auroraBlue,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AuroraTheme.auroraBlue.withOpacity(0.5),
+                                              blurRadius: 8,
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(Icons.check, size: 9, color: Colors.white),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                                 Text(
                                   ownerCity?.isNotEmpty == true ? ownerCity! : category.label,
@@ -997,12 +1029,31 @@ class InvitationCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(100)),
-                            child: Text(category.emoji, style: const TextStyle(fontSize: 13)),
-                          ),
                         ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 3b. Kategori badge — sağ üst, yuvarlak glass pill
+              Positioned(
+                top: 14,
+                right: 14,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.50),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                      ),
+                      child: Center(
+                        child: Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),
                   ),
@@ -1018,23 +1069,35 @@ class InvitationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Timer pill
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: timeRemaining.inHours < 2 ? AuroraTheme.auroraRed : const Color(0xCCFF6D00),
-                        borderRadius: BorderRadius.circular(100),
-                        boxShadow: timeRemaining.inHours < 2
-                            ? [BoxShadow(color: AuroraTheme.auroraRed.withOpacity(0.5), blurRadius: 12)]
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(width: 5, height: 5, decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white)),
-                          const SizedBox(width: 4),
-                          Text(_formatTimer(timeRemaining), style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
-                        ],
+                    // Timer pill — soft glass
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const _PulsingDot(),
+                              const SizedBox(width: 5),
+                              Text(
+                                _formatTimer(timeRemaining),
+                                style: TextStyle(
+                                  fontFamily: 'JetBrainsMono',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white.withOpacity(0.85),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -1048,8 +1111,8 @@ class InvitationCard extends StatelessWidget {
                     // Fraunces italic başlık
                     Text(
                       title,
-                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white, height: 1.2),
-                      maxLines: 2,
+                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 12),
@@ -1092,7 +1155,8 @@ class InvitationCard extends StatelessWidget {
 
 class _CityPickerSheet extends StatefulWidget {
   final String? selectedCityId;
-  const _CityPickerSheet({this.selectedCityId});
+  final void Function(String? cityId, String? cityName) onCitySelected;
+  const _CityPickerSheet({this.selectedCityId, required this.onCitySelected});
 
   @override
   State<_CityPickerSheet> createState() => _CityPickerSheetState();
@@ -1296,15 +1360,19 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               name: 'Tüm Şehirler',
                               emoji: '🌍',
                               selected: widget.selectedCityId == null,
-                              onTap: () => Navigator.of(context)
-                                  .pop((id: '', name: '')),
+                              onTap: () {
+                                widget.onCitySelected(null, null);
+                                Navigator.of(context).pop();
+                              },
                             ),
                           ...filtered.map((c) => _CityRow(
                                 name: c.name,
                                 emoji: _cityEmoji(c.name),
                                 selected: widget.selectedCityId == c.id,
-                                onTap: () =>
-                                    Navigator.of(context).pop(c),
+                                onTap: () {
+                                  widget.onCitySelected(c.id, c.name);
+                                  Navigator.of(context).pop();
+                                },
                               )),
                           if (filtered.isEmpty)
                             Padding(
@@ -1476,4 +1544,57 @@ class _CardFallbackGradient extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pulsing Dot — timer pill için animasyonlu kırmızı nokta
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PulsingDot extends StatefulWidget {
+  const _PulsingDot();
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+    _anim = Tween<double>(begin: 0.35, end: 1.0)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _anim,
+        builder: (_, __) => Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AuroraTheme.auroraGold.withOpacity(_anim.value),
+            boxShadow: [
+              BoxShadow(
+                color: AuroraTheme.auroraGold.withOpacity(_anim.value * 0.7),
+                blurRadius: 6,
+              ),
+            ],
+          ),
+        ),
+      );
 }

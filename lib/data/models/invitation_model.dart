@@ -35,9 +35,9 @@ extension InvitationCategoryExt on InvitationCategory {
   String get emoji {
     switch (this) {
       case InvitationCategory.food:
-        return '🥘';
+        return '🍽';
       case InvitationCategory.concert:
-        return '🎸';
+        return '🎵';
       case InvitationCategory.travel:
         return '✈️';
       case InvitationCategory.culture:
@@ -47,7 +47,7 @@ extension InvitationCategoryExt on InvitationCategory {
       case InvitationCategory.theater:
         return '🎭';
       case InvitationCategory.coffee:
-        return '🫖';
+        return '☕';
     }
   }
 }

@@ -1,11 +1,11 @@
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/matches_provider.dart';
@@ -56,13 +56,75 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
-              _buildTabBar(),
+              // Başlık
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                child: ShaderMask(
+                  shaderCallback: (b) =>
+                      AuroraTheme.redBlueGradient.createShader(b),
+                  child: const Text(
+                    'Mesajlar',
+                    style: TextStyle(
+                      fontFamily: 'Fraunces',
+                      fontStyle: FontStyle.italic,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+              ),
+              // Tab bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AuroraTheme.glassBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border:
+                            Border.all(color: AuroraTheme.glassBorder),
+                      ),
+                      child: TabBar(
+                        controller: _tabController,
+                        indicator: BoxDecoration(
+                          gradient: AuroraTheme.redBlueGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        labelStyle: const TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                        ),
+                        labelColor: Colors.white,
+                        unselectedLabelColor:
+                            Colors.white.withOpacity(0.35),
+                        tabs: const [
+                          Tab(text: 'Aktif'),
+                          Tab(text: 'Geçmiş'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -75,56 +137,6 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-      child: Row(
-        children: [
-          ShaderMask(
-            shaderCallback: (b) =>
-                AppColors.primaryGradient.createShader(b),
-            child: Text(
-              'Mesajlar',
-              style: AppTextStyles.headingLarge.copyWith(
-                fontStyle: FontStyle.italic,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      decoration: BoxDecoration(
-        color: AppColors.glassBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.glassBorder),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        labelStyle: AppTextStyles.labelLarge.copyWith(fontSize: 14),
-        unselectedLabelStyle:
-            AppTextStyles.labelMedium.copyWith(fontSize: 14),
-        labelColor: AppColors.textPrimary,
-        unselectedLabelColor: AppColors.textTertiary,
-        tabs: const [
-          Tab(text: 'Aktif'),
-          Tab(text: 'Geçmiş'),
-        ],
       ),
     );
   }
@@ -150,28 +162,34 @@ class _MatchesTab extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off,
-                color: AppColors.textTertiary, size: 40),
+            Icon(Icons.wifi_off,
+                color: AuroraTheme.textMuted, size: 40),
             const SizedBox(height: 12),
-            Text('Bağlantı hatası', style: AppTextStyles.bodyMedium),
+            Text(
+              'Bağlantı hatası',
+              style: TextStyle(
+                  fontFamily: 'Manrope',
+                  color: AuroraTheme.textSecondary),
+            ),
           ],
         ),
       ),
       data: (matches) {
         if (matches.isEmpty) return _EmptyState(isArchived: isArchived);
         return RefreshIndicator(
-          color: AppColors.gradientStart,
-          backgroundColor: AppColors.bgCard,
+          color: AuroraTheme.auroraRed,
+          backgroundColor: AuroraTheme.glassStrong,
           onRefresh: () async {
             ref.invalidate(matchesProvider);
             await Future.delayed(const Duration(milliseconds: 300));
           },
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
             itemCount: matches.length,
-            separatorBuilder: (_, __) =>
-                const Divider(color: AppColors.glassBorder, height: 1),
-            itemBuilder: (ctx, i) => _MatchTile(match: matches[i]),
+            itemBuilder: (ctx, i) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _MatchTile(match: matches[i]),
+            ),
           ),
         );
       },
@@ -180,7 +198,7 @@ class _MatchesTab extends ConsumerWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Match Tile
+// Match Tile — Aurora glass card
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _MatchTile extends StatelessWidget {
@@ -197,80 +215,126 @@ class _MatchTile extends StatelessWidget {
             ? '${match.lastMessage!.substring(0, 35)}…'
             : match.lastMessage!)
         : 'Henüz mesaj yok';
+    final hasUnread = match.unreadCount > 0;
 
-    return InkWell(
-      onTap: () => context.push('/chat/${match.matchId}'),
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            _Avatar(
-              photoUrl: match.otherPhotoUrl,
-              name: match.otherName,
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => context.push('/chat/${match.matchId}'),
+            borderRadius:
+                BorderRadius.circular(AuroraTheme.radiusInfoCard),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: hasUnread
+                    ? AuroraTheme.auroraRed.withOpacity(0.07)
+                    : AuroraTheme.glassBg,
+                borderRadius:
+                    BorderRadius.circular(AuroraTheme.radiusInfoCard),
+                border: Border.all(
+                  color: hasUnread
+                      ? AuroraTheme.auroraRed.withOpacity(0.35)
+                      : AuroraTheme.glassBorder,
+                ),
+              ),
+              child: Row(
                 children: [
-                  Text(
-                    '${match.otherName}, ${match.otherAge}',
-                    style: AppTextStyles.labelLarge.copyWith(fontSize: 16),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    preview,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: match.unreadCount > 0
-                          ? AppColors.textPrimary.withOpacity(0.85)
-                          : AppColors.textTertiary,
+                  _Avatar(
+                      photoUrl: match.otherPhotoUrl,
+                      name: match.otherName),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${match.otherName}, ${match.otherAge}',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: hasUnread
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          preview,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 13,
+                            color: hasUnread
+                                ? Colors.white.withOpacity(0.80)
+                                : AuroraTheme.textMuted,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (timeStr.isNotEmpty)
+                        Text(
+                          timeStr,
+                          style: TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 9,
+                            color: AuroraTheme.textMuted,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      if (hasUnread) ...[
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 3),
+                          decoration: BoxDecoration(
+                            gradient: AuroraTheme.redBlueGradient,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AuroraTheme.auroraRed
+                                    .withOpacity(0.5),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            match.unreadCount > 99
+                                ? '99+'
+                                : '${match.unreadCount}',
+                            style: const TextStyle(
+                              fontFamily: 'JetBrainsMono',
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (timeStr.isNotEmpty)
-                  Text(timeStr, style: AppTextStyles.monoSmall),
-                const SizedBox(height: 6),
-                if (match.unreadCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      match.unreadCount > 99
-                          ? '99+'
-                          : '${match.unreadCount}',
-                      style: AppTextStyles.monoSmall.copyWith(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Avatar
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ── Avatar ────────────────────────────────────────────────────────────────────
 class _Avatar extends StatelessWidget {
   final String? photoUrl;
   final String name;
@@ -282,8 +346,8 @@ class _Avatar extends StatelessWidget {
       return ClipOval(
         child: CachedNetworkImage(
           imageUrl: photoUrl!,
-          width: 60,
-          height: 60,
+          width: 52,
+          height: 52,
           fit: BoxFit.cover,
           errorWidget: (_, __, ___) => _InitialsAvatar(name: name),
         ),
@@ -299,26 +363,31 @@ class _InitialsAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: 60,
-        height: 60,
+        width: 52,
+        height: 52,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          gradient: AppColors.primaryGradient,
+          gradient: LinearGradient(
+            colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Center(
           child: Text(
             name.isNotEmpty ? name[0].toUpperCase() : '?',
-            style: AppTextStyles.titleLarge
-                .copyWith(color: Colors.white, fontSize: 22),
+            style: const TextStyle(
+              fontFamily: 'JetBrainsMono',
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Empty State
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ── Empty State ───────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
   final bool isArchived;
   const _EmptyState({required this.isArchived});
@@ -339,14 +408,23 @@ class _EmptyState extends StatelessWidget {
                 isArchived
                     ? 'Geçmiş sohbetin yok'
                     : 'Henüz aktif sohbetin yok',
-                style: AppTextStyles.titleMedium,
+                style: const TextStyle(
+                  fontFamily: 'Fraunces',
+                  fontStyle: FontStyle.italic,
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
                 textAlign: TextAlign.center,
               ),
               if (!isArchived) ...[
                 const SizedBox(height: 8),
                 Text(
                   'Bir davet aç veya mevcut davete başvur',
-                  style: AppTextStyles.bodyMedium,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -361,66 +439,22 @@ class _EmptyState extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Skeleton loader
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 class _SkeletonList extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => ListView.separated(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+  Widget build(BuildContext context) => ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
         itemCount: 6,
-        separatorBuilder: (_, __) =>
-            const Divider(color: AppColors.glassBorder, height: 1),
-        itemBuilder: (_, __) => const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              _SkeletonCircle(size: 60),
-              SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SkeletonBar(width: 120, height: 14),
-                    SizedBox(height: 6),
-                    _SkeletonBar(width: 200, height: 12),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8),
-              _SkeletonBar(width: 36, height: 11),
-            ],
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Container(
+            height: 76,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius:
+                  BorderRadius.circular(AuroraTheme.radiusInfoCard),
+            ),
           ),
-        ),
-      );
-}
-
-class _SkeletonCircle extends StatelessWidget {
-  final double size;
-  const _SkeletonCircle({required this.size});
-  @override
-  Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.glassBgMedium,
-        ),
-      );
-}
-
-class _SkeletonBar extends StatelessWidget {
-  final double width;
-  final double height;
-  const _SkeletonBar({required this.width, required this.height});
-  @override
-  Widget build(BuildContext context) => Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: AppColors.glassBgMedium,
-          borderRadius: BorderRadius.circular(6),
         ),
       );
 }

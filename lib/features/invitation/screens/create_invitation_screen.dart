@@ -297,7 +297,8 @@ class _StepFlowType extends StatelessWidget {
           _FlowTypeCard(
             title: 'Ismarlıyorum',
             subtitle: 'Birini de götürmek istiyorum, masraf benden',
-            icon: '🥂',
+            icon: Icons.wine_bar_rounded,
+            gradientColors: const [Color(0xFFFF2D55), Color(0xFF8B5CF6)],
             isSelected: selected == InvitationFlowType.invite,
             onTap: () => onSelected(InvitationFlowType.invite),
           ),
@@ -305,7 +306,8 @@ class _StepFlowType extends StatelessWidget {
           _FlowTypeCard(
             title: 'İstiyorum',
             subtitle: 'Gitmek istediğim bir yer var, birlikte gelen olsun',
-            icon: '✨',
+            icon: Icons.explore_rounded,
+            gradientColors: const [Color(0xFF2D7FFF), Color(0xFF8B5CF6)],
             isSelected: selected == InvitationFlowType.request,
             onTap: () => onSelected(InvitationFlowType.request),
           ),
@@ -318,13 +320,15 @@ class _StepFlowType extends StatelessWidget {
 class _FlowTypeCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String icon;
+  final IconData icon;
+  final List<Color> gradientColors;
   final bool isSelected;
   final VoidCallback onTap;
   const _FlowTypeCard({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.gradientColors,
     required this.isSelected,
     required this.onTap,
   });
@@ -349,7 +353,26 @@ class _FlowTypeCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Text(icon, style: const TextStyle(fontSize: 32)),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: gradientColors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: gradientColors[0].withOpacity(0.45),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: Colors.white, size: 26),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

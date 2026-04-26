@@ -293,9 +293,10 @@ class _NotifTile extends StatelessWidget {
                       ],
                     ),
                     child: Center(
-                      child: Text(
-                        item.iconEmoji,
-                        style: const TextStyle(fontSize: 20),
+                      child: Icon(
+                        item.iconData,
+                        color: Colors.white,
+                        size: 22,
                       ),
                     ),
                   ),

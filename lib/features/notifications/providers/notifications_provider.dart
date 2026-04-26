@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -40,26 +41,26 @@ class NotificationItem {
     return '/feed';
   }
 
-  String get iconEmoji {
+  IconData get iconData {
     switch (type) {
       case 'selected':
-        return '🎉';
+        return Icons.celebration_rounded;
       case 'not_selected':
-        return '😔';
+        return Icons.sentiment_dissatisfied_rounded;
       case 'new_message':
-        return '💬';
+        return Icons.chat_rounded;
       case 'new_application':
-        return '👋';
+        return Icons.person_add_rounded;
       case 'selfie_approved':
-        return '✅';
+        return Icons.verified_user_rounded;
       case 'selfie_rejected':
-        return '❌';
+        return Icons.cancel_rounded;
       case 'meeting_reminder':
-        return '⏰';
+        return Icons.schedule_rounded;
       case 'feedback_request':
-        return '❓';
+        return Icons.rate_review_rounded;
       default:
-        return '🔔';
+        return Icons.notifications_rounded;
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -22,6 +23,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   InvitationCategory? _selectedCategory;
+  String? _selectedCityId;
+  String? _selectedCityName;
 
   @override
   void initState() {
@@ -35,6 +38,21 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     super.dispose();
   }
 
+  Future<void> _showCityPicker() async {
+    final result = await showModalBottomSheet<({String id, String name})>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => _CityPickerSheet(selectedCityId: _selectedCityId),
+    );
+    if (result != null) {
+      setState(() {
+        _selectedCityId = result.id.isEmpty ? null : result.id;
+        _selectedCityName = result.id.isEmpty ? null : result.name;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +62,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           child: Column(
             children: [
               _Header(
-                onCityTap: () {},
+                cityName: _selectedCityName ?? 'Tüm Şehirler',
+                onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
               ),
               _StoryBar(),
@@ -62,10 +81,12 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                     _InvitationList(
                       flowType: InvitationFlowType.invite,
                       category: _selectedCategory,
+                      cityId: _selectedCityId,
                     ),
                     _InvitationList(
                       flowType: InvitationFlowType.request,
                       category: _selectedCategory,
+                      cityId: _selectedCityId,
                     ),
                   ],
                 ),
@@ -83,10 +104,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _Header extends ConsumerWidget {
+  final String cityName;
   final VoidCallback onCityTap;
   final VoidCallback onNotificationTap;
 
-  const _Header({required this.onCityTap, required this.onNotificationTap});
+  const _Header({required this.cityName, required this.onCityTap, required this.onNotificationTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,7 +143,7 @@ class _Header extends ConsumerWidget {
                 const Icon(Icons.location_on,
                     size: 13, color: AuroraTheme.auroraRed),
                 const SizedBox(width: 4),
-                Text('Moskova',
+                Text(cityName,
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 11,
@@ -703,14 +725,15 @@ class _CategoryChips extends StatelessWidget {
 class _InvitationList extends ConsumerWidget {
   final InvitationFlowType flowType;
   final InvitationCategory? category;
+  final String? cityId;
 
   const _InvitationList(
-      {required this.flowType, required this.category});
+      {required this.flowType, required this.category, this.cityId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter =
-        InvitationFilter(flowType: flowType, category: category);
+        InvitationFilter(flowType: flowType, category: category, cityId: cityId);
     final async = ref.watch(invitationsProvider(filter));
 
     return async.when(
@@ -1057,6 +1080,224 @@ class InvitationCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// City Picker Bottom Sheet
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _CityPickerSheet extends StatefulWidget {
+  final String? selectedCityId;
+  const _CityPickerSheet({this.selectedCityId});
+
+  @override
+  State<_CityPickerSheet> createState() => _CityPickerSheetState();
+}
+
+class _CityPickerSheetState extends State<_CityPickerSheet> {
+  List<({String id, String name})>? _cities;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCities();
+  }
+
+  Future<void> _fetchCities() async {
+    final data = await Supabase.instance.client
+        .from('cities')
+        .select('id, name')
+        .order('name');
+    if (!mounted) return;
+    setState(() {
+      _cities = (data as List)
+          .map((r) => (id: r['id'] as String, name: r['name'] as String))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AuroraTheme.bgDeep.withOpacity(0.92),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.12), width: 0.8),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Başlık
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    ShaderMask(
+                      shaderCallback: (b) =>
+                          AuroraTheme.redBlueGradient.createShader(b),
+                      child: const Text(
+                        'Şehir Seç',
+                        style: TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              // "Tüm Şehirler" seçeneği
+              _CityRow(
+                name: 'Tüm Şehirler',
+                emoji: '🌍',
+                selected: widget.selectedCityId == null,
+                onTap: () => Navigator.of(context).pop((id: '', name: '')),
+              ),
+              const SizedBox(height: 4),
+              // Şehir listesi
+              if (_cities == null)
+                const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+                    ),
+                  ),
+                )
+              else
+                ..._cities!.map((c) => _CityRow(
+                      name: c.name,
+                      emoji: _cityEmoji(c.name),
+                      selected: widget.selectedCityId == c.id,
+                      onTap: () => Navigator.of(context).pop(c),
+                    )),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _cityEmoji(String name) {
+    switch (name.toLowerCase()) {
+      case 'moskova':
+      case 'moscow':
+      case 'saint petersburg':
+      case 'st. petersburg':
+      case 'petersburg':
+        return '🇷🇺';
+      case 'istanbul':
+      case 'İstanbul':
+        return '🇹🇷';
+      case 'londra':
+      case 'london':
+        return '🇬🇧';
+      case 'dubai':
+        return '🇦🇪';
+      case 'berlin':
+        return '🇩🇪';
+      default:
+        return '📍';
+    }
+  }
+}
+
+class _CityRow extends StatelessWidget {
+  final String name;
+  final String emoji;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _CityRow({
+    required this.name,
+    required this.emoji,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: selected
+              ? const LinearGradient(
+                  colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : null,
+          color: selected ? null : AuroraTheme.glassBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? Colors.transparent
+                : AuroraTheme.glassBorder,
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AuroraTheme.auroraRed.withOpacity(0.3),
+                    blurRadius: 12,
+                  )
+                ]
+              : null,
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 12),
+            Text(
+              name,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: selected ? Colors.white : AuroraTheme.textSecondary,
+              ),
+            ),
+            const Spacer(),
+            if (selected)
+              const Icon(Icons.check_circle_rounded,
+                  color: Colors.white, size: 20),
+          ],
         ),
       ),
     );

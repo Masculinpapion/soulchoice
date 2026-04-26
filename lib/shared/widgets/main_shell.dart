@@ -2,8 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/aurora_theme.dart';
 
 class MainShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -12,29 +11,31 @@ class MainShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: _GlassNavBar(
+      bottomNavigationBar: _AuroraNavBar(
         currentBranchIndex: navigationShell.currentIndex,
-        onBranchTap: (branchIndex) {
-          navigationShell.goBranch(
-            branchIndex,
-            initialLocation: branchIndex == navigationShell.currentIndex,
-          );
-        },
+        onBranchTap: (i) => navigationShell.goBranch(
+          i,
+          initialLocation: i == navigationShell.currentIndex,
+        ),
         onFabTap: () => context.push('/invitation/create'),
       ),
     );
   }
 }
 
-class _GlassNavBar extends StatelessWidget {
+// ─────────────────────────────────────────────────────────────────────────────
+// Aurora bottom nav bar — floating pill, FAB yüksekte
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AuroraNavBar extends StatelessWidget {
   final int currentBranchIndex;
   final ValueChanged<int> onBranchTap;
   final VoidCallback onFabTap;
 
-  const _GlassNavBar({
+  const _AuroraNavBar({
     required this.currentBranchIndex,
     required this.onBranchTap,
     required this.onFabTap,
@@ -45,84 +46,105 @@ class _GlassNavBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final bottomPad = MediaQuery.of(context).padding.bottom;
 
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          height: 72 + bottomPad,
-          padding: EdgeInsets.only(bottom: bottomPad),
-          decoration: const BoxDecoration(
-            color: Color(0x18FFFFFF),
-            border: Border(
-              top: BorderSide(color: AppColors.glassBorder),
-            ),
-          ),
-          child: Row(
-            children: [
-              _NavItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home_rounded,
-                label: l10n.nav_home,
-                isActive: currentBranchIndex == 0,
-                onTap: () => onBranchTap(0),
-              ),
-              _NavItem(
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore_rounded,
-                label: l10n.nav_discover,
-                isActive: currentBranchIndex == 1,
-                onTap: () => onBranchTap(1),
-              ),
-              // FAB (center)
-              Expanded(
-                child: Center(
-                  child: GestureDetector(
-                    onTap: onFabTap,
-                    child: Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: AppColors.primaryGradient,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.gradientStart.withOpacity(0.45),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
-                          ),
-                          BoxShadow(
-                            color: AppColors.gradientEnd.withOpacity(0.20),
-                            blurRadius: 20,
-                            offset: const Offset(4, 0),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 26,
-                      ),
-                    ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPad + 12),
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          // Pill nav
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+              child: Container(
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A0A0E).withOpacity(0.75),
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.12),
+                    width: 1,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.55),
+                      blurRadius: 60,
+                      offset: const Offset(0, 20),
+                    ),
+                    BoxShadow(
+                      color: AuroraTheme.auroraRed.withOpacity(0.08),
+                      blurRadius: 40,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    _NavItem(
+                      icon: Icons.home_outlined,
+                      activeIcon: Icons.home_rounded,
+                      label: l10n.nav_home,
+                      isActive: currentBranchIndex == 0,
+                      onTap: () => onBranchTap(0),
+                    ),
+                    _NavItem(
+                      icon: Icons.explore_outlined,
+                      activeIcon: Icons.explore_rounded,
+                      label: l10n.nav_discover,
+                      isActive: currentBranchIndex == 1,
+                      onTap: () => onBranchTap(1),
+                    ),
+                    // FAB boşluk
+                    const Expanded(child: SizedBox()),
+                    _NavItem(
+                      icon: Icons.chat_bubble_outline_rounded,
+                      activeIcon: Icons.chat_bubble_rounded,
+                      label: l10n.nav_messages,
+                      isActive: currentBranchIndex == 2,
+                      onTap: () => onBranchTap(2),
+                    ),
+                    _NavItem(
+                      icon: Icons.person_outline_rounded,
+                      activeIcon: Icons.person_rounded,
+                      label: l10n.nav_profile,
+                      isActive: currentBranchIndex == 3,
+                      onTap: () => onBranchTap(3),
+                    ),
+                  ],
                 ),
               ),
-              _NavItem(
-                icon: Icons.chat_bubble_outline_rounded,
-                activeIcon: Icons.chat_bubble_rounded,
-                label: l10n.nav_messages,
-                isActive: currentBranchIndex == 2,
-                onTap: () => onBranchTap(2),
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                activeIcon: Icons.person_rounded,
-                label: l10n.nav_profile,
-                isActive: currentBranchIndex == 3,
-                onTap: () => onBranchTap(3),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          // FAB — ortada, pill'in üstüne çıkıyor
+          Positioned(
+            top: -18,
+            child: GestureDetector(
+              onTap: onFabTap,
+              child: Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AuroraTheme.redBlueGradient,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AuroraTheme.auroraRed.withOpacity(0.55),
+                      blurRadius: 32,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.45),
+                      blurRadius: 24,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add_rounded,
+                    color: Colors.white, size: 26),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -147,7 +169,8 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) => Expanded(
         child: InkWell(
           onTap: onTap,
-          splashColor: AppColors.gradientStart.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(100),
+          splashColor: AuroraTheme.auroraRed.withOpacity(0.08),
           highlightColor: Colors.transparent,
           child: SizedBox(
             height: double.infinity,
@@ -157,20 +180,23 @@ class _NavItem extends StatelessWidget {
                 isActive
                     ? ShaderMask(
                         shaderCallback: (b) =>
-                            AppColors.primaryGradient.createShader(b),
+                            AuroraTheme.redBlueGradient.createShader(b),
                         child: Icon(activeIcon,
                             color: Colors.white, size: 22),
                       )
                     : Icon(icon,
-                        color: AppColors.textTertiary, size: 22),
+                        color: Colors.white.withOpacity(0.35), size: 22),
                 const SizedBox(height: 3),
                 Text(
                   label,
-                  style: AppTextStyles.monoSmall.copyWith(
-                    color: isActive
-                        ? AppColors.gradientStart
-                        : AppColors.textTertiary,
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
                     fontSize: 9,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                    color: isActive
+                        ? AuroraTheme.auroraRed
+                        : Colors.white.withOpacity(0.30),
                   ),
                 ),
               ],

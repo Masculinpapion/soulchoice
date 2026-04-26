@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/aurora_theme.dart';
 
-/// Premium frosted glass card with backdrop blur.
+/// Aurora glassmorphism card — güçlendirilmiş blur ve border.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -18,7 +18,7 @@ class GlassCard extends StatelessWidget {
     this.padding,
     this.borderRadius,
     this.borderColor,
-    this.blurStrength = 20,
+    this.blurStrength = 30,
     this.onTap,
     this.backgroundColor,
   });
@@ -26,26 +26,35 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = borderRadius ?? BorderRadius.circular(20);
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurStrength, sigmaY: blurStrength),
-          child: Container(
-            padding: padding ?? const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.glassBgMedium,
-              borderRadius: radius,
-              border: Border.all(
-                color: borderColor ?? AppColors.glassBorder,
-                width: 1,
-              ),
+    final card = ClipRRect(
+      borderRadius: radius,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blurStrength, sigmaY: blurStrength),
+        child: Container(
+          padding: padding ?? const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: backgroundColor ?? AuroraTheme.glassBg,
+            borderRadius: radius,
+            border: Border.all(
+              color: borderColor ?? AuroraTheme.glassBorder,
+              width: 1,
             ),
-            child: child,
           ),
+          child: child,
         ),
       ),
     );
+
+    if (onTap != null) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: card,
+        ),
+      );
+    }
+    return card;
   }
 }

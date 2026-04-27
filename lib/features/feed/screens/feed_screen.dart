@@ -798,8 +798,9 @@ class _InvitationList extends ConsumerStatefulWidget {
 }
 
 class _InvitationListState extends ConsumerState<_InvitationList> {
-  late final PageController _pageController;
+  late PageController _pageController;
   double _currentPage = 0;
+  bool _ringInitialized = false;
 
   @override
   void initState() {
@@ -807,6 +808,19 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     _pageController = PageController(viewportFraction: 0.72);
     _pageController.addListener(() {
       if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
+    });
+  }
+
+  // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
+  void _initRing(int length) {
+    if (_ringInitialized || length == 0) return;
+    _ringInitialized = true;
+    final start = length * 500; // her zaman item[0]'dan başlar (length*500 % length == 0)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _pageController.hasClients) {
+        _pageController.jumpToPage(start);
+        setState(() => _currentPage = start.toDouble());
+      }
     });
   }
 
@@ -871,6 +885,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
             ),
           );
         }
+        _initRing(invitations.length);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -897,9 +912,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
               child: PageView.builder(
                 controller: _pageController,
                 padEnds: true,
-                itemCount: invitations.length,
+                itemCount: invitations.length * 1000,
                 itemBuilder: (_, i) {
-                  final inv = invitations[i];
+                  final inv = invitations[i % invitations.length];
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
                   final scale = 1.0 - absOffset * 0.08;
                   final opacity = (1.0 - absOffset * 0.85).clamp(0.0, 1.0);
@@ -939,7 +954,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                             eventDate: inv.eventDate,
                             flowType: flowType,
                             cardWidth: double.infinity,
-                            onTap: () => context.push('/invitation/${inv.id}'),
+                            onTap: () => context.push('/invitation/${inv.id}'), // inv zaten doğru item
                           ),
                         ),
                       ),

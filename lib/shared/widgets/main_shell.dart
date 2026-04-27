@@ -118,7 +118,7 @@ class _AuroraNavBar extends StatelessWidget {
 
           // FAB — ortada, pill'in üstüne çıkıyor
           Positioned(
-            top: -18,
+            top: -5,
             child: GestureDetector(
               onTap: onFabTap,
               child: Container(

@@ -900,31 +900,47 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 itemCount: invitations.length,
                 itemBuilder: (_, i) {
                   final inv = invitations[i];
-                  final distance = (_currentPage - i).abs().clamp(0.0, 1.0);
-                  final scale = 1.0 - distance * 0.04;
-                  final opacity = (1.0 - distance * 0.35).clamp(0.0, 1.0);
+                  final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
+                  final scale = 1.0 - absOffset * 0.18;
+                  final opacity = (1.0 - absOffset * 0.30).clamp(0.0, 1.0);
+                  final shadowOpacity = (0.55 - absOffset * 0.48).clamp(0.0, 0.55);
+                  final shadowBlur = 32.0 + absOffset * 16;
+                  final shadowOffset = 18.0 - absOffset * 6;
                   return Transform.scale(
                     scale: scale,
                     child: Opacity(
                       opacity: opacity,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: InvitationCard(
-                          title: inv.title,
-                          category: inv.category,
-                          venueName: inv.venueName ?? '',
-                          ownerName: inv.owner?.name ?? '—',
-                          ownerAge: inv.owner?.age ?? 0,
-                          ownerPhotoUrl: inv.ownerPhotoUrl,
-                          ownerCity: inv.cityName,
-                          ownerVerified: inv.owner?.verified ?? false,
-                          timeRemaining: inv.timeRemaining,
-                          applicationCount: inv.applicationCount ?? 0,
-                          applicantPhotoUrls: inv.applicantPhotoUrls,
-                          eventDate: inv.eventDate,
-                          flowType: flowType,
-                          cardWidth: double.infinity,
-                          onTap: () => context.push('/invitation/${inv.id}'),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(shadowOpacity),
+                                blurRadius: shadowBlur,
+                                spreadRadius: -8,
+                                offset: Offset(0, shadowOffset),
+                              ),
+                            ],
+                          ),
+                          child: InvitationCard(
+                            title: inv.title,
+                            category: inv.category,
+                            venueName: inv.venueName ?? '',
+                            ownerName: inv.owner?.name ?? '—',
+                            ownerAge: inv.owner?.age ?? 0,
+                            ownerPhotoUrl: inv.ownerPhotoUrl,
+                            ownerCity: inv.cityName,
+                            ownerVerified: inv.owner?.verified ?? false,
+                            timeRemaining: inv.timeRemaining,
+                            applicationCount: inv.applicationCount ?? 0,
+                            applicantPhotoUrls: inv.applicantPhotoUrls,
+                            eventDate: inv.eventDate,
+                            flowType: flowType,
+                            cardWidth: double.infinity,
+                            onTap: () => context.push('/invitation/${inv.id}'),
+                          ),
                         ),
                       ),
                     ),

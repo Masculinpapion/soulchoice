@@ -804,7 +804,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.88);
+    _pageController = PageController(viewportFraction: 0.65);
     _pageController.addListener(() {
       if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
     });
@@ -896,18 +896,19 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                padEnds: true,
+                padEnds: false,
                 itemCount: invitations.length,
                 itemBuilder: (_, i) {
                   final inv = invitations[i];
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
-                  final scale = 1.0 - absOffset * 0.18;
-                  final opacity = (1.0 - absOffset * 0.30).clamp(0.0, 1.0);
-                  final shadowOpacity = (0.55 - absOffset * 0.48).clamp(0.0, 0.55);
-                  final shadowBlur = 32.0 + absOffset * 16;
-                  final shadowOffset = 18.0 - absOffset * 6;
+                  final scale = 1.0 - absOffset * 0.10;
+                  final opacity = (1.0 - absOffset * 0.25).clamp(0.0, 1.0);
+                  final shadowOpacity = (0.45 - absOffset * 0.35).clamp(0.0, 0.45);
+                  final shadowBlur = 28.0 + absOffset * 12;
+                  final shadowOffset = 16.0 - absOffset * 4;
                   return Transform.scale(
-                    scale: scale,
+                    scaleX: scale,
+                    scaleY: 1.0,
                     child: Opacity(
                       opacity: opacity,
                       child: Padding(
@@ -1053,18 +1054,19 @@ class InvitationCard extends StatelessWidget {
               else
                 _CardFallbackGradient(ownerName: ownerName, category: category),
 
-              // 2. Gradient overlay — sadece alt %45, yüzü kapatmaz
+              // 2. Gradient overlay — alt %35, yüz temiz kalır, alt köşe net görünür
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.55, 1.0],
+                      stops: const [0.0, 0.60, 0.82, 1.0],
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.40),
-                        Colors.black.withOpacity(0.96),
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.50),
+                        Colors.black.withOpacity(0.84),
                       ],
                     ),
                   ),

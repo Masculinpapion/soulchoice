@@ -268,7 +268,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
     final otherUser = _matchInfo?['other'] as Map<String, dynamic>?;
     final otherName = otherUser?['name'] as String? ?? '—';
+    final otherAge = (otherUser?['age'] as int?) ?? 0;
     final invTitle = inv?['title'] as String? ?? '';
+    final invVenue = inv?['venue_name'] as String? ?? '';
+    final invDate = inv?['event_date'] != null
+        ? DateTime.tryParse(inv!['event_date'] as String)
+        : null;
     final isArchived = _archivedAt != null ||
         (_meetingDate != null &&
             DateTime.now()
@@ -276,20 +281,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
-        child: _ChatAppBar(
-          otherName: otherName,
-          invTitle: invTitle,
-          photoUrl: _matchInfo?['photoUrl'] as String?,
-          onBack: () => context.pop(),
-        ),
-      ),
       body: AmbientBackground(
         child: Column(
           children: [
-            // Event badge — sadece başlık doluysa göster
-            if (inv != null && invTitle.isNotEmpty) _EventBadge(title: invTitle),
+            _ChatAppBar(
+              otherName: otherName,
+              otherAge: otherAge,
+              photoUrl: _matchInfo?['photoUrl'] as String?,
+              onBack: () => context.pop(),
+            ),
+            // Event badge — davet bilgisi özeti
+            if (invTitle.isNotEmpty)
+              _EventBadge(title: invTitle, venue: invVenue, eventDate: invDate),
 
             // Archived banner
             if (isArchived) const _ArchivedBanner(),
@@ -475,55 +478,82 @@ class _BannerButton extends StatelessWidget {
 
 class _ChatAppBar extends StatelessWidget {
   final String otherName;
-  final String invTitle;
+  final int otherAge;
   final String? photoUrl;
   final VoidCallback onBack;
   const _ChatAppBar({
     required this.otherName,
-    required this.invTitle,
+    required this.otherAge,
     this.photoUrl,
     required this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AuroraTheme.bgDeep,
-      child: SafeArea(
+    return SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
           child: Row(
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new,
-                    color: AppColors.textPrimary, size: 20),
+                    color: Colors.white, size: 20),
                 onPressed: onBack,
               ),
-              if (photoUrl != null)
-                ClipOval(
-                  child: Image.network(
-                    photoUrl!,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
+              // Avatar — gradient ring
+              Container(
+                width: 46,
+                height: 46,
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet, AuroraTheme.auroraBlue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                )
-              else
-                _DefaultAvatar(name: otherName),
+                  shape: BoxShape.circle,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AuroraTheme.bgDeep, width: 1.5),
+                  ),
+                  child: ClipOval(
+                    child: photoUrl != null
+                        ? Image.network(
+                            photoUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
+                          )
+                        : _DefaultAvatar(name: otherName),
+                  ),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(otherName, style: AppTextStyles.titleMedium),
-                    if (invTitle.isNotEmpty)
+                    Text(
+                      otherName,
+                      style: const TextStyle(
+                        fontFamily: 'Fraunces',
+                        fontStyle: FontStyle.italic,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    if (otherAge > 0)
                       Text(
-                        invTitle,
-                        style: AppTextStyles.monoSmall,
-                        overflow: TextOverflow.ellipsis,
+                        '$otherAge yaş',
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 11,
+                          color: Colors.white.withOpacity(0.50),
+                        ),
                       ),
                   ],
                 ),
@@ -531,8 +561,7 @@ class _ChatAppBar extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -564,46 +593,52 @@ class _DefaultAvatar extends StatelessWidget {
 
 class _EventBadge extends StatelessWidget {
   final String title;
-  const _EventBadge({required this.title});
+  final String venue;
+  final DateTime? eventDate;
+  const _EventBadge({required this.title, this.venue = '', this.eventDate});
+
+  String get _label {
+    final parts = <String>[title];
+    if (venue.isNotEmpty) parts.add(venue.toUpperCase());
+    if (eventDate != null) {
+      final h = eventDate!.hour.toString().padLeft(2, '0');
+      final m = eventDate!.minute.toString().padLeft(2, '0');
+      parts.add('$h:$m');
+    }
+    return parts.join(' · ');
+  }
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.gradientStart.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                    color: AppColors.gradientStart.withOpacity(0.25)),
-              ),
-              child: Row(
-                children: [
-                  ShaderMask(
-                    shaderCallback: (b) =>
-                        AppColors.primaryGradient.createShader(b),
-                    child: const Icon(Icons.event,
-                        size: 16, color: Colors.white),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      title.toUpperCase(),
-                      style: AppTextStyles.monoSmall.copyWith(
-                        color: AppColors.textSecondary,
-                        letterSpacing: 0.5,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: AuroraTheme.auroraRed.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(color: AuroraTheme.auroraRed.withOpacity(0.22)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+              child: const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.white),
+            ),
+            const SizedBox(width: 7),
+            Flexible(
+              child: Text(
+                _label.toUpperCase(),
+                style: const TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white60,
+                  letterSpacing: 0.8,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
+          ],
         ),
       );
 }
@@ -757,40 +792,58 @@ class _InputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-              16, 10, 16, MediaQuery.of(context).padding.bottom + 10),
-          decoration: const BoxDecoration(
-            color: AppColors.glassBg,
-            border: Border(top: BorderSide(color: AppColors.glassBorder)),
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            AuroraTheme.bgDeep.withOpacity(0.0),
+            AuroraTheme.bgDeep,
+          ],
+          stops: const [0.0, 0.38],
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(
+          16, 24, 16, MediaQuery.of(context).padding.bottom + 10),
           child: Row(
             children: [
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.glassBgMedium,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: AppColors.glassBorder),
+                child: TextField(
+                  controller: controller,
+                  style: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: Colors.white,
                   ),
-                  child: TextField(
-                    controller: controller,
-                    style: AppTextStyles.bodyLarge,
-                    maxLines: null,
-                    decoration: InputDecoration(
-                      hintText: 'Mesaj yaz...',
-                      hintStyle: AppTextStyles.bodyMedium,
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 12),
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: 'Mesaj yaz...',
+                    hintStyle: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.35),
                     ),
-                    onSubmitted: (_) => onSend(),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.07),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                          color: AuroraTheme.auroraRed.withOpacity(0.6),
+                          width: 1),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 12),
                   ),
+                  onSubmitted: (_) => onSend(),
                 ),
               ),
               const SizedBox(width: 10),
@@ -816,8 +869,6 @@ class _InputBar extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        );
   }
 }

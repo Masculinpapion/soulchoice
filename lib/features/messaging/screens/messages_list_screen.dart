@@ -399,11 +399,8 @@ class _EmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                isArchived ? '📚' : '💬',
-                style: const TextStyle(fontSize: 56),
-              ),
-              const SizedBox(height: 20),
+              _EmptyStateIcon(isArchived: isArchived),
+              const SizedBox(height: 24),
               Text(
                 isArchived
                     ? 'Geçmiş sohbetin yok'
@@ -436,6 +433,165 @@ class _EmptyState extends StatelessWidget {
             ],
           ),
         ),
+      );
+}
+
+// ── Empty State Icon ──────────────────────────────────────────────────────────
+class _EmptyStateIcon extends StatelessWidget {
+  final bool isArchived;
+  const _EmptyStateIcon({required this.isArchived});
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 104,
+        height: 104,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Outer glow halo
+            Container(
+              width: 104,
+              height: 104,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    (isArchived
+                            ? AuroraTheme.auroraViolet
+                            : AuroraTheme.auroraRed)
+                        .withOpacity(0.22),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+            // Glass ring
+            ClipOval(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                child: Container(
+                  width: 78,
+                  height: 78,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.05),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.11),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Icon
+            if (isArchived)
+              _ArchiveIconLayers()
+            else
+              _ActiveIconLayers(),
+          ],
+        ),
+      );
+}
+
+class _ArchiveIconLayers extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 54,
+        height: 54,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Back bubble — upper-right, violet, muted
+            Positioned(
+              right: 0,
+              top: 2,
+              child: Icon(
+                Icons.chat_bubble_rounded,
+                size: 34,
+                color: AuroraTheme.auroraViolet.withOpacity(0.36),
+              ),
+            ),
+            // Front bubble — lower-left, aurora gradient
+            Positioned(
+              left: 0,
+              bottom: 0,
+              child: ShaderMask(
+                shaderCallback: (b) =>
+                    AuroraTheme.redBlueGradient.createShader(b),
+                child: const Icon(
+                  Icons.chat_bubble_rounded,
+                  size: 40,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            // Tiny clock badge — bottom-right
+            Positioned(
+              right: 1,
+              bottom: 1,
+              child: Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AuroraTheme.bgDeep,
+                  border: Border.all(
+                    color: AuroraTheme.auroraViolet.withOpacity(0.50),
+                    width: 1,
+                  ),
+                ),
+                child: Icon(
+                  Icons.schedule_rounded,
+                  size: 11,
+                  color: AuroraTheme.auroraViolet.withOpacity(0.80),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _ActiveIconLayers extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          // Main bubble — aurora gradient
+          ShaderMask(
+            shaderCallback: (b) =>
+                AuroraTheme.redBlueGradient.createShader(b),
+            child: const Icon(
+              Icons.chat_bubble_rounded,
+              size: 44,
+              color: Colors.white,
+            ),
+          ),
+          // Glowing spark dot — top-right
+          Positioned(
+            right: -2,
+            top: -2,
+            child: Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AuroraTheme.redBlueGradient,
+                boxShadow: [
+                  BoxShadow(
+                    color: AuroraTheme.auroraRed.withOpacity(0.65),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.add_rounded,
+                size: 12,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       );
 }
 

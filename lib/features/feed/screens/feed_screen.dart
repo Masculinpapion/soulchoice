@@ -804,7 +804,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.65);
+    _pageController = PageController(viewportFraction: 0.72);
     _pageController.addListener(() {
       if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
     });
@@ -896,19 +896,18 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                padEnds: false,
+                padEnds: true,
                 itemCount: invitations.length,
                 itemBuilder: (_, i) {
                   final inv = invitations[i];
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
-                  final scale = 1.0 - absOffset * 0.10;
-                  final opacity = (1.0 - absOffset * 0.25).clamp(0.0, 1.0);
+                  final scale = 1.0 - absOffset * 0.08;
+                  final opacity = (1.0 - absOffset * 0.85).clamp(0.0, 1.0);
                   final shadowOpacity = (0.45 - absOffset * 0.35).clamp(0.0, 0.45);
                   final shadowBlur = 28.0 + absOffset * 12;
                   final shadowOffset = 16.0 - absOffset * 4;
                   return Transform.scale(
-                    scaleX: scale,
-                    scaleY: 1.0,
+                    scale: scale,
                     child: Opacity(
                       opacity: opacity,
                       child: Padding(

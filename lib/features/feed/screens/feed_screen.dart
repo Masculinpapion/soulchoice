@@ -800,7 +800,7 @@ class _InvitationList extends ConsumerStatefulWidget {
 class _InvitationListState extends ConsumerState<_InvitationList> {
   late PageController _pageController;
   double _currentPage = 0;
-  bool _ringInitialized = false;
+  int _ringLength = 0; // son bilinen liste uzunluğu
 
   @override
   void initState() {
@@ -811,11 +811,11 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     });
   }
 
-  // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
+  // Liste uzunluğu değişince (filtre vs.) güvenli şekilde sıfırla
   void _initRing(int length) {
-    if (_ringInitialized || length == 0) return;
-    _ringInitialized = true;
-    final start = length * 500; // her zaman item[0]'dan başlar (length*500 % length == 0)
+    if (length == 0 || length == _ringLength) return;
+    _ringLength = length;
+    final start = length * 500; // length*500 % length == 0, her zaman item[0]
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _pageController.hasClients) {
         _pageController.jumpToPage(start);

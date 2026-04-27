@@ -799,11 +799,15 @@ class _InvitationList extends ConsumerStatefulWidget {
 
 class _InvitationListState extends ConsumerState<_InvitationList> {
   late final PageController _pageController;
+  double _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.88);
+    _pageController.addListener(() {
+      if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
+    });
   }
 
   @override
@@ -896,24 +900,33 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 itemCount: invitations.length,
                 itemBuilder: (_, i) {
                   final inv = invitations[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: InvitationCard(
-                      title: inv.title,
-                      category: inv.category,
-                      venueName: inv.venueName ?? '',
-                      ownerName: inv.owner?.name ?? '—',
-                      ownerAge: inv.owner?.age ?? 0,
-                      ownerPhotoUrl: inv.ownerPhotoUrl,
-                      ownerCity: inv.cityName,
-                      ownerVerified: inv.owner?.verified ?? false,
-                      timeRemaining: inv.timeRemaining,
-                      applicationCount: inv.applicationCount ?? 0,
-                      applicantPhotoUrls: inv.applicantPhotoUrls,
-                      eventDate: inv.eventDate,
-                      flowType: flowType,
-                      cardWidth: double.infinity,
-                      onTap: () => context.push('/invitation/${inv.id}'),
+                  final distance = (_currentPage - i).abs().clamp(0.0, 1.0);
+                  final scale = 1.0 - distance * 0.04;
+                  final opacity = (1.0 - distance * 0.35).clamp(0.0, 1.0);
+                  return Transform.scale(
+                    scale: scale,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: InvitationCard(
+                          title: inv.title,
+                          category: inv.category,
+                          venueName: inv.venueName ?? '',
+                          ownerName: inv.owner?.name ?? '—',
+                          ownerAge: inv.owner?.age ?? 0,
+                          ownerPhotoUrl: inv.ownerPhotoUrl,
+                          ownerCity: inv.cityName,
+                          ownerVerified: inv.owner?.verified ?? false,
+                          timeRemaining: inv.timeRemaining,
+                          applicationCount: inv.applicationCount ?? 0,
+                          applicantPhotoUrls: inv.applicantPhotoUrls,
+                          eventDate: inv.eventDate,
+                          flowType: flowType,
+                          cardWidth: double.infinity,
+                          onTap: () => context.push('/invitation/${inv.id}'),
+                        ),
+                      ),
                     ),
                   );
                 },

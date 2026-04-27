@@ -785,7 +785,7 @@ class _CategoryChips extends StatelessWidget {
 // Invitation List
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _InvitationList extends ConsumerWidget {
+class _InvitationList extends ConsumerStatefulWidget {
   final InvitationFlowType flowType;
   final InvitationCategory? category;
   final String? cityId;
@@ -794,9 +794,29 @@ class _InvitationList extends ConsumerWidget {
       {required this.flowType, required this.category, this.cityId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final filter =
-        InvitationFilter(flowType: flowType, category: category, cityId: cityId);
+  ConsumerState<_InvitationList> createState() => _InvitationListState();
+}
+
+class _InvitationListState extends ConsumerState<_InvitationList> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.88);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final flowType = widget.flowType;
+    final filter = InvitationFilter(
+        flowType: flowType, category: widget.category, cityId: widget.cityId);
     final async = ref.watch(invitationsProvider(filter));
 
     return async.when(
@@ -870,14 +890,14 @@ class _InvitationList extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: PageView.builder(
+                controller: _pageController,
+                padEnds: true,
                 itemCount: invitations.length,
                 itemBuilder: (_, i) {
                   final inv = invitations[i];
                   return Padding(
-                    padding: const EdgeInsets.only(right: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: InvitationCard(
                       title: inv.title,
                       category: inv.category,
@@ -892,6 +912,7 @@ class _InvitationList extends ConsumerWidget {
                       applicantPhotoUrls: inv.applicantPhotoUrls,
                       eventDate: inv.eventDate,
                       flowType: flowType,
+                      cardWidth: double.infinity,
                       onTap: () => context.push('/invitation/${inv.id}'),
                     ),
                   );
@@ -924,6 +945,7 @@ class InvitationCard extends StatelessWidget {
   final DateTime? eventDate;
   final VoidCallback onTap;
   final InvitationFlowType flowType;
+  final double? cardWidth;
 
   const InvitationCard({
     super.key,
@@ -941,6 +963,7 @@ class InvitationCard extends StatelessWidget {
     this.eventDate,
     required this.onTap,
     this.flowType = InvitationFlowType.invite,
+    this.cardWidth,
   });
 
   String _formatTimer(Duration d) {
@@ -969,7 +992,7 @@ class InvitationCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 280,
+        width: cardWidth ?? 280,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           boxShadow: [

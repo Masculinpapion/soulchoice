@@ -2,7 +2,7 @@ name: Flutter APK Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, design/aurora ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:   # Manuel tetikleme butonu

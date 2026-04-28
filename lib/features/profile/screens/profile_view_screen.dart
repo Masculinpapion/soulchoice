@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/widgets/aurora/glass_card.dart';
+import '../../../core/widgets/aurora/glass_pill.dart';
 import '../providers/profile_provider.dart';
 
 class ProfileViewScreen extends ConsumerStatefulWidget {
@@ -54,7 +56,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             child: Text(
               '$e',
               style: TextStyle(
-                  fontFamily: 'Manrope', color: AuroraTheme.textSecondary),
+                  fontFamily: AuroraTheme.fontBody,
+                  color: AuroraTheme.textSecondary),
             ),
           ),
           data: (user) {
@@ -63,7 +66,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                 child: Text(
                   'Profil bulunamadı',
                   style: TextStyle(
-                      fontFamily: 'Manrope', color: AuroraTheme.textSecondary),
+                      fontFamily: AuroraTheme.fontBody,
+                      color: AuroraTheme.textSecondary),
                 ),
               );
             }
@@ -119,9 +123,9 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(
-                          24,
-                          8,
-                          24,
+                          AuroraTheme.spacingXL,
+                          AuroraTheme.spacingS,
+                          AuroraTheme.spacingXL,
                           bottomPad + kBottomNavigationBarHeight + 20,
                         ),
                         child: _GradientCTA(
@@ -136,15 +140,15 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                     ),
 
                     const SliverPadding(
-                        padding: EdgeInsets.only(bottom: 32)),
+                        padding: EdgeInsets.only(bottom: AuroraTheme.spacingXXL)),
                   ],
                 ),
 
                 // ── Overlay: back + action buttons ───────────────────────
                 Positioned(
-                  top: topPad + 8,
-                  left: 8,
-                  right: 8,
+                  top: topPad + AuroraTheme.spacingS,
+                  left: AuroraTheme.spacingS,
+                  right: AuroraTheme.spacingS,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -156,7 +160,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         children: [
                           if (!isOwnProfile && currentUid != null) ...[
                             _FavoriteButton(targetUserId: userId),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: AuroraTheme.spacingXS),
                           ],
                           _GlassIconButton(
                             icon: isOwnProfile
@@ -276,7 +280,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                 key: ValueKey(url),
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
-                errorBuilder: (_, __, ___) => _NoPhotoPlaceholder(),
+                errorBuilder: (_, _, _) => _NoPhotoPlaceholder(),
               ),
             )
           else
@@ -294,7 +298,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF050709).withOpacity(0.60),
+                    AuroraTheme.bgDeep.withOpacity(0.60),
                     Colors.transparent,
                   ],
                 ),
@@ -337,7 +341,8 @@ class _PhotoHeroState extends State<_PhotoHero> {
                 children: List.generate(widget.photos.length, (i) {
                   final isActive = i == widget.currentIndex;
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AuroraTheme.spacingXS - 1),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -356,7 +361,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                                 BoxShadow(
                                   color: AuroraTheme.auroraRed
                                       .withOpacity(0.50),
-                                  blurRadius: 8,
+                                  blurRadius: AuroraTheme.spacingS,
                                 ),
                               ]
                             : null,
@@ -369,9 +374,9 @@ class _PhotoHeroState extends State<_PhotoHero> {
 
           // ── Identity overlay — bottom of hero ──────────────────────────
           Positioned(
-            left: 24,
-            right: 24,
-            bottom: 32,
+            left: AuroraTheme.spacingXL,
+            right: AuroraTheme.spacingXL,
+            bottom: AuroraTheme.spacingXXL,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -383,18 +388,16 @@ class _PhotoHeroState extends State<_PhotoHero> {
                     Flexible(
                       child: Text(
                         '${widget.name}, ${widget.age}',
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
+                        style: TextStyle(
+                          fontFamily: AuroraTheme.fontDisplay,
                           fontStyle: FontStyle.italic,
                           fontSize: 44,
                           fontWeight: FontWeight.w500,
                           letterSpacing: -0.88, // -0.02em @ 44px
                           color: Colors.white,
                           height: 1.05,
-                          shadows: [
-                            Shadow(
-                                blurRadius: 24,
-                                color: Colors.black87),
+                          shadows: const [
+                            Shadow(blurRadius: 24, color: Colors.black87),
                           ],
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -410,9 +413,8 @@ class _PhotoHeroState extends State<_PhotoHero> {
                           gradient: AuroraTheme.redBlueGradient,
                           boxShadow: [
                             BoxShadow(
-                              color: AuroraTheme.auroraRed
-                                  .withOpacity(0.40),
-                              blurRadius: 16,
+                              color: AuroraTheme.auroraRed.withOpacity(0.40),
+                              blurRadius: AuroraTheme.spacingL,
                             ),
                           ],
                         ),
@@ -445,8 +447,7 @@ class _MetaLine extends StatelessWidget {
   final String cityName;
   final String? job;
   final String? education;
-  const _MetaLine(
-      {required this.cityName, this.job, this.education});
+  const _MetaLine({required this.cityName, this.job, this.education});
 
   @override
   Widget build(BuildContext context) {
@@ -461,16 +462,16 @@ class _MetaLine extends StatelessWidget {
     final spans = <InlineSpan>[];
     for (int i = 0; i < parts.length; i++) {
       if (i > 0) {
-        spans.add(const WidgetSpan(
+        spans.add(WidgetSpan(
           alignment: PlaceholderAlignment.middle,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: SizedBox(
               width: 3,
               height: 3,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Color(0x66FFFFFF),
+                  color: AuroraTheme.metaSeparator,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -483,12 +484,12 @@ class _MetaLine extends StatelessWidget {
 
     return Text.rich(
       TextSpan(children: spans),
-      style: const TextStyle(
-        fontFamily: 'JetBrainsMono',
+      style: TextStyle(
+        fontFamily: AuroraTheme.fontMono,
         fontSize: 11,
         fontWeight: FontWeight.w500,
         letterSpacing: 1.76, // 0.16em @ 11px
-        color: Color(0xC7FFFFFF), // rgba(255,255,255,0.78)
+        color: AuroraTheme.textMetaLine,
       ),
     );
   }
@@ -538,7 +539,12 @@ class _ContentSection extends StatelessWidget {
     return ColoredBox(
       color: AuroraTheme.bgDeep,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+        padding: const EdgeInsets.fromLTRB(
+          AuroraTheme.spacingXL,
+          28,
+          AuroraTheme.spacingXL,
+          0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -546,28 +552,28 @@ class _ContentSection extends StatelessWidget {
             // ── Bio — editorial pull-quote ────────────────────────────────
             if (bio != null && bio!.isNotEmpty) ...[
               _BioPullQuote(text: bio!),
-              const SizedBox(height: 36),
+              const SizedBox(height: AuroraTheme.spacingXXXL),
             ],
 
             // ── Interests ─────────────────────────────────────────────────
             if (interests.isNotEmpty) ...[
               const _SectionHeader(label: 'İlgi Alanları'),
-              const SizedBox(height: 16),
+              const SizedBox(height: AuroraTheme.spacingL),
               SizedBox(
                 height: 38,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.zero,
                   itemCount: interests.length,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(width: 8),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(width: AuroraTheme.spacingS),
                   itemBuilder: (_, i) => _InterestPill(
                     label: interests[i],
                     accent: i == 0,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
+              const SizedBox(height: AuroraTheme.spacingXXXL),
             ],
 
             // ── Prompts ───────────────────────────────────────────────────
@@ -580,11 +586,12 @@ class _ContentSection extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const _SectionHeader(label: 'İfadeler'),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AuroraTheme.spacingL),
                     ...list.map((p) {
                       final map = p as Map<String, dynamic>;
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.only(
+                            bottom: AuroraTheme.spacingM),
                         child: _PromptCard(
                           question: _questionLabel(
                               map['question_key'] as String),
@@ -592,7 +599,7 @@ class _ContentSection extends StatelessWidget {
                         ),
                       );
                     }),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AuroraTheme.spacingM),
                   ],
                 );
               },
@@ -622,18 +629,18 @@ class _BioPullQuote extends StatelessWidget {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AuroraTheme.spacingL),
             Expanded(
               child: Text(
-                '"$text"',
-                style: const TextStyle(
-                  fontFamily: 'Fraunces',
+                text,
+                style: TextStyle(
+                  fontFamily: AuroraTheme.fontDisplay,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.w400,
                   fontSize: 18,
                   height: 1.55,
                   letterSpacing: -0.09, // -0.005em @ 18px
-                  color: Color(0xE1FFFFFF), // rgba(255,255,255,0.88)
+                  color: AuroraTheme.textPullQuote,
                 ),
               ),
             ),
@@ -661,54 +668,40 @@ class _SectionHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AuroraTheme.spacingM),
           Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              fontFamily: 'JetBrainsMono',
+            style: TextStyle(
+              fontFamily: AuroraTheme.fontMono,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.98, // 0.18em @ 11px
-              color: Color(0x8CFFFFFF), // rgba(255,255,255,0.55)
+              color: AuroraTheme.textSectionLabel,
             ),
           ),
         ],
       );
 }
 
-// ── Interest Pill — horizontal scroll glass pill ───────────────────────────────
+// ── Interest Pill — horizontal scroll, uses AuroraGlassPill ──────────────────
 class _InterestPill extends StatelessWidget {
   final String label;
   final bool accent;
   const _InterestPill({required this.label, this.accent = false});
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-        decoration: BoxDecoration(
-          color: accent ? null : Colors.white.withOpacity(0.06),
-          gradient: accent
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0x2EFF2D55), // rgba(255,45,85,0.18)
-                    Color(0x2E2D7FFF), // rgba(45,127,255,0.18)
-                  ],
-                )
-              : null,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(
-            color: accent
-                ? AuroraTheme.auroraRed.withOpacity(0.35)
-                : Colors.white.withOpacity(0.12),
-          ),
-        ),
+  Widget build(BuildContext context) => AuroraGlassPill(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AuroraTheme.spacingL,
+            vertical: 9),
+        backgroundGradient: accent ? AuroraTheme.redBlueSoftGradient : null,
+        borderColor: accent
+            ? AuroraTheme.auroraRed.withOpacity(0.35)
+            : AuroraTheme.glassBorder,
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: 'Manrope',
+            fontFamily: AuroraTheme.fontBody,
             fontSize: 13,
             fontWeight: FontWeight.w500,
             letterSpacing: -0.065, // -0.005em @ 13px
@@ -718,79 +711,66 @@ class _InterestPill extends StatelessWidget {
       );
 }
 
-// ── Prompt Card — neutral bar, 22px Fraunces italic ───────────────────────────
+// ── Prompt Card — uses AuroraGlassCard, neutral left bar ─────────────────────
 class _PromptCard extends StatelessWidget {
   final String question;
   final String answer;
   const _PromptCard({required this.question, required this.answer});
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
-              borderRadius: BorderRadius.circular(20),
-              border:
-                  Border.all(color: Colors.white.withOpacity(0.12)),
-            ),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Left accent bar — neutral white
-                  Container(
-                    width: 2,
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  // Content
-                  Expanded(
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.fromLTRB(18, 18, 20, 22),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            question.toUpperCase(),
-                            style: const TextStyle(
-                              fontFamily: 'JetBrainsMono',
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 1.4, // 0.14em @ 10px
-                              color: Color(
-                                  0x6BFFFFFF), // rgba(255,255,255,0.42)
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            answer,
-                            style: const TextStyle(
-                              fontFamily: 'Fraunces',
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 22,
-                              height: 1.3,
-                              letterSpacing: -0.22, // -0.01em @ 22px
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+  Widget build(BuildContext context) => AuroraGlassCard(
+        radius: AuroraTheme.radiusInfoCard,
+        padding: EdgeInsets.zero,
+        blurRadius: 20,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Left accent bar — neutral white
+              Container(
+                width: 2,
+                margin: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: AuroraTheme.glassBarNeutral,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
+              // Content
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 18, 20, 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        question.toUpperCase(),
+                        style: TextStyle(
+                          fontFamily: AuroraTheme.fontMono,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 1.4, // 0.14em @ 10px
+                          color: AuroraTheme.textPromptLabel,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        answer,
+                        style: TextStyle(
+                          fontFamily: AuroraTheme.fontDisplay,
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 22,
+                          height: 1.3,
+                          letterSpacing: -0.22, // -0.01em @ 22px
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -813,7 +793,7 @@ class _GradientCTA extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: AuroraTheme.auroraRed.withOpacity(0.28),
-                blurRadius: 32,
+                blurRadius: AuroraTheme.spacingXXL,
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
@@ -826,8 +806,8 @@ class _GradientCTA extends StatelessWidget {
           child: Center(
             child: Text(
               label,
-              style: const TextStyle(
-                fontFamily: 'Manrope',
+              style: TextStyle(
+                fontFamily: AuroraTheme.fontBody,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
                 letterSpacing: 0.08, // 0.005em @ 16px
@@ -992,13 +972,13 @@ class _ActionSheet extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: ctx,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF0D0D12),
+        backgroundColor: AuroraTheme.bgSoft,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: const Text(
+        title: Text(
           'Kullanıcıyı engelle',
           style: TextStyle(
-              fontFamily: 'Fraunces',
+              fontFamily: AuroraTheme.fontDisplay,
               fontStyle: FontStyle.italic,
               fontSize: 18,
               color: Colors.white),
@@ -1006,7 +986,7 @@ class _ActionSheet extends StatelessWidget {
         content: Text(
           'Bu kullanıcıyı engellemek istediğine emin misin?',
           style: TextStyle(
-              fontFamily: 'Manrope',
+              fontFamily: AuroraTheme.fontBody,
               fontSize: 14,
               color: AuroraTheme.textSecondary),
         ),
@@ -1015,14 +995,14 @@ class _ActionSheet extends StatelessWidget {
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Vazgeç',
                 style: TextStyle(
-                    fontFamily: 'Manrope',
+                    fontFamily: AuroraTheme.fontBody,
                     color: AuroraTheme.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Engelle',
+            child: Text('Engelle',
                 style: TextStyle(
-                    fontFamily: 'Manrope',
+                    fontFamily: AuroraTheme.fontBody,
                     color: AuroraTheme.auroraRed,
                     fontWeight: FontWeight.w700)),
           ),
@@ -1038,9 +1018,11 @@ class _ActionSheet extends StatelessWidget {
     });
     if (ctx.mounted) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content:
-            Text('${targetName ?? 'Kullanıcı'} engellendi'),
-        backgroundColor: const Color(0xFF10B981),
+        content: Text(
+          '${targetName ?? 'Kullanıcı'} engellendi',
+          style: TextStyle(fontFamily: AuroraTheme.fontBody),
+        ),
+        backgroundColor: AuroraTheme.successGreen,
       ));
       ctx.pop();
     }
@@ -1054,7 +1036,7 @@ class _ActionSheet extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF0D0D12).withOpacity(0.90),
+              color: AuroraTheme.bgSoft.withOpacity(0.90),
               borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(28)),
               border: Border(
@@ -1065,7 +1047,7 @@ class _ActionSheet extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AuroraTheme.spacingM),
                   Container(
                     width: 36,
                     height: 4,
@@ -1074,13 +1056,13 @@ class _ActionSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AuroraTheme.spacingS),
                   ListTile(
                     leading: const Icon(Icons.block,
                         color: AuroraTheme.auroraRed),
-                    title: const Text('Kullanıcıyı engelle',
+                    title: Text('Kullanıcıyı engelle',
                         style: TextStyle(
-                            fontFamily: 'Manrope',
+                            fontFamily: AuroraTheme.fontBody,
                             fontSize: 15,
                             color: Colors.white)),
                     onTap: () => _block(context),
@@ -1088,9 +1070,9 @@ class _ActionSheet extends StatelessWidget {
                   ListTile(
                     leading: Icon(Icons.flag_outlined,
                         color: AuroraTheme.auroraGold),
-                    title: const Text('Rapor et',
+                    title: Text('Rapor et',
                         style: TextStyle(
-                            fontFamily: 'Manrope',
+                            fontFamily: AuroraTheme.fontBody,
                             fontSize: 15,
                             color: Colors.white)),
                     onTap: () {
@@ -1103,12 +1085,12 @@ class _ActionSheet extends StatelessWidget {
                         color: AuroraTheme.textMuted),
                     title: Text('İptal',
                         style: TextStyle(
-                            fontFamily: 'Manrope',
+                            fontFamily: AuroraTheme.fontBody,
                             fontSize: 15,
                             color: AuroraTheme.textSecondary)),
                     onTap: () => Navigator.pop(context),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AuroraTheme.spacingL),
                 ],
               ),
             ),
@@ -1161,7 +1143,7 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
                   child: CachedNetworkImage(
                     imageUrl: url,
                     fit: BoxFit.contain,
-                    errorWidget: (_, __, ___) => const Icon(
+                    errorWidget: (_, _, _) => const Icon(
                         Icons.broken_image_outlined,
                         color: Colors.white54,
                         size: 60),

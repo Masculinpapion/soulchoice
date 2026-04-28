@@ -11,6 +11,7 @@ class AuroraGlassCard extends StatelessWidget {
   final Color? borderColor;
   final List<BoxShadow>? customShadow;
   final VoidCallback? onTap;
+  final double blurRadius;
 
   const AuroraGlassCard({
     super.key,
@@ -22,6 +23,7 @@ class AuroraGlassCard extends StatelessWidget {
     this.borderColor,
     this.customShadow,
     this.onTap,
+    this.blurRadius = 30,
   });
 
   @override
@@ -29,7 +31,7 @@ class AuroraGlassCard extends StatelessWidget {
     final card = ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        filter: ImageFilter.blur(sigmaX: blurRadius, sigmaY: blurRadius),
         child: Container(
           width: width,
           height: height,

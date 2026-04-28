@@ -59,6 +59,22 @@ class AuroraTheme {
     ),
   ];
 
+  // ── Background variants ───────────────────────────────────────────────────
+  static const Color bgSoft = Color(0xFF0A0D12);
+
+  // ── Extended text colors (mockup-spec opacity stops) ──────────────────────
+  static Color textMetaLine     = Colors.white.withOpacity(0.78);
+  static Color textPullQuote    = Colors.white.withOpacity(0.88);
+  static Color textSectionLabel = Colors.white.withOpacity(0.55);
+  static Color textPromptLabel  = Colors.white.withOpacity(0.42);
+  static Color metaSeparator    = Colors.white.withOpacity(0.40);
+
+  // ── Glass variants ────────────────────────────────────────────────────────
+  static Color glassBarNeutral  = Colors.white.withOpacity(0.18);
+
+  // ── Accent colors ─────────────────────────────────────────────────────────
+  static const Color successGreen = Color(0xFF10B981);
+
   // ── Radius ────────────────────────────────────────────────────────────────
   static const double radiusCard      = 28.0;
   static const double radiusGlassPill = 100.0;
@@ -66,11 +82,13 @@ class AuroraTheme {
   static const double radiusSmall     = 12.0;
 
   // ── Spacing ───────────────────────────────────────────────────────────────
-  static const double spacingXS = 4.0;
-  static const double spacingS  = 8.0;
-  static const double spacingM  = 12.0;
-  static const double spacingL  = 16.0;
-  static const double spacingXL = 24.0;
+  static const double spacingXS   = 4.0;
+  static const double spacingS    = 8.0;
+  static const double spacingM    = 12.0;
+  static const double spacingL    = 16.0;
+  static const double spacingXL   = 24.0;
+  static const double spacingXXL  = 32.0;
+  static const double spacingXXXL = 36.0;
 
   // ── Typography ────────────────────────────────────────────────────────────
   static const String fontDisplay = 'Fraunces';
@@ -98,5 +116,12 @@ class AuroraTheme {
     color: textMuted,
     letterSpacing: 2,
     height: 1.4,
+  );
+
+  // ── Soft gradient (accent pill) ───────────────────────────────────────────
+  static const LinearGradient redBlueSoftGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0x2EFF2D55), Color(0x2E2D7FFF)],
   );
 }

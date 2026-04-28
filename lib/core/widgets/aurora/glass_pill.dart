@@ -6,6 +6,8 @@ class AuroraGlassPill extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
   final Color? borderColor;
+  final Color? backgroundColor;
+  final Gradient? backgroundGradient;
   final VoidCallback? onTap;
 
   const AuroraGlassPill({
@@ -13,6 +15,8 @@ class AuroraGlassPill extends StatelessWidget {
     required this.child,
     this.padding,
     this.borderColor,
+    this.backgroundColor,
+    this.backgroundGradient,
     this.onTap,
   });
 
@@ -26,7 +30,10 @@ class AuroraGlassPill extends StatelessWidget {
           padding: padding ??
               const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color: AuroraTheme.glassBg,
+            color: backgroundGradient == null
+                ? (backgroundColor ?? AuroraTheme.glassBg)
+                : null,
+            gradient: backgroundGradient,
             borderRadius: BorderRadius.circular(100),
             border: Border.all(
               color: borderColor ?? AuroraTheme.glassBorder,

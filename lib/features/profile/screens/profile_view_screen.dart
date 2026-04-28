@@ -435,7 +435,8 @@ class _IdentityOverlay extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
             Flexible(
               child: Text(
@@ -456,10 +457,10 @@ class _IdentityOverlay extends StatelessWidget {
               ),
             ),
             if (verified) ...[
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Container(
-                width: 32,
-                height: 32,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: AuroraTheme.redBlueGradient,
@@ -470,7 +471,7 @@ class _IdentityOverlay extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.check, color: Colors.white, size: 16),
+                child: const Icon(Icons.check, color: Colors.white, size: 14),
               ),
             ],
           ],

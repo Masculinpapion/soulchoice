@@ -131,14 +131,12 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                     ),
 
                     // ── Content section ───────────────────────────────────
-                    // FIX #5: topPadding = topPad + 56 ensures first section
-                    // header never conflicts with fixed back button overlay.
                     SliverToBoxAdapter(
                       child: _ContentSection(
                         bio: bio,
                         interests: interests,
                         promptsAsync: promptsAsync,
-                        topPadding: topPad + 56,
+                        topPadding: 28,
                       ),
                     ),
 

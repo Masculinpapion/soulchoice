@@ -76,8 +76,8 @@ class AuroraTheme {
   static const Color successGreen = Color(0xFF10B981);
 
   // ── Scroll clearance ──────────────────────────────────────────────────────
-  // nav(72) + margin(16) + safety(22) = 110
-  static const double scrollBottomSafetyHeight = 110.0;
+  // nav(72) + margin(16) + safety(52) = 140
+  static const double scrollBottomSafetyHeight = 140.0;
 
   // ── Radius ────────────────────────────────────────────────────────────────
   static const double radiusCard      = 28.0;

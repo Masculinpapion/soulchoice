@@ -109,20 +109,63 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                     setState(() => _photoIndex = i),
                               ),
                             ),
-                            // FIX #1: identity is a sibling Positioned —
-                            // always clipped to SizedBox height
-                            // FIX #2: left:24 right:24 ensures padding
+                            // Identity overlay — foto Stack'i içinde
                             Positioned(
-                              left: AuroraTheme.spacingXL,
-                              right: AuroraTheme.spacingXL,
-                              bottom: AuroraTheme.spacingXXL,
-                              child: _IdentityOverlay(
-                                name: name,
-                                age: age,
-                                verified: verified,
-                                cityName: cityName,
-                                job: job,
-                                education: education,
+                              left: 24,
+                              right: 24,
+                              bottom: 32,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          '$name, $age',
+                                          style: TextStyle(
+                                            fontFamily: AuroraTheme.fontDisplay,
+                                            fontStyle: FontStyle.italic,
+                                            fontSize: 44,
+                                            fontWeight: FontWeight.w500,
+                                            letterSpacing: -0.88,
+                                            color: Colors.white,
+                                            height: 1.05,
+                                            shadows: const [
+                                              Shadow(blurRadius: 24, color: Colors.black87),
+                                            ],
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (verified) ...[
+                                        const SizedBox(width: 10),
+                                        Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            gradient: AuroraTheme.redBlueGradient,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: AuroraTheme.auroraRed.withOpacity(0.40),
+                                                blurRadius: AuroraTheme.spacingL,
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Icon(Icons.check, color: Colors.white, size: 14),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  _MetaLine(
+                                    cityName: cityName,
+                                    job: job,
+                                    education: education,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -403,88 +446,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
             ),
         ],
       ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Identity Overlay — name, age, verified badge, meta line
-// Rendered as Positioned inside wrapper Stack, not inside _PhotoHero.
-// ─────────────────────────────────────────────────────────────────────────────
-class _IdentityOverlay extends StatelessWidget {
-  final String name;
-  final int age;
-  final bool verified;
-  final String cityName;
-  final String? job;
-  final String? education;
-
-  const _IdentityOverlay({
-    required this.name,
-    required this.age,
-    required this.verified,
-    required this.cityName,
-    this.job,
-    this.education,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              child: Text(
-                '$name, $age',
-                style: TextStyle(
-                  fontFamily: AuroraTheme.fontDisplay,
-                  fontStyle: FontStyle.italic,
-                  fontSize: 44,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: -0.88, // -0.02em @ 44px
-                  color: Colors.white,
-                  height: 1.05,
-                  shadows: const [
-                    Shadow(blurRadius: 24, color: Colors.black87),
-                  ],
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (verified) ...[
-              const SizedBox(width: 12),
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: AuroraTheme.redBlueGradient,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AuroraTheme.auroraRed.withOpacity(0.40),
-                      blurRadius: AuroraTheme.spacingL,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.check, color: Colors.white, size: 14),
-              ),
-            ],
-          ],
-        ),
-
-        const SizedBox(height: 8),
-
-        // Meta line: CITY · JOB · EDU
-        _MetaLine(
-          cityName: cityName,
-          job: job,
-          education: education,
-        ),
-      ],
     );
   }
 }

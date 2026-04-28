@@ -299,6 +299,25 @@ class _PhotoHeroState extends State<_PhotoHero> {
           else
             _NoPhotoPlaceholder(),
 
+          // ── Full-coverage dark overlay — photo barely visible (mockup) ─
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black87,
+                    Color(0xB3000000), // 70%
+                    Color(0x33000000), // 20%
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 0.38, 0.60, 0.72],
+                ),
+              ),
+            ),
+          ),
+
           // ── Top scrim — status bar + button legibility ─────────────────
           Positioned(
             top: 0,
@@ -440,10 +459,9 @@ class _IdentityOverlay extends StatelessWidget {
             ),
             if (verified) ...[
               const SizedBox(width: 10),
-              // FIX #3: 24×24, gradient ring, icon size 14 (was 13)
               Container(
-                width: 24,
-                height: 24,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: AuroraTheme.redBlueGradient,
@@ -454,8 +472,7 @@ class _IdentityOverlay extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.check,
-                    color: Colors.white, size: 14), // FIX #3
+                child: const Icon(Icons.check, color: Colors.white, size: 16),
               ),
             ],
           ],
@@ -670,7 +687,7 @@ class _BioPullQuote extends StatelessWidget {
             const SizedBox(width: AuroraTheme.spacingL),
             Expanded(
               child: Text(
-                text,
+                '\u201C$text\u201D',
                 style: TextStyle(
                   fontFamily: AuroraTheme.fontDisplay,
                   fontStyle: FontStyle.italic,
@@ -698,12 +715,11 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // FIX #8: SizedBox enforces exactly 40px; Opacity wraps only this
           Opacity(
             opacity: 0.6,
             child: SizedBox(
               width: 40,
-              height: 1,
+              height: 2,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: AuroraTheme.redBlueGradient,

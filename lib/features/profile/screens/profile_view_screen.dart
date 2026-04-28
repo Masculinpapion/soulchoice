@@ -91,35 +91,58 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                 // ── Scrollable content ───────────────────────────────────
                 CustomScrollView(
                   slivers: [
-                    // Hero — 75% of screen height
+                    // ── Hero — 75% of screen height ───────────────────────
+                    // FIX #1 + #2: Wrapper Stack so identity Positioned is
+                    // guaranteed inside the SizedBox bounds, not inside
+                    // _PhotoHero's internal Stack (which had constraint issues).
                     SliverToBoxAdapter(
                       child: SizedBox(
                         height: screenHeight * 0.75,
-                        child: _PhotoHero(
-                          photos: photos,
-                          currentIndex: _photoIndex,
-                          onIndexChanged: (i) =>
-                              setState(() => _photoIndex = i),
-                          name: name,
-                          age: age,
-                          verified: verified,
-                          cityName: cityName,
-                          job: job,
-                          education: education,
+                        child: Stack(
+                          children: [
+                            // Photo fills entire hero area
+                            Positioned.fill(
+                              child: _PhotoHero(
+                                photos: photos,
+                                currentIndex: _photoIndex,
+                                onIndexChanged: (i) =>
+                                    setState(() => _photoIndex = i),
+                              ),
+                            ),
+                            // FIX #1: identity is a sibling Positioned —
+                            // always clipped to SizedBox height
+                            // FIX #2: left:24 right:24 ensures padding
+                            Positioned(
+                              left: AuroraTheme.spacingXL,
+                              right: AuroraTheme.spacingXL,
+                              bottom: AuroraTheme.spacingXXL,
+                              child: _IdentityOverlay(
+                                name: name,
+                                age: age,
+                                verified: verified,
+                                cityName: cityName,
+                                job: job,
+                                education: education,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
 
-                    // Content section
+                    // ── Content section ───────────────────────────────────
+                    // FIX #5: topPadding = topPad + 56 ensures first section
+                    // header never conflicts with fixed back button overlay.
                     SliverToBoxAdapter(
                       child: _ContentSection(
                         bio: bio,
                         interests: interests,
                         promptsAsync: promptsAsync,
+                        topPadding: topPad + 56,
                       ),
                     ),
 
-                    // CTA
+                    // ── CTA ───────────────────────────────────────────────
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(
@@ -139,12 +162,16 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                       ),
                     ),
 
-                    const SliverPadding(
-                        padding: EdgeInsets.only(bottom: AuroraTheme.spacingXXL)),
+                    // FIX #6: bottom clearance so last prompt + CTA are
+                    // fully visible above the bottom nav bar.
+                    const SliverToBoxAdapter(
+                      child: SizedBox(
+                          height: AuroraTheme.scrollBottomSafetyHeight),
+                    ),
                   ],
                 ),
 
-                // ── Overlay: back + action buttons ───────────────────────
+                // ── Fixed overlay: back + action buttons ─────────────────
                 Positioned(
                   top: topPad + AuroraTheme.spacingS,
                   left: AuroraTheme.spacingS,
@@ -168,8 +195,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                 : Icons.more_horiz,
                             onTap: isOwnProfile
                                 ? () => context.push('/settings')
-                                : () =>
-                                    _showActionSheet(context, userId),
+                                : () => _showActionSheet(context, userId),
                           ),
                         ],
                       ),
@@ -195,29 +221,18 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Photo Hero — Aurora v2
+// Photo Hero — photo display + swipe gestures + scrim + fade + dots
+// Identity overlay is handled by caller (wrapper Stack + Positioned)
 // ─────────────────────────────────────────────────────────────────────────────
 class _PhotoHero extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
-  final String name;
-  final int age;
-  final bool verified;
-  final String cityName;
-  final String? job;
-  final String? education;
 
   const _PhotoHero({
     required this.photos,
     required this.currentIndex,
     required this.onIndexChanged,
-    required this.name,
-    required this.age,
-    required this.verified,
-    required this.cityName,
-    this.job,
-    this.education,
   });
 
   @override
@@ -330,7 +345,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
             ),
           ),
 
-          // ── Dot indicator — top center ─────────────────────────────────
+          // ── Dot indicator — top center (preserved ✓) ───────────────────
           if (widget.photos.length > 1)
             Positioned(
               top: topPad + 14,
@@ -341,17 +356,15 @@ class _PhotoHeroState extends State<_PhotoHero> {
                 children: List.generate(widget.photos.length, (i) {
                   final isActive = i == widget.currentIndex;
                   return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AuroraTheme.spacingXS - 1),
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                       width: isActive ? 22.0 : 6.0,
                       height: 6.0,
                       decoration: BoxDecoration(
-                        gradient: isActive
-                            ? AuroraTheme.redBlueGradient
-                            : null,
+                        gradient:
+                            isActive ? AuroraTheme.redBlueGradient : null,
                         color: isActive
                             ? null
                             : Colors.white.withOpacity(0.35),
@@ -359,8 +372,8 @@ class _PhotoHeroState extends State<_PhotoHero> {
                         boxShadow: isActive
                             ? [
                                 BoxShadow(
-                                  color: AuroraTheme.auroraRed
-                                      .withOpacity(0.50),
+                                  color:
+                                      AuroraTheme.auroraRed.withOpacity(0.50),
                                   blurRadius: AuroraTheme.spacingS,
                                 ),
                               ]
@@ -371,73 +384,94 @@ class _PhotoHeroState extends State<_PhotoHero> {
                 }),
               ),
             ),
-
-          // ── Identity overlay — bottom of hero ──────────────────────────
-          Positioned(
-            left: AuroraTheme.spacingXL,
-            right: AuroraTheme.spacingXL,
-            bottom: AuroraTheme.spacingXXL,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Name + Age + Verified
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${widget.name}, ${widget.age}',
-                        style: TextStyle(
-                          fontFamily: AuroraTheme.fontDisplay,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 44,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: -0.88, // -0.02em @ 44px
-                          color: Colors.white,
-                          height: 1.05,
-                          shadows: const [
-                            Shadow(blurRadius: 24, color: Colors.black87),
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (widget.verified) ...[
-                      const SizedBox(width: 10),
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AuroraTheme.redBlueGradient,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AuroraTheme.auroraRed.withOpacity(0.40),
-                              blurRadius: AuroraTheme.spacingL,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.check,
-                            color: Colors.white, size: 13),
-                      ),
-                    ],
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                // Meta line: CITY · JOB · EDU
-                _MetaLine(
-                  cityName: widget.cityName,
-                  job: widget.job,
-                  education: widget.education,
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Identity Overlay — name, age, verified badge, meta line
+// Rendered as Positioned inside wrapper Stack, not inside _PhotoHero.
+// ─────────────────────────────────────────────────────────────────────────────
+class _IdentityOverlay extends StatelessWidget {
+  final String name;
+  final int age;
+  final bool verified;
+  final String cityName;
+  final String? job;
+  final String? education;
+
+  const _IdentityOverlay({
+    required this.name,
+    required this.age,
+    required this.verified,
+    required this.cityName,
+    this.job,
+    this.education,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // FIX #3, #4: Name + Age + Verified badge
+        // Row with center alignment; badge 24×24, icon size 14
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(
+                '$name, $age',
+                style: TextStyle(
+                  fontFamily: AuroraTheme.fontDisplay,
+                  fontStyle: FontStyle.italic,
+                  fontSize: 44,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: -0.88, // -0.02em @ 44px
+                  color: Colors.white,
+                  height: 1.05,
+                  shadows: const [
+                    Shadow(blurRadius: 24, color: Colors.black87),
+                  ],
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (verified) ...[
+              const SizedBox(width: 10),
+              // FIX #3: 24×24, gradient ring, icon size 14 (was 13)
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: AuroraTheme.redBlueGradient,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AuroraTheme.auroraRed.withOpacity(0.40),
+                      blurRadius: AuroraTheme.spacingL,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.check,
+                    color: Colors.white, size: 14), // FIX #3
+              ),
+            ],
+          ],
+        ),
+
+        const SizedBox(height: 10),
+
+        // Meta line: CITY · JOB · EDU
+        _MetaLine(
+          cityName: cityName,
+          job: job,
+          education: education,
+        ),
+      ],
     );
   }
 }
@@ -511,17 +545,20 @@ class _NoPhotoPlaceholder extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Content Section — Aurora v2
+// Content Section — bio, interests, prompts
 // ─────────────────────────────────────────────────────────────────────────────
 class _ContentSection extends StatelessWidget {
   final String? bio;
   final List<String> interests;
   final AsyncValue promptsAsync;
+  // FIX #5: topPadding from parent (topPad + 56) clears fixed back button
+  final double topPadding;
 
   const _ContentSection({
     this.bio,
     required this.interests,
     required this.promptsAsync,
+    required this.topPadding,
   });
 
   String _questionLabel(String key) {
@@ -539,9 +576,10 @@ class _ContentSection extends StatelessWidget {
     return ColoredBox(
       color: AuroraTheme.bgDeep,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
+        // FIX #5: top = topPadding (safe from fixed back button)
+        padding: EdgeInsets.fromLTRB(
           AuroraTheme.spacingXL,
-          28,
+          topPadding,
           AuroraTheme.spacingXL,
           0,
         ),
@@ -559,6 +597,8 @@ class _ContentSection extends StatelessWidget {
             if (interests.isNotEmpty) ...[
               const _SectionHeader(label: 'İlgi Alanları'),
               const SizedBox(height: AuroraTheme.spacingL),
+              // FIX #7: pill height matches padding 9+font+9 ≈ 34px; ListView
+              // height 38 gives small buffer. Pill padding: 9×16, font: 13.
               SizedBox(
                 height: 38,
                 child: ListView.separated(
@@ -650,21 +690,27 @@ class _BioPullQuote extends StatelessWidget {
 }
 
 // ── Section Header — 40px gradient line + mono caps label ─────────────────────
+// FIX #8: SizedBox(width:40) is explicit; Container(width:40) could be
+// misinterpreted by certain layout engines on high-density devices.
 class _SectionHeader extends StatelessWidget {
   final String label;
   const _SectionHeader({required this.label});
 
   @override
   Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // FIX #8: SizedBox enforces exactly 40px; Opacity wraps only this
           Opacity(
             opacity: 0.6,
-            child: Container(
+            child: SizedBox(
               width: 40,
               height: 1,
-              decoration: BoxDecoration(
-                gradient: AuroraTheme.redBlueGradient,
-                borderRadius: BorderRadius.circular(1),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: AuroraTheme.redBlueGradient,
+                  borderRadius: BorderRadius.circular(1),
+                ),
               ),
             ),
           ),
@@ -683,7 +729,8 @@ class _SectionHeader extends StatelessWidget {
       );
 }
 
-// ── Interest Pill — horizontal scroll, uses AuroraGlassPill ──────────────────
+// ── Interest Pill — uses AuroraGlassPill (backdrop blur included) ─────────────
+// FIX #7: padding: 9×16, fontSize: 13, weight: 500, radius: 100 (via GlassPill)
 class _InterestPill extends StatelessWidget {
   final String label;
   final bool accent;
@@ -692,8 +739,9 @@ class _InterestPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) => AuroraGlassPill(
         padding: const EdgeInsets.symmetric(
-            horizontal: AuroraTheme.spacingL,
-            vertical: 9),
+          horizontal: 16, // mockup: .pill { padding: 9px 16px }
+          vertical: 9,
+        ),
         backgroundGradient: accent ? AuroraTheme.redBlueSoftGradient : null,
         borderColor: accent
             ? AuroraTheme.auroraRed.withOpacity(0.35)
@@ -810,7 +858,7 @@ class _GradientCTA extends StatelessWidget {
                 fontFamily: AuroraTheme.fontBody,
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
-                letterSpacing: 0.08, // 0.005em @ 16px
+                letterSpacing: 0.08,
                 color: Colors.white,
               ),
             ),
@@ -837,8 +885,8 @@ class _GlassIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.black.withOpacity(0.35),
-                border: Border.all(
-                    color: Colors.white.withOpacity(0.20)),
+                border:
+                    Border.all(color: Colors.white.withOpacity(0.20)),
               ),
               child: Icon(icon, size: 18, color: Colors.white),
             ),
@@ -866,11 +914,9 @@ class _FavoriteButtonState extends State<_FavoriteButton>
   void initState() {
     super.initState();
     _scaleCtrl = AnimationController(
-        vsync: this,
-        duration: const Duration(milliseconds: 180));
+        vsync: this, duration: const Duration(milliseconds: 180));
     _scaleAnim = Tween(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-          parent: _scaleCtrl, curve: Curves.elasticOut),
+      CurvedAnimation(parent: _scaleCtrl, curve: Curves.elasticOut),
     );
     _scaleCtrl.value = 1.0;
     _loadState();
@@ -964,8 +1010,7 @@ class _FavoriteButtonState extends State<_FavoriteButton>
 class _ActionSheet extends StatelessWidget {
   final String targetUserId;
   final String? targetName;
-  const _ActionSheet(
-      {required this.targetUserId, this.targetName});
+  const _ActionSheet({required this.targetUserId, this.targetName});
 
   Future<void> _block(BuildContext ctx) async {
     Navigator.pop(ctx);
@@ -973,8 +1018,8 @@ class _ActionSheet extends StatelessWidget {
       context: ctx,
       builder: (_) => AlertDialog(
         backgroundColor: AuroraTheme.bgSoft,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Kullanıcıyı engelle',
           style: TextStyle(
@@ -1037,11 +1082,10 @@ class _ActionSheet extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               color: AuroraTheme.bgSoft.withOpacity(0.90),
-              borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
               border: Border(
-                top: BorderSide(color: AuroraTheme.glassBorder),
-              ),
+                  top: BorderSide(color: AuroraTheme.glassBorder)),
             ),
             child: SafeArea(
               child: Column(
@@ -1081,8 +1125,8 @@ class _ActionSheet extends StatelessWidget {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.close,
-                        color: AuroraTheme.textMuted),
+                    leading:
+                        Icon(Icons.close, color: AuroraTheme.textMuted),
                     title: Text('İptal',
                         style: TextStyle(
                             fontFamily: AuroraTheme.fontBody,

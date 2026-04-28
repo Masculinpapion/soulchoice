@@ -893,7 +893,7 @@ class _HostCard extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: () => context.push('/profile/${owner['id']}'),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
+          padding: const EdgeInsets.fromLTRB(14, 12, 16, 12),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(20),
@@ -901,15 +901,15 @@ class _HostCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // 48px avatar with gradient ring
+              // 40px avatar with gradient ring
               SizedBox(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 child: Stack(
                   children: [
                     Container(
-                      width: 48,
-                      height: 48,
+                      width: 40,
+                      height: 40,
                       decoration: const BoxDecoration(
                         gradient: AuroraTheme.redBlueGradient,
                         shape: BoxShape.circle,
@@ -955,9 +955,9 @@ class _HostCard extends StatelessWidget {
                               fontFamily: AuroraTheme.fontDisplay,
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.w500,
-                              fontSize: 18,
+                              fontSize: 15,
                               height: 1.1,
-                              letterSpacing: -0.18,
+                              letterSpacing: -0.15,
                               color: Colors.white,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -978,15 +978,15 @@ class _HostCard extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       _meta(),
                       style: TextStyle(
                         fontFamily: AuroraTheme.fontMono,
-                        fontSize: 10,
+                        fontSize: 9,
                         fontWeight: FontWeight.w500,
-                        letterSpacing: 1.60,
-                        color: Colors.white.withOpacity(0.55),
+                        letterSpacing: 1.44,
+                        color: Colors.white.withOpacity(0.50),
                       ),
                     ),
                   ],

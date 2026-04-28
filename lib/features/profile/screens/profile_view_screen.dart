@@ -434,10 +434,8 @@ class _IdentityOverlay extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // FIX #3, #4: Name + Age + Verified badge
-        // Row with center alignment; badge 24×24, icon size 14
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Flexible(
               child: Text(

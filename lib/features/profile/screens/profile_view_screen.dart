@@ -23,10 +23,10 @@ class ProfileViewScreen extends ConsumerWidget {
     final isOwnProfile = currentUid == userId;
 
     return Scaffold(
-      backgroundColor: AppColors.bgDeep,
+      backgroundColor: AppColors.bgBlack,
       body: AmbientBackground(
         child: profileAsync.when(
-          loading: () => const Center(
+          loading: () => Center(
             child: SizedBox(
               width: 30,
               height: 30,
@@ -36,8 +36,9 @@ class ProfileViewScreen extends ConsumerWidget {
               ),
             ),
           ),
-          error: (e, _) =>
-              Center(child: Text('$e', style: AppTextStyles.bodyMedium)),
+          error: (e, _) => Center(
+            child: Text('$e', style: AppTextStyles.bodyMedium),
+          ),
           data: (user) {
             if (user == null) {
               return Center(
@@ -48,8 +49,7 @@ class ProfileViewScreen extends ConsumerWidget {
 
             final name = user['name'] as String? ?? '—';
             final age = user['age'] as int? ?? 0;
-            final selfieStatus =
-                user['selfie_status'] as String? ?? 'none';
+            final selfieStatus = user['selfie_status'] as String? ?? 'none';
             final verified = selfieStatus == 'approved' ||
                 (user['verified'] as bool? ?? false);
             final bio = user['bio'] as String?;
@@ -61,130 +61,313 @@ class ProfileViewScreen extends ConsumerWidget {
                 (user['interests'] as List?)?.cast<String>() ?? [];
             final photos = photosAsync.asData?.value ?? [];
 
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Hero ────────────────────────────────────────────────
-                  _HeroSection(
-                    photos: photos,
-                    name: name,
-                    age: age,
-                    verified: verified,
-                    cityName: cityName,
-                    job: job,
-                    education: education,
-                    isOwnProfile: isOwnProfile,
-                    currentUid: currentUid,
-                    userId: userId,
-                    onBack: () => context.pop(),
-                    onSettings: () => context.push('/settings'),
-                    onReport: () => _showActionSheet(context, userId),
-                    onPhotoTap: (i) =>
-                        _openPhotoViewer(context, photos, i),
+            return CustomScrollView(
+              slivers: [
+                // ── Hero photo (edge-to-edge, status bar overlap) ──────────
+                SliverAppBar(
+                  expandedHeight: 540,
+                  pinned: true,
+                  backgroundColor: AppColors.bgBlack,
+                  systemOverlayStyle: const SystemUiOverlayStyle(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness: Brightness.light,
                   ),
+                  leading: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: _GlassIconButton(
+                      icon: Icons.arrow_back_ios_new,
+                      onTap: () => context.pop(),
+                    ),
+                  ),
+                  actions: [
+                    if (!isOwnProfile && currentUid != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _FavoriteButton(targetUserId: userId),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: isOwnProfile
+                          ? _GlassIconButton(
+                              icon: Icons.settings_outlined,
+                              onTap: () => context.push('/settings'),
+                            )
+                          : _GlassIconButton(
+                              icon: Icons.more_horiz,
+                              onTap: () =>
+                                  _showActionSheet(context, userId),
+                            ),
+                    ),
+                  ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: _PhotoCarousel(photos: photos),
+                  ),
+                ),
 
-                  // ── Content ─────────────────────────────────────────────
-                  Container(
-                    color: AppColors.bgDeep,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Bio
-                        if (bio != null && bio.isNotEmpty) ...[
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(24, 28, 24, 0),
-                            child: _BioPullQuote(text: bio),
-                          ),
-                          const SizedBox(height: 36),
-                        ] else
-                          const SizedBox(height: 28),
-
-                        // Interests
-                        if (interests.isNotEmpty) ...[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24),
-                            child: const _SectionHeader(
-                                label: 'İlgi Alanları'),
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            height: 40,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24),
-                              itemCount: interests.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 8),
-                              itemBuilder: (_, i) => _InterestPill(
-                                label: interests[i],
-                                isAccent: i == 0,
+                // ── Floating glass panel ──────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Transform.translate(
+                    offset: const Offset(0, -32),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.bgBlack,
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(32)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Drag indicator
+                          Center(
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 14),
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                gradient: AppColors.primaryGradient,
+                                borderRadius: BorderRadius.circular(2),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 36),
-                        ],
 
-                        // Prompts
-                        promptsAsync.maybeWhen(
-                          data: (prompts) {
-                            if (prompts.isEmpty) {
-                              return const SizedBox.shrink();
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24),
+                          // ── Name / age / verified ──────────────────────
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Name + age + verified badge
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              '$name, $age',
+                                              style: AppTextStyles
+                                                  .displayMedium
+                                                  .copyWith(
+                                                fontSize: 30,
+                                                fontStyle: FontStyle.normal,
+                                              ),
+                                              overflow:
+                                                  TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          if (verified) ...[
+                                            const SizedBox(width: 8),
+                                            ShaderMask(
+                                              shaderCallback: (b) =>
+                                                  AppColors.primaryGradient
+                                                      .createShader(b),
+                                              child: const Icon(
+                                                  Icons.verified,
+                                                  color: Colors.white,
+                                                  size: 22),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Location + job + education
+                                      Wrap(
+                                        spacing: 14,
+                                        runSpacing: 4,
+                                        children: [
+                                          if (cityName.isNotEmpty)
+                                            _MetaItem(
+                                              icon: Icons
+                                                  .location_on_outlined,
+                                              text: cityName,
+                                            ),
+                                          if (job != null && job.isNotEmpty)
+                                            _MetaItem(
+                                              icon: Icons.work_outline,
+                                              text: job,
+                                            ),
+                                          if (education != null &&
+                                              education.isNotEmpty)
+                                            _MetaItem(
+                                              icon:
+                                                  Icons.school_outlined,
+                                              text: education,
+                                            ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // ── Bio (plain text, no borders) ───────────────
+                          if (bio != null && bio.isNotEmpty) ...[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                              child: Text(
+                                bio,
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  color: AppColors.textSecondary,
+                                  height: 1.7,
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          // ── Photo gallery strip ─────────────────────────
+                          if (photos.length > 1) ...[
+                            const SizedBox(height: 24),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 24),
+                              child: Text(
+                                'FOTOĞRAFLAR',
+                                style: AppTextStyles.monoSmall.copyWith(
+                                  letterSpacing: 2,
+                                  color: AppColors.textTertiary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 100,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24),
+                                itemCount: photos.length,
+                                itemBuilder: (_, i) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(right: 10),
+                                    child: GestureDetector(
+                                      onTap: () =>
+                                          _openPhotoViewer(
+                                              context, photos, i),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(14),
+                                        child: SizedBox(
+                                          width: 80,
+                                          height: 100,
+                                          child: CachedNetworkImage(
+                                            imageUrl: photos[i]['url']
+                                                as String,
+                                            fit: BoxFit.cover,
+                                            alignment:
+                                                Alignment.topCenter,
+                                            errorWidget: (_, __, ___) =>
+                                                Container(
+                                              color: AppColors.glassBg,
+                                              child: const Icon(
+                                                  Icons.person_outline,
+                                                  color: AppColors
+                                                      .textTertiary),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+
+                          // ── Interests ──────────────────────────────────
+                          if (interests.isNotEmpty) ...[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  24, 24, 24, 0),
                               child: Column(
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
-                                  const _SectionHeader(label: 'İfadeler'),
-                                  const SizedBox(height: 16),
-                                  ...prompts.map((p) => Padding(
-                                        padding: const EdgeInsets.only(
-                                            bottom: 12),
-                                        child: _PromptCard(
-                                          question: _questionLabel(
-                                              p['question_key'] as String),
-                                          answer: p['answer'] as String? ??
-                                              '',
-                                        ),
-                                      )),
-                                  const SizedBox(height: 24),
+                                  Text(
+                                    'İLGİ ALANLARI',
+                                    style: AppTextStyles.monoSmall
+                                        .copyWith(
+                                            letterSpacing: 2,
+                                            color:
+                                                AppColors.textTertiary),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: interests
+                                        .map((i) =>
+                                            _InterestChip(label: i))
+                                        .toList(),
+                                  ),
                                 ],
                               ),
-                            );
-                          },
-                          orElse: () => const SizedBox.shrink(),
-                        ),
+                            ),
+                          ],
 
-                        // CTA
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            24,
-                            8,
-                            24,
-                            MediaQuery.of(context).padding.bottom + 32,
-                          ),
-                          child: isOwnProfile
-                              ? _OutlineCTA(
-                                  label: 'Profili Düzenle',
-                                  onTap: () =>
-                                      context.push('/profile/setup'),
-                                )
-                              : _GradientCTA(
-                                  label: 'Gelmek isterim',
-                                  onTap: () => context.pop(),
+                          // ── Prompts (no borders, Fraunces answers) ─────
+                          promptsAsync.maybeWhen(
+                            data: (prompts) {
+                              if (prompts.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    24, 28, 24, 0),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: prompts
+                                      .map((p) => Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                    bottom: 24),
+                                            child: _PromptItem(
+                                              question: _questionLabel(
+                                                  p['question_key']
+                                                      as String),
+                                              answer: p['answer']
+                                                      as String? ??
+                                                  '',
+                                            ),
+                                          ))
+                                      .toList(),
                                 ),
-                        ),
-                      ],
+                              );
+                            },
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+
+                          // ── CTA (context-aware) ────────────────────────
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                                24, 28, 24,
+                                MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 16),
+                            child: isOwnProfile
+                                ? _OutlineCTA(
+                                    label: 'Profili Düzenle',
+                                    onTap: () =>
+                                        context.push('/profile/setup'),
+                                  )
+                                : _GradientCTA(
+                                    label: 'Gelmek isterim',
+                                    onTap: () => context.pop(),
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
@@ -194,10 +377,10 @@ class ProfileViewScreen extends ConsumerWidget {
 
   String _questionLabel(String key) {
     const labels = {
-      'favorite_restaurant': 'Favori Restoranım',
-      'last_book': 'Son Okuduğum Kitap',
-      'perfect_evening': 'Mükemmel Bir Akşam',
-      'travel_dream': 'Hayalimdeki Seyahat',
+      'favorite_restaurant': 'Favori restoranım...',
+      'last_book': 'Son okuduğum kitap...',
+      'perfect_evening': 'Mükemmel bir akşam...',
+      'travel_dream': 'Hayalimdeki seyahat...',
     };
     return labels[key] ?? key;
   }
@@ -222,564 +405,68 @@ class ProfileViewScreen extends ConsumerWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) =>
-          _ActionSheet(targetUserId: targetUserId, targetName: null),
+      builder: (_) => _ActionSheet(targetUserId: targetUserId, targetName: null),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Hero Section
+// Meta info item (city / job / education)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _HeroSection extends StatefulWidget {
-  final List<Map<String, dynamic>> photos;
-  final String name;
-  final int age;
-  final bool verified;
-  final String cityName;
-  final String? job;
-  final String? education;
-  final bool isOwnProfile;
-  final String? currentUid;
-  final String userId;
-  final VoidCallback onBack;
-  final VoidCallback onSettings;
-  final VoidCallback onReport;
-  final void Function(int) onPhotoTap;
-
-  const _HeroSection({
-    required this.photos,
-    required this.name,
-    required this.age,
-    required this.verified,
-    required this.cityName,
-    this.job,
-    this.education,
-    required this.isOwnProfile,
-    required this.currentUid,
-    required this.userId,
-    required this.onBack,
-    required this.onSettings,
-    required this.onReport,
-    required this.onPhotoTap,
-  });
+class _MetaItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _MetaItem({required this.icon, required this.text});
 
   @override
-  State<_HeroSection> createState() => _HeroSectionState();
-}
-
-class _HeroSectionState extends State<_HeroSection> {
-  int _current = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    final heroH = MediaQuery.of(context).size.height * 0.75;
-
-    return SizedBox(
-      height: heroH,
-      child: Stack(
-        fit: StackFit.expand,
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Photo carousel
-          _buildCarousel(),
-
-          // Top scrim (gradient for legibility of buttons)
-          IgnorePointer(
-            child: Container(
-              height: 140,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0x99050709), Colors.transparent],
-                ),
-              ),
-            ),
-          ),
-
-          // Bottom fade into bgDeep
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: IgnorePointer(
-              child: Container(
-                height: heroH * 0.5,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Color(0xFF050709),
-                      Color(0xCC050709),
-                      Color(0x55050709),
-                      Colors.transparent,
-                    ],
-                    stops: [0.0, 0.35, 0.65, 1.0],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Top bar: back + dots + action button
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 12),
-                child: Row(
-                  children: [
-                    _GlassIconButton(
-                      icon: Icons.arrow_back_ios_new,
-                      onTap: widget.onBack,
-                    ),
-                    const Spacer(),
-                    if (widget.photos.length > 1)
-                      _DotIndicator(
-                        count: widget.photos.length,
-                        active: _current,
-                      ),
-                    const Spacer(),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (!widget.isOwnProfile &&
-                            widget.currentUid != null) ...[
-                          _FavoriteButton(targetUserId: widget.userId),
-                          const SizedBox(width: 8),
-                        ],
-                        _GlassIconButton(
-                          icon: widget.isOwnProfile
-                              ? Icons.settings_outlined
-                              : Icons.more_horiz,
-                          onTap: widget.isOwnProfile
-                              ? widget.onSettings
-                              : widget.onReport,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Identity overlay — bottom of hero
-          Positioned(
-            left: 24,
-            right: 24,
-            bottom: 32,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${widget.name}, ${widget.age}',
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 44,
-                          letterSpacing: -0.88,
-                          height: 1.05,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Color(0x99000000),
-                              blurRadius: 24,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (widget.verified) ...[
-                      const SizedBox(width: 12),
-                      _GradientVerifiedBadge(size: 24),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 8),
-                _MetaLine(
-                  cityName: widget.cityName,
-                  job: widget.job,
-                  education: widget.education,
-                ),
-              ],
-            ),
-          ),
+          Icon(icon, size: 13, color: AppColors.textTertiary),
+          const SizedBox(width: 4),
+          Text(text, style: AppTextStyles.bodyMedium),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCarousel() {
-    if (widget.photos.isEmpty) {
-      return Container(
-        color: AppColors.bgCard,
-        child: const Center(
-          child: Icon(Icons.person_outline,
-              size: 80, color: AppColors.textTertiary),
-        ),
-      );
-    }
-
-    return PageView.builder(
-      itemCount: widget.photos.length,
-      onPageChanged: (i) => setState(() => _current = i),
-      itemBuilder: (_, i) {
-        final url = widget.photos[i]['url'] as String;
-        return GestureDetector(
-          onTap: () => widget.onPhotoTap(i),
-          child: CachedNetworkImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-            errorWidget: (_, __, ___) => Container(
-              color: AppColors.bgCard,
-              child: const Icon(Icons.person_outline,
-                  size: 80, color: AppColors.textTertiary),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Dot Indicator
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _DotIndicator extends StatelessWidget {
-  final int count;
-  final int active;
-  const _DotIndicator({required this.count, required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(count, (i) {
-        final isActive = i == active;
-        return Padding(
-          padding: EdgeInsets.only(right: i < count - 1 ? 6 : 0),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            width: isActive ? 22 : 6,
-            height: 6,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(isActive ? 3 : 100),
-              gradient: isActive ? AppColors.primaryGradient : null,
-              color: isActive ? null : Colors.white.withOpacity(0.35),
-              boxShadow: isActive
-                  ? [
-                      BoxShadow(
-                        color: AppColors.gradientStart.withOpacity(0.5),
-                        blurRadius: 10,
-                      )
-                    ]
-                  : null,
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Gradient Verified Badge
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _GradientVerifiedBadge extends StatelessWidget {
-  final double size;
-  const _GradientVerifiedBadge({required this.size});
-
-  @override
-  Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AppColors.primaryGradient,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.gradientStart.withOpacity(0.4),
-              blurRadius: 16,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Icon(
-          Icons.check,
-          color: Colors.white,
-          size: size * 0.55,
-        ),
       );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Meta Line (city · job · education)
+// Prompt item (no borders)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _MetaLine extends StatelessWidget {
-  final String cityName;
-  final String? job;
-  final String? education;
-  const _MetaLine(
-      {required this.cityName, required this.job, required this.education});
+class _PromptItem extends StatelessWidget {
+  final String question;
+  final String answer;
+  const _PromptItem({required this.question, required this.answer});
 
   @override
-  Widget build(BuildContext context) {
-    final parts = <String>[
-      if (cityName.isNotEmpty) cityName,
-      if (job != null && job!.isNotEmpty) job!,
-      if (education != null && education!.isNotEmpty) education!,
-    ];
-    if (parts.isEmpty) return const SizedBox.shrink();
-
-    return Wrap(
-      spacing: 0,
-      runSpacing: 4,
-      children: () {
-        final widgets = <Widget>[];
-        for (var i = 0; i < parts.length; i++) {
-          widgets.add(Text(
-            parts[i].toUpperCase(),
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question.toUpperCase(),
             style: const TextStyle(
               fontFamily: 'JetBrainsMono',
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              letterSpacing: 0.176,
-              color: Color(0xC7FFFFFF),
-            ),
-          ));
-          if (i < parts.length - 1) {
-            widgets.add(Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                '·',
-                style: const TextStyle(
-                  color: Color(0x66FFFFFF),
-                  fontSize: 11,
-                ),
-              ),
-            ));
-          }
-        }
-        return widgets;
-      }(),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Bio Pull-Quote
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _BioPullQuote extends StatelessWidget {
-  final String text;
-  const _BioPullQuote({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            width: 2,
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(2),
+              color: AppColors.textTertiary,
+              letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontFamily: 'Fraunces',
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w400,
-                fontSize: 18,
-                height: 1.55,
-                color: Color(0xE0FFFFFF),
-                letterSpacing: -0.09,
-              ),
+          const SizedBox(height: 6),
+          Text(
+            answer,
+            style: const TextStyle(
+              fontFamily: 'Fraunces',
+              fontSize: 19,
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+              color: AppColors.textPrimary,
+              height: 1.4,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Section Header (gradient line + mono label)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _SectionHeader extends StatelessWidget {
-  final String label;
-  const _SectionHeader({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 1,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontFamily: 'JetBrainsMono',
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.198,
-            color: Color(0x8CFFFFFF),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Interest Pill
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _InterestPill extends StatelessWidget {
-  final String label;
-  final bool isAccent;
-  const _InterestPill({required this.label, this.isAccent = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-      decoration: BoxDecoration(
-        gradient: isAccent
-            ? const LinearGradient(
-                colors: [Color(0x2EFF2D55), Color(0x2E2D7FFF)],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              )
-            : null,
-        color: isAccent ? null : AppColors.glassBg,
-        borderRadius: BorderRadius.circular(100),
-        border: Border.all(
-          color: isAccent
-              ? const Color(0x59E63946)
-              : AppColors.glassBorder,
-        ),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontFamily: 'Manrope',
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: Colors.white.withOpacity(isAccent ? 1.0 : 0.85),
-          letterSpacing: -0.065,
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Prompt Card
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _PromptCard extends StatelessWidget {
-  final String question;
-  final String answer;
-  const _PromptCard({required this.question, required this.answer});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.glassBg,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.glassBorder),
-          ),
-          child: IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  width: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.18),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 18, 20, 22),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          question.toUpperCase(),
-                          style: const TextStyle(
-                            fontFamily: 'JetBrainsMono',
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.14,
-                            color: Color(0x6BFFFFFF),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          answer,
-                          style: const TextStyle(
-                            fontFamily: 'Fraunces',
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 22,
-                            height: 1.3,
-                            color: Colors.white,
-                            letterSpacing: -0.22,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -796,16 +483,16 @@ class _GlassIconButton extends StatelessWidget {
         onTap: onTap,
         child: ClipOval(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0x59000000),
+                color: AppColors.glassBgStrong,
                 border: Border.all(color: AppColors.glassBorder),
               ),
-              child: Icon(icon, size: 18, color: Colors.white),
+              child: Icon(icon, size: 18, color: AppColors.textPrimary),
             ),
           ),
         ),
@@ -813,7 +500,7 @@ class _GlassIconButton extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Favorite Button
+// Favorite Button (glass circle, toggle with haptic + scale animation)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _FavoriteButton extends StatefulWidget {
@@ -864,10 +551,13 @@ class _FavoriteButtonState extends State<_FavoriteButton>
     if (_isFavorite == null) return;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
+
     HapticFeedback.lightImpact();
     _scaleCtrl.reverse().then((_) => _scaleCtrl.forward());
+
     final next = !_isFavorite!;
     setState(() => _isFavorite = next);
+
     if (next) {
       await Supabase.instance.client.from('favorites').insert({
         'user_id': uid,
@@ -893,7 +583,7 @@ class _FavoriteButtonState extends State<_FavoriteButton>
         onTap: _toggle,
         child: ClipOval(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: 40,
@@ -902,7 +592,7 @@ class _FavoriteButtonState extends State<_FavoriteButton>
                 shape: BoxShape.circle,
                 color: _isFavorite!
                     ? AppColors.red.withOpacity(0.18)
-                    : const Color(0x59000000),
+                    : AppColors.glassBgStrong,
                 border: Border.all(
                   color: _isFavorite!
                       ? AppColors.red.withOpacity(0.5)
@@ -910,12 +600,8 @@ class _FavoriteButtonState extends State<_FavoriteButton>
                 ),
               ),
               child: Icon(
-                _isFavorite!
-                    ? Icons.star_rounded
-                    : Icons.star_outline_rounded,
-                color: _isFavorite!
-                    ? AppColors.red
-                    : Colors.white.withOpacity(0.8),
+                _isFavorite! ? Icons.star_rounded : Icons.star_outline_rounded,
+                color: _isFavorite! ? AppColors.red : AppColors.textSecondary,
                 size: 20,
               ),
             ),
@@ -924,6 +610,28 @@ class _FavoriteButtonState extends State<_FavoriteButton>
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Interest Chip
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _InterestChip extends StatelessWidget {
+  final String label;
+  const _InterestChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: AppColors.glassBg,
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(color: AppColors.glassBorder),
+        ),
+        child: Text(label,
+            style: AppTextStyles.labelMedium
+                .copyWith(color: AppColors.textSecondary, fontSize: 12)),
+      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -939,34 +647,22 @@ class _GradientCTA extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 56,
+          height: 58,
           decoration: BoxDecoration(
             gradient: AppColors.primaryGradient,
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: AppColors.gradientStart.withOpacity(0.28),
-                blurRadius: 32,
-                offset: const Offset(0, 12),
-              ),
-              BoxShadow(
-                color: AppColors.gradientEnd.withOpacity(0.18),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
+                color: AppColors.gradientStart.withOpacity(0.30),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                letterSpacing: 0.08,
-              ),
-            ),
+            child: Text(label,
+                style:
+                    AppTextStyles.labelLarge.copyWith(color: Colors.white)),
           ),
         ),
       );
@@ -981,31 +677,23 @@ class _OutlineCTA extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 56,
+          height: 58,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-                color: AppColors.glassBorderBright, width: 1.5),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.glassBorderBright, width: 1.5),
             color: AppColors.glassBg,
           ),
           child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                letterSpacing: 0.08,
-              ),
-            ),
+            child: Text(label,
+                style: AppTextStyles.labelLarge
+                    .copyWith(color: AppColors.textSecondary)),
           ),
         ),
       );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Full-Screen Photo Viewer
+// Full-screen Photo Viewer
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _PhotoViewerPage extends StatefulWidget {
@@ -1024,7 +712,8 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: widget.initialIndex);
+    _pageController =
+        PageController(initialPage: widget.initialIndex);
   }
 
   @override
@@ -1052,10 +741,9 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
                   imageUrl: url,
                   fit: BoxFit.contain,
                   errorWidget: (_, __, ___) => const Icon(
-                    Icons.broken_image_outlined,
-                    color: Colors.white54,
-                    size: 60,
-                  ),
+                      Icons.broken_image_outlined,
+                      color: Colors.white54,
+                      size: 60),
                 ),
               ),
             );
@@ -1067,7 +755,7 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Action Sheet (block / report)
+// Action Sheet
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _ActionSheet extends StatelessWidget {
@@ -1080,8 +768,7 @@ class _ActionSheet extends StatelessWidget {
       context: ctx,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.bgCard,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Kullanıcıyı engelle',
             style: AppTextStyles.titleMedium),
         content: Text(
@@ -1105,6 +792,7 @@ class _ActionSheet extends StatelessWidget {
       ),
     );
     if (confirmed != true || !ctx.mounted) return;
+
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
     await Supabase.instance.client.from('blocks').upsert({
@@ -1112,12 +800,12 @@ class _ActionSheet extends StatelessWidget {
       'blocked_id': targetUserId,
     });
     if (ctx.mounted) {
-      ctx.pop();
+      ctx.pop(); // close bottom sheet
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
         backgroundColor: AppColors.success,
       ));
-      ctx.pop();
+      ctx.pop(); // go back from profile
     }
   }
 
@@ -1140,26 +828,124 @@ class _ActionSheet extends StatelessWidget {
         const SizedBox(height: 8),
         ListTile(
           leading: const Icon(Icons.block, color: AppColors.error),
-          title: Text('Kullanıcıyı engelle',
+          title: Text('🚫 Kullanıcıyı engelle',
               style: AppTextStyles.bodyLarge),
           onTap: () => _block(context),
         ),
         ListTile(
-          leading: const Icon(Icons.flag_outlined,
-              color: AppColors.warning),
-          title: Text('Rapor et', style: AppTextStyles.bodyLarge),
+          leading:
+              const Icon(Icons.flag_outlined, color: AppColors.warning),
+          title: Text('⚠️ Rapor et', style: AppTextStyles.bodyLarge),
           onTap: () {
             Navigator.pop(context);
             context.push('/report/$targetUserId');
           },
         ),
         ListTile(
-          leading:
-              const Icon(Icons.close, color: AppColors.textTertiary),
+          leading: const Icon(Icons.close, color: AppColors.textTertiary),
           title: Text('İptal', style: AppTextStyles.bodyMedium),
           onTap: () => Navigator.pop(context),
         ),
         const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Photo Carousel (hero)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _PhotoCarousel extends StatefulWidget {
+  final List<Map<String, dynamic>> photos;
+  const _PhotoCarousel({required this.photos});
+
+  @override
+  State<_PhotoCarousel> createState() => _PhotoCarouselState();
+}
+
+class _PhotoCarouselState extends State<_PhotoCarousel> {
+  int _current = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.photos.isEmpty) {
+      return Container(
+        color: AppColors.bgCard,
+        child: const Center(
+          child: Icon(Icons.person_outline,
+              size: 80, color: AppColors.textTertiary),
+        ),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        PageView.builder(
+          itemCount: widget.photos.length,
+          onPageChanged: (i) => setState(() => _current = i),
+          itemBuilder: (_, i) {
+            final url = widget.photos[i]['url'] as String;
+            return Image.network(
+              url,
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              errorBuilder: (_, __, ___) => Container(
+                color: AppColors.bgCard,
+                child: const Icon(Icons.person_outline,
+                    size: 60, color: AppColors.textTertiary),
+              ),
+            );
+          },
+        ),
+        // Bottom gradient into the panel
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.center,
+              colors: [AppColors.bgBlack, Colors.transparent],
+              stops: [0.0, 0.6],
+            ),
+          ),
+        ),
+        // Photo indicator bars — top center
+        if (widget.photos.length > 1)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 10),
+                child: Row(
+                  children: List.generate(widget.photos.length, (i) {
+                    final isActive = i == _current;
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            right: i < widget.photos.length - 1 ? 4 : 0),
+                        child: Container(
+                          height: 3,
+                          decoration: BoxDecoration(
+                            gradient: isActive
+                                ? AppColors.primaryGradient
+                                : null,
+                            color: isActive
+                                ? null
+                                : AppColors.glassBorderBright,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

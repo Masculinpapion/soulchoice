@@ -342,25 +342,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
           else
             _NoPhotoPlaceholder(),
 
-          // ── Full-coverage dark overlay — photo barely visible (mockup) ─
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black87,
-                    Color(0xB3000000), // 70%
-                    Color(0x33000000), // 20%
-                    Colors.transparent,
-                  ],
-                  stops: [0.0, 0.38, 0.60, 0.72],
-                ),
-              ),
-            ),
-          ),
-
           // ── Top scrim — status bar + button legibility ─────────────────
           Positioned(
             top: 0,

@@ -901,15 +901,15 @@ class _HostCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // 56px avatar with gradient ring
+              // 48px avatar with gradient ring
               SizedBox(
-                width: 56,
-                height: 56,
+                width: 48,
+                height: 48,
                 child: Stack(
                   children: [
                     Container(
-                      width: 56,
-                      height: 56,
+                      width: 48,
+                      height: 48,
                       decoration: const BoxDecoration(
                         gradient: AuroraTheme.redBlueGradient,
                         shape: BoxShape.circle,
@@ -955,9 +955,9 @@ class _HostCard extends StatelessWidget {
                               fontFamily: AuroraTheme.fontDisplay,
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.w500,
-                              fontSize: 22,
+                              fontSize: 18,
                               height: 1.1,
-                              letterSpacing: -0.22,
+                              letterSpacing: -0.18,
                               color: Colors.white,
                             ),
                             overflow: TextOverflow.ellipsis,

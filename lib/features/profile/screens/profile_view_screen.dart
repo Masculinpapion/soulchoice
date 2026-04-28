@@ -435,8 +435,7 @@ class _IdentityOverlay extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
               child: Text(
@@ -477,7 +476,7 @@ class _IdentityOverlay extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
 
         // Meta line: CITY · JOB · EDU
         _MetaLine(
@@ -513,7 +512,7 @@ class _MetaLine extends StatelessWidget {
         spans.add(WidgetSpan(
           alignment: PlaceholderAlignment.middle,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: SizedBox(
               width: 3,
               height: 3,

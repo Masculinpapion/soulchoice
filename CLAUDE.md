@@ -96,3 +96,25 @@ ASLA kullanıcı istemeden screenshot ALMA.
 Kullanıcı telefonu canlı görüyor, screenshot
 gereksiz kredi yakar. Sadece kullanıcı
 'screenshot al' derse al.
+
+## ASİL VERSİYON — carousel-v1
+
+Bu proje HER ZAMAN bu commit üzerinden gelişir:
+- **Tag:** `carousel-v1`
+- **Commit:** `707ae11` (707ae1123f4964a384f7e05f7e352237e0b936b2)
+- **Mesaj:** Feed: sonsuz halka carousel — ilk kartta solda da gölge görünür
+- **GitHub main:** bu commit'e force-push edildi (2026-04-29)
+
+Kurtarma (main kaybolursa):
+```
+git fetch origin carousel-v1
+git reset --hard carousel-v1
+git push origin main --force
+```
+
+Feed tasarımı:
+- viewportFraction: 0.72, padEnds: true
+- _initRing ile sonsuz halka (itemCount × 1000)
+- "GÜNÜN DAVETLERİ · KAYDIR →" başlığı
+- Story avatarlar gradient halka
+- Davetler / İstekler pill sekmeler

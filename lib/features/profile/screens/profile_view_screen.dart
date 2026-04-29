@@ -29,163 +29,213 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     final currentUid = Supabase.instance.client.auth.currentUser?.id;
     final isOwnProfile = currentUid == userId;
 
-    return Scaffold(
-      backgroundColor: AuroraTheme.bgDeep,
-      body: profileAsync.when(
-        loading: () => AmbientBackground(
-          child: Center(
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: AuroraTheme.bgDeep,
+        body: profileAsync.when(
+          loading: () => AmbientBackground(
+            child: Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+                ),
               ),
             ),
           ),
-        ),
-        error: (e, _) => AmbientBackground(
-          child: Center(
-            child: Text('$e',
-                style: TextStyle(
-                    fontFamily: 'Manrope',
-                    color: AuroraTheme.textSecondary)),
+          error: (e, _) => AmbientBackground(
+            child: Center(
+              child: Text('$e',
+                  style: TextStyle(
+                      fontFamily: 'Manrope',
+                      color: AuroraTheme.textSecondary)),
+            ),
           ),
-        ),
-        data: (user) {
-          if (user == null) {
-            return AmbientBackground(
-              child: Center(
-                child: Text('Profil bulunamadı',
-                    style: TextStyle(
-                        fontFamily: 'Manrope',
-                        color: AuroraTheme.textSecondary)),
-              ),
-            );
-          }
+          data: (user) {
+            if (user == null) {
+              return AmbientBackground(
+                child: Center(
+                  child: Text('Profil bulunamadı',
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          color: AuroraTheme.textSecondary)),
+                ),
+              );
+            }
 
-          final name = user['name'] as String? ?? '—';
-          final age = user['age'] as int? ?? 0;
-          final selfieStatus = user['selfie_status'] as String? ?? 'none';
-          final verified = selfieStatus == 'approved' ||
-              (user['verified'] as bool? ?? false);
-          final bio = user['bio'] as String?;
-          final job = user['job'] as String?;
-          final education = user['education'] as String?;
-          final city = user['city'] as Map<String, dynamic>?;
-          final cityName = city?['name'] as String? ?? '';
-          final interests =
-              (user['interests'] as List?)?.cast<String>() ?? [];
-          final photos = photosAsync.asData?.value ?? [];
+            final name = user['name'] as String? ?? '—';
+            final age = user['age'] as int? ?? 0;
+            final selfieStatus =
+                user['selfie_status'] as String? ?? 'none';
+            final verified = selfieStatus == 'approved' ||
+                (user['verified'] as bool? ?? false);
+            final bio = user['bio'] as String?;
+            final job = user['job'] as String?;
+            final education = user['education'] as String?;
+            final city = user['city'] as Map<String, dynamic>?;
+            final cityName = city?['name'] as String? ?? '';
+            final interests =
+                (user['interests'] as List?)?.cast<String>() ?? [];
+            final photos = photosAsync.asData?.value ?? [];
 
-          return CustomScrollView(
-            slivers: [
-              // ── Hero — foto + isim overlay ───────────────────────────
-              SliverAppBar(
-                expandedHeight: MediaQuery.of(context).size.height * 0.64,
-                pinned: true,
-                backgroundColor: AuroraTheme.bgDeep,
-                elevation: 0,
-                systemOverlayStyle: const SystemUiOverlayStyle(
-                  statusBarColor: Colors.transparent,
-                  statusBarIconBrightness: Brightness.light,
-                ),
-                leading: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: _GlassIconButton(
-                    icon: Icons.arrow_back_ios_new,
-                    onTap: () => context.pop(),
-                  ),
-                ),
-                // Collapsed state: isim
-                title: Text(
-                  name,
-                  style: const TextStyle(
-                    fontFamily: 'Fraunces',
-                    fontStyle: FontStyle.italic,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                actions: [
-                  if (!isOwnProfile && currentUid != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: _FavoriteButton(targetUserId: userId),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: isOwnProfile
-                        ? _GlassIconButton(
-                            icon: Icons.settings_outlined,
-                            onTap: () => context.push('/settings'),
-                          )
-                        : _GlassIconButton(
-                            icon: Icons.more_horiz,
-                            onTap: () =>
-                                _showActionSheet(context, userId),
-                          ),
+            final metaParts = [
+              if (cityName.isNotEmpty) cityName,
+              if (job != null && job.isNotEmpty) job,
+              if (education != null && education.isNotEmpty) education,
+            ].join(' · ');
+
+            Widget trailing;
+            if (isOwnProfile) {
+              trailing = _GlassIconButton(
+                icon: Icons.settings_outlined,
+                onTap: () => context.push('/settings'),
+              );
+            } else if (currentUid != null) {
+              trailing = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _FavoriteButton(targetUserId: userId),
+                  const SizedBox(width: 4),
+                  _GlassIconButton(
+                    icon: Icons.more_horiz,
+                    onTap: () => _showActionSheet(context, userId),
                   ),
                 ],
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  background: _PhotoHero(
-                    photos: photos,
-                    currentIndex: _photoIndex,
-                    onIndexChanged: (i) =>
-                        setState(() => _photoIndex = i),
-                    name: name,
-                    age: age,
-                    verified: verified,
-                    cityName: cityName,
-                    job: job,
-                  ),
-                ),
-              ),
+              );
+            } else {
+              trailing = const SizedBox(width: 38);
+            }
 
-              // ── Profil içerik ────────────────────────────────────────
-              SliverToBoxAdapter(
-                child: Transform.translate(
-                  offset: const Offset(0, -32),
-                  child: _ContentSection(
-                    bio: bio,
-                    job: job,
-                    education: education,
-                    interests: interests,
-                    photos: photos,
-                    promptsAsync: promptsAsync,
-                    isOwnProfile: isOwnProfile,
-                    currentPhotoIndex: _photoIndex,
-                    onPhotoTap: (i) =>
-                        setState(() => _photoIndex = i),
-                  ),
-                ),
-              ),
+            final bottomPad = MediaQuery.of(context).padding.bottom +
+                kBottomNavigationBarHeight +
+                24;
 
-              // CTA
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    20, 0, 20,
-                    MediaQuery.of(context).padding.bottom +
-                        kBottomNavigationBarHeight +
-                        20,
-                  ),
-                  child: isOwnProfile
-                      ? _OutlineCTA(
-                          label: 'Profili Düzenle',
-                          onTap: () => context.push('/profile/setup'),
-                        )
-                      : _AuroraCTA(
-                          label: 'Gelmek isterim',
-                          onTap: () => context.pop(),
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.only(bottom: bottomPad),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Hero %45 ──────────────────────────────────────
+                      _HeroSection(
+                        photos: photos,
+                        initialIndex: _photoIndex,
+                        onPageChanged: (i) =>
+                            setState(() => _photoIndex = i),
+                        onBack: () => context.pop(),
+                        trailing: trailing,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // ── Scroll İçerik ─────────────────────────────────
+                      Padding(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // İsim Kartı
+                            _NameCard(
+                              name: name,
+                              age: age,
+                              verified: verified,
+                              metaParts: metaParts,
+                            ),
+
+                            // Bio
+                            if (bio != null && bio.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              _BioSection(bio: bio),
+                            ],
+
+                            // İlgi Alanları
+                            if (interests.isNotEmpty) ...[
+                              const SizedBox(height: 20),
+                              const _V2SectionHeader(
+                                  label: 'İLGİ ALANLARI'),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: interests
+                                    .asMap()
+                                    .entries
+                                    .map((e) => _InterestChip(
+                                        label: e.value,
+                                        colorIndex: e.key))
+                                    .toList(),
+                              ),
+                            ],
+
+                            // İfadeler
+                            promptsAsync.maybeWhen(
+                              data: (prompts) {
+                                final list =
+                                    (prompts as List)
+                                        .cast<Map<String, dynamic>>()
+                                        .where((p) {
+                                  final a = p['answer'] as String?;
+                                  return a != null && a.isNotEmpty;
+                                }).toList();
+                                if (list.isEmpty) {
+                                  return const SizedBox.shrink();
+                                }
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    const _V2SectionHeader(
+                                        label: 'İFADELER'),
+                                    const SizedBox(height: 10),
+                                    ...list.map((p) => Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 12),
+                                          child: _PromptCard(
+                                            question: _questionLabel(
+                                                p['question_key']
+                                                    as String),
+                                            answer:
+                                                p['answer'] as String,
+                                          ),
+                                        )),
+                                  ],
+                                );
+                              },
+                              orElse: () => const SizedBox.shrink(),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // CTA
+                            isOwnProfile
+                                ? _OutlineCTA(
+                                    label: 'Profili Düzenle',
+                                    onTap: () =>
+                                        context.push('/profile/setup'),
+                                  )
+                                : _AuroraCTA(
+                                    label: 'Gelmek isterim',
+                                    onTap: () => context.pop(),
+                                  ),
+                          ],
                         ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -211,7 +261,403 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Photo Hero — fotoğraf + isim/yaş overlay
+// YENİ: Hero Section — %45 ekran, PageView.builder
+// ─────────────────────────────────────────────────────────────────────────────
+class _HeroSection extends StatefulWidget {
+  final List<Map<String, dynamic>> photos;
+  final int initialIndex;
+  final ValueChanged<int> onPageChanged;
+  final VoidCallback onBack;
+  final Widget trailing;
+
+  const _HeroSection({
+    required this.photos,
+    required this.initialIndex,
+    required this.onPageChanged,
+    required this.onBack,
+    required this.trailing,
+  });
+
+  @override
+  State<_HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<_HeroSection> {
+  late PageController _ctrl;
+  late int _current;
+
+  @override
+  void initState() {
+    super.initState();
+    _current = widget.initialIndex;
+    _ctrl = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height * 0.45;
+    return SizedBox(
+      height: height,
+      child: Stack(
+        children: [
+          // PageView.builder
+          if (widget.photos.isNotEmpty)
+            PageView.builder(
+              controller: _ctrl,
+              itemCount: widget.photos.length,
+              onPageChanged: (i) {
+                setState(() => _current = i);
+                widget.onPageChanged(i);
+              },
+              itemBuilder: (_, i) => CachedNetworkImage(
+                imageUrl: widget.photos[i]['url'] as String,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
+              ),
+            )
+          else
+            _NoPhotoPlaceholder(),
+
+          // Üst gradient scrim
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 100,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.55),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Alt gradient fade → bgDeep
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 80,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    AuroraTheme.bgDeep,
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Top bar: geri | dots | trailing
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                child: Row(
+                  children: [
+                    _GlassIconButton(
+                      icon: Icons.arrow_back_ios_new,
+                      onTap: widget.onBack,
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: widget.photos.length > 1
+                            ? _DotIndicator(
+                                count: widget.photos.length,
+                                current: _current,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ),
+                    widget.trailing,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YENİ: Dot Indicator
+// ─────────────────────────────────────────────────────────────────────────────
+class _DotIndicator extends StatelessWidget {
+  final int count;
+  final int current;
+  const _DotIndicator({required this.count, required this.current});
+
+  @override
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(count, (i) {
+          final isActive = i == current;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            width: isActive ? 18 : 5,
+            height: 5,
+            decoration: BoxDecoration(
+              gradient: isActive ? AuroraTheme.redBlueGradient : null,
+              color: isActive ? null : Colors.white.withOpacity(0.35),
+              borderRadius: BorderRadius.circular(100),
+            ),
+          );
+        }),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YENİ: V2 Section Header — yatay çizgi + mono label
+// ─────────────────────────────────────────────────────────────────────────────
+class _V2SectionHeader extends StatelessWidget {
+  final String label;
+  const _V2SectionHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) => Row(
+        children: [
+          Container(
+            width: 40,
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: AuroraTheme.redBlueGradient,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'JetBrainsMono',
+              fontSize: 9,
+              letterSpacing: 0.16,
+              color: Colors.white.withOpacity(0.45),
+            ),
+          ),
+        ],
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YENİ: Name Card — glass kart, isim + meta satır
+// ─────────────────────────────────────────────────────────────────────────────
+class _NameCard extends StatelessWidget {
+  final String name;
+  final int age;
+  final bool verified;
+  final String metaParts;
+
+  const _NameCard({
+    required this.name,
+    required this.age,
+    required this.verified,
+    required this.metaParts,
+  });
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            width: double.infinity,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: AuroraTheme.glassBg,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AuroraTheme.glassBorder),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '$name, $age',
+                        style: const TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.1,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (verified) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: AuroraTheme.redBlueGradient,
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  AuroraTheme.auroraRed.withOpacity(0.4),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.check,
+                            color: Colors.white, size: 13),
+                      ),
+                    ],
+                  ],
+                ),
+                if (metaParts.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    metaParts,
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 10,
+                      letterSpacing: 1.4,
+                      color: Colors.white.withOpacity(0.6),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YENİ: Bio Section — sol gradient çizgi + italic metin
+// ─────────────────────────────────────────────────────────────────────────────
+class _BioSection extends StatelessWidget {
+  final String bio;
+  const _BioSection({required this.bio});
+
+  @override
+  Widget build(BuildContext context) => IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 2,
+              decoration: BoxDecoration(
+                gradient: AuroraTheme.redBlueGradient,
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                bio,
+                style: const TextStyle(
+                  fontFamily: 'Fraunces',
+                  fontStyle: FontStyle.italic,
+                  fontSize: 12,
+                  color: Colors.white,
+                  height: 1.6,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// YENİ: Prompt Card — glass kart, sol nötr çizgi + soru/cevap
+// ─────────────────────────────────────────────────────────────────────────────
+class _PromptCard extends StatelessWidget {
+  final String question;
+  final String answer;
+  const _PromptCard({required this.question, required this.answer});
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AuroraTheme.glassBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AuroraTheme.glassBorder),
+            ),
+            padding: const EdgeInsets.all(14),
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    width: 2,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          question,
+                          style: TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 9,
+                            color: Colors.white.withOpacity(0.38),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          answer,
+                          style: const TextStyle(
+                            fontFamily: 'Fraunces',
+                            fontStyle: FontStyle.italic,
+                            fontSize: 16,
+                            color: Colors.white,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mevcut widget'lar — değiştirilmedi
 // ─────────────────────────────────────────────────────────────────────────────
 class _PhotoHero extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
@@ -284,7 +730,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // ── Fotoğraf ────────────────────────────────────────────────
           if (url != null)
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
@@ -298,8 +743,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
             )
           else
             _NoPhotoPlaceholder(),
-
-          // ── Üst solma — status bar okunurluğu ───────────────────────
           Positioned(
             top: 0, left: 0, right: 0, height: 120,
             child: DecoratedBox(
@@ -315,8 +758,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
               ),
             ),
           ),
-
-          // ── Alt gradient + isim/yaş overlay ─────────────────────────
           Positioned(
             bottom: 0, left: 0, right: 0,
             child: Container(
@@ -337,7 +778,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // İsim + yaş + verified
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -352,9 +792,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                             color: Colors.white,
                             height: 1.0,
                             shadows: [
-                              Shadow(
-                                  blurRadius: 20,
-                                  color: Colors.black87),
+                              Shadow(blurRadius: 20, color: Colors.black87),
                             ],
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -387,8 +825,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                               color: AuroraTheme.auroraBlue,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AuroraTheme.auroraBlue
-                                      .withOpacity(0.6),
+                                  color: AuroraTheme.auroraBlue.withOpacity(0.6),
                                   blurRadius: 10,
                                 ),
                               ],
@@ -401,7 +838,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Şehir + iş pills
                   Wrap(
                     spacing: 8,
                     runSpacing: 6,
@@ -411,8 +847,7 @@ class _PhotoHeroState extends State<_PhotoHero> {
                           icon: Icons.location_on_outlined,
                           text: widget.cityName,
                         ),
-                      if (widget.job != null &&
-                          widget.job!.isNotEmpty)
+                      if (widget.job != null && widget.job!.isNotEmpty)
                         _OverlayPill(
                           icon: Icons.work_outline_rounded,
                           text: widget.job!,
@@ -423,8 +858,6 @@ class _PhotoHeroState extends State<_PhotoHero> {
               ),
             ),
           ),
-
-          // ── Foto sayaç noktaları — üstte ────────────────────────────
           if (widget.photos.length > 1)
             Positioned(
               top: 0, left: 0, right: 0,
@@ -439,11 +872,9 @@ class _PhotoHeroState extends State<_PhotoHero> {
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.only(
-                                right:
-                                    i < widget.photos.length - 1 ? 4 : 0),
+                                right: i < widget.photos.length - 1 ? 4 : 0),
                             child: AnimatedContainer(
-                              duration:
-                                  const Duration(milliseconds: 250),
+                              duration: const Duration(milliseconds: 250),
                               height: 3,
                               decoration: BoxDecoration(
                                 gradient: isActive
@@ -495,20 +926,18 @@ class _OverlayPill extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: 6),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.35),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                  color: Colors.white.withOpacity(0.18)),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.18)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon,
-                    size: 12,
-                    color: AuroraTheme.auroraRed),
+                Icon(icon, size: 12, color: AuroraTheme.auroraRed),
                 const SizedBox(width: 5),
                 Text(
                   text,
@@ -526,9 +955,6 @@ class _OverlayPill extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Content Section — Aurora glow background
-// ─────────────────────────────────────────────────────────────────────────────
 class _ContentSection extends StatelessWidget {
   final String? bio;
   final String? job;
@@ -555,16 +981,12 @@ class _ContentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius:
-          const BorderRadius.vertical(top: Radius.circular(32)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       child: Stack(
         children: [
-          // Zemin
           Positioned.fill(child: ColoredBox(color: AuroraTheme.bgDeep)),
-          // Kırmızı glow — sol üst
           Positioned(
-            top: -60, left: -80,
-            width: 320, height: 320,
+            top: -60, left: -80, width: 320, height: 320,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
@@ -576,10 +998,8 @@ class _ContentSection extends StatelessWidget {
               ),
             ),
           ),
-          // Mavi glow — sağ orta
           Positioned(
-            top: 200, right: -60,
-            width: 280, height: 280,
+            top: 200, right: -60, width: 280, height: 280,
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
@@ -591,12 +1011,10 @@ class _ContentSection extends StatelessWidget {
               ),
             ),
           ),
-          // İçerik
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Aurora accent çizgisi
               Center(
                 child: Container(
                   margin: const EdgeInsets.only(top: 14, bottom: 4),
@@ -608,18 +1026,13 @@ class _ContentSection extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Eğitim / iş (sadece content'te göster, overlay'den farklı)
               if (education != null && education!.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _MetaPillRow(
-                      education: education, job: null),
+                  child: _MetaPillRow(education: education, job: null),
                 ),
               ],
-
-              // Bio
               if (bio != null && bio!.isNotEmpty) ...[
                 const SizedBox(height: 20),
                 Padding(
@@ -640,8 +1053,6 @@ class _ContentSection extends StatelessWidget {
                   ),
                 ),
               ],
-
-              // Fotoğraflar — horizontal strip
               if (photos.length > 1) ...[
                 const SizedBox(height: 24),
                 Padding(
@@ -653,8 +1064,7 @@ class _ContentSection extends StatelessWidget {
                   height: 130,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemCount: photos.length,
                     itemBuilder: (_, i) {
                       final isActive = i == currentPhotoIndex;
@@ -668,8 +1078,7 @@ class _ContentSection extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isActive
-                                  ? AuroraTheme.auroraRed
-                                      .withOpacity(0.70)
+                                  ? AuroraTheme.auroraRed.withOpacity(0.70)
                                   : Colors.white.withOpacity(0.10),
                               width: isActive ? 2 : 1,
                             ),
@@ -686,15 +1095,12 @@ class _ContentSection extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             child: CachedNetworkImage(
-                              imageUrl:
-                                  photos[i]['url'] as String,
+                              imageUrl: photos[i]['url'] as String,
                               fit: BoxFit.cover,
                               alignment: Alignment.topCenter,
-                              errorWidget: (_, __, ___) =>
-                                  Container(
+                              errorWidget: (_, __, ___) => Container(
                                 color: AuroraTheme.glassBg,
-                                child: const Icon(
-                                    Icons.person_outline,
+                                child: const Icon(Icons.person_outline,
                                     color: Colors.white24),
                               ),
                             ),
@@ -705,8 +1111,6 @@ class _ContentSection extends StatelessWidget {
                   ),
                 ),
               ],
-
-              // İlgi alanları
               if (interests.isNotEmpty) ...[
                 const SizedBox(height: 24),
                 Padding(
@@ -723,16 +1127,13 @@ class _ContentSection extends StatelessWidget {
                             .asMap()
                             .entries
                             .map((e) => _InterestChip(
-                                label: e.value,
-                                colorIndex: e.key))
+                                label: e.value, colorIndex: e.key))
                             .toList(),
                       ),
                     ],
                   ),
                 ),
               ],
-
-              // Prompts
               promptsAsync.maybeWhen(
                 data: (prompts) {
                   if ((prompts as List).isEmpty) {
@@ -774,7 +1175,6 @@ class _ContentSection extends StatelessWidget {
                 },
                 orElse: () => const SizedBox.shrink(),
               ),
-
               const SizedBox(height: 20),
             ],
           ),
@@ -794,7 +1194,6 @@ class _ContentSection extends StatelessWidget {
   }
 }
 
-// ── Section Header ────────────────────────────────────────────────────────────
 class _SectionHeader extends StatelessWidget {
   final String label;
   const _SectionHeader({required this.label});
@@ -816,7 +1215,6 @@ class _SectionHeader extends StatelessWidget {
       );
 }
 
-// ── Meta Pill Row ─────────────────────────────────────────────────────────────
 class _MetaPillRow extends StatelessWidget {
   final String? job;
   final String? education;
@@ -835,7 +1233,6 @@ class _MetaPillRow extends StatelessWidget {
       );
 }
 
-// ── Meta Pill ─────────────────────────────────────────────────────────────────
 class _MetaPill extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -853,8 +1250,8 @@ class _MetaPill extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.07),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                  color: Colors.white.withOpacity(0.12)),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.12)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -881,7 +1278,6 @@ class _MetaPill extends StatelessWidget {
       );
 }
 
-// ── Glass Info Card ───────────────────────────────────────────────────────────
 class _GlassInfoCard extends StatelessWidget {
   final String label;
   final Widget child;
@@ -902,14 +1298,13 @@ class _GlassInfoCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.06),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                  color: Colors.white.withOpacity(0.10)),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.10)),
             ),
             child: IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Left accent bar
                   Container(
                     width: 3,
                     decoration: BoxDecoration(
@@ -927,10 +1322,10 @@ class _GlassInfoCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Content
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                      padding:
+                          const EdgeInsets.fromLTRB(14, 14, 14, 14),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -955,12 +1350,10 @@ class _GlassInfoCard extends StatelessWidget {
       );
 }
 
-// ── Interest Chip ─────────────────────────────────────────────────────────────
 class _InterestChip extends StatelessWidget {
   final String label;
   final int colorIndex;
-  const _InterestChip(
-      {required this.label, required this.colorIndex});
+  const _InterestChip({required this.label, required this.colorIndex});
 
   static const _colors = [
     AuroraTheme.auroraRed,
@@ -973,8 +1366,7 @@ class _InterestChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _colors[colorIndex % _colors.length];
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
         color: color.withOpacity(0.10),
         borderRadius: BorderRadius.circular(100),
@@ -999,7 +1391,6 @@ class _InterestChip extends StatelessWidget {
   }
 }
 
-// ── CTA'lar ───────────────────────────────────────────────────────────────────
 class _AuroraCTA extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -1047,33 +1438,38 @@ class _OutlineCTA extends StatelessWidget {
         child: Container(
           height: 56,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
+            gradient: AuroraTheme.redBlueGradient,
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-              color: AuroraTheme.auroraBlue.withOpacity(0.40),
-              width: 1.5,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: AuroraTheme.auroraRed.withOpacity(0.35),
+                blurRadius: 24,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Center(
-            child: ShaderMask(
-              shaderCallback: (b) =>
-                  AuroraTheme.redBlueGradient.createShader(b),
-              child: const Text(
-                'Profili Düzenle',
-                style: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                  color: Colors.white,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.edit_outlined, color: Colors.white, size: 17),
+                SizedBox(width: 8),
+                Text(
+                  'Profili Düzenle',
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
       );
 }
 
-// ── Glass Icon Button ─────────────────────────────────────────────────────────
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -1091,8 +1487,8 @@ class _GlassIconButton extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.black.withOpacity(0.40),
-                border: Border.all(
-                    color: Colors.white.withOpacity(0.18)),
+                border:
+                    Border.all(color: Colors.white.withOpacity(0.18)),
               ),
               child: Icon(icon, size: 17, color: Colors.white),
             ),
@@ -1101,7 +1497,6 @@ class _GlassIconButton extends StatelessWidget {
       );
 }
 
-// ── Favorite Button ───────────────────────────────────────────────────────────
 class _FavoriteButton extends StatefulWidget {
   final String targetUserId;
   const _FavoriteButton({required this.targetUserId});
@@ -1196,7 +1591,9 @@ class _FavoriteButtonState extends State<_FavoriteButton>
                 ),
               ),
               child: Icon(
-                _isFavorite! ? Icons.star_rounded : Icons.star_outline_rounded,
+                _isFavorite!
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
                 color: _isFavorite!
                     ? AuroraTheme.auroraRed
                     : Colors.white.withOpacity(0.7),
@@ -1210,7 +1607,6 @@ class _FavoriteButtonState extends State<_FavoriteButton>
   }
 }
 
-// ── Action Sheet ──────────────────────────────────────────────────────────────
 class _ActionSheet extends StatelessWidget {
   final String targetUserId;
   final String? targetName;
@@ -1267,7 +1663,8 @@ class _ActionSheet extends StatelessWidget {
     });
     if (ctx.mounted) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
+        content:
+            Text('${targetName ?? 'Kullanıcı'} engellendi'),
         backgroundColor: const Color(0xFF10B981),
       ));
       ctx.pop();
@@ -1345,7 +1742,6 @@ class _ActionSheet extends StatelessWidget {
       );
 }
 
-// ── Full-screen Photo Viewer ──────────────────────────────────────────────────
 class _PhotoViewerPage extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
   final int initialIndex;

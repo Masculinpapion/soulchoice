@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -11,20 +12,80 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 
+// Her slot ya boş, ya yeni yerel dosya, ya da mevcut uzak fotoğraf
+class _PhotoEntry {
+  final File? file;
+  final String? url;
+  final String? remoteId;
+
+  const _PhotoEntry._({this.file, this.url, this.remoteId});
+
+  static const empty = _PhotoEntry._();
+  factory _PhotoEntry.local(File f) => _PhotoEntry._(file: f);
+  factory _PhotoEntry.remote(String u, String id) =>
+      _PhotoEntry._(url: u, remoteId: id);
+
+  bool get isEmpty => file == null && url == null;
+  bool get isLocal => file != null;
+  bool get isRemote => url != null;
+}
+
 class PhotoUploadScreen extends StatefulWidget {
-  const PhotoUploadScreen({super.key});
+  /// true → ayarlardan gelindi (mevcut fotoğrafları yükle, kaydedince pop)
+  /// false → onboarding akışı (min fotoğraf zorunlu, kaydedince selfie)
+  final bool isEditing;
+  const PhotoUploadScreen({super.key, this.isEditing = false});
 
   @override
   State<PhotoUploadScreen> createState() => _PhotoUploadScreenState();
 }
 
 class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
-  final List<File?> _photos = List.filled(AppConstants.maxPhotos, null);
+  final List<_PhotoEntry> _photos =
+      List.filled(AppConstants.maxPhotos, _PhotoEntry.empty);
+  final List<String> _removedRemoteIds = [];
   final _picker = ImagePicker();
   bool _isUploading = false;
+  bool _isLoading = false;
 
-  int get _filledCount => _photos.where((p) => p != null).length;
-  bool get _canContinue => _filledCount >= AppConstants.minPhotos;
+  int get _filledCount => _photos.where((p) => !p.isEmpty).length;
+  bool get _canSave =>
+      widget.isEditing ? _filledCount > 0 : _filledCount >= AppConstants.minPhotos;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing) _loadExistingPhotos();
+  }
+
+  Future<void> _loadExistingPhotos() async {
+    setState(() => _isLoading = true);
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) {
+      setState(() => _isLoading = false);
+      return;
+    }
+    try {
+      final rows = await Supabase.instance.client
+          .from('user_photos')
+          .select('id, url, order_index')
+          .eq('user_id', uid)
+          .eq('is_selfie', false)
+          .order('order_index');
+      if (!mounted) return;
+      setState(() {
+        for (int i = 0; i < rows.length && i < AppConstants.maxPhotos; i++) {
+          _photos[i] = _PhotoEntry.remote(
+            rows[i]['url'] as String,
+            rows[i]['id'] as String,
+          );
+        }
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   Future<void> _pickPhoto(int index) async {
     final picked = await _picker.pickImage(
@@ -53,50 +114,86 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         ),
       ],
     );
-    if (cropped != null) {
-      setState(() => _photos[index] = File(cropped.path));
-    }
+    if (cropped == null || !mounted) return;
+
+    // Eski remote slot siliniyorsa ID'yi takip et
+    final old = _photos[index];
+    if (old.isRemote) _removedRemoteIds.add(old.remoteId!);
+
+    setState(() => _photos[index] = _PhotoEntry.local(File(cropped.path)));
   }
 
   void _removePhoto(int index) {
-    setState(() => _photos[index] = null);
+    final entry = _photos[index];
+    if (entry.isRemote) _removedRemoteIds.add(entry.remoteId!);
+    setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
-  Future<void> _uploadAndContinue() async {
+  Future<void> _save() async {
     setState(() => _isUploading = true);
     try {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser!.id;
-      final photos = _photos.where((p) => p != null).toList();
 
-      for (int i = 0; i < photos.length; i++) {
-        final file = photos[i]!;
-        final ext = file.path.split('.').last;
-        final path = '$uid/${DateTime.now().millisecondsSinceEpoch}_$i.$ext';
-
-        await client.storage
-            .from(SupabaseConstants.profilePhotosBucket)
-            .upload(path, file, fileOptions: const FileOptions(upsert: true));
-
-        final url = client.storage
-            .from(SupabaseConstants.profilePhotosBucket)
-            .getPublicUrl(path);
-
-        await client.from('user_photos').insert({
-          'user_id': uid,
-          'url': url,
-          'is_primary': i == 0,
-          'is_selfie': false,
-          'order_index': i,
-          'moderation_status': 'approved',
-        });
+      // 1. Silinen remote fotoğrafları DB'den kaldır
+      for (final id in _removedRemoteIds) {
+        await client.from('user_photos').delete().eq('id', id);
       }
 
-      if (mounted) context.go('/profile/selfie');
+      // 2. Dolu slotları sırayla işle
+      final filled = _photos.asMap().entries
+          .where((e) => !e.value.isEmpty)
+          .toList();
+
+      for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
+        final entry = filled[orderIdx].value;
+        final isPrimary = orderIdx == 0;
+
+        if (entry.isLocal) {
+          // Yeni fotoğraf: storage'a yükle + DB'ye ekle
+          final file = entry.file!;
+          final ext = file.path.split('.').last.toLowerCase();
+          final path =
+              '$uid/${DateTime.now().millisecondsSinceEpoch}_$orderIdx.$ext';
+
+          await client.storage
+              .from(SupabaseConstants.profilePhotosBucket)
+              .upload(path, file,
+                  fileOptions: const FileOptions(upsert: true));
+
+          final url = client.storage
+              .from(SupabaseConstants.profilePhotosBucket)
+              .getPublicUrl(path);
+
+          await client.from('user_photos').insert({
+            'user_id': uid,
+            'url': url,
+            'is_primary': isPrimary,
+            'is_selfie': false,
+            'order_index': orderIdx,
+            'moderation_status': 'approved',
+          });
+        } else {
+          // Mevcut fotoğraf: sıra ve primary güncelle
+          await client
+              .from('user_photos')
+              .update({'order_index': orderIdx, 'is_primary': isPrimary})
+              .eq('id', entry.remoteId!);
+        }
+      }
+
+      if (!mounted) return;
+      if (widget.isEditing) {
+        context.pop();
+      } else {
+        context.go('/profile/selfie');
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Yükleme hatası: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+              content: Text('Yükleme hatası: $e'),
+              backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -111,50 +208,63 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              color: AppColors.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),
       body: AmbientBackground(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Fotoğraflarını ekle', style: AppTextStyles.displayMedium),
-                const SizedBox(height: 8),
-                Text(
-                  'Min ${AppConstants.minPhotos}, max ${AppConstants.maxPhotos} fotoğraf  •  $_filledCount / ${AppConstants.maxPhotos}',
-                  style: AppTextStyles.mono,
-                ),
-                const SizedBox(height: 32),
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 3 / 4,
-                    ),
-                    itemCount: AppConstants.maxPhotos,
-                    itemBuilder: (_, i) => _PhotoSlot(
-                      file: _photos[i],
-                      isPrimary: i == 0,
-                      onTap: () => _photos[i] == null ? _pickPhoto(i) : _removePhoto(i),
-                    ),
+          child: _isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.red))
+              : Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.isEditing
+                            ? 'Fotoğraflarını düzenle'
+                            : 'Fotoğraflarını ekle',
+                        style: AppTextStyles.displayMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Min ${AppConstants.minPhotos}, max ${AppConstants.maxPhotos} fotoğraf  •  $_filledCount / ${AppConstants.maxPhotos}',
+                        style: AppTextStyles.mono,
+                      ),
+                      const SizedBox(height: 32),
+                      Expanded(
+                        child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                            childAspectRatio: 3 / 4,
+                          ),
+                          itemCount: AppConstants.maxPhotos,
+                          itemBuilder: (_, i) => _PhotoSlot(
+                            entry: _photos[i],
+                            isPrimary: i == 0,
+                            onTap: () => _photos[i].isEmpty
+                                ? _pickPhoto(i)
+                                : _removePhoto(i),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ScButton(
+                        label: widget.isEditing ? 'Kaydet' : 'Devam',
+                        onPressed: _canSave && !_isUploading ? _save : null,
+                        isLoading: _isUploading,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                ScButton(
-                  label: 'Devam',
-                  onPressed: _canContinue && !_isUploading ? _uploadAndContinue : null,
-                  isLoading: _isUploading,
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -162,11 +272,12 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
 }
 
 class _PhotoSlot extends StatelessWidget {
-  final File? file;
+  final _PhotoEntry entry;
   final bool isPrimary;
   final VoidCallback onTap;
 
-  const _PhotoSlot({required this.file, required this.isPrimary, required this.onTap});
+  const _PhotoSlot(
+      {required this.entry, required this.isPrimary, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -177,16 +288,35 @@ class _PhotoSlot extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (file != null)
-              Image.file(file!, fit: BoxFit.cover)
+            // Fotoğraf (yerel file veya uzak URL)
+            if (entry.isLocal)
+              Image.file(entry.file!, fit: BoxFit.cover)
+            else if (entry.isRemote)
+              CachedNetworkImage(
+                imageUrl: entry.url!,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(
+                  color: AppColors.glassBg,
+                  child: const Center(
+                      child: CircularProgressIndicator(
+                          strokeWidth: 1.5, color: AppColors.red)),
+                ),
+                errorWidget: (_, __, ___) => Container(
+                  color: AppColors.glassBg,
+                  child: const Icon(Icons.broken_image_outlined,
+                      color: AppColors.textTertiary),
+                ),
+              )
             else
+              // Boş slot
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.glassBg,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isPrimary ? AppColors.red.withOpacity(0.5) : AppColors.glassBorder,
-                    style: BorderStyle.solid,
+                    color: isPrimary
+                        ? AppColors.red.withOpacity(0.5)
+                        : AppColors.glassBorder,
                   ),
                 ),
                 child: Column(
@@ -194,17 +324,23 @@ class _PhotoSlot extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.add_photo_alternate_outlined,
-                      color: isPrimary ? AppColors.red : AppColors.textTertiary,
+                      color: isPrimary
+                          ? AppColors.red
+                          : AppColors.textTertiary,
                       size: 28,
                     ),
                     if (isPrimary) ...[
                       const SizedBox(height: 6),
-                      Text('Ana fotoğraf', style: AppTextStyles.monoSmall.copyWith(color: AppColors.red)),
+                      Text('Ana fotoğraf',
+                          style: AppTextStyles.monoSmall
+                              .copyWith(color: AppColors.red)),
                     ],
                   ],
                 ),
               ),
-            if (file != null)
+
+            // Sil butonu (dolu slotlarda)
+            if (!entry.isEmpty)
               Positioned(
                 top: 6,
                 right: 6,
@@ -215,20 +351,26 @@ class _PhotoSlot extends StatelessWidget {
                     color: AppColors.bgBlack.withOpacity(0.8),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, size: 14, color: AppColors.textPrimary),
+                  child: const Icon(Icons.close,
+                      size: 14, color: AppColors.textPrimary),
                 ),
               ),
-            if (isPrimary && file != null)
+
+            // "Ana" etiketi
+            if (isPrimary && !entry.isEmpty)
               Positioned(
                 bottom: 6,
                 left: 6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppColors.red,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text('Ana', style: AppTextStyles.monoSmall.copyWith(color: AppColors.textPrimary)),
+                  child: Text('Ana',
+                      style: AppTextStyles.monoSmall
+                          .copyWith(color: AppColors.textPrimary)),
                 ),
               ),
           ],

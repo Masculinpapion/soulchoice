@@ -94,7 +94,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile/photos',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, _) => const PhotoUploadScreen(),
+        builder: (ctx, state) =>
+            PhotoUploadScreen(isEditing: state.extra == 'edit'),
       ),
       GoRoute(
         path: '/profile/selfie',

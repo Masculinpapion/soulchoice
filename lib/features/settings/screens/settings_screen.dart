@@ -211,7 +211,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.add_photo_alternate_outlined,
                           label: l10n.settings_edit_photos,
-                          onTap: () => context.push('/profile/photos'),
+                          onTap: () =>
+                              context.push('/profile/photos', extra: 'edit'),
                         ),
                       ],
                     ),

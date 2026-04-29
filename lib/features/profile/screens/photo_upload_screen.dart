@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/supabase_constants.dart';
@@ -88,39 +91,66 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   }
 
   Future<void> _pickPhoto(int index) async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 90,
-      maxWidth: 1080,
-    );
-    if (picked == null) return;
+    try {
+      // Android 13+ (API 33+) için galeri izni kontrolü
+      if (Platform.isAndroid) {
+        final status = await Permission.photos.status;
+        if (status.isPermanentlyDenied) {
+          await openAppSettings();
+          return;
+        }
+        if (status.isDenied) {
+          final result = await Permission.photos.request();
+          if (!result.isGranted) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Galeri iznine ihtiyaç var. Lütfen ayarlardan izin verin.'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+            return;
+          }
+        }
+      }
 
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: picked.path,
-      aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 4),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Fotoğrafı düzenle',
-          toolbarColor: const Color(0xFF0A0A0B),
-          toolbarWidgetColor: Colors.white,
-          activeControlsWidgetColor: AppColors.red,
-          cropStyle: CropStyle.rectangle,
-          lockAspectRatio: true,
+      final picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 90,
+        maxWidth: 1080,
+      );
+      if (picked == null || !mounted) return;
+
+      // Flutter tabanlı crop ekranı — UCropActivity yok, request code çakışması yok
+      final croppedBytes = await Navigator.of(context).push<Uint8List>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) => _CropScreen(imageFile: File(picked.path)),
         ),
-        IOSUiSettings(
-          title: 'Fotoğrafı düzenle',
-          aspectRatioLockEnabled: true,
-          resetAspectRatioEnabled: false,
+      );
+      if (croppedBytes == null || !mounted) return;
+
+      // Kırpılmış bytes'ı geçici dosyaya yaz
+      final tmpDir = await getTemporaryDirectory();
+      final tmpFile = File(
+        '${tmpDir.path}/crop_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      await tmpFile.writeAsBytes(croppedBytes);
+
+      // Eski remote slot siliniyorsa ID'yi takip et
+      final old = _photos[index];
+      if (old.isRemote) _removedRemoteIds.add(old.remoteId!);
+
+      setState(() => _photos[index] = _PhotoEntry.local(tmpFile));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Fotoğraf seçilemedi: $e'),
+          backgroundColor: AppColors.error,
         ),
-      ],
-    );
-    if (cropped == null || !mounted) return;
-
-    // Eski remote slot siliniyorsa ID'yi takip et
-    final old = _photos[index];
-    if (old.isRemote) _removedRemoteIds.add(old.remoteId!);
-
-    setState(() => _photos[index] = _PhotoEntry.local(File(cropped.path)));
+      );
+    }
   }
 
   void _removePhoto(int index) {
@@ -376,6 +406,86 @@ class _PhotoSlot extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Flutter tabanlı crop ekranı — Activity açılmıyor, request code çakışması yok
+class _CropScreen extends StatefulWidget {
+  final File imageFile;
+  const _CropScreen({required this.imageFile});
+
+  @override
+  State<_CropScreen> createState() => _CropScreenState();
+}
+
+class _CropScreenState extends State<_CropScreen> {
+  final _controller = CropController();
+  bool _isCropping = false;
+  late Uint8List _imageBytes;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.imageFile.readAsBytes().then((bytes) {
+      if (mounted) setState(() { _imageBytes = bytes; _loaded = true; });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF050709),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF050709),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(null),
+        ),
+        title: const Text(
+          'Fotoğrafı düzenle',
+          style: TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _isCropping ? null : () {
+              setState(() => _isCropping = true);
+              _controller.crop();
+            },
+            child: Text(
+              'Uygula',
+              style: TextStyle(
+                fontFamily: 'JetBrainsMono',
+                fontWeight: FontWeight.w700,
+                color: _isCropping ? Colors.white38 : const Color(0xFFFF2D55),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: _loaded
+          ? Crop(
+              controller: _controller,
+              image: _imageBytes,
+              aspectRatio: 3 / 4,
+              onCropped: (result) {
+                if (result is CropSuccess) {
+                  if (mounted) Navigator.of(context).pop(result.croppedImage);
+                } else if (result is CropFailure) {
+                  if (mounted) {
+                    setState(() => _isCropping = false);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Kırpma hatası: ${result.cause}'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                }
+              },
+            )
+          : const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFFF2D55))),
     );
   }
 }

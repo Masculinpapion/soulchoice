@@ -71,7 +71,9 @@ class InvitationDetailScreen extends ConsumerWidget {
             (c) => c.name == inv['category'],
             orElse: () => InvitationCategory.food,
           );
-          final expiresAt = DateTime.parse(inv['expires_at'] as String);
+          final expiresAt = inv['expires_at'] != null
+              ? DateTime.parse(inv['expires_at'] as String)
+              : DateTime.now();
           final remaining = expiresAt.difference(DateTime.now());
           final invStatus = inv['status'] as String? ?? 'active';
           final appStatus =

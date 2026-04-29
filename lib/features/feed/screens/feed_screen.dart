@@ -813,15 +813,26 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
 
   // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
   void _initRing(int length) {
-    if (_ringInitialized || length == 0) return;
-    _ringInitialized = true;
-    final start = length * 500; // her zaman item[0]'dan başlar (length*500 % length == 0)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _pageController.hasClients) {
-        _pageController.jumpToPage(start);
-        setState(() => _currentPage = start.toDouble());
-      }
-    });
+    if (length == 0) return;
+    final maxPage = length * 1000 - 1;
+    final start = length * 500;
+    if (!_ringInitialized) {
+      _ringInitialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pageController.hasClients) {
+          _pageController.jumpToPage(start);
+          setState(() => _currentPage = start.toDouble());
+        }
+      });
+    } else if (_currentPage > maxPage) {
+      // Filtre değişince mevcut sayfa yeni itemCount dışına çıkabilir → sıfırla
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pageController.hasClients) {
+          _pageController.jumpToPage(start);
+          setState(() => _currentPage = start.toDouble());
+        }
+      });
+    }
   }
 
   @override

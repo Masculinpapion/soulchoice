@@ -46,7 +46,6 @@ class PhotoUploadScreen extends StatefulWidget {
 class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   final List<_PhotoEntry> _photos =
       List.filled(AppConstants.maxPhotos, _PhotoEntry.empty);
-  final List<String> _removedRemoteIds = [];
   final _picker = ImagePicker();
   bool _isUploading = false;
   bool _isLoading = false;
@@ -77,6 +76,10 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           .order('order_index');
       if (!mounted) return;
       setState(() {
+        // Tüm slot'ları sıfırla, sonra DB'den gelen verileri doldur
+        for (int i = 0; i < AppConstants.maxPhotos; i++) {
+          _photos[i] = _PhotoEntry.empty;
+        }
         for (int i = 0; i < rows.length && i < AppConstants.maxPhotos; i++) {
           _photos[i] = _PhotoEntry.remote(
             rows[i]['url'] as String,
@@ -137,10 +140,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       );
       await tmpFile.writeAsBytes(croppedBytes);
 
-      // Eski remote slot siliniyorsa ID'yi takip et
-      final old = _photos[index];
-      if (old.isRemote) _removedRemoteIds.add(old.remoteId!);
-
       setState(() => _photos[index] = _PhotoEntry.local(tmpFile));
     } catch (e) {
       if (!mounted) return;
@@ -154,8 +153,6 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   }
 
   void _removePhoto(int index) {
-    final entry = _photos[index];
-    if (entry.isRemote) _removedRemoteIds.add(entry.remoteId!);
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
@@ -165,14 +162,15 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser!.id;
 
-      // 1. Silinen remote fotoğrafları DB'den kaldır
-      for (final id in _removedRemoteIds) {
-        await client.from('user_photos').delete().eq('id', id);
-      }
-
-      // 2. Dolu slotları sırayla işle
+      // Tutulacak remote ID'leri topla; tekrar eden remote'ları atla
+      final keptIds = <String>[];
+      final seenRemoteIds = <String>{};
       final filled = _photos.asMap().entries
           .where((e) => !e.value.isEmpty)
+          .where((e) {
+            if (e.value.isRemote) return seenRemoteIds.add(e.value.remoteId!);
+            return true;
+          })
           .toList();
 
       for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
@@ -195,21 +193,37 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
               .from(SupabaseConstants.profilePhotosBucket)
               .getPublicUrl(path);
 
-          await client.from('user_photos').insert({
+          final inserted = await client.from('user_photos').insert({
             'user_id': uid,
             'url': url,
             'is_primary': isPrimary,
             'is_selfie': false,
             'order_index': orderIdx,
             'moderation_status': 'approved',
-          });
+          }).select('id').single();
+          keptIds.add(inserted['id'] as String);
         } else {
           // Mevcut fotoğraf: sıra ve primary güncelle
           await client
               .from('user_photos')
               .update({'order_index': orderIdx, 'is_primary': isPrimary})
               .eq('id', entry.remoteId!);
+          keptIds.add(entry.remoteId!);
         }
+      }
+
+      // Artık olmayan tüm fotoğrafları sil (selfie hariç) — NOT IN ile kesin temizlik
+      if (keptIds.isEmpty) {
+        await client.from('user_photos')
+            .delete()
+            .eq('user_id', uid)
+            .eq('is_selfie', false);
+      } else {
+        await client.from('user_photos')
+            .delete()
+            .eq('user_id', uid)
+            .eq('is_selfie', false)
+            .not('id', 'in', '(${keptIds.join(',')})');
       }
 
       if (!mounted) return;
@@ -279,9 +293,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                           itemBuilder: (_, i) => _PhotoSlot(
                             entry: _photos[i],
                             isPrimary: i == 0,
-                            onTap: () => _photos[i].isEmpty
-                                ? _pickPhoto(i)
-                                : _removePhoto(i),
+                            onTap: () => _pickPhoto(i),
+                            onRemove: _photos[i].isEmpty ? null : () => _removePhoto(i),
                           ),
                         ),
                       ),
@@ -305,9 +318,14 @@ class _PhotoSlot extends StatelessWidget {
   final _PhotoEntry entry;
   final bool isPrimary;
   final VoidCallback onTap;
+  final VoidCallback? onRemove;
 
-  const _PhotoSlot(
-      {required this.entry, required this.isPrimary, required this.onTap});
+  const _PhotoSlot({
+    required this.entry,
+    required this.isPrimary,
+    required this.onTap,
+    this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -354,9 +372,7 @@ class _PhotoSlot extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.add_photo_alternate_outlined,
-                      color: isPrimary
-                          ? AppColors.red
-                          : AppColors.textTertiary,
+                      color: isPrimary ? AppColors.red : AppColors.textTertiary,
                       size: 28,
                     ),
                     if (isPrimary) ...[
@@ -369,20 +385,24 @@ class _PhotoSlot extends StatelessWidget {
                 ),
               ),
 
-            // Sil butonu (dolu slotlarda)
-            if (!entry.isEmpty)
+            // Sil butonu — ayrı GestureDetector, fotoğraf tapından bağımsız
+            if (onRemove != null)
               Positioned(
                 top: 6,
                 right: 6,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: AppColors.bgBlack.withOpacity(0.8),
-                    shape: BoxShape.circle,
+                child: GestureDetector(
+                  onTap: onRemove,
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: AppColors.bgBlack.withOpacity(0.8),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close,
+                        size: 16, color: AppColors.textPrimary),
                   ),
-                  child: const Icon(Icons.close,
-                      size: 14, color: AppColors.textPrimary),
                 ),
               ),
 

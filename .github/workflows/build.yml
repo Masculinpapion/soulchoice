@@ -40,15 +40,21 @@ jobs:
           key: pub-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-
 
-      # 5. Bağımlılıkları yükle
+      # 5. Sabit debug keystore'u yerleştir (adb install -r için imza tutarlılığı)
+      - name: Restore debug keystore
+        run: |
+          mkdir -p ~/.android
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > ~/.android/debug.keystore
+
+      # 6. Bağımlılıkları yükle
       - name: Flutter pub get
         run: flutter pub get
 
-      # 6. Debug APK build et (signing gerekmez, telefona direkt kurulur)
+      # 7. Debug APK build et (signing gerekmez, telefona direkt kurulur)
       - name: Build APK
         run: flutter build apk --debug --no-pub
 
-      # 7. APK'yı artifact olarak yükle (7 gün saklanır)
+      # 8. APK'yı artifact olarak yükle (7 gün saklanır)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
@@ -56,7 +62,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 7
 
-      # 8. Build bilgisi
+      # 9. Build bilgisi
       - name: Build summary
         run: |
           echo "✅ Build #${{ github.run_number }} tamamlandı"

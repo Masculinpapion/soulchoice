@@ -146,6 +146,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       );
       await tmpFile.writeAsBytes(croppedBytes);
 
+      // Slot'ta zaten bir local temp dosya varsa üzerine yazılmadan önce sil
+      _photos[index].file?.delete().catchError((_) {});
       setState(() => _photos[index] = _PhotoEntry.local(tmpFile));
     } catch (e) {
       if (!mounted) return;
@@ -159,6 +161,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   }
 
   void _removePhoto(int index) {
+    _photos[index].file?.delete().catchError((_) {});
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
@@ -218,6 +221,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
             'moderation_status': 'approved',
           }).select('id').single();
           keptIds.add(inserted['id'] as String);
+          // Upload tamamlandı, geçici dosyaya artık gerek yok
+          file.delete().catchError((_) {});
         } else {
           // Mevcut fotoğraf: sıra ve primary güncelle
           await client
@@ -484,6 +489,12 @@ class _CropScreenState extends State<_CropScreen> {
     widget.imageFile.readAsBytes().then((bytes) {
       if (mounted) setState(() { _imageBytes = bytes; _loaded = true; });
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override

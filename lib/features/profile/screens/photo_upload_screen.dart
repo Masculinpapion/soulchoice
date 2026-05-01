@@ -185,8 +185,11 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
 
   Future<void> _save() async {
     setState(() => _isUploading = true);
+    final client = Supabase.instance.client;
+    // Rollback için: try dışında tanımlanır ki catch'ten erişilebilsin
+    final uploadedPaths = <String>[];
+    final insertedDbIds = <String>[];
     try {
-      final client = Supabase.instance.client;
       final uid = client.auth.currentUser?.id;
       if (uid == null) return;
 
@@ -215,6 +218,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
               .from(SupabaseConstants.profilePhotosBucket)
               .upload(path, file,
                   fileOptions: const FileOptions(upsert: true));
+          uploadedPaths.add(path); // rollback: upload başarılı, izle
 
           final url = client.storage
               .from(SupabaseConstants.profilePhotosBucket)
@@ -228,6 +232,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
             'order_index': orderIdx,
             'moderation_status': 'approved',
           }).select('id').single();
+          insertedDbIds.add(inserted['id'] as String); // rollback: DB kaydı izle
           keptIds.add(inserted['id'] as String);
           // Upload tamamlandı, geçici dosyaya artık gerek yok
           file.delete().catchError((_) {});
@@ -279,6 +284,19 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         context.go('/profile/selfie');
       }
     } catch (e) {
+      // Rollback: loop ortasında hata çıktıysa yüklenen dosyaları geri al
+      if (uploadedPaths.isNotEmpty) {
+        await client.storage
+            .from(SupabaseConstants.profilePhotosBucket)
+            .remove(uploadedPaths)
+            .catchError((_) {});
+      }
+      if (insertedDbIds.isNotEmpty) {
+        await client.from('user_photos')
+            .delete()
+            .inFilter('id', insertedDbIds)
+            .catchError((_) {});
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

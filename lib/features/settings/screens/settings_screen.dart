@@ -309,8 +309,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       icon: Icons.logout,
                       label: l10n.settings_logout,
                       onTap: () async {
-                        await Supabase.instance.client.auth.signOut();
-                        if (context.mounted) context.go('/splash');
+                        try {
+                          await Supabase.instance.client.auth.signOut();
+                          if (context.mounted) context.go('/splash');
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Çıkış yapılamadı. Lütfen tekrar deneyin.'),
+                              ),
+                            );
+                          }
+                        }
                       },
                     ),
                     const SizedBox(height: 10),

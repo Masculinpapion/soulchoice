@@ -46,6 +46,8 @@ class PhotoUploadScreen extends StatefulWidget {
 class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   final List<_PhotoEntry> _photos =
       List.filled(AppConstants.maxPhotos, _PhotoEntry.empty);
+  // Editing modunda yüklenen orijinal remote fotoğraflar — hangileri silineceğini takip etmek için
+  final List<_PhotoEntry> _originalRemotePhotos = [];
   final _picker = ImagePicker();
   bool _isUploading = false;
   bool _isLoading = false;
@@ -86,6 +88,10 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
             rows[i]['id'] as String,
           );
         }
+        // Storage cleanup için orijinal listeyi sakla
+        _originalRemotePhotos
+          ..clear()
+          ..addAll(_photos.where((p) => p.isRemote));
         _isLoading = false;
       });
     } catch (_) {
@@ -156,6 +162,15 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
+  // Supabase public URL'inden storage path'ini çıkarır
+  // Örnek: .../object/public/profile-photos/uid/filename.jpg → uid/filename.jpg
+  String? _storagePathFromUrl(String url) {
+    const marker = '/object/public/${SupabaseConstants.profilePhotosBucket}/';
+    final idx = url.indexOf(marker);
+    if (idx == -1) return null;
+    return url.substring(idx + marker.length);
+  }
+
   Future<void> _save() async {
     setState(() => _isUploading = true);
     try {
@@ -211,6 +226,23 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
               .eq('id', entry.remoteId!);
           keptIds.add(entry.remoteId!);
         }
+      }
+
+      // Storage cleanup: orijinal yüklenen remote fotoğraflardan artık tutulmayanlara ait
+      // dosyaları storage'dan sil (DB'den silmeden önce)
+      final keptRemoteIds = filled
+          .where((e) => e.value.isRemote)
+          .map((e) => e.value.remoteId!)
+          .toSet();
+      final storagePathsToDelete = _originalRemotePhotos
+          .where((p) => !keptRemoteIds.contains(p.remoteId))
+          .map((p) => _storagePathFromUrl(p.url!))
+          .whereType<String>()
+          .toList();
+      if (storagePathsToDelete.isNotEmpty) {
+        await client.storage
+            .from(SupabaseConstants.profilePhotosBucket)
+            .remove(storagePathsToDelete);
       }
 
       // Artık olmayan tüm fotoğrafları sil (selfie hariç) — NOT IN ile kesin temizlik

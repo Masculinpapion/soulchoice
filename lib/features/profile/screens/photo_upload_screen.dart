@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crop_your_image/crop_your_image.dart';
@@ -165,6 +166,14 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
+  // Çakışmaya karşı güvenli 64-bit rastgele hex ID üretir (milisaniye race'i yok)
+  String _uniqueId() {
+    final rng = Random.secure();
+    return List.generate(8, (_) => rng.nextInt(256))
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+  }
+
   // Supabase public URL'inden storage path'ini çıkarır
   // Örnek: .../object/public/profile-photos/uid/filename.jpg → uid/filename.jpg
   String? _storagePathFromUrl(String url) {
@@ -200,8 +209,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           // Yeni fotoğraf: storage'a yükle + DB'ye ekle
           final file = entry.file!;
           final ext = file.path.split('.').last.toLowerCase();
-          final path =
-              '$uid/${DateTime.now().millisecondsSinceEpoch}_$orderIdx.$ext';
+          final path = '$uid/${_uniqueId()}.$ext';
 
           await client.storage
               .from(SupabaseConstants.profilePhotosBucket)

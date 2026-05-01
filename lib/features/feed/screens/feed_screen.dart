@@ -26,11 +26,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   String? _selectedCityId;
   String _selectedCityName = 'Moskova';
 
+  void _onTabChanged() => setState(() {});
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() => setState(() {}));
+    _tabController.addListener(_onTabChanged);
     _loadMoskovaCityId();
   }
 
@@ -46,6 +48,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -802,13 +805,15 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
   double _currentPage = 0;
   bool _ringInitialized = false;
 
+  void _onPageScroll() {
+    if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
+  }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.72);
-    _pageController.addListener(() {
-      if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
-    });
+    _pageController.addListener(_onPageScroll);
   }
 
   // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
@@ -837,6 +842,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
 
   @override
   void dispose() {
+    _pageController.removeListener(_onPageScroll);
     _pageController.dispose();
     super.dispose();
   }

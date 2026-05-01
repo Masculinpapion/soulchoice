@@ -159,6 +159,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _messageController.dispose();
     _scrollController.dispose();
     if (_channel != null) {
+      _channel!.unsubscribe();
       Supabase.instance.client.removeChannel(_channel!);
     }
     super.dispose();

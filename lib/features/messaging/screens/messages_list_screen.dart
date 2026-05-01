@@ -48,6 +48,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
   void dispose() {
     _tabController.dispose();
     if (_channel != null) {
+      _channel!.unsubscribe();
       Supabase.instance.client.removeChannel(_channel!);
     }
     super.dispose();

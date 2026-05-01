@@ -1,5 +1,5 @@
 # SoulChoice — Proje Durumu
-**Son güncelleme:** 2026-04-26
+**Son güncelleme:** 2026-05-01
 
 ## ✅ TAMAMLANANLAR
 
@@ -39,6 +39,12 @@
 - BUG-5: Report kolon adı yanlıştı
 - BUG-6: city_id null crash (Feed)
 
+### Faz 6 — Yayın Öncesi Kod Denetimi (1 Mayıs 2026)
+- ✅ ADIM 1: 5 kritik crash fix — null guard (app_router, otp, photo_upload, selfie, chat)
+- ✅ ADIM 2: Memory leak düzeltme — unsubscribe + removeListener (3 dosya)
+- ✅ ADIM 3: Profile setup guard — splash screen'de users tablosu kontrolü
+- ✅ ADIM 4: N+1 query eliminasyonu — 41 seri sorgu → 4 paralel sorgu
+
 ### Faz 5 — Documentation
 - CLAUDE.md eklendi (sunucu/yerel karışıklığı çözüldü)
 - Test raporları arşivlendi
@@ -46,14 +52,13 @@
 ## 🚧 KALAN İŞLER
 
 ### Hemen yapılacak (öncelik sırası):
-1. **Yeni kullanıcı onboarding testi**
+1. **Yeni kullanıcı onboarding E2E testi**
    - Mustafa hesabını sil
    - Sıfırdan kayıt ol
    - Profil setup 7 adım, foto yükleme, selfie test et
    - Beklenen süre: 1 saat
 
-2. **Twilio SMS entegrasyonu**
-   - Trial hesap aç ($15 free)
+2. **SMS.ru entegrasyonu** *(Twilio yerine)*
    - GoTrue config güncelle
    - GOTRUE_SMS_TEST_OTP sil
    - Beklenen süre: 1 saat

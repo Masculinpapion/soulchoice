@@ -24,19 +24,25 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser?.id;
       if (uid != null) {
-        // Delete user data (auth.users cascade deletes users row via FK)
-        await client.auth.admin.deleteUser(uid);
+        await client.from('users').update({'is_deleted': true}).eq('id', uid);
       }
       await client.auth.signOut();
-      if (mounted) context.go('/splash');
-    } catch (e) {
-      // Service role not available from client → sign out and show message
-      await Supabase.instance.client.auth.signOut();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hesap silme isteğiniz alındı.')),
+          const SnackBar(
+            content: Text(
+              'Hesabınız silinmek üzere işaretlendi. En kısa sürede kalıcı olarak kaldırılacak.',
+            ),
+          ),
         );
         context.go('/splash');
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bir hata oluştu. Lütfen tekrar deneyin.')),
+        );
       }
     }
   }

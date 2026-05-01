@@ -24,7 +24,7 @@ final discoverProvider =
   var query = client.from('invitations').select(
         '*, '
         'city:cities(name), '
-        'owner:users(id, name, age, gender, verified, '
+        'owner:users(id, name, age, gender, verified, is_deleted, '
         'photos:user_photos(url, is_primary, is_selfie, order_index))',
       );
 
@@ -43,6 +43,7 @@ final discoverProvider =
 
   final list = (data as List).map((row) {
     final ownerRow = row['owner'] as Map<String, dynamic>?;
+    if (ownerRow?['is_deleted'] == true) return null;
     final owner = ownerRow != null
         ? UserModel(
             id: ownerRow['id'] as String,
@@ -72,7 +73,7 @@ final discoverProvider =
       ownerPhotoUrl: ownerPhotoUrl,
       cityName: cityName,
     );
-  }).where((inv) => inv.ownerPhotoUrl != null).toList();
+  }).whereType<InvitationModel>().where((inv) => inv.ownerPhotoUrl != null).toList();
 
   list.shuffle();
   return list;

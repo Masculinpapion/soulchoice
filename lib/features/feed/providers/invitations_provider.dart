@@ -26,7 +26,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .select(
           '*, '
           'city:cities(name), '
-          'owner:users(id, name, age, gender, city_id, verified, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          'owner:users(id, name, age, gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
         .eq('status', 'active')
@@ -49,6 +49,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     return (data as List).map((row) {
       // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
+      if (ownerRow?['is_deleted'] == true) return null;
       final owner = ownerRow != null
           ? UserModel(
               id: ownerRow['id'] as String,
@@ -99,7 +100,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         applicantPhotoUrls: applicantPhotoUrls,
         cityName: cityName,
       );
-    }).where((inv) => inv.ownerPhotoUrl != null).toList();
+    }).whereType<InvitationModel>().where((inv) => inv.ownerPhotoUrl != null).toList();
   },
 );
 

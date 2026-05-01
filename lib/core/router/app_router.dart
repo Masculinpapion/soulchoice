@@ -24,6 +24,7 @@ import '../../features/invitation/screens/decision_screen.dart';
 import '../../features/messaging/screens/chat_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/delete_account_screen.dart';
+import '../../features/settings/screens/blocked_users_screen.dart';
 import '../../features/admin/screens/admin_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/profile/screens/report_user_screen.dart';
@@ -162,6 +163,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings/delete-account',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (ctx, _) => const DeleteAccountScreen(),
+      ),
+      GoRoute(
+        path: '/settings/blocked-users',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, _) => const BlockedUsersScreen(),
       ),
       GoRoute(
         path: '/admin',

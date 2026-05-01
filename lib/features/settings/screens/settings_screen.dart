@@ -270,6 +270,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title: 'GİZLİLİK & GÜVENLİK',
                       items: [
                         _SettingsTile(
+                          icon: Icons.block_outlined,
+                          label: 'Engellenen kullanıcılar',
+                          onTap: () => context.push('/settings/blocked-users'),
+                        ),
+                        _SettingsTile(
                           icon: Icons.location_on_outlined,
                           label: 'Konum izni',
                           onTap: () => openAppSettings(),

@@ -59,11 +59,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       );
       if (!mounted) return;
 
-      if (response.user != null) {
+      final user = response.user;
+      if (user != null) {
         final existing = await Supabase.instance.client
             .from('users')
             .select('id')
-            .eq('id', response.user!.id)
+            .eq('id', user.id)
             .maybeSingle();
         if (!mounted) return;
 

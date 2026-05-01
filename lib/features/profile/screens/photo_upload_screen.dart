@@ -160,7 +160,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     setState(() => _isUploading = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser!.id;
+      final uid = client.auth.currentUser?.id;
+      if (uid == null) return;
 
       // Tutulacak remote ID'leri topla; tekrar eden remote'ları atla
       final keptIds = <String>[];

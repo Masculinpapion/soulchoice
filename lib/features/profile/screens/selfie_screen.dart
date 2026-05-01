@@ -38,13 +38,15 @@ class _SelfieScreenState extends State<SelfieScreen> {
     setState(() => _isUploading = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser!.id;
-      final ext = _selfie!.path.split('.').last;
+      final uid = client.auth.currentUser?.id;
+      final selfie = _selfie;
+      if (uid == null || selfie == null) return;
+      final ext = selfie.path.split('.').last;
       final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.$ext';
 
       await client.storage
           .from(SupabaseConstants.selfiesBucket)
-          .upload(path, _selfie!, fileOptions: const FileOptions(upsert: true));
+          .upload(path, selfie, fileOptions: const FileOptions(upsert: true));
 
       final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);
 

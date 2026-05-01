@@ -82,7 +82,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           path: '/auth/phone', builder: (ctx, _) => const PhoneScreen()),
       GoRoute(
         path: '/auth/otp',
-        builder: (_, state) => OtpScreen(phone: state.extra as String),
+        builder: (_, state) => OtpScreen(phone: (state.extra as String?) ?? ''),
       ),
 
       // ── Setup / Permissions (root navigator, shown over shell) ──────────
@@ -118,21 +118,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/invitation/:id',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) => InvitationDetailScreen(
-          invitationId: state.pathParameters['id']!,
+          invitationId: state.pathParameters['id'] ?? '',
         ),
       ),
       GoRoute(
         path: '/invitation/:id/applicants',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) => ApplicantsScreen(
-          invitationId: state.pathParameters['id']!,
+          invitationId: state.pathParameters['id'] ?? '',
         ),
       ),
       GoRoute(
         path: '/invitation/:id/decision',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) => DecisionScreen(
-          invitationId: state.pathParameters['id']!,
+          invitationId: state.pathParameters['id'] ?? '',
         ),
       ),
 
@@ -141,7 +141,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/chat/:matchId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) =>
-            ChatScreen(matchId: state.pathParameters['matchId']!),
+            ChatScreen(matchId: state.pathParameters['matchId'] ?? ''),
       ),
 
       // ── Profile detail (root navigator, shown over shell) ───────────────
@@ -149,7 +149,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile/:userId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) =>
-            ProfileViewScreen(userId: state.pathParameters['userId']!),
+            ProfileViewScreen(userId: state.pathParameters['userId'] ?? ''),
       ),
 
       // ── Settings (root navigator) ───────────────────────────────────────
@@ -177,7 +177,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/report/:userId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) =>
-            ReportUserScreen(userId: state.pathParameters['userId']!),
+            ReportUserScreen(userId: state.pathParameters['userId'] ?? ''),
       ),
 
       // ── Shell with bottom nav ───────────────────────────────────────────

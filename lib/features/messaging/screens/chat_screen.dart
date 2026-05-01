@@ -167,7 +167,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _sendMessage() async {
     if (_archivedAt != null) return;
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _currentUid == null) return;
     _messageController.clear();
 
     final optimistic = MessageModel(
@@ -271,9 +271,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final otherAge = (otherUser?['age'] as int?) ?? 0;
     final invTitle = inv?['title'] as String? ?? '';
     final invVenue = inv?['venue_name'] as String? ?? '';
-    final invDate = inv?['event_date'] != null
-        ? DateTime.tryParse(inv!['event_date'] as String)
-        : null;
+    final rawDate = inv?['event_date'] as String?;
+    final invDate = rawDate != null ? DateTime.tryParse(rawDate) : null;
     final isArchived = _archivedAt != null ||
         (_meetingDate != null &&
             DateTime.now()

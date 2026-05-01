@@ -47,7 +47,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
-    context.go('/feed');
+    final existing = await Supabase.instance.client
+        .from('users')
+        .select('id')
+        .eq('id', session.user.id)
+        .maybeSingle();
+    if (!mounted) return;
+
+    if (existing == null) {
+      context.go('/profile/setup');
+    } else {
+      context.go('/feed');
+    }
   }
 
   @override

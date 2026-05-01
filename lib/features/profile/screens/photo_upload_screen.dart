@@ -519,7 +519,6 @@ class _CropScreenState extends State<_CropScreen> {
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 

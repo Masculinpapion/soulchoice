@@ -31,7 +31,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         )
         .eq('status', 'active')
         .eq('flow_type', filter.flowType.name)
-        .gt('expires_at', DateTime.now().toIso8601String());
+        .gt('expires_at', DateTime.now().toUtc().toIso8601String());
 
     if (filter.cityId != null) {
       query = query.eq('city_id', filter.cityId!);

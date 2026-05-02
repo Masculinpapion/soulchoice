@@ -5,7 +5,7 @@ class AppConstants {
   static const String appSlogan = 'Choose Your Night';
 
   // Age limits
-  static const int minAge = 18;
+  static const int minAge = 21;
   static const int maxAge = 99;
 
   // Invitation

@@ -165,6 +165,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               .where((e) => e.value.trim().isNotEmpty)
               .map((e) => {'user_id': uid, 'question_key': e.key, 'answer': e.value.trim()})
               .toList(),
+          onConflict: 'user_id,question_key',
         );
       }
 

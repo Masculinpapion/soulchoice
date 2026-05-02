@@ -149,13 +149,10 @@ class _SelectButtonState extends State<_SelectButton> {
   Future<void> _select() async {
     setState(() => _loading = true);
     try {
-      final client = Supabase.instance.client;
-      await client.from('applications').update({
-        'status': 'selected',
-        'selected_at': DateTime.now().toIso8601String(),
-      }).eq('id', widget.applicationId);
-
-      await client.from('invitations').update({'status': 'matched'}).eq('id', widget.invitationId);
+      await Supabase.instance.client.rpc('match_and_select', params: {
+        'p_application_id': widget.applicationId,
+        'p_invitation_id': widget.invitationId,
+      });
 
       widget.onSelected();
 
@@ -168,6 +165,18 @@ class _SelectButtonState extends State<_SelectButton> {
             'applicantName': widget.applicantName,
           },
         );
+      }
+    } on PostgrestException catch (e) {
+      if (mounted) {
+        final msg = e.message.contains('invitation_not_active')
+            ? 'Bu davet zaten eşleşti'
+            : e.message.contains('not_authorized')
+                ? 'Yetki hatası'
+                : 'Hata: ${e.message}';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: AppColors.error),
+        );
+        setState(() => _loading = false);
       }
     } catch (e) {
       if (mounted) {

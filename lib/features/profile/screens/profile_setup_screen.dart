@@ -312,7 +312,7 @@ class _StepNameAge extends StatelessWidget {
             decoration: const InputDecoration(labelText: 'Ad'),
           ),
           const SizedBox(height: 20),
-          TextField(
+          TextFormField(
             keyboardType: TextInputType.number,
             style: AppTextStyles.bodyLarge,
             initialValue: age?.toString(),
@@ -575,7 +575,7 @@ class _StepPrompts extends StatelessWidget {
                     children: [
                       Text(e.value, style: AppTextStyles.labelLarge),
                       const SizedBox(height: 8),
-                      TextField(
+                      TextFormField(
                         style: AppTextStyles.bodyLarge,
                         initialValue: answers[e.key] ?? '',
                         onChanged: (v) => onAnswered(e.key, v),

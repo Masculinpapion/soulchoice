@@ -9,19 +9,23 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     final client = Supabase.instance.client;
     final currentUserId = ref.read(currentUserIdProvider);
 
-    // Fetch blocked IDs + current user gender/show_gender
+    // Fetch blocked IDs + current user preferences
     List<String> blockedIds = [];
     String? myGender;
     String showGender = 'opposite';
+    int minAge = 21;
+    int maxAge = 60;
     if (currentUserId != null) {
       final results = await Future.wait([
         client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
-        client.from('users').select('gender, show_gender').eq('id', currentUserId).maybeSingle(),
+        client.from('users').select('gender, show_gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
       ]);
       blockedIds = (results[0] as List).map((b) => b['blocked_id'] as String).toList();
       final userRow = results[1] as Map<String, dynamic>?;
       myGender = userRow?['gender'] as String?;
       showGender = userRow?['show_gender'] as String? ?? 'opposite';
+      minAge = userRow?['min_age'] as int? ?? 21;
+      maxAge = userRow?['max_age'] as int? ?? 60;
     }
 
     // Hedef cinsiyet belirle
@@ -119,6 +123,10 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)
         .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
+        .where((inv) {
+          final age = inv.owner?.age ?? 0;
+          return age >= minAge && age <= maxAge;
+        })
         .toList();
   },
 );

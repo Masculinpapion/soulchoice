@@ -32,6 +32,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
   String _showGender = 'opposite';
+  int _minAge = 21;
+  int _maxAge = 60;
   bool _isSaving = false;
   bool _isLoadingProfile = true;
 
@@ -44,6 +46,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     'İlgi alanları',
     'Sorular',
     'Gösterim tercihi',
+    'Yaş aralığı',
   ];
 
   static const _allInterests = [
@@ -75,7 +78,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     try {
       final row = await client
           .from('users')
-          .select('name, age, gender, city_id, bio, job, education, interests, show_gender, cities(name)')
+          .select('name, age, gender, city_id, bio, job, education, interests, show_gender, min_age, max_age, cities(name)')
           .eq('id', user.id)
           .maybeSingle();
       if (!mounted) return;
@@ -105,6 +108,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           _prompts[p['question_key'] as String] = p['answer'] as String;
         }
         _showGender = row['show_gender'] as String? ?? 'opposite';
+        _minAge = row['min_age'] as int? ?? 21;
+        _maxAge = row['max_age'] as int? ?? 60;
         _isLoadingProfile = false;
       });
     } catch (_) {
@@ -180,6 +185,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         'education': _educationController.text.trim().isEmpty ? null : _educationController.text.trim(),
         'interests': _interests.toList(),
         'show_gender': _showGender,
+        'min_age': _minAge,
+        'max_age': _maxAge,
       });
 
       if (_prompts.isNotEmpty) {
@@ -301,6 +308,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                     _StepShowGender(
                       selected: _showGender,
                       onSelected: (v) => setState(() => _showGender = v),
+                    ),
+                    _StepAgeRange(
+                      minAge: _minAge,
+                      maxAge: _maxAge,
+                      onChanged: (min, max) => setState(() { _minAge = min; _maxAge = max; }),
                     ),
                   ],
                 ),
@@ -618,6 +630,48 @@ class _StepShowGender extends StatelessWidget {
                   ),
                 ),
               )),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepAgeRange extends StatelessWidget {
+  final int minAge;
+  final int maxAge;
+  final void Function(int min, int max) onChanged;
+
+  const _StepAgeRange({required this.minAge, required this.maxAge, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text('Hangi yaş aralığında birini arıyorsun?', style: AppTextStyles.displayMedium),
+          const SizedBox(height: 8),
+          Text('Feedinde yalnızca bu yaş aralığındaki davetler görünür', style: AppTextStyles.bodyMedium),
+          const SizedBox(height: 40),
+          Center(
+            child: Text(
+              '$minAge — $maxAge yaş',
+              style: AppTextStyles.titleMedium.copyWith(fontSize: 22),
+            ),
+          ),
+          const SizedBox(height: 16),
+          RangeSlider(
+            values: RangeValues(minAge.toDouble(), maxAge.toDouble()),
+            min: 21,
+            max: 60,
+            divisions: 39,
+            activeColor: AppColors.red,
+            inactiveColor: AppColors.glassBorder,
+            labels: RangeLabels('$minAge', '$maxAge'),
+            onChanged: (v) => onChanged(v.start.round(), v.end.round()),
+          ),
         ],
       ),
     );

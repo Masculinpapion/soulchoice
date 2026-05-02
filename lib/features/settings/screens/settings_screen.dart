@@ -21,6 +21,8 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _selfieStatus = 'none';
   String _showGender = 'opposite';
+  int _minAge = 21;
+  int _maxAge = 60;
 
   @override
   void initState() {
@@ -33,18 +35,119 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (uid == null) return;
     final row = await Supabase.instance.client
         .from('users')
-        .select('selfie_status, show_gender')
+        .select('selfie_status, show_gender, min_age, max_age')
         .eq('id', uid)
         .maybeSingle();
     if (mounted) {
       setState(() {
         _selfieStatus = row?['selfie_status'] as String? ?? 'none';
         _showGender = row?['show_gender'] as String? ?? 'opposite';
+        _minAge = row?['min_age'] as int? ?? 21;
+        _maxAge = row?['max_age'] as int? ?? 60;
       });
     }
   }
 
   Future<void> _loadSelfieStatus() => _loadUserData();
+
+  void _showAgeRangePicker(BuildContext context) {
+    int localMin = _minAge;
+    int localMax = _maxAge;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setModalState) => ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D0D12).withOpacity(0.92),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 36, height: 4,
+                      decoration: BoxDecoration(
+                        color: AuroraTheme.glassBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Yaş aralığı',
+                      style: TextStyle(
+                        fontFamily: 'Fraunces',
+                        fontStyle: FontStyle.italic,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$localMin — $localMax yaş',
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 13,
+                        color: AuroraTheme.textMuted,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    RangeSlider(
+                      values: RangeValues(localMin.toDouble(), localMax.toDouble()),
+                      min: 21,
+                      max: 60,
+                      divisions: 39,
+                      activeColor: AuroraTheme.auroraRed,
+                      inactiveColor: AuroraTheme.glassBorder,
+                      labels: RangeLabels('$localMin', '$localMax'),
+                      onChanged: (v) => setModalState(() {
+                        localMin = v.start.round();
+                        localMax = v.end.round();
+                      }),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.of(ctx).pop();
+                          final uid = Supabase.instance.client.auth.currentUser?.id;
+                          if (uid == null) return;
+                          await Supabase.instance.client
+                              .from('users')
+                              .update({'min_age': localMin, 'max_age': localMax})
+                              .eq('id', uid);
+                          if (mounted) {
+                            setState(() { _minAge = localMin; _maxAge = localMax; });
+                            ref.invalidate(invitationsProvider);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AuroraTheme.auroraRed,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                        child: const Text('Kaydet', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   String _currentLanguageLabel(BuildContext context) {
     final locale = ref.read(localeProvider);
@@ -313,6 +416,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: 'Gösterim tercihi',
                           value: _showGenderLabel(),
                           onTap: () => _showShowGenderPicker(context),
+                        ),
+                        _SettingsTile(
+                          icon: Icons.people_outline,
+                          label: 'Yaş aralığı',
+                          value: '$_minAge–$_maxAge',
+                          onTap: () => _showAgeRangePicker(context),
                         ),
                       ],
                     ),

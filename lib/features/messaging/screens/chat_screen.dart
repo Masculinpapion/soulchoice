@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -215,8 +216,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (text.isEmpty || _currentUid == null) return;
     _messageController.clear();
 
+    final rng = Random.secure();
+    final tmpId = 'tmp_${List.generate(16, (_) => rng.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
     final optimistic = MessageModel(
-      id: 'tmp_${DateTime.now().millisecondsSinceEpoch}',
+      id: tmpId,
       matchId: widget.matchId,
       senderId: _currentUid!,
       content: text,

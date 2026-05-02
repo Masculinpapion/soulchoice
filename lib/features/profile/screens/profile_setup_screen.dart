@@ -120,6 +120,25 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   Future<void> _next() async {
+    if (_step == 0) {
+      if (_nameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('Ad boş bırakılamaz'),
+          backgroundColor: AppColors.error,
+        ));
+        return;
+      }
+      if (_age == null ||
+          _age! < AppConstants.minAge ||
+          _age! > AppConstants.maxAge) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Yaş ${AppConstants.minAge} ile ${AppConstants.maxAge} arasında olmalı'),
+          backgroundColor: AppColors.error,
+        ));
+        return;
+      }
+    }
     if (_step < _steps.length - 1) {
       setState(() => _step++);
       _pageController.nextPage(

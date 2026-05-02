@@ -16,7 +16,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     int minAge = 21;
     int maxAge = 60;
     if (currentUserId != null) {
-      final results = await Future.wait([
+      final results = await Future.wait<dynamic>([
         client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
         client.from('users').select('gender, show_gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
       ]);

@@ -9,16 +9,32 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     final client = Supabase.instance.client;
     final currentUserId = ref.read(currentUserIdProvider);
 
-    // Fetch blocked user IDs
+    // Fetch blocked IDs + current user gender/show_gender
     List<String> blockedIds = [];
+    String? myGender;
+    String showGender = 'opposite';
     if (currentUserId != null) {
-      final blocks = await client
-          .from('blocks')
-          .select('blocked_id')
-          .eq('blocker_id', currentUserId);
-      blockedIds = (blocks as List)
-          .map((b) => b['blocked_id'] as String)
-          .toList();
+      final results = await Future.wait([
+        client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
+        client.from('users').select('gender, show_gender').eq('id', currentUserId).maybeSingle(),
+      ]);
+      blockedIds = (results[0] as List).map((b) => b['blocked_id'] as String).toList();
+      final userRow = results[1] as Map<String, dynamic>?;
+      myGender = userRow?['gender'] as String?;
+      showGender = userRow?['show_gender'] as String? ?? 'opposite';
+    }
+
+    // Hedef cinsiyet belirle
+    String? targetGender;
+    switch (showGender) {
+      case 'opposite':
+        targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
+      case 'male':
+        targetGender = 'male';
+      case 'female':
+        targetGender = 'female';
+      case 'all':
+        targetGender = null;
     }
 
     var query = client
@@ -100,7 +116,10 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         applicantPhotoUrls: applicantPhotoUrls,
         cityName: cityName,
       );
-    }).whereType<InvitationModel>().where((inv) => inv.ownerPhotoUrl != null).toList();
+    }).whereType<InvitationModel>()
+        .where((inv) => inv.ownerPhotoUrl != null)
+        .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
+        .toList();
   },
 );
 

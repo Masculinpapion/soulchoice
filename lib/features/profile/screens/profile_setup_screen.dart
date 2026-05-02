@@ -31,6 +31,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _educationController = TextEditingController();
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
+  String _showGender = 'opposite';
   bool _isSaving = false;
   bool _isLoadingProfile = true;
 
@@ -42,6 +43,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     'İş / Eğitim',
     'İlgi alanları',
     'Sorular',
+    'Gösterim tercihi',
   ];
 
   static const _allInterests = [
@@ -73,7 +75,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     try {
       final row = await client
           .from('users')
-          .select('name, age, gender, city_id, bio, job, education, interests, cities(name)')
+          .select('name, age, gender, city_id, bio, job, education, interests, show_gender, cities(name)')
           .eq('id', user.id)
           .maybeSingle();
       if (!mounted) return;
@@ -102,6 +104,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         for (final p in prompts) {
           _prompts[p['question_key'] as String] = p['answer'] as String;
         }
+        _showGender = row['show_gender'] as String? ?? 'opposite';
         _isLoadingProfile = false;
       });
     } catch (_) {
@@ -176,6 +179,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         'job': _jobController.text.trim().isEmpty ? null : _jobController.text.trim(),
         'education': _educationController.text.trim().isEmpty ? null : _educationController.text.trim(),
         'interests': _interests.toList(),
+        'show_gender': _showGender,
       });
 
       if (_prompts.isNotEmpty) {
@@ -293,6 +297,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       questions: _promptQuestions,
                       answers: _prompts,
                       onAnswered: (k, v) => setState(() => _prompts[k] = v),
+                    ),
+                    _StepShowGender(
+                      selected: _showGender,
+                      onSelected: (v) => setState(() => _showGender = v),
                     ),
                   ],
                 ),
@@ -562,6 +570,54 @@ class _StepInterests extends StatelessWidget {
               );
             }).toList(),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepShowGender extends StatelessWidget {
+  final String selected;
+  final ValueChanged<String> onSelected;
+
+  const _StepShowGender({required this.selected, required this.onSelected});
+
+  static const _options = [
+    ('opposite', 'Karşı cinsiyet', Icons.swap_horiz),
+    ('all', 'Hepsi', Icons.people_outline),
+    ('female', 'Kadınlar', Icons.female),
+    ('male', 'Erkekler', Icons.male),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text('Kimlerin davetlerini görmek istiyorsun?', style: AppTextStyles.displayMedium),
+          const SizedBox(height: 8),
+          Text('Feedinde yalnızca bu kişilerin davetleri görünür', style: AppTextStyles.bodyMedium),
+          const SizedBox(height: 32),
+          ..._options.map((opt) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GlassCard(
+                  borderColor: selected == opt.$1 ? AppColors.red : AppColors.glassBorder,
+                  onTap: () => onSelected(opt.$1),
+                  child: Row(
+                    children: [
+                      Icon(opt.$3, color: selected == opt.$1 ? AppColors.red : AppColors.textSecondary, size: 26),
+                      const SizedBox(width: 16),
+                      Text(opt.$2, style: AppTextStyles.titleMedium),
+                      const Spacer(),
+                      if (selected == opt.$1)
+                        const Icon(Icons.check_circle, color: AppColors.red, size: 22),
+                    ],
+                  ),
+                ),
+              )),
         ],
       ),
     );

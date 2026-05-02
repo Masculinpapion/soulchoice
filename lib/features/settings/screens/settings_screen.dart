@@ -9,6 +9,7 @@ import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
+import '../../feed/providers/invitations_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -19,26 +20,31 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _selfieStatus = 'none';
+  String _showGender = 'opposite';
 
   @override
   void initState() {
     super.initState();
-    _loadSelfieStatus();
+    _loadUserData();
   }
 
-  Future<void> _loadSelfieStatus() async {
+  Future<void> _loadUserData() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
     final row = await Supabase.instance.client
         .from('users')
-        .select('selfie_status')
+        .select('selfie_status, show_gender')
         .eq('id', uid)
         .maybeSingle();
     if (mounted) {
-      setState(() =>
-          _selfieStatus = row?['selfie_status'] as String? ?? 'none');
+      setState(() {
+        _selfieStatus = row?['selfie_status'] as String? ?? 'none';
+        _showGender = row?['show_gender'] as String? ?? 'opposite';
+      });
     }
   }
+
+  Future<void> _loadSelfieStatus() => _loadUserData();
 
   String _currentLanguageLabel(BuildContext context) {
     final locale = ref.read(localeProvider);
@@ -53,6 +59,93 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       default:
         return AppLocalizations.of(context)!.settings_language_system;
     }
+  }
+
+  static const _showGenderOptions = [
+    ('opposite', 'Karşı cinsiyet'),
+    ('all', 'Hepsi'),
+    ('female', 'Kadınlar'),
+    ('male', 'Erkekler'),
+  ];
+
+  String _showGenderLabel() {
+    return _showGenderOptions
+        .firstWhere((o) => o.$1 == _showGender, orElse: () => _showGenderOptions.first)
+        .$2;
+  }
+
+  void _showShowGenderPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D0D12).withOpacity(0.85),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AuroraTheme.glassBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Gösterim tercihi',
+                      style: TextStyle(
+                        fontFamily: 'Fraunces',
+                        fontStyle: FontStyle.italic,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ..._showGenderOptions.map((opt) => _LangTile(
+                          flag: opt.$1 == 'opposite'
+                              ? '⇄'
+                              : opt.$1 == 'all'
+                                  ? '👥'
+                                  : opt.$1 == 'female'
+                                      ? '♀'
+                                      : '♂',
+                          name: opt.$2,
+                          isSelected: _showGender == opt.$1,
+                          onTap: () async {
+                            Navigator.of(context).pop();
+                            final uid = Supabase.instance.client.auth.currentUser?.id;
+                            if (uid == null) return;
+                            await Supabase.instance.client
+                                .from('users')
+                                .update({'show_gender': opt.$1})
+                                .eq('id', uid);
+                            if (mounted) {
+                              setState(() => _showGender = opt.$1);
+                              ref.invalidate(invitationsProvider);
+                            }
+                          },
+                        )),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showLanguagePicker(BuildContext context) {
@@ -214,6 +307,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: l10n.settings_edit_photos,
                           onTap: () =>
                               context.push('/profile/photos', extra: 'edit'),
+                        ),
+                        _SettingsTile(
+                          icon: Icons.visibility_outlined,
+                          label: 'Gösterim tercihi',
+                          value: _showGenderLabel(),
+                          onTap: () => _showShowGenderPicker(context),
                         ),
                       ],
                     ),

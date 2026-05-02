@@ -82,7 +82,12 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
     setState(() => _isLoading = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser!.id;
+      final user = client.auth.currentUser;
+      if (user == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+      final uid = user.id;
 
       final matchRes = await client.from('matches').insert({
         'invitation_id': widget.invitationId,

@@ -140,7 +140,12 @@ class _CreateInvitationScreenState
     setState(() => _isPublishing = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser!.id;
+      final user = client.auth.currentUser;
+      if (user == null) {
+        setState(() => _isPublishing = false);
+        return;
+      }
+      final uid = user.id;
 
       final userRow = await client
           .from('users')
@@ -164,6 +169,7 @@ class _CreateInvitationScreenState
                 .map((w) => w[0].toUpperCase() + w.substring(1))
                 .join(' '),
         'event_date': _eventDate?.toIso8601String(),
+        'expires_at': _eventDate?.toIso8601String(),
         'city_id': cityId,
         'slots_total': 1,
         'status': 'active',

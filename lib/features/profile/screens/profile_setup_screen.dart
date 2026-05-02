@@ -32,6 +32,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
   bool _isSaving = false;
+  bool _isLoadingProfile = true;
 
   static const _steps = [
     'Ad ve yaş',
@@ -55,6 +56,58 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     'perfect_evening': 'Mükemmel bir akşam...',
     'travel_dream': 'Hayalimdeki seyahat...',
   };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExistingProfile();
+  }
+
+  Future<void> _loadExistingProfile() async {
+    final client = Supabase.instance.client;
+    final user = client.auth.currentUser;
+    if (user == null) {
+      if (mounted) setState(() => _isLoadingProfile = false);
+      return;
+    }
+    try {
+      final row = await client
+          .from('users')
+          .select('name, age, gender, city_id, bio, job, education, interests, cities(name)')
+          .eq('id', user.id)
+          .maybeSingle();
+      if (!mounted) return;
+      if (row == null) {
+        setState(() => _isLoadingProfile = false);
+        return;
+      }
+      _nameController.text = row['name'] as String? ?? '';
+      _bioController.text = row['bio'] as String? ?? '';
+      _jobController.text = row['job'] as String? ?? '';
+      _educationController.text = row['education'] as String? ?? '';
+
+      final prompts = await client
+          .from('user_prompts')
+          .select('question_key, answer')
+          .eq('user_id', user.id);
+      if (!mounted) return;
+
+      setState(() {
+        _age = row['age'] as int?;
+        _gender = row['gender'] as String?;
+        final cityData = row['cities'] as Map<String, dynamic>?;
+        _cityId = cityData?['name'] as String?;
+        final interests = row['interests'];
+        if (interests is List) _interests.addAll(interests.cast<String>());
+        for (final p in prompts) {
+          _prompts[p['question_key'] as String] = p['answer'] as String;
+        }
+        _isLoadingProfile = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingProfile = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -82,7 +135,12 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     setState(() => _isSaving = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser!.id;
+      final user = client.auth.currentUser;
+      if (user == null) {
+        setState(() => _isSaving = false);
+        return;
+      }
+      final uid = user.id;
 
       final cityRow = _cityId != null
           ? await client.from('cities').select('id').eq('name', _cityId!).maybeSingle()
@@ -90,7 +148,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
       await client.from('users').upsert({
         'id': uid,
-        'phone': client.auth.currentUser!.phone,
+        'phone': user.phone,
         'name': _nameController.text.trim(),
         'age': _age,
         'gender': _gender,
@@ -134,6 +192,12 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingProfile) {
+      return const Scaffold(
+        backgroundColor: AppColors.bgBlack,
+        body: Center(child: CircularProgressIndicator(color: AppColors.red)),
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       body: AmbientBackground(
@@ -251,6 +315,7 @@ class _StepNameAge extends StatelessWidget {
           TextField(
             keyboardType: TextInputType.number,
             style: AppTextStyles.bodyLarge,
+            initialValue: age?.toString(),
             onChanged: (v) => onAgeChanged(int.tryParse(v)),
             decoration: InputDecoration(
               labelText: 'Yaş (${AppConstants.minAge}-${AppConstants.maxAge})',
@@ -512,6 +577,7 @@ class _StepPrompts extends StatelessWidget {
                       const SizedBox(height: 8),
                       TextField(
                         style: AppTextStyles.bodyLarge,
+                        initialValue: answers[e.key] ?? '',
                         onChanged: (v) => onAnswered(e.key, v),
                         decoration: const InputDecoration(hintText: 'Cevabın...'),
                       ),

@@ -22,6 +22,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _scrollController = ScrollController();
   final List<MessageModel> _messages = [];
   bool _loading = true;
+  bool _loadingMore = false;
+  bool _hasMore = true;
+  static const _pageSize = 50;
   RealtimeChannel? _channel;
 
   // Match meta
@@ -39,6 +42,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void initState() {
     super.initState();
     _currentUid = Supabase.instance.client.auth.currentUser?.id;
+    _scrollController.addListener(_onScroll);
     _loadMessages();
     _subscribeRealtime();
     _loadMatchInfo();
@@ -106,19 +110,58 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  void _onScroll() {
+    final pos = _scrollController.position;
+    if (pos.pixels >= pos.maxScrollExtent - 200 &&
+        _hasMore && !_loadingMore && !_loading) {
+      _loadMoreMessages();
+    }
+  }
+
   Future<void> _loadMessages() async {
     final data = await Supabase.instance.client
         .from('messages')
         .select()
         .eq('match_id', widget.matchId)
-        .order('created_at');
+        .order('created_at', ascending: false)
+        .limit(_pageSize);
     if (!mounted) return;
+    final msgs = (data as List)
+        .map((r) => MessageModel.fromJson(r))
+        .toList()
+        .reversed
+        .toList();
     setState(() {
-      _messages.addAll((data as List).map((r) => MessageModel.fromJson(r)));
+      _messages.addAll(msgs);
+      _hasMore = data.length == _pageSize;
       _loading = false;
     });
     _scrollToBottom();
     _markRead();
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (_messages.isEmpty || _loadingMore || !_hasMore) return;
+    setState(() => _loadingMore = true);
+    final oldest = _messages.first.createdAt;
+    final data = await Supabase.instance.client
+        .from('messages')
+        .select()
+        .eq('match_id', widget.matchId)
+        .lt('created_at', oldest.toUtc().toIso8601String())
+        .order('created_at', ascending: false)
+        .limit(_pageSize);
+    if (!mounted) return;
+    final older = (data as List)
+        .map((r) => MessageModel.fromJson(r))
+        .toList()
+        .reversed
+        .toList();
+    setState(() {
+      _messages.insertAll(0, older);
+      _hasMore = data.length == _pageSize;
+      _loadingMore = false;
+    });
   }
 
   Future<void> _markRead() async {
@@ -156,6 +199,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _messageController.dispose();
     _scrollController.dispose();
     if (_channel != null) {
@@ -325,8 +369,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           reverse: true,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
-                          itemCount: _messages.length,
+                          itemCount: _messages.length + (_loadingMore ? 1 : 0),
                           itemBuilder: (_, i) {
+                            if (_loadingMore && i == _messages.length) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppColors.red),
+                                  ),
+                                ),
+                              );
+                            }
                             final msg = _messages[_messages.length - 1 - i];
                             final isMe = msg.senderId == _currentUid;
                             return _MessageBubble(message: msg, isMe: isMe);

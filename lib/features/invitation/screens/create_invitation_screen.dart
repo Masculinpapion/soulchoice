@@ -31,6 +31,7 @@ class _CreateInvitationScreenState
   final _descriptionController = TextEditingController();
   final _venueController = TextEditingController();
   DateTime? _eventDate;
+  int _expiryHours = 24;
   bool _isPublishing = false;
 
   static const _steps = [
@@ -40,6 +41,7 @@ class _CreateInvitationScreenState
     'Açıklama',
     'Yer',
     'Tarih & Saat',
+    'Davet süresi',
   ];
 
   @override
@@ -169,7 +171,7 @@ class _CreateInvitationScreenState
                 .map((w) => w[0].toUpperCase() + w.substring(1))
                 .join(' '),
         'event_date': _eventDate?.toIso8601String(),
-        'expires_at': _eventDate?.toIso8601String(),
+        'expires_at': DateTime.now().toUtc().add(Duration(hours: _expiryHours)).toIso8601String(),
         'city_id': cityId,
         'slots_total': 1,
         'status': 'active',
@@ -258,6 +260,10 @@ class _CreateInvitationScreenState
                         date: _eventDate,
                         onSelected: (d) =>
                             setState(() => _eventDate = d)),
+                    _StepDuration(
+                        selected: _expiryHours,
+                        onSelected: (h) =>
+                            setState(() => _expiryHours = h)),
                   ],
                 ),
               ),
@@ -648,6 +654,84 @@ class _StepVenue extends StatelessWidget {
                     color: AppColors.textTertiary),
               ),
             ),
+          ],
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step: Duration
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _StepDuration extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onSelected;
+
+  const _StepDuration({required this.selected, required this.onSelected});
+
+  static const _options = [
+    (6, '6 saat', 'Kısa vadeli — bugün için'),
+    (12, '12 saat', 'Yarım gün'),
+    (24, '24 saat', 'Standart — 1 gün'),
+    (48, '48 saat', 'Uzun vadeli — 2 gün'),
+  ];
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text('Davet ne kadar sürsün?', style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text('Bu süre sonunda davet feedden kalkar', style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 32),
+            ..._options.map((opt) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: GestureDetector(
+                    onTap: () => onSelected(opt.$1),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        gradient: selected == opt.$1 ? AppColors.primaryGradient : null,
+                        color: selected == opt.$1 ? null : AppColors.glassBgMedium,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: selected == opt.$1 ? Colors.transparent : AppColors.glassBorder,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(opt.$2, style: AppTextStyles.titleMedium),
+                                const SizedBox(height: 2),
+                                Text(
+                                  opt.$3,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: selected == opt.$1
+                                        ? AppColors.textPrimary.withOpacity(0.75)
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (selected == opt.$1)
+                            ShaderMask(
+                              shaderCallback: (b) =>
+                                  selected == opt.$1 ? const LinearGradient(colors: [Colors.white, Colors.white]).createShader(b) : AppColors.primaryGradient.createShader(b),
+                              child: const Icon(Icons.check_circle, color: Colors.white, size: 22),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )),
           ],
         ),
       );

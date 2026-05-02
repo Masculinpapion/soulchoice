@@ -32,15 +32,24 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   ];
 
   Future<void> _sendOtp() async {
-    final phone = '$_countryCode${_phoneController.text.trim()}';
-    if (_phoneController.text.trim().isEmpty) {
+    setState(() => _error = null);
+    final rawPhone = _phoneController.text.trim();
+    if (rawPhone.isEmpty) {
       setState(() => _error = 'Telefon numarası girin');
       return;
     }
-    // Navigate immediately — don't wait for server response
-    if (mounted) context.go('/auth/otp', extra: phone);
-    // Fire OTP request in background; user can resend from OTP screen if needed
-    Supabase.instance.client.auth.signInWithOtp(phone: phone).ignore();
+    final phone = '$_countryCode$rawPhone';
+    setState(() => _isLoading = true);
+    try {
+      await Supabase.instance.client.auth.signInWithOtp(phone: phone);
+      if (mounted) context.go('/auth/otp', extra: phone);
+    } on AuthException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Bağlantı hatası, tekrar deneyin');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override

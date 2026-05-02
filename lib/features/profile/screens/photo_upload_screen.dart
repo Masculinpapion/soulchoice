@@ -166,6 +166,17 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
+  void _setPrimary(int index) {
+    if (index == 0 || _photos[index].isEmpty) return;
+    setState(() {
+      final entry = _photos[index];
+      for (int i = index; i > 0; i--) {
+        _photos[i] = _photos[i - 1];
+      }
+      _photos[0] = entry;
+    });
+  }
+
   // Çakışmaya karşı güvenli 64-bit rastgele hex ID üretir (milisaniye race'i yok)
   String _uniqueId() {
     final rng = Random.secure();
@@ -359,6 +370,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                             isPrimary: i == 0,
                             onTap: () => _pickPhoto(i),
                             onRemove: _photos[i].isEmpty ? null : () => _removePhoto(i),
+                            onSetPrimary: (i == 0 || _photos[i].isEmpty) ? null : () => _setPrimary(i),
                           ),
                         ),
                       ),
@@ -383,12 +395,14 @@ class _PhotoSlot extends StatelessWidget {
   final bool isPrimary;
   final VoidCallback onTap;
   final VoidCallback? onRemove;
+  final VoidCallback? onSetPrimary;
 
   const _PhotoSlot({
     required this.entry,
     required this.isPrimary,
     required this.onTap,
     this.onRemove,
+    this.onSetPrimary,
   });
 
   @override
@@ -465,6 +479,27 @@ class _PhotoSlot extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.close,
+                        size: 16, color: AppColors.textPrimary),
+                  ),
+                ),
+              ),
+
+            // Ana fotoğraf yap ikonu — sol üst, yalnızca dolu + ana değilse
+            if (onSetPrimary != null)
+              Positioned(
+                top: 6,
+                left: 6,
+                child: GestureDetector(
+                  onTap: onSetPrimary,
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: AppColors.bgBlack.withOpacity(0.8),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.star_outline,
                         size: 16, color: AppColors.textPrimary),
                   ),
                 ),

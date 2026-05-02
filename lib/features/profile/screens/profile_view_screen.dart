@@ -137,6 +137,20 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Profil tamamlanma — sadece kendi profili
+                            if (isOwnProfile) ...[
+                              _buildCompletionCard(
+                                context: context,
+                                user: user,
+                                photos: photos,
+                                bio: bio,
+                                interests: interests,
+                                selfieStatus: selfieStatus,
+                                promptsAsync: promptsAsync,
+                              ),
+                              const SizedBox(height: 28),
+                            ],
+
                             // Bio
                             if (bio != null && bio.isNotEmpty) ...[
                               _EditBio(bio: bio),
@@ -235,6 +249,80 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     );
   }
 
+  Widget _buildCompletionCard({
+    required BuildContext context,
+    required Map<String, dynamic> user,
+    required List<Map<String, dynamic>> photos,
+    required String? bio,
+    required List<String> interests,
+    required String selfieStatus,
+    required AsyncValue promptsAsync,
+  }) {
+    int score = 0;
+    String? hint;
+    String? route;
+
+    // Name & age: 20 pts
+    final hasName = (user['name'] as String?)?.isNotEmpty == true;
+    final hasAge = (user['age'] as int?) != null;
+    if (hasName && hasAge) {
+      score += 20;
+    } else {
+      hint ??= 'Ad ve yaş eksik';
+      route ??= '/profile/setup';
+    }
+
+    // Photo: 20 pts
+    if (photos.isNotEmpty) {
+      score += 20;
+    } else {
+      hint ??= 'Fotoğraf ekle';
+      route ??= '/profile/photos';
+    }
+
+    // Bio: 15 pts
+    if (bio != null && bio.isNotEmpty) {
+      score += 15;
+    } else {
+      hint ??= 'Bio ekle';
+      route ??= '/profile/setup';
+    }
+
+    // Interests: 15 pts
+    if (interests.isNotEmpty) {
+      score += 15;
+    } else {
+      hint ??= 'İlgi alanları ekle';
+      route ??= '/profile/setup';
+    }
+
+    // Selfie approved: 20 pts
+    if (selfieStatus == 'approved') {
+      score += 20;
+    } else {
+      hint ??= selfieStatus == 'pending' ? 'Selfie inceleniyor...' : 'Selfie yükle';
+      route ??= selfieStatus == 'pending' ? null : '/profile/selfie';
+    }
+
+    // Prompt: 10 pts
+    final promptList = promptsAsync.asData?.value as List?;
+    final hasPrompt = promptList?.any(
+          (p) => ((p as Map<String, dynamic>)['answer'] as String?)?.isNotEmpty == true,
+        ) == true;
+    if (hasPrompt) {
+      score += 10;
+    } else {
+      hint ??= 'Bir soruyu cevapla';
+      route ??= '/profile/setup';
+    }
+
+    return _ProfileCompletionCard(
+      score: score,
+      hint: score == 100 ? null : hint,
+      onTap: route != null ? () => context.push(route!) : null,
+    );
+  }
+
   String _questionLabel(String key) {
     const labels = {
       'favorite_restaurant': 'Favori restoranım...',
@@ -251,6 +339,112 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) =>
           _ActionSheet(targetUserId: targetUserId, targetName: null),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Profile Completion Card
+// ─────────────────────────────────────────────────────────────────────────────
+class _ProfileCompletionCard extends StatelessWidget {
+  final int score;
+  final String? hint;
+  final VoidCallback? onTap;
+
+  const _ProfileCompletionCard({required this.score, this.hint, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final pct = score / 100.0;
+    final color = score == 100
+        ? AuroraTheme.auroraBlue
+        : score >= 60
+            ? AuroraTheme.auroraRed
+            : const Color(0xFFFFB800);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: color.withOpacity(0.25)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      '%$score tamamlandı',
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                        color: color,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (hint != null && onTap != null)
+                      Row(
+                        children: [
+                          Text(
+                            hint!,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 12,
+                              color: Colors.white.withOpacity(0.5),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.arrow_forward_ios,
+                              size: 11, color: Colors.white.withOpacity(0.3)),
+                        ],
+                      )
+                    else if (hint != null)
+                      Text(
+                        hint!,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(3),
+                  child: Container(
+                    height: 3,
+                    color: Colors.white.withOpacity(0.08),
+                    child: FractionallySizedBox(
+                      widthFactor: pct,
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: score == 100
+                                ? [AuroraTheme.auroraBlue, AuroraTheme.auroraBlue]
+                                : [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                          ),
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -10,12 +10,29 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 
-class InvitationDetailScreen extends ConsumerWidget {
+class InvitationDetailScreen extends ConsumerStatefulWidget {
   final String invitationId;
   const InvitationDetailScreen({super.key, required this.invitationId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<InvitationDetailScreen> createState() =>
+      _InvitationDetailScreenState();
+}
+
+class _InvitationDetailScreenState
+    extends ConsumerState<InvitationDetailScreen> {
+  final _photoCtrl = PageController();
+  int _photoPage = 0;
+
+  @override
+  void dispose() {
+    _photoCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final invitationId = widget.invitationId;
     final invAsync = ref.watch(invitationDetailProvider(invitationId));
     final myAppAsync = ref.watch(myApplicationProvider(invitationId));
     final countAsync = ref.watch(applicationCountProvider(invitationId));
@@ -98,18 +115,55 @@ class InvitationDetailScreen extends ConsumerWidget {
                       height: heroH,
                       child: Stack(
                         children: [
-                          // a. Fotoğraf
+                          // a. Fotoğraf carousel
                           Positioned.fill(
-                            child: ownerPhotoUrl != null
-                                ? CachedNetworkImage(
-                                    imageUrl: ownerPhotoUrl,
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.topCenter,
-                                    errorWidget: (_, __, ___) =>
-                                        _FallbackBg(),
-                                  )
-                                : _FallbackBg(),
+                            child: sortedOwnerPhotos.isEmpty
+                                ? _FallbackBg()
+                                : PageView.builder(
+                                    controller: _photoCtrl,
+                                    itemCount: sortedOwnerPhotos.length,
+                                    onPageChanged: (i) =>
+                                        setState(() => _photoPage = i),
+                                    itemBuilder: (_, i) {
+                                      final url = sortedOwnerPhotos[i]
+                                          ['url'] as String?;
+                                      return url != null
+                                          ? CachedNetworkImage(
+                                              imageUrl: url,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.topCenter,
+                                              errorWidget: (_, __, ___) =>
+                                                  _FallbackBg(),
+                                            )
+                                          : _FallbackBg();
+                                    },
+                                  ),
                           ),
+                          // a2. Foto sayfa noktaları
+                          if (sortedOwnerPhotos.length > 1)
+                            Positioned(
+                              top: MediaQuery.of(context).padding.top + 56,
+                              left: 0,
+                              right: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(
+                                  sortedOwnerPhotos.length,
+                                  (i) => AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                                    width: i == _photoPage ? 16 : 5,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: i == _photoPage
+                                          ? Colors.white
+                                          : Colors.white.withOpacity(0.35),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
 
                           // b. Üst scrim
                           Positioned(

@@ -335,6 +335,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               otherName: otherName,
               otherAge: otherAge,
               photoUrl: _matchInfo?['photoUrl'] as String?,
+              otherUserId: _matchInfo?['otherUserId'] as String?,
               onBack: () => context.pop(),
             ),
             // Event badge — davet bilgisi özeti
@@ -541,11 +542,13 @@ class _ChatAppBar extends StatelessWidget {
   final String otherName;
   final int otherAge;
   final String? photoUrl;
+  final String? otherUserId;
   final VoidCallback onBack;
   const _ChatAppBar({
     required this.otherName,
     required this.otherAge,
     this.photoUrl,
+    this.otherUserId,
     required this.onBack,
   });
 
@@ -562,60 +565,67 @@ class _ChatAppBar extends StatelessWidget {
                     color: Colors.white, size: 20),
                 onPressed: onBack,
               ),
-              // Avatar — gradient ring
-              Container(
-                width: 46,
-                height: 46,
-                padding: const EdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet, AuroraTheme.auroraBlue],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AuroraTheme.bgDeep, width: 1.5),
-                  ),
-                  child: ClipOval(
-                    child: photoUrl != null
-                        ? Image.network(
-                            photoUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
-                          )
-                        : _DefaultAvatar(name: otherName),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+              // Avatar + isim — tıklanınca profile git
+              GestureDetector(
+                onTap: otherUserId != null
+                    ? () => context.push('/profile/$otherUserId')
+                    : null,
+                child: Row(
                   children: [
-                    Text(
-                      otherName,
-                      style: const TextStyle(
-                        fontFamily: 'Fraunces',
-                        fontStyle: FontStyle.italic,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                    Container(
+                      width: 46,
+                      height: 46,
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [AuroraTheme.auroraRed, AuroraTheme.auroraViolet, AuroraTheme.auroraBlue],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        shape: BoxShape.circle,
                       ),
-                    ),
-                    if (otherAge > 0)
-                      Text(
-                        '$otherAge yaş',
-                        style: TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontSize: 11,
-                          color: Colors.white.withOpacity(0.50),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AuroraTheme.bgDeep, width: 1.5),
+                        ),
+                        child: ClipOval(
+                          child: photoUrl != null
+                              ? Image.network(
+                                  photoUrl!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
+                                )
+                              : _DefaultAvatar(name: otherName),
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          otherName,
+                          style: const TextStyle(
+                            fontFamily: 'Fraunces',
+                            fontStyle: FontStyle.italic,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (otherAge > 0)
+                          Text(
+                            '$otherAge yaş',
+                            style: TextStyle(
+                              fontFamily: 'JetBrainsMono',
+                              fontSize: 11,
+                              color: Colors.white.withOpacity(0.50),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),

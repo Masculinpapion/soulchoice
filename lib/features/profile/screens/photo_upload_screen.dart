@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,6 +16,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../providers/profile_provider.dart';
 
 // Her slot ya boş, ya yeni yerel dosya, ya da mevcut uzak fotoğraf
 class _PhotoEntry {
@@ -34,17 +36,17 @@ class _PhotoEntry {
   bool get isRemote => url != null;
 }
 
-class PhotoUploadScreen extends StatefulWidget {
+class PhotoUploadScreen extends ConsumerStatefulWidget {
   /// true → ayarlardan gelindi (mevcut fotoğrafları yükle, kaydedince pop)
   /// false → onboarding akışı (min fotoğraf zorunlu, kaydedince selfie)
   final bool isEditing;
   const PhotoUploadScreen({super.key, this.isEditing = false});
 
   @override
-  State<PhotoUploadScreen> createState() => _PhotoUploadScreenState();
+  ConsumerState<PhotoUploadScreen> createState() => _PhotoUploadScreenState();
 }
 
-class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
+class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   final List<_PhotoEntry> _photos =
       List.filled(AppConstants.maxPhotos, _PhotoEntry.empty);
   // Editing modunda yüklenen orijinal remote fotoğraflar — hangileri silineceğini takip etmek için
@@ -289,6 +291,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       }
 
       if (!mounted) return;
+      ref.invalidate(userPhotosProvider(uid));
+      ref.invalidate(userProfileProvider(uid));
       if (widget.isEditing) {
         context.pop();
       } else {

@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -23,11 +28,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _showGender = 'opposite';
   int _minAge = 21;
   int _maxAge = 60;
+  bool _quietEnabled = false;
+  TimeOfDay _quietStart = const TimeOfDay(hour: 22, minute: 0);
+  TimeOfDay _quietEnd = const TimeOfDay(hour: 8, minute: 0);
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadQuietHours();
   }
 
   Future<void> _loadUserData() async {
@@ -49,6 +58,202 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _loadSelfieStatus() => _loadUserData();
+
+  Future<void> _loadQuietHours() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _quietEnabled = prefs.getBool('quiet_enabled') ?? false;
+      _quietStart = TimeOfDay(
+        hour: prefs.getInt('quiet_start_h') ?? 22,
+        minute: prefs.getInt('quiet_start_m') ?? 0,
+      );
+      _quietEnd = TimeOfDay(
+        hour: prefs.getInt('quiet_end_h') ?? 8,
+        minute: prefs.getInt('quiet_end_m') ?? 0,
+      );
+    });
+  }
+
+  void _showComingSoon(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
+        content: const Text('Bu özellik yakında geliyor.', style: TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Tamam', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAbout(BuildContext context) async {
+    final info = await PackageInfo.fromPlatform();
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('SoulChoice', style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 22)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('v${info.version} (${info.buildNumber})', style: const TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white38, fontSize: 12)),
+            const SizedBox(height: 8),
+            const Text('Premium sosyal davet uygulaması.', style: TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 13)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Tamam', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _downloadData(BuildContext context) async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    final client = Supabase.instance.client;
+    try {
+      final results = await Future.wait([
+        client.from('users').select('name, age, gender, bio, job, education, interests').eq('id', uid).maybeSingle(),
+        client.from('invitations').select('id, title, category, status, created_at').eq('owner_id', uid),
+        client.from('applications').select('id, invitation_id, status, created_at').eq('applicant_id', uid),
+      ]);
+      final data = {
+        'profile': results[0],
+        'invitations': results[1],
+        'applications': results[2],
+        'exported_at': DateTime.now().toIso8601String(),
+      };
+      final json = const JsonEncoder.withIndent('  ').convert(data);
+      await SharePlus.instance.share(ShareParams(
+        text: json,
+        subject: 'SoulChoice Veri Dışa Aktarma',
+      ));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: AuroraTheme.auroraRed),
+        );
+      }
+    }
+  }
+
+  Future<void> _showQuietHoursPicker(BuildContext context) async {
+    bool localEnabled = _quietEnabled;
+    TimeOfDay localStart = _quietStart;
+    TimeOfDay localEnd = _quietEnd;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setModalState) => ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D0D12).withOpacity(0.92),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(width: 36, height: 4, decoration: BoxDecoration(color: AuroraTheme.glassBorder, borderRadius: BorderRadius.circular(2))),
+                    const SizedBox(height: 20),
+                    const Text('Gece sessizliği', style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white)),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Aktif', style: TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 14)),
+                        Switch(
+                          value: localEnabled,
+                          activeColor: AuroraTheme.auroraRed,
+                          onChanged: (v) => setModalState(() => localEnabled = v),
+                        ),
+                      ],
+                    ),
+                    if (localEnabled) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _TimeButton(
+                              label: 'Başlangıç',
+                              time: localStart,
+                              onTap: () async {
+                                final t = await showTimePicker(context: ctx, initialTime: localStart);
+                                if (t != null) setModalState(() => localStart = t);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _TimeButton(
+                              label: 'Bitiş',
+                              time: localEnd,
+                              onTap: () async {
+                                final t = await showTimePicker(context: ctx, initialTime: localEnd);
+                                if (t != null) setModalState(() => localEnd = t);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.of(ctx).pop();
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('quiet_enabled', localEnabled);
+                          await prefs.setInt('quiet_start_h', localStart.hour);
+                          await prefs.setInt('quiet_start_m', localStart.minute);
+                          await prefs.setInt('quiet_end_h', localEnd.hour);
+                          await prefs.setInt('quiet_end_m', localEnd.minute);
+                          if (mounted) setState(() {
+                            _quietEnabled = localEnabled;
+                            _quietStart = localStart;
+                            _quietEnd = localEnd;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AuroraTheme.auroraRed,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                        child: const Text('Kaydet', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   void _showAgeRangePicker(BuildContext context) {
     int localMin = _minAge;
@@ -446,12 +651,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.notifications_active_outlined,
                           label: l10n.settings_notification_prefs,
-                          onTap: () {},
+                          onTap: () => _showComingSoon(context, l10n.settings_notification_prefs),
                         ),
                         _SettingsTile(
                           icon: Icons.do_not_disturb_on_outlined,
                           label: l10n.settings_do_not_disturb,
-                          onTap: () {},
+                          value: _quietEnabled
+                              ? '${_quietStart.hour.toString().padLeft(2, '0')}:${_quietStart.minute.toString().padLeft(2, '0')} – ${_quietEnd.hour.toString().padLeft(2, '0')}:${_quietEnd.minute.toString().padLeft(2, '0')}'
+                              : null,
+                          onTap: () => _showQuietHoursPicker(context),
                         ),
                       ],
                     ),
@@ -463,12 +671,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.devices_outlined,
                           label: l10n.settings_active_devices,
-                          onTap: () {},
+                          onTap: () => _showComingSoon(context, l10n.settings_active_devices),
                         ),
                         _SettingsTile(
                           icon: Icons.download_outlined,
                           label: l10n.settings_download_data,
-                          onTap: () {},
+                          onTap: () => _downloadData(context),
                         ),
                       ],
                     ),
@@ -502,12 +710,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.help_outline,
                           label: 'Yardım & Destek',
-                          onTap: () {},
+                          onTap: () => launchUrl(Uri.parse('mailto:support@soulchoice.app')),
                         ),
                         _SettingsTile(
                           icon: Icons.info_outline,
                           label: 'Hakkında',
-                          onTap: () {},
+                          onTap: () => _showAbout(context),
                         ),
                       ],
                     ),
@@ -902,4 +1110,34 @@ class _VerificationCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TimeButton extends StatelessWidget {
+  final String label;
+  final TimeOfDay time;
+  final VoidCallback onTap;
+  const _TimeButton({required this.label, required this.time, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AuroraTheme.glassBorder),
+          ),
+          child: Column(
+            children: [
+              Text(label, style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white38, letterSpacing: 0.5)),
+              const SizedBox(height: 4),
+              Text(
+                '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+                style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      );
 }

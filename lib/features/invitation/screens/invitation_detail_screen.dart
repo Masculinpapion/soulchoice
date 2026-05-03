@@ -1351,6 +1351,45 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     }
   }
 
+  Future<void> _withdraw() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Başvuruyu geri al',
+            style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
+        content: Text('Bu davete olan başvurunu geri almak istediğine emin misin?',
+            style: TextStyle(fontFamily: 'Manrope', color: AuroraTheme.textSecondary, fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Vazgeç', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.textMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Geri Al', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+    setState(() => _loading = true);
+    try {
+      final appId = widget.existingApp!['id'] as String;
+      await Supabase.instance.client.from('applications').delete().eq('id', appId);
+      widget.onApplied();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e'), backgroundColor: AuroraTheme.auroraRed),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = widget.existingApp;
@@ -1375,6 +1414,11 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     if (status == 'accepted') {
       return _AuroraCTA(label: '✓ Kabul edildi', onPressed: null);
     }
-    return _AuroraCTA(label: 'Başvurdunuz', onPressed: null);
+    // pending — geri çekme butonu
+    return _AuroraCTA(
+      label: _loading ? 'İptal ediliyor...' : 'Başvuruyu Geri Al',
+      icon: Icons.undo_rounded,
+      onPressed: _loading ? null : _withdraw,
+    );
   }
 }

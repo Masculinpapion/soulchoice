@@ -20,9 +20,9 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     if (saved != null) {
       state = Locale(saved);
     } else {
-      // İlk açılış: sistem dili ru ise Rusça, aksi halde İngilizce
+      // İlk açılış: sistem diline göre TR/RU/EN, aksi halde İngilizce
       final systemCode = PlatformDispatcher.instance.locale.languageCode;
-      final code = systemCode == 'ru' ? 'ru' : 'en';
+      final code = systemCode == 'tr' ? 'tr' : systemCode == 'ru' ? 'ru' : 'en';
       await prefs.setString(_key, code);
       state = Locale(code);
     }

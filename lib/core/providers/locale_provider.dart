@@ -18,13 +18,10 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_key);
     if (saved != null) {
-      state = Locale(saved);
+      state = saved == 'system' ? null : Locale(saved);
     } else {
-      // İlk açılış: sistem diline göre TR/RU/EN, aksi halde İngilizce
-      final systemCode = PlatformDispatcher.instance.locale.languageCode;
-      final code = systemCode == 'tr' ? 'tr' : systemCode == 'ru' ? 'ru' : 'en';
-      await prefs.setString(_key, code);
-      state = Locale(code);
+      // İlk açılış: telefon dilini kullan, kaydedilmez → null (sistem dili)
+      state = null;
     }
   }
 
@@ -36,7 +33,7 @@ class LocaleNotifier extends StateNotifier<Locale?> {
 
   Future<void> useSystemLocale() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_key);
+    await prefs.setString(_key, 'system');
     state = null;
   }
 }

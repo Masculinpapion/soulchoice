@@ -11,6 +11,8 @@ jobs:
   build:
     name: Build Release APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       # 1. Kodu çek
@@ -54,13 +56,14 @@ jobs:
       - name: Build APK
         run: flutter build apk --debug --no-pub
 
-      # 8. APK'yı artifact olarak yükle (7 gün saklanır)
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      # 8. APK'yı GitHub Release olarak yükle
+      - name: Upload APK to Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: soulchoice-debug-${{ github.run_number }}
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 1
+          tag_name: latest-debug
+          name: "Debug APK (latest)"
+          prerelease: true
+          files: build/app/outputs/flutter-apk/app-debug.apk
 
       # 9. Build bilgisi
       - name: Build summary

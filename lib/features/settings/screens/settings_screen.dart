@@ -126,7 +126,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (uid == null) return;
     final client = Supabase.instance.client;
     try {
-      final results = await Future.wait([
+      final results = await Future.wait<dynamic>([
         client.from('users').select('name, age, gender, bio, job, education, interests').eq('id', uid).maybeSingle(),
         client.from('invitations').select('id, title, category, status, created_at').eq('owner_id', uid),
         client.from('applications').select('id, invitation_id, status, created_at').eq('applicant_id', uid),
@@ -138,10 +138,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         'exported_at': DateTime.now().toIso8601String(),
       };
       final json = const JsonEncoder.withIndent('  ').convert(data);
-      await SharePlus.instance.share(ShareParams(
-        text: json,
-        subject: 'SoulChoice Veri Dışa Aktarma',
-      ));
+      await Share.share(json, subject: 'SoulChoice Veri Dışa Aktarma');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

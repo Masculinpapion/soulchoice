@@ -359,14 +359,14 @@ class _InvitationDetailScreenState
                               children: [
                                 Text(
                                   inv['title'] as String,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Fraunces',
                                     fontStyle: FontStyle.italic,
-                                    fontSize: 34,
+                                    fontSize: MediaQuery.of(context).size.width < 360 ? 29.0 : 34,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
                                     height: 1.15,
-                                    shadows: [
+                                    shadows: const [
                                       Shadow(
                                           blurRadius: 24,
                                           color: Colors.black87)

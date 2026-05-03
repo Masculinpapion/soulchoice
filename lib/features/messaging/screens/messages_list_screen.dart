@@ -69,12 +69,12 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
                 child: ShaderMask(
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Text(
+                  child: Text(
                     'Mesajlar',
                     style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
-                      fontSize: 28,
+                      fontSize: MediaQuery.of(context).size.width < 360 ? 23.8 : 28,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: -0.5,

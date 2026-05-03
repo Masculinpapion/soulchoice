@@ -144,12 +144,12 @@ class _Header extends ConsumerWidget {
           ShaderMask(
             shaderCallback: (bounds) =>
                 AuroraTheme.redBlueGradient.createShader(bounds),
-            child: const Text(
+            child: Text(
               'SoulChoice',
               style: TextStyle(
                 fontFamily: 'Fraunces',
                 fontStyle: FontStyle.italic,
-                fontSize: 26,
+                fontSize: MediaQuery.of(context).size.width < 360 ? 22.0 : 26,
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
                 letterSpacing: -0.5,
@@ -1688,9 +1688,9 @@ class _CardFallbackGradient extends StatelessWidget {
             child: Center(
               child: Text(
                 initials,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'JetBrainsMono',
-                  fontSize: 30,
+                  fontSize: MediaQuery.of(context).size.width < 360 ? 25.5 : 30,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),

@@ -43,12 +43,12 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 child: ShaderMask(
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Text(
+                  child: Text(
                     'Keşfet',
                     style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
-                      fontSize: 30,
+                      fontSize: MediaQuery.of(context).size.width < 360 ? 25.5 : 30,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: -0.5,

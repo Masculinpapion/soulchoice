@@ -138,7 +138,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         'exported_at': DateTime.now().toIso8601String(),
       };
       final json = const JsonEncoder.withIndent('  ').convert(data);
-      await Share.share(json, subject: 'SoulChoice Veri Dışa Aktarma');
+      await SharePlus.instance.share(ShareParams(
+        text: json,
+        subject: 'SoulChoice Veri Dışa Aktarma',
+      ));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

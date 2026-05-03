@@ -36,7 +36,9 @@ class ApplicantsScreen extends ConsumerWidget {
         ],
       ),
       body: AmbientBackground(
-        child: async.when(
+        child: SafeArea(
+          top: false,
+          child: async.when(
           loading: () => const Center(child: CircularProgressIndicator(color: AppColors.red)),
           error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: AppColors.textSecondary))),
           data: (applicants) {
@@ -118,6 +120,7 @@ class ApplicantsScreen extends ConsumerWidget {
               ),
             );
           },
+        ),
         ),
       ),
     );

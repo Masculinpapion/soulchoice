@@ -57,12 +57,15 @@ class _AdminScreenState extends State<AdminScreen>
         ),
       ),
       body: AmbientBackground(
-        child: TabBarView(
-          controller: _tabController,
-          children: const [
-            _PendingSelfiestTab(),
-            _ReportsTab(),
-          ],
+        child: SafeArea(
+          top: false,
+          child: TabBarView(
+            controller: _tabController,
+            children: const [
+              _PendingSelfiestTab(),
+              _ReportsTab(),
+            ],
+          ),
         ),
       ),
     );

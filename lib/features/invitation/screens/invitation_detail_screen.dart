@@ -42,33 +42,39 @@ class _InvitationDetailScreenState
       backgroundColor: AuroraTheme.bgDeep,
       body: invAsync.when(
         loading: () => AmbientBackground(
-          child: Center(
-            child: SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+          child: SafeArea(
+            child: Center(
+              child: SizedBox(
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+                ),
               ),
             ),
           ),
         ),
         error: (e, _) => AmbientBackground(
-          child: Center(
-            child: Text('$e',
-                style: TextStyle(
-                    color: AuroraTheme.textSecondary,
-                    fontFamily: 'Manrope')),
+          child: SafeArea(
+            child: Center(
+              child: Text('$e',
+                  style: TextStyle(
+                      color: AuroraTheme.textSecondary,
+                      fontFamily: 'Manrope')),
+            ),
           ),
         ),
         data: (inv) {
           if (inv == null) {
             return AmbientBackground(
-              child: Center(
-                child: Text('Davet bulunamadı',
-                    style: TextStyle(
-                        color: AuroraTheme.textSecondary,
-                        fontFamily: 'Manrope')),
+              child: SafeArea(
+                child: Center(
+                  child: Text('Davet bulunamadı',
+                      style: TextStyle(
+                          color: AuroraTheme.textSecondary,
+                          fontFamily: 'Manrope')),
+                ),
               ),
             );
           }

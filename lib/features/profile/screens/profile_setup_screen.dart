@@ -429,19 +429,58 @@ class _GenderOption extends StatelessWidget {
   }
 }
 
-class _StepCity extends StatelessWidget {
+class _StepCity extends StatefulWidget {
   final String? selectedCityId;
   final ValueChanged<String> onSelected;
 
   const _StepCity({required this.selectedCityId, required this.onSelected});
 
-  static const _cities = [
-    ('Moskova', '🇷🇺 Moskova'),
-    ('İstanbul', '🇹🇷 İstanbul'),
-    ('Londra', '🇬🇧 Londra'),
-    ('Dubai', '🇦🇪 Dubai'),
-    ('Berlin', '🇩🇪 Berlin'),
-  ];
+  @override
+  State<_StepCity> createState() => _StepCityState();
+}
+
+class _StepCityState extends State<_StepCity> {
+  List<Map<String, dynamic>> _cities = [];
+  List<Map<String, dynamic>> _filtered = [];
+  bool _loading = true;
+  final _searchCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCities();
+    _searchCtrl.addListener(_onSearch);
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.removeListener(_onSearch);
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadCities() async {
+    final data = await Supabase.instance.client
+        .from('cities')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name');
+    if (!mounted) return;
+    setState(() {
+      _cities = List<Map<String, dynamic>>.from(data as List);
+      _filtered = _cities;
+      _loading = false;
+    });
+  }
+
+  void _onSearch() {
+    final q = _searchCtrl.text.toLowerCase();
+    setState(() {
+      _filtered = q.isEmpty
+          ? _cities
+          : _cities.where((c) => (c['name'] as String).toLowerCase().contains(q)).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -452,22 +491,46 @@ class _StepCity extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
           Text('Hangi şehirdesin?', style: AppTextStyles.displayMedium),
-          const SizedBox(height: 32),
-          ..._cities.map((c) => Padding(
+          const SizedBox(height: 24),
+          TextField(
+            controller: _searchCtrl,
+            style: AppTextStyles.bodyLarge,
+            decoration: InputDecoration(
+              hintText: 'Şehir ara...',
+              prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
+              suffixIcon: _searchCtrl.text.isNotEmpty
+                  ? GestureDetector(
+                      onTap: () => _searchCtrl.clear(),
+                      child: const Icon(Icons.close, color: AppColors.textTertiary, size: 18),
+                    )
+                  : null,
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (_loading)
+            const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.red))
+          else if (_filtered.isEmpty)
+            Center(child: Text('Şehir bulunamadı', style: AppTextStyles.bodyMedium))
+          else
+            ..._filtered.map((c) {
+              final name = c['name'] as String;
+              final isSelected = widget.selectedCityId == name;
+              return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: GlassCard(
-                  borderColor: selectedCityId == c.$1 ? AppColors.red : AppColors.glassBorder,
-                  onTap: () => onSelected(c.$1),
+                  borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
+                  onTap: () => widget.onSelected(name),
                   child: Row(
                     children: [
-                      Text(c.$2, style: AppTextStyles.bodyLarge),
+                      Text(name, style: AppTextStyles.bodyLarge),
                       const Spacer(),
-                      if (selectedCityId == c.$1)
+                      if (isSelected)
                         const Icon(Icons.check_circle, color: AppColors.red, size: 20),
                     ],
                   ),
                 ),
-              )),
+              );
+            }),
         ],
       ),
     );

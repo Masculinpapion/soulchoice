@@ -360,10 +360,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return AppLocalizations.of(context)!.settings_language_system;
     }
     switch (locale.languageCode) {
-      case 'tr': return 'Türkçe';
       case 'ru': return 'Русский';
       case 'en': return 'English';
-      case 'de': return 'Deutsch';
       default:
         return AppLocalizations.of(context)!.settings_language_system;
     }
@@ -503,10 +501,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     const SizedBox(height: 16),
                     ...[
-                      ('tr', '🇹🇷', 'Türkçe'),
                       ('ru', '🇷🇺', 'Русский'),
                       ('en', '🇬🇧', 'English'),
-                      ('de', '🇩🇪', 'Deutsch'),
                     ].map((entry) {
                       final (code, flag, name) = entry;
                       final isSelected =

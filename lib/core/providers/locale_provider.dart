@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,12 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     final saved = prefs.getString(_key);
     if (saved != null) {
       state = Locale(saved);
+    } else {
+      // İlk açılış: sistem dili ru ise Rusça, aksi halde İngilizce
+      final systemCode = PlatformDispatcher.instance.locale.languageCode;
+      final code = systemCode == 'ru' ? 'ru' : 'en';
+      await prefs.setString(_key, code);
+      state = Locale(code);
     }
   }
 

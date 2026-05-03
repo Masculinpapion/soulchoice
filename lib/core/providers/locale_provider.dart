@@ -7,6 +7,11 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale?>((ref) {
   return LocaleNotifier();
 });
 
+Locale _fromSystem() {
+  final code = PlatformDispatcher.instance.locale.languageCode;
+  return Locale(code == 'ru' ? 'ru' : 'en');
+}
+
 class LocaleNotifier extends StateNotifier<Locale?> {
   static const _key = 'selected_locale';
 
@@ -17,11 +22,10 @@ class LocaleNotifier extends StateNotifier<Locale?> {
   Future<void> _loadSavedLocale() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getString(_key);
-    if (saved != null) {
-      state = saved == 'system' ? null : Locale(saved);
+    if (saved == null || saved == 'system') {
+      state = _fromSystem();
     } else {
-      // İlk açılış: telefon dilini kullan, kaydedilmez → null (sistem dili)
-      state = null;
+      state = Locale(saved);
     }
   }
 
@@ -34,6 +38,6 @@ class LocaleNotifier extends StateNotifier<Locale?> {
   Future<void> useSystemLocale() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, 'system');
-    state = null;
+    state = _fromSystem();
   }
 }

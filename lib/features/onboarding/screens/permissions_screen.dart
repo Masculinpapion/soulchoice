@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 const _kPermissionsRequestedKey = 'permissions_requested';
 
@@ -23,24 +24,26 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   int _currentStep = 0;
   final List<bool?> _results = [null, null, null];
 
-  static const _steps = [
-    _PermissionStep(
-      emoji: '🔔',
-      title: 'Bildirimlere izin ver',
-      description:
-          'Seçildiğinde, yeni mesaj geldiğinde haberdar olman için gerekli',
-    ),
-    _PermissionStep(
-      emoji: '📍',
-      title: 'Konumunu paylaş',
-      description: 'Yakın davetleri gösterebilmemiz için konumuna ihtiyacımız var',
-    ),
-    _PermissionStep(
-      emoji: '📷',
-      title: 'Fotoğraf galerisine erişim',
-      description: 'Profiline fotoğraf eklemek için gerekli',
-    ),
-  ];
+  static List<_PermissionStep> _getSteps(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return [
+      _PermissionStep(
+        emoji: '🔔',
+        title: l.perm_notification_title,
+        description: l.perm_notification_desc,
+      ),
+      _PermissionStep(
+        emoji: '📍',
+        title: l.perm_location_title,
+        description: l.perm_location_desc,
+      ),
+      _PermissionStep(
+        emoji: '📷',
+        title: l.perm_photos_title,
+        description: l.perm_photos_desc,
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -80,7 +83,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   }
 
   void _advance() {
-    if (_currentStep < _steps.length - 1) {
+    if (_currentStep < _getSteps(context).length - 1) {
       setState(() => _currentStep++);
       _pageController.animateToPage(
         _currentStep,
@@ -101,6 +104,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   @override
   Widget build(BuildContext context) {
     final result = _results[_currentStep];
+    final steps = _getSteps(context);
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       body: AmbientBackground(
@@ -108,14 +112,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
           child: Column(
             children: [
               const SizedBox(height: 24),
-              _ProgressDots(total: _steps.length, current: _currentStep),
+              _ProgressDots(total: steps.length, current: _currentStep),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _steps.length,
+                  itemCount: steps.length,
                   itemBuilder: (_, i) => _StepPage(
-                    step: _steps[i],
+                    step: steps[i],
                     result: _results[i],
                   ),
                 ),
@@ -130,14 +134,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                     : Column(
                         children: [
                           ScButton(
-                            label: result == true ? 'Devam et' : 'İzin ver',
+                            label: result == true ? AppLocalizations.of(context)!.btn_continue : AppLocalizations.of(context)!.perm_grant,
                             onPressed: _handleGrant,
                           ),
                           const SizedBox(height: 12),
                           GestureDetector(
                             onTap: _advance,
                             child: Text(
-                              'Şimdi değil',
+                              AppLocalizations.of(context)!.perm_not_now,
                               style: AppTextStyles.labelMedium.copyWith(
                                 color: AppColors.textTertiary,
                                 decoration: TextDecoration.underline,
@@ -305,7 +309,7 @@ class _DeniedWidget extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Bu özelliği kullanmak için ayarlardan izin verebilirsin',
+                    AppLocalizations.of(context)!.perm_denied_hint,
                     style: AppTextStyles.bodyMedium,
                   ),
                 ),
@@ -313,10 +317,10 @@ class _DeniedWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          ScButton(label: 'Ayarlara git', onPressed: onSettings),
+          ScButton(label: AppLocalizations.of(context)!.perm_go_to_settings, onPressed: onSettings),
           const SizedBox(height: 12),
           ScButton(
-              label: 'Devam et',
+              label: AppLocalizations.of(context)!.btn_continue,
               variant: ScButtonVariant.ghost,
               onPressed: onContinue),
         ],

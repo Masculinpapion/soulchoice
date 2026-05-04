@@ -9,6 +9,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/matches_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class MessagesListScreen extends ConsumerStatefulWidget {
   const MessagesListScreen({super.key});
@@ -70,7 +71,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
-                    'Mesajlar',
+                    AppLocalizations.of(context)!.messages_title,
                     style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
@@ -117,9 +118,9 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
                         labelColor: Colors.white,
                         unselectedLabelColor:
                             Colors.white.withOpacity(0.35),
-                        tabs: const [
-                          Tab(text: 'Aktif'),
-                          Tab(text: 'Geçmiş'),
+                        tabs: [
+                          Tab(text: AppLocalizations.of(context)!.messages_tab_active),
+                          Tab(text: AppLocalizations.of(context)!.messages_tab_past),
                         ],
                       ),
                     ),
@@ -167,7 +168,7 @@ class _MatchesTab extends ConsumerWidget {
                 color: AuroraTheme.textMuted, size: 40),
             const SizedBox(height: 12),
             Text(
-              'Bağlantı hatası',
+              AppLocalizations.of(context)!.messages_connection_error,
               style: TextStyle(
                   fontFamily: 'Manrope',
                   color: AuroraTheme.textSecondary),
@@ -209,13 +210,13 @@ class _MatchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeStr = match.lastMessageTime != null
-        ? timeago.format(match.lastMessageTime!, locale: 'tr')
+        ? timeago.format(match.lastMessageTime!, locale: 'ru')
         : '';
     final preview = match.lastMessage != null
         ? (match.lastMessage!.length > 35
             ? '${match.lastMessage!.substring(0, 35)}…'
             : match.lastMessage!)
-        : 'Henüz mesaj yok';
+        : AppLocalizations.of(context)!.messages_no_preview;
     final hasUnread = match.unreadCount > 0;
 
     return ClipRRect(
@@ -404,8 +405,8 @@ class _EmptyState extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 isArchived
-                    ? 'Geçmiş sohbetin yok'
-                    : 'Henüz aktif sohbetin yok',
+                    ? AppLocalizations.of(context)!.messages_empty_past
+                    : AppLocalizations.of(context)!.messages_empty_active,
                 style: const TextStyle(
                   fontFamily: 'Fraunces',
                   fontStyle: FontStyle.italic,
@@ -417,7 +418,7 @@ class _EmptyState extends StatelessWidget {
               if (!isArchived) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Bir davet aç veya mevcut davete başvur',
+                  AppLocalizations.of(context)!.messages_empty_hint,
                   style: TextStyle(
                     fontFamily: 'Manrope',
                     fontSize: 14,
@@ -427,7 +428,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 ScButton(
-                  label: 'Davet Aç',
+                  label: AppLocalizations.of(context)!.messages_btn_create,
                   onPressed: () => context.push('/invitation/create'),
                 ),
               ],

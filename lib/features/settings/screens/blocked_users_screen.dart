@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -95,9 +96,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                     ShaderMask(
                       shaderCallback: (b) =>
                           AuroraTheme.redBlueGradient.createShader(b),
-                      child: const Text(
-                        'Engellenen Kullanıcılar',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.blocked_users_title,
+                        style: const TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 22,
@@ -117,7 +118,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                     : _users.isEmpty
                         ? Center(
                             child: Text(
-                              'Engellenen kullanıcı yok',
+                              AppLocalizations.of(context)!.blocked_users_empty,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,
@@ -207,7 +208,7 @@ class _BlockedTile extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
-                  child: const Text('Engeli Kaldır'),
+                  child: Text(AppLocalizations.of(context)!.blocked_users_unblock_btn),
                 ),
               ],
             ),

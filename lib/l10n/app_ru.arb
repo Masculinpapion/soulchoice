@@ -37,5 +37,552 @@
   "settings_notification_prefs": "Настройки уведомлений",
   "settings_do_not_disturb": "Не беспокоить",
   "settings_active_devices": "Активные устройства",
-  "settings_download_data": "Загрузить мои данные"
+  "settings_download_data": "Загрузить мои данные",
+
+  "phone_title": "Введи свой\nномер телефона",
+  "phone_subtitle": "Мы отправим тебе код подтверждения",
+  "phone_error_empty": "Введи номер телефона",
+  "phone_error_connection": "Ошибка подключения, попробуй ещё раз",
+  "phone_terms": "Продолжая, ты принимаешь Условия использования",
+
+  "otp_title": "Введи код",
+  "otp_sent_to": "Отправлено: ",
+  "otp_resend_countdown": "Отправить снова ({seconds}с)",
+  "@otp_resend_countdown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "otp_resend": "Отправить снова",
+  "otp_verify": "Подтвердить",
+  "otp_error_failed": "Подтверждение не удалось",
+
+  "perm_notification_title": "Разрешить уведомления",
+  "perm_notification_desc": "Нужно, чтобы уведомлять тебя о новых сообщениях при выборе",
+  "perm_location_title": "Поделиться геолокацией",
+  "perm_location_desc": "Нам нужна твоя геолокация, чтобы показывать ближайшие приглашения",
+  "perm_photos_title": "Доступ к галерее фото",
+  "perm_photos_desc": "Нужно для добавления фотографий в профиль",
+  "perm_grant": "Разрешить",
+  "perm_not_now": "Не сейчас",
+  "perm_denied_hint": "Ты можешь разрешить это в настройках, чтобы использовать эту функцию",
+  "perm_go_to_settings": "Перейти в настройки",
+
+  "feed_all_cities": "Все города",
+  "feed_active_invitations": "АКТИВНЫЕ ПРИГЛАШЕНИЯ",
+  "feed_active_requests": "АКТИВНЫЕ ЗАПРОСЫ",
+  "feed_24h_badge": "24 ЧАС",
+  "feed_error": "Ошибка: {error}",
+  "@feed_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "feed_no_invitations": "Пока нет приглашений",
+  "feed_be_first": "Будь первым!",
+  "feed_todays_invitations": "ПРИГЛАШЕНИЯ СЕГОДНЯ",
+  "feed_todays_requests": "ЗАПРОСЫ СЕГОДНЯ",
+  "feed_swipe_hint": "· ЛИСТАЙ →",
+  "feed_cta_invite": "Хочу прийти",
+  "feed_cta_request": "Хочу присоединиться",
+  "feed_city_picker_title": "Выбрать город",
+  "feed_city_search_hint": "Поиск города…",
+  "feed_city_not_found": "Город \"{query}\" не найден",
+  "@feed_city_not_found": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "feed_tab_invitations": "Приглашения",
+  "feed_tab_requests": "Запросы",
+  "feed_city_name_moscow": "Москва",
+
+  "discover_title": "Обзор",
+  "discover_all_invitations_label": "ВСЕ АКТИВНЫЕ ПРИГЛАШЕНИЯ",
+  "discover_filter_all": "Все",
+  "discover_empty_title": "Пока нет активных приглашений",
+  "discover_empty_subtitle": "Будь первым, кто откроет приглашение здесь",
+  "discover_btn_create": "+ Создать приглашение",
+  "discover_error": "Ошибка подключения",
+
+  "applicants_title": "Заявки",
+  "applicants_count": "{count} человек",
+  "@applicants_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "applicants_empty": "Пока нет заявок",
+  "applicants_select_btn": "Выбрать",
+  "applicants_error_already_matched": "Это приглашение уже совпало",
+  "applicants_error_not_authorized": "Ошибка авторизации",
+  "applicants_error_generic": "Ошибка: {message}",
+  "@applicants_error_generic": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+
+  "create_inv_step_flow_type": "Тип приглашения",
+  "create_inv_step_category": "Категория",
+  "create_inv_step_title": "Заголовок",
+  "create_inv_step_description": "Описание",
+  "create_inv_step_venue": "Место",
+  "create_inv_step_datetime": "Дата и время",
+  "create_inv_step_duration": "Длительность",
+  "create_inv_validation_category": "Пожалуйста, выбери категорию",
+  "create_inv_validation_title": "Заголовок не может быть пустым",
+  "create_inv_validation_venue": "Название места не может быть пустым",
+  "create_inv_validation_date": "Пожалуйста, выбери дату и время",
+  "create_inv_error_publish": "Ошибка: {error}",
+  "@create_inv_error_publish": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "create_inv_btn_next": "Далее",
+  "create_inv_btn_publish": "Опубликовать",
+  "create_inv_flow_invite_title": "Я угощаю",
+  "create_inv_flow_invite_subtitle": "Хочу взять кого-нибудь с собой за мой счёт",
+  "create_inv_flow_request_title": "Хочу пойти",
+  "create_inv_flow_request_subtitle": "Есть место, ищу кого-то, кто составит компанию",
+  "create_inv_flow_question": "Что ты хочешь открыть?",
+  "create_inv_category_question": "Каким опытом ты делишься?",
+  "create_inv_title_subtitle": "Коротко и ёмко — будет крупно в ленте",
+  "create_inv_title_label": "Заголовок",
+  "create_inv_desc_invite_hint": "Куда идёшь, какого человека ищешь?",
+  "create_inv_desc_request_hint": "Куда хочешь пойти, какого человека ищешь?",
+  "create_inv_desc_input_hint": "Напиши подробности...",
+  "create_inv_venue_question": "Где?",
+  "create_inv_venue_subtitle": "Короткое название места — кафе, ресторан, парк",
+  "create_inv_venue_label": "Название места",
+  "create_inv_venue_placeholder": "Например: White Rabbit, Парк Горького...",
+  "create_inv_duration_question": "Как долго должно действовать приглашение?",
+  "create_inv_duration_subtitle": "По истечении этого времени приглашение исчезнет из ленты",
+  "create_inv_duration_6h": "6 часов",
+  "create_inv_duration_6h_desc": "Краткосрочное — на сегодня",
+  "create_inv_duration_12h": "12 часов",
+  "create_inv_duration_12h_desc": "Полдня",
+  "create_inv_duration_24h": "24 часа",
+  "create_inv_duration_24h_desc": "Стандарт — 1 день",
+  "create_inv_duration_48h": "48 часов",
+  "create_inv_duration_48h_desc": "Долгосрочное — 2 дня",
+  "create_inv_datetime_question": "Когда?",
+  "create_inv_datetime_subtitle": "Выбери дату и время мероприятия",
+  "create_inv_datetime_placeholder": "Выбрать дату и время",
+
+  "decision_selected_title": "Тебя выбрали!",
+  "decision_selected_body": "{name} выбрал(а) тебя для приглашения \"{title}\".\nХочешь принять?",
+  "@decision_selected_body": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  },
+  "decision_time_remaining": "осталось времени",
+  "decision_accept": "Да, принимаю",
+  "decision_reject": "Нет, отказаться",
+  "decision_fallback_name": "Пользователь",
+  "decision_error": "Ошибка: {error}",
+  "@decision_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "inv_detail_not_found": "Приглашение не найдено",
+  "inv_detail_delete_title": "Удалить приглашение",
+  "inv_detail_delete_body": "Ты уверен(а), что хочешь удалить это приглашение? Это действие необратимо.",
+  "inv_detail_delete_cancel": "Отмена",
+  "inv_detail_delete_confirm": "Удалить",
+  "inv_detail_status_closed": "Это приглашение закрыто",
+  "inv_detail_status_meeting": "Встреча",
+  "inv_detail_status_decision": "ВРЕМЯ РЕШЕНИЯ",
+  "inv_detail_status_awaiting": "ОЖИДАНИЕ ВЫБОРА",
+  "inv_detail_status_remaining": "ОСТАЛОСЬ ВРЕМЕНИ",
+  "inv_detail_status_expired": "Истекло",
+  "inv_detail_day_mon": "Пн",
+  "inv_detail_day_tue": "Вт",
+  "inv_detail_day_wed": "Ср",
+  "inv_detail_day_thu": "Чт",
+  "inv_detail_day_fri": "Пт",
+  "inv_detail_day_sat": "Сб",
+  "inv_detail_day_sun": "Вс",
+  "inv_detail_directions": "Маршрут",
+  "inv_detail_section_invitation": "ПРИГЛАШЕНИЕ",
+  "inv_detail_section_details": "ДЕТАЛИ",
+  "inv_detail_section_host": "ОРГАНИЗАТОР",
+  "inv_detail_host_label": "Организатор приглашения",
+  "inv_detail_applicants_btn": "Посмотреть заявки",
+  "inv_detail_loading": "Загрузка...",
+  "inv_detail_error_label": "Ошибка",
+  "inv_detail_apply_invite": "Хочу прийти",
+  "inv_detail_apply_request": "Хочу присоединиться",
+  "inv_detail_apply_sending": "Отправка...",
+  "inv_detail_withdraw_title": "Отозвать заявку",
+  "inv_detail_withdraw_body": "Ты уверен(а), что хочешь отозвать заявку на это приглашение?",
+  "inv_detail_withdraw_cancel": "Отмена",
+  "inv_detail_withdraw_confirm": "Отозвать",
+  "inv_detail_withdraw_btn": "Отозвать заявку",
+  "inv_detail_withdrawing": "Отмена...",
+  "inv_detail_selected_btn": "Выбрали — Прими решение",
+  "inv_detail_accepted_btn": "✓ Принято",
+  "inv_detail_apply_sent_title": "Заявка отправлена",
+  "inv_detail_apply_sent_body": "Жди, пока владелец приглашения сделает выбор",
+  "inv_detail_error": "Ошибка: {error}",
+  "@inv_detail_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "inv_detail_duration_days_hours": "{days}д {hours}ч",
+  "@inv_detail_duration_days_hours": {
+    "placeholders": {
+      "days": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "inv_detail_duration_hours_min": "{hours}ч {min}мин",
+  "@inv_detail_duration_hours_min": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
+  "inv_detail_duration_min": "{min}мин",
+  "@inv_detail_duration_min": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "inv_detail_weekday_mon_full": "Понедельник",
+  "inv_detail_weekday_tue_full": "Вторник",
+  "inv_detail_weekday_wed_full": "Среда",
+  "inv_detail_weekday_thu_full": "Четверг",
+  "inv_detail_weekday_fri_full": "Пятница",
+  "inv_detail_weekday_sat_full": "Суббота",
+  "inv_detail_weekday_sun_full": "Воскресенье",
+
+  "chat_archived": "Этот чат в архиве",
+  "chat_meeting_question": "Встреча состоялась?",
+  "chat_yes_we_met": "Да, встретились",
+  "chat_other_no_show": "Другая сторона не пришла",
+  "chat_send_error": "Не удалось отправить: {error}",
+  "@chat_send_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "chat_meeting_saved": "Спасибо! Встреча записана.",
+  "chat_noted": "Принято.",
+  "chat_other_age": "{age} лет",
+  "@chat_other_age": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "chat_empty_hint": "Отправь первое сообщение!",
+  "chat_input_hint": "Написать сообщение...",
+
+  "messages_title": "Сообщения",
+  "messages_tab_active": "Активные",
+  "messages_tab_past": "Прошлые",
+  "messages_connection_error": "Ошибка подключения",
+  "messages_no_preview": "Пока нет сообщений",
+  "messages_empty_past": "Прошлых чатов нет",
+  "messages_empty_active": "Пока нет активных чатов",
+  "messages_empty_hint": "Открой приглашение или откликнись на существующее",
+  "messages_btn_create": "Создать приглашение",
+
+  "notifications_title": "Уведомления",
+  "notifications_mark_all_read": "Отметить все прочитанными",
+  "notifications_error": "Ошибка: {error}",
+  "@notifications_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "notifications_empty": "Пока нет уведомлений",
+
+  "photo_upload_title_edit": "Редактировать фото",
+  "photo_upload_title_add": "Добавить фото",
+  "photo_upload_subtitle": "Мин {min} макс {max} фото • {filled} / {total}",
+  "@photo_upload_subtitle": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" },
+      "filled": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "photo_upload_primary_label": "Главное фото",
+  "photo_upload_primary_badge": "Главное",
+  "photo_upload_permission_error": "Необходим доступ к галерее. Пожалуйста, разреши в настройках.",
+  "photo_upload_pick_error": "Не удалось выбрать фото: {error}",
+  "@photo_upload_pick_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photo_upload_error": "Ошибка загрузки: {error}",
+  "@photo_upload_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photo_upload_btn_save": "Сохранить",
+  "photo_upload_btn_continue": "Продолжить",
+  "photo_crop_title": "Редактировать фото",
+  "photo_crop_apply": "Применить",
+  "photo_crop_error": "Ошибка обрезки: {error}",
+  "@photo_crop_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "profile_setup_step_name_age": "Имя и возраст",
+  "profile_setup_step_gender": "Пол",
+  "profile_setup_step_city": "Город",
+  "profile_setup_step_bio": "О себе",
+  "profile_setup_step_job_edu": "Работа / Образование",
+  "profile_setup_step_interests": "Интересы",
+  "profile_setup_step_prompts": "Вопросы",
+  "profile_setup_step_show_gender": "Настройки показа",
+  "profile_setup_step_age_range": "Возрастной диапазон",
+  "profile_setup_validation_name": "Имя не может быть пустым",
+  "profile_setup_validation_age": "Возраст должен быть от {min} до {max}",
+  "@profile_setup_validation_age": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_error": "Ошибка: {error}",
+  "@profile_setup_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "profile_setup_btn_next": "Далее",
+  "profile_setup_btn_add_photos": "Добавить фото",
+  "profile_setup_name_question": "Как тебя зовут?",
+  "profile_setup_name_label": "Имя",
+  "profile_setup_age_label": "Возраст ({min}-{max})",
+  "@profile_setup_age_label": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_gender_title": "Пол",
+  "profile_setup_gender_female": "Женский",
+  "profile_setup_gender_male": "Мужской",
+  "profile_setup_city_question": "В каком ты городе?",
+  "profile_setup_city_search": "Поиск города...",
+  "profile_setup_city_not_found": "Город не найден",
+  "profile_setup_bio_title": "Расскажи о себе",
+  "profile_setup_bio_subtitle": "Необязательно — максимум 200 символов",
+  "profile_setup_bio_hint": "Коротко представься...",
+  "profile_setup_job_title": "Работа и образование",
+  "profile_setup_job_subtitle": "Необязательно",
+  "profile_setup_job_label": "Профессия",
+  "profile_setup_education_label": "Школа / Университет",
+  "profile_setup_interests_title": "Интересы",
+  "profile_setup_interests_subtitle": "Выбери не менее 3",
+  "profile_setup_prompts_title": "Несколько вопросов",
+  "profile_setup_prompts_subtitle": "Необязательно — обогащает твой профиль",
+  "profile_setup_prompts_answer_hint": "Твой ответ...",
+  "profile_setup_show_gender_title": "Чьи приглашения ты хочешь видеть?",
+  "profile_setup_show_gender_subtitle": "В ленте будут показываться только приглашения этих людей",
+  "profile_setup_show_gender_opposite": "Противоположный пол",
+  "profile_setup_show_gender_all": "Все",
+  "profile_setup_show_gender_female": "Женщины",
+  "profile_setup_show_gender_male": "Мужчины",
+  "profile_setup_age_range_title": "Какой возрастной диапазон тебя интересует?",
+  "profile_setup_age_range_subtitle": "В ленте будут показываться только приглашения в этом возрастном диапазоне",
+  "profile_setup_age_range_value": "{min} — {max} лет",
+  "@profile_setup_age_range_value": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_prompt_favorite_restaurant": "Мой любимый ресторан...",
+  "profile_setup_prompt_last_book": "Последняя книга, которую я читал(а)...",
+  "profile_setup_prompt_perfect_evening": "Идеальный вечер...",
+  "profile_setup_prompt_travel_dream": "Моя мечта о путешествии...",
+  "profile_setup_interest_art": "Искусство",
+  "profile_setup_interest_music": "Музыка",
+  "profile_setup_interest_sports": "Спорт",
+  "profile_setup_interest_books": "Книги",
+  "profile_setup_interest_travel": "Путешествия",
+  "profile_setup_interest_food": "Еда",
+  "profile_setup_interest_film": "Кино",
+  "profile_setup_interest_theatre": "Театр",
+  "profile_setup_interest_dance": "Танцы",
+  "profile_setup_interest_yoga": "Йога",
+  "profile_setup_interest_photography": "Фотография",
+  "profile_setup_interest_games": "Игры",
+  "profile_setup_interest_technology": "Технологии",
+  "profile_setup_interest_nature": "Природа",
+  "profile_setup_interest_history": "История",
+  "profile_setup_interest_fashion": "Мода",
+
+  "profile_view_not_found": "Профиль не найден",
+  "profile_view_hint_name_age": "Имя и возраст не указаны",
+  "profile_view_hint_photo": "Добавь фото",
+  "profile_view_hint_bio": "Добавь описание",
+  "profile_view_hint_interests": "Добавь интересы",
+  "profile_view_hint_selfie_pending": "Селфи на проверке...",
+  "profile_view_hint_selfie_upload": "Загрузить селфи",
+  "profile_view_hint_prompt": "Ответить на вопрос",
+  "profile_view_completion": "{score}% заполнено",
+  "@profile_view_completion": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "profile_view_section_interests": "Интересы",
+  "profile_view_section_prompts": "Выражения",
+  "profile_view_cta_edit": "Редактировать профиль",
+  "profile_view_cta_come": "Хочу прийти",
+  "profile_view_action_block": "Заблокировать пользователя",
+  "profile_view_action_block_confirm": "Заблокировать",
+  "profile_view_action_block_cancel": "Отмена",
+  "profile_view_action_report": "Пожаловаться",
+  "profile_view_action_cancel": "Отмена",
+  "profile_view_blocked_snack": "{name} заблокирован(а)",
+  "@profile_view_blocked_snack": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "report_title": "Пожаловаться на пользователя",
+  "report_why": "Почему ты жалуешься?",
+  "report_reason_inappropriate": "Неприемлемый контент / фото",
+  "report_reason_harassment": "Домогательства или угрозы",
+  "report_reason_spam": "Спам или фейковый аккаунт",
+  "report_reason_illegal": "Незаконная деятельность",
+  "report_reason_other": "Другое",
+  "report_desc_label": "Описание (необязательно)",
+  "report_desc_hint": "Можешь добавить подробности...",
+  "report_btn_sending": "Отправка...",
+  "report_btn_submit": "Отправить жалобу",
+  "report_error_no_reason": "Пожалуйста, выбери причину",
+  "report_success": "Твоя жалоба получена, мы её рассмотрим",
+  "report_error": "Ошибка: {error}",
+  "@report_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "selfie_title": "Верификация через селфи",
+  "selfie_subtitle": "Мы вручную проверяем твой профиль для безопасного сообщества",
+  "selfie_take_btn": "Сделать селфи",
+  "selfie_tip_lighting": "Снимай в хорошо освещённом месте",
+  "selfie_tip_face": "Твоё лицо должно быть чётко видно",
+  "selfie_tip_approval": "Администратор проверяет в течение 24 часов",
+  "selfie_submit_btn": "Отправить",
+
+  "blocked_users_title": "Заблокированные пользователи",
+  "blocked_users_empty": "Нет заблокированных пользователей",
+  "blocked_users_unblock_btn": "Разблокировать",
+
+  "delete_account_title": "Удалить аккаунт",
+  "delete_account_heading": "Это действие необратимо",
+  "delete_account_body": "Если ты удалишь аккаунт, все твои данные, сообщения, совпадения и фото будут безвозвратно удалены. Это нельзя отменить.",
+  "delete_account_warn_profile": "Твой профиль и все фото будут удалены",
+  "delete_account_warn_messages": "Вся история сообщений будет удалена",
+  "delete_account_warn_invitations": "Твои активные приглашения и заявки будут удалены",
+  "delete_account_warn_phone": "Ты не сможешь снова зарегистрироваться с тем же номером телефона",
+  "delete_account_checkbox": "Да, я хочу безвозвратно удалить свой аккаунт",
+  "delete_account_btn_delete": "Удалить аккаунт навсегда",
+  "delete_account_btn_cancel": "Отмена",
+  "delete_account_success": "Твой аккаунт помечен для удаления. Вскоре он будет удалён окончательно.",
+  "delete_account_error": "Произошла ошибка. Пожалуйста, попробуй ещё раз.",
+
+  "settings_coming_soon": "Эта функция скоро появится.",
+  "settings_ok": "ОК",
+  "settings_about_subtitle": "Премиум-приложение для социальных приглашений.",
+  "settings_share_subject": "Экспорт данных SoulChoice",
+  "settings_error": "Ошибка: {error}",
+  "@settings_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settings_quiet_hours_title": "Ночная тишина",
+  "settings_quiet_active": "Активно",
+  "settings_quiet_start": "Начало",
+  "settings_quiet_end": "Конец",
+  "settings_age_range_title": "Возрастной диапазон",
+  "settings_age_range_value": "{min} — {max} лет",
+  "@settings_age_range_value": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "settings_display_pref_title": "Настройки показа",
+  "settings_privacy_section": "КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ",
+  "settings_blocked_users": "Заблокированные пользователи",
+  "settings_location_permission": "Разрешение геолокации",
+  "settings_camera_permission": "Разрешение камеры",
+  "settings_support_section": "ПОДДЕРЖКА",
+  "settings_help": "Помощь и поддержка",
+  "settings_about": "О приложении",
+  "settings_logout_error": "Не удалось выйти. Пожалуйста, попробуй ещё раз.",
+  "settings_selfie_pending": "Селфи на проверке",
+  "settings_selfie_approved": "Аккаунт верифицирован",
+  "settings_selfie_rejected": "Селфи отклонено — загрузи снова",
+  "settings_selfie_none": "Селфи ещё не загружено",
+  "settings_verification_status": "Статус верификации",
+  "settings_reupload": "Загрузить снова",
+  "settings_show_gender_opposite": "Противоположный пол",
+  "settings_show_gender_all": "Все",
+  "settings_show_gender_female": "Женщины",
+  "settings_show_gender_male": "Мужчины",
+
+  "admin_title": "Модерация",
+  "admin_tab_selfies": "Проверка селфи",
+  "admin_tab_reports": "Жалобы",
+  "admin_reject_reason_title": "Причина отклонения",
+  "admin_reject_reason_no_face": "Лицо не видно",
+  "admin_reject_reason_inappropriate": "Неприемлемый контент",
+  "admin_reject_reason_mismatch": "Другой человек (не совпадает с фото профиля)",
+  "admin_reject_reason_quality": "Низкое качество / размыто",
+  "admin_reject_reason_other": "Другое",
+  "admin_btn_cancel": "Отмена",
+  "admin_btn_reject": "Отклонить",
+  "admin_selfies_empty": "Нет ожидающих селфи",
+  "admin_view_profile": "Просмотреть профиль",
+  "admin_photo_label_profile": "Фото профиля",
+  "admin_photo_label_selfie": "Селфи",
+  "admin_btn_approve": "✅ Одобрить",
+  "admin_btn_reject_action": "❌ Отклонить",
+  "admin_reports_empty": "Нет ожидающих жалоб",
+  "admin_report_about": "жалоба на {name}",
+  "@admin_report_about": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "admin_reporter_label": "Жалующийся: {name}",
+  "@admin_reporter_label": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "admin_reason_label": "Причина: {reason}",
+  "@admin_reason_label": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "admin_user_banned": "Пользователь заблокирован",
+  "admin_btn_ban": "Заблокировать",
+  "admin_btn_dismiss": "Отклонить"
 }

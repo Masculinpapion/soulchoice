@@ -7,6 +7,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/notifications_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -106,9 +107,9 @@ class _NotificationsScreenState
                     ShaderMask(
                       shaderCallback: (b) =>
                           AuroraTheme.redBlueGradient.createShader(b),
-                      child: const Text(
-                        'Bildirimler',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)!.notifications_title,
+                        style: const TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 26,
@@ -122,8 +123,8 @@ class _NotificationsScreenState
                     // Tümünü oku
                     TextButton(
                       onPressed: _markAllRead,
-                      child: const Text(
-                        'Tümünü oku',
+                      child: Text(
+                        AppLocalizations.of(context)!.notifications_mark_all_read,
                         style: TextStyle(
                           fontFamily: 'JetBrainsMono',
                           fontSize: 11,
@@ -152,7 +153,7 @@ class _NotificationsScreenState
                   ),
                   error: (e, _) => Center(
                     child: Text(
-                      'Hata: $e',
+                      AppLocalizations.of(context)!.notifications_error(e.toString()),
                       style: TextStyle(
                           fontFamily: 'Manrope',
                           color: AuroraTheme.textSecondary),
@@ -336,7 +337,7 @@ class _NotifTile extends StatelessWidget {
                   const SizedBox(width: 8),
                   // Zaman
                   Text(
-                    timeago.format(item.createdAt, locale: 'tr'),
+                    timeago.format(item.createdAt, locale: 'ru'),
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 9,
@@ -387,9 +388,9 @@ class _EmptyState extends StatelessWidget {
           children: [
             const Text('🔔', style: TextStyle(fontSize: 56)),
             const SizedBox(height: 20),
-            const Text(
-              'Henüz bildirimin yok',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.notifications_empty,
+              style: const TextStyle(
                 fontFamily: 'Fraunces',
                 fontStyle: FontStyle.italic,
                 fontSize: 20,

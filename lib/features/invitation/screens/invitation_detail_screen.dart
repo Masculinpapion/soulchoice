@@ -9,6 +9,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
   final String invitationId;
@@ -70,7 +71,7 @@ class _InvitationDetailScreenState
             return AmbientBackground(
               child: SafeArea(
                 child: Center(
-                  child: Text('Davet bulunamadı',
+                  child: Text(AppLocalizations.of(context)!.inv_detail_not_found,
                       style: TextStyle(
                           color: AuroraTheme.textSecondary,
                           fontFamily: 'Manrope')),
@@ -271,23 +272,25 @@ class _InvitationDetailScreenState
                                           final confirm =
                                               await showDialog<bool>(
                                             context: context,
-                                            builder: (ctx) => AlertDialog(
+                                            builder: (ctx) {
+                                              final l = AppLocalizations.of(ctx)!;
+                                              return AlertDialog(
                                               backgroundColor:
                                                   AuroraTheme.bgDeep,
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           20)),
-                                              title: const Text(
-                                                  'Daveti sil',
-                                                  style: TextStyle(
+                                              title: Text(
+                                                  l.inv_detail_delete_title,
+                                                  style: const TextStyle(
                                                       fontFamily: 'Fraunces',
                                                       fontStyle:
                                                           FontStyle.italic,
                                                       color: Colors.white,
                                                       fontSize: 20)),
                                               content: Text(
-                                                  'Bu daveti silmek istiyor musun? Geri alınamaz.',
+                                                  l.inv_detail_delete_body,
                                                   style: TextStyle(
                                                       fontFamily: 'Manrope',
                                                       color: AuroraTheme
@@ -298,7 +301,7 @@ class _InvitationDetailScreenState
                                                   onPressed: () =>
                                                       Navigator.of(ctx)
                                                           .pop(false),
-                                                  child: Text('Vazgeç',
+                                                  child: Text(l.inv_detail_delete_cancel,
                                                       style: TextStyle(
                                                           fontFamily:
                                                               'JetBrainsMono',
@@ -309,8 +312,8 @@ class _InvitationDetailScreenState
                                                   onPressed: () =>
                                                       Navigator.of(ctx)
                                                           .pop(true),
-                                                  child: const Text('Sil',
-                                                      style: TextStyle(
+                                                  child: Text(l.inv_detail_delete_confirm,
+                                                      style: const TextStyle(
                                                           fontFamily:
                                                               'JetBrainsMono',
                                                           color: AuroraTheme
@@ -319,7 +322,7 @@ class _InvitationDetailScreenState
                                                               FontWeight.w700)),
                                                 ),
                                               ],
-                                            ),
+                                            );},
                                           );
                                           if (confirm == true &&
                                               context.mounted) {
@@ -391,7 +394,7 @@ class _InvitationDetailScreenState
                                     [
                                       if (venueName != null) venueName,
                                       if (eventDate != null)
-                                        _formatDate(eventDate),
+                                        _formatDate(context, eventDate),
                                     ].join(' · '),
                                     style: TextStyle(
                                       fontFamily: 'JetBrainsMono',
@@ -430,7 +433,7 @@ class _InvitationDetailScreenState
                               (inv['description'] as String)
                                   .isNotEmpty) ...[
                             const SizedBox(height: 28),
-                            const _SectionHeader(label: 'DAVET'),
+                            _SectionHeader(label: AppLocalizations.of(context)!.inv_detail_section_invitation),
                             const SizedBox(height: 12),
                             IntrinsicHeight(
                               child: Row(
@@ -468,7 +471,7 @@ class _InvitationDetailScreenState
                           if (venueName != null ||
                               eventDate != null) ...[
                             const SizedBox(height: 28),
-                            const _SectionHeader(label: 'DETAYLAR'),
+                            _SectionHeader(label: AppLocalizations.of(context)!.inv_detail_section_details),
                             const SizedBox(height: 12),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
@@ -491,7 +494,7 @@ class _InvitationDetailScreenState
                                               Icons.location_on_outlined,
                                           label: venueName,
                                           trailing: Text(
-                                            'Yol Tarifi',
+                                            AppLocalizations.of(context)!.inv_detail_directions,
                                             style: TextStyle(
                                               fontFamily: 'JetBrainsMono',
                                               fontSize: 10,
@@ -511,7 +514,7 @@ class _InvitationDetailScreenState
                                         _DetailRow(
                                           icon: Icons
                                               .calendar_today_outlined,
-                                          label: _formatDate(eventDate),
+                                          label: _formatDate(context, eventDate),
                                         ),
                                     ],
                                   ),
@@ -523,7 +526,7 @@ class _InvitationDetailScreenState
                           // d. Davet Sahibi
                           if (owner != null) ...[
                             const SizedBox(height: 28),
-                            const _SectionHeader(label: 'DAVET SAHİBİ'),
+                            _SectionHeader(label: AppLocalizations.of(context)!.inv_detail_section_host),
                             const SizedBox(height: 12),
                             _HostCard(
                               owner: owner,
@@ -561,17 +564,17 @@ class _InvitationDetailScreenState
                       ),
                       child: isOwner
                           ? _AuroraCTA(
-                              label: 'Başvuranları Gör',
+                              label: AppLocalizations.of(context)!.inv_detail_applicants_btn,
                               icon: Icons.people_outline,
                               onPressed: () => context.push(
                                   '/invitation/$invitationId/applicants'),
                             )
                           : myAppAsync.when(
-                              loading: () => const _AuroraCTA(
-                                  label: 'Yükleniyor...',
+                              loading: () => _AuroraCTA(
+                                  label: AppLocalizations.of(context)!.inv_detail_loading,
                                   onPressed: null),
-                              error: (_, __) => const _AuroraCTA(
-                                  label: 'Hata', onPressed: null),
+                              error: (_, __) => _AuroraCTA(
+                                  label: AppLocalizations.of(context)!.inv_detail_error_label, onPressed: null),
                               data: (myApp) => _ApplyButton(
                                 invitationId: invitationId,
                                 existingApp: myApp,
@@ -592,10 +595,13 @@ class _InvitationDetailScreenState
     );
   }
 
-  String _formatDate(DateTime dt) {
-    const days = [
-      'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe',
-      'Cuma', 'Cumartesi', 'Pazar'
+  String _formatDate(BuildContext context, DateTime dt) {
+    final l10n = AppLocalizations.of(context)!;
+    final days = [
+      l10n.inv_detail_weekday_mon_full, l10n.inv_detail_weekday_tue_full,
+      l10n.inv_detail_weekday_wed_full, l10n.inv_detail_weekday_thu_full,
+      l10n.inv_detail_weekday_fri_full, l10n.inv_detail_weekday_sat_full,
+      l10n.inv_detail_weekday_sun_full,
     ];
     final day = days[dt.weekday - 1];
     final h = dt.hour.toString().padLeft(2, '0');
@@ -622,21 +628,24 @@ class _CountdownStrip extends StatelessWidget {
     this.eventDate,
   });
 
-  String _label() {
-    if (invStatus == 'closed' || invStatus == 'cancelled') {
-      return 'Bu davet kapandı';
-    }
-    if (appStatus == 'accepted') return 'Buluşma';
-    if (isOwner) return 'KARAR SÜRENİZ';
-    if (appStatus != null) return 'SEÇİM BEKLENİYOR';
-    return 'BAŞVURU İÇİN KALAN';
+  String _label(AppLocalizations l10n) {
+    if (invStatus == 'closed' || invStatus == 'cancelled') return l10n.inv_detail_status_closed;
+    if (appStatus == 'accepted') return l10n.inv_detail_status_meeting;
+    if (isOwner) return l10n.inv_detail_status_decision;
+    if (appStatus != null) return l10n.inv_detail_status_awaiting;
+    return l10n.inv_detail_status_remaining;
   }
 
-  String _value() {
+  String _value(AppLocalizations l10n) {
     if (invStatus == 'closed' || invStatus == 'cancelled') return '—';
     if (appStatus == 'accepted') {
       if (eventDate != null) {
-        const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+        final days = [
+          l10n.inv_detail_day_mon, l10n.inv_detail_day_tue,
+          l10n.inv_detail_day_wed, l10n.inv_detail_day_thu,
+          l10n.inv_detail_day_fri, l10n.inv_detail_day_sat,
+          l10n.inv_detail_day_sun,
+        ];
         final d = eventDate!;
         return '${days[d.weekday - 1]} '
             '${d.hour.toString().padLeft(2, '0')}:'
@@ -644,20 +653,19 @@ class _CountdownStrip extends StatelessWidget {
       }
       return '—';
     }
-    if (remaining.isNegative) return 'Sona erdi';
-    if (remaining.inDays >= 1) {
-      return '${remaining.inDays} gün ${remaining.inHours % 24} saat';
-    }
-    if (remaining.inHours >= 1) {
-      return '${remaining.inHours} saat ${remaining.inMinutes % 60} dk';
-    }
-    return '${remaining.inMinutes} dk';
+    if (remaining.isNegative) return l10n.inv_detail_status_expired;
+    if (remaining.inDays >= 1) return l10n.inv_detail_duration_days_hours(remaining.inDays, remaining.inHours % 24);
+    if (remaining.inHours >= 1) return l10n.inv_detail_duration_hours_min(remaining.inHours, remaining.inMinutes % 60);
+    return l10n.inv_detail_duration_min(remaining.inMinutes);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isClosed =
         invStatus == 'closed' || invStatus == 'cancelled';
+    final label = _label(l10n);
+    final value = _value(l10n);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -721,7 +729,7 @@ class _CountdownStrip extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              _value(),
+                              value,
                               style: TextStyle(
                                 fontFamily: 'Fraunces',
                                 fontStyle: FontStyle.italic,
@@ -735,7 +743,7 @@ class _CountdownStrip extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              _label(),
+                              label,
                               style: TextStyle(
                                 fontFamily: 'JetBrainsMono',
                                 fontSize: 9,
@@ -1105,7 +1113,7 @@ class _HostRow extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Davet sahibi',
+                          AppLocalizations.of(context)!.inv_detail_host_label,
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,
@@ -1317,9 +1325,9 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'Başvurun Gönderildi',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context)!.inv_detail_apply_sent_title,
+                        style: const TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 15,
@@ -1329,7 +1337,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Davet sahibinin seçim yapmasını bekle',
+                        AppLocalizations.of(context)!.inv_detail_apply_sent_body,
                         style: TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 12,
@@ -1348,7 +1356,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Hata: $e'),
+              content: Text(AppLocalizations.of(context)!.inv_detail_error(e.toString())),
               backgroundColor: AuroraTheme.auroraRed),
         );
       }
@@ -1360,24 +1368,26 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   Future<void> _withdraw() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) {
+        final l = AppLocalizations.of(ctx)!;
+        return AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Başvuruyu geri al',
-            style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
-        content: Text('Bu davete olan başvurunu geri almak istediğine emin misin?',
+        title: Text(l.inv_detail_withdraw_title,
+            style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
+        content: Text(l.inv_detail_withdraw_body,
             style: TextStyle(fontFamily: 'Manrope', color: AuroraTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Vazgeç', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.textMuted)),
+            child: Text(l.inv_detail_withdraw_cancel, style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Geri Al', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed, fontWeight: FontWeight.w700)),
+            child: Text(l.inv_detail_withdraw_confirm, style: const TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed, fontWeight: FontWeight.w700)),
           ),
         ],
-      ),
+      );},
     );
     if (confirm != true || !mounted) return;
     setState(() => _loading = true);
@@ -1388,7 +1398,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AuroraTheme.auroraRed),
+          SnackBar(content: Text(AppLocalizations.of(context)!.inv_detail_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
         );
       }
     } finally {
@@ -1398,19 +1408,20 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final app = widget.existingApp;
     if (app == null) {
       return _AuroraCTA(
         label: _loading
-            ? 'Gönderiliyor...'
-            : (widget.isRequestFlow ? 'Katılmak isterim' : 'Gelmek isterim'),
+            ? l10n.inv_detail_apply_sending
+            : (widget.isRequestFlow ? l10n.inv_detail_apply_request : l10n.inv_detail_apply_invite),
         onPressed: _loading ? null : _apply,
       );
     }
     final status = app['status'] as String;
     if (status == 'selected') {
       return _AuroraCTA(
-        label: 'Seçildiniz — Kararınızı verin',
+        label: l10n.inv_detail_selected_btn,
         icon: Icons.favorite_outline,
         onPressed: () => context.push(
             '/invitation/${widget.invitationId}/decision',
@@ -1418,11 +1429,10 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       );
     }
     if (status == 'accepted') {
-      return _AuroraCTA(label: '✓ Kabul edildi', onPressed: null);
+      return _AuroraCTA(label: l10n.inv_detail_accepted_btn, onPressed: null);
     }
-    // pending — geri çekme butonu
     return _AuroraCTA(
-      label: _loading ? 'İptal ediliyor...' : 'Başvuruyu Geri Al',
+      label: _loading ? l10n.inv_detail_withdrawing : l10n.inv_detail_withdraw_btn,
       icon: Icons.undo_rounded,
       onPressed: _loading ? null : _withdraw,
     );

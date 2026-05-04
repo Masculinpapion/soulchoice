@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String matchId;
@@ -239,7 +240,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         setState(() =>
             _messages.removeWhere((m) => m.id == optimistic.id));
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Gönderilemedi: $e'),
+          content: Text(AppLocalizations.of(context)!.chat_send_error(e.toString())),
           backgroundColor: AppColors.error,
         ));
       }
@@ -305,7 +306,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (mounted) {
       setState(() => _myConfirmation = attended);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(attended ? 'Teşekkürler! Buluşma kaydedildi.' : 'Bildirim alındı.'),
+        content: Text(attended ? AppLocalizations.of(context)!.chat_meeting_saved : AppLocalizations.of(context)!.chat_noted),
         backgroundColor: attended ? AppColors.success : AppColors.warning,
       ));
     }
@@ -431,7 +432,7 @@ class _ArchivedBanner extends StatelessWidget {
                 size: 16, color: AppColors.textTertiary),
             const SizedBox(width: 8),
             Text(
-              'Bu sohbet arşivlendi',
+              AppLocalizations.of(context)!.chat_archived,
               style: AppTextStyles.monoSmall
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -472,7 +473,7 @@ class _AttendanceBanner extends StatelessWidget {
                         size: 16, color: AppColors.warning),
                     const SizedBox(width: 8),
                     Text(
-                      'Buluşmanız gerçekleşti mi?',
+                      AppLocalizations.of(context)!.chat_meeting_question,
                       style: AppTextStyles.labelLarge.copyWith(
                           color: AppColors.warning, fontSize: 14),
                     ),
@@ -483,7 +484,7 @@ class _AttendanceBanner extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _BannerButton(
-                        label: 'Evet, geldik',
+                        label: AppLocalizations.of(context)!.chat_yes_we_met,
                         color: AppColors.success,
                         onTap: onYes,
                       ),
@@ -491,7 +492,7 @@ class _AttendanceBanner extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _BannerButton(
-                        label: 'Diğer taraf gelmedi',
+                        label: AppLocalizations.of(context)!.chat_other_no_show,
                         color: AppColors.error,
                         onTap: onNo,
                       ),
@@ -617,7 +618,7 @@ class _ChatAppBar extends StatelessWidget {
                         ),
                         if (otherAge > 0)
                           Text(
-                            '$otherAge yaş',
+                            AppLocalizations.of(context)!.chat_other_age(otherAge),
                             style: TextStyle(
                               fontFamily: 'JetBrainsMono',
                               fontSize: 11,
@@ -731,7 +732,7 @@ class _EmptyState extends StatelessWidget {
                   color: Colors.white, size: 44),
             ),
             const SizedBox(height: 16),
-            Text('İlk mesajı sen gönder!',
+            Text(AppLocalizations.of(context)!.chat_empty_hint,
                 style: AppTextStyles.bodyMedium),
           ],
         ),
@@ -889,7 +890,7 @@ class _InputBar extends StatelessWidget {
                   ),
                   maxLines: null,
                   decoration: InputDecoration(
-                    hintText: 'Mesaj yaz...',
+                    hintText: AppLocalizations.of(context)!.chat_input_hint,
                     hintStyle: TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 14,

@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phone;
@@ -74,7 +75,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           context.go('/profile/setup');
         }
       } else {
-        setState(() => _error = 'Doğrulama başarısız');
+        setState(() => _error = AppLocalizations.of(context)!.otp_error_failed);
       }
     } on AuthException catch (e) {
       setState(() => _error = e.message);
@@ -125,13 +126,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 20),
-                Text('Kodu gir', style: AppTextStyles.displayMedium),
+                Text(AppLocalizations.of(context)!.otp_title, style: AppTextStyles.displayMedium),
                 const SizedBox(height: 10),
                 RichText(
                   text: TextSpan(
                     style: AppTextStyles.bodyMedium,
                     children: [
-                      const TextSpan(text: 'Gönderildi: '),
+                      TextSpan(text: AppLocalizations.of(context)!.otp_sent_to),
                       TextSpan(
                         text: widget.phone,
                         style: AppTextStyles.bodyMedium.copyWith(
@@ -191,7 +192,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 Center(
                   child: _resendSeconds > 0
                       ? Text(
-                          'Tekrar gönder ($_resendSeconds sn)',
+                          AppLocalizations.of(context)!.otp_resend_countdown(_resendSeconds),
                           style: AppTextStyles.bodyMedium,
                         )
                       : GestureDetector(
@@ -205,7 +206,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             shaderCallback: (b) =>
                                 AppColors.primaryGradient.createShader(b),
                             child: Text(
-                              'Tekrar gönder',
+                              AppLocalizations.of(context)!.otp_resend,
                               style: AppTextStyles.labelMedium
                                   .copyWith(color: Colors.white),
                             ),
@@ -214,7 +215,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
                 const Spacer(),
                 ScButton(
-                  label: 'Doğrula',
+                  label: AppLocalizations.of(context)!.otp_verify,
                   onPressed: _otp.length == 6 ? _verify : null,
                   isLoading: _isLoading,
                 ),

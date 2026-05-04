@@ -8,6 +8,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/glass_card.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 // 7-step profile setup wizard
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -37,29 +38,30 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   bool _isSaving = false;
   bool _isLoadingProfile = true;
 
-  static const _steps = [
-    'Ad ve yaş',
-    'Cinsiyet',
-    'Şehir',
-    'Bio',
-    'İş / Eğitim',
-    'İlgi alanları',
-    'Sorular',
-    'Gösterim tercihi',
-    'Yaş aralığı',
+  static const _stepCount = 9;
+  static const _allInterestKeys = [
+    'art', 'music', 'sports', 'books', 'travel', 'food',
+    'film', 'theatre', 'dance', 'yoga', 'photography', 'games',
+    'technology', 'nature', 'history', 'fashion',
   ];
 
-  static const _allInterests = [
-    'Sanat', 'Müzik', 'Spor', 'Kitaplar', 'Seyahat', 'Yemek',
-    'Film', 'Tiyatro', 'Dans', 'Yoga', 'Fotoğrafçılık', 'Oyunlar',
-    'Teknoloji', 'Doğa', 'Tarih', 'Moda',
+  List<String> _getSteps(AppLocalizations l10n) => [
+    l10n.profile_setup_step_name_age,
+    l10n.profile_setup_step_gender,
+    l10n.profile_setup_step_city,
+    l10n.profile_setup_step_bio,
+    l10n.profile_setup_step_job_edu,
+    l10n.profile_setup_step_interests,
+    l10n.profile_setup_step_prompts,
+    l10n.profile_setup_step_show_gender,
+    l10n.profile_setup_step_age_range,
   ];
 
-  static const _promptQuestions = {
-    'favorite_restaurant': 'Favori restoranım...',
-    'last_book': 'Son okuduğum kitap...',
-    'perfect_evening': 'Mükemmel bir akşam...',
-    'travel_dream': 'Hayalimdeki seyahat...',
+  Map<String, String> _getPromptQuestions(AppLocalizations l10n) => {
+    'favorite_restaurant': l10n.profile_setup_prompt_favorite_restaurant,
+    'last_book': l10n.profile_setup_prompt_last_book,
+    'perfect_evening': l10n.profile_setup_prompt_perfect_evening,
+    'travel_dream': l10n.profile_setup_prompt_travel_dream,
   };
 
   @override
@@ -128,10 +130,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   Future<void> _next() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_step == 0) {
       if (_nameController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text('Ad boş bırakılamaz'),
+          content: Text(l10n.profile_setup_validation_name),
           backgroundColor: AppColors.error,
         ));
         return;
@@ -140,14 +143,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           _age! < AppConstants.minAge ||
           _age! > AppConstants.maxAge) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'Yaş ${AppConstants.minAge} ile ${AppConstants.maxAge} arasında olmalı'),
+          content: Text(l10n.profile_setup_validation_age(AppConstants.minAge, AppConstants.maxAge)),
           backgroundColor: AppColors.error,
         ));
         return;
       }
     }
-    if (_step < _steps.length - 1) {
+    if (_step < _stepCount - 1) {
       setState(() => _step++);
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
@@ -203,7 +205,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.profile_setup_error(e.toString())), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -223,6 +225,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final steps = _getSteps(l10n);
     if (_isLoadingProfile) {
       return const Scaffold(
         backgroundColor: AppColors.bgBlack,
@@ -252,7 +256,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
-                              value: (_step + 1) / _steps.length,
+                              value: (_step + 1) / _stepCount,
                               backgroundColor: AppColors.glassBorder,
                               color: AppColors.red,
                               minHeight: 3,
@@ -264,7 +268,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${_step + 1} / ${_steps.length}  •  ${_steps[_step]}',
+                      '${_step + 1} / $_stepCount  •  ${steps[_step]}',
                       style: AppTextStyles.monoSmall,
                     ),
                   ],
@@ -294,14 +298,14 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       educationController: _educationController,
                     ),
                     _StepInterests(
-                      allInterests: _allInterests,
+                      allInterests: _allInterestKeys,
                       selected: _interests,
                       onToggle: (v) => setState(() {
                         _interests.contains(v) ? _interests.remove(v) : _interests.add(v);
                       }),
                     ),
                     _StepPrompts(
-                      questions: _promptQuestions,
+                      questions: _getPromptQuestions(l10n),
                       answers: _prompts,
                       onAnswered: (k, v) => setState(() => _prompts[k] = v),
                     ),
@@ -319,7 +323,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: ScButton(label: _step < _steps.length - 1 ? 'Devam' : 'Fotoğraf ekle', onPressed: _isSaving ? null : _next, isLoading: _isSaving),
+                child: ScButton(label: _step < _stepCount - 1 ? l10n.profile_setup_btn_next : l10n.profile_setup_btn_add_photos, onPressed: _isSaving ? null : _next, isLoading: _isSaving),
               ),
             ],
           ),
@@ -344,12 +348,12 @@ class _StepNameAge extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Adın ne?', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_name_question, style: AppTextStyles.displayMedium),
           const SizedBox(height: 32),
           TextField(
             controller: nameController,
             style: AppTextStyles.bodyLarge,
-            decoration: const InputDecoration(labelText: 'Ad'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_name_label),
           ),
           const SizedBox(height: 20),
           TextFormField(
@@ -358,7 +362,7 @@ class _StepNameAge extends StatelessWidget {
             initialValue: age?.toString(),
             onChanged: (v) => onAgeChanged(int.tryParse(v)),
             decoration: InputDecoration(
-              labelText: 'Yaş (${AppConstants.minAge}-${AppConstants.maxAge})',
+              labelText: AppLocalizations.of(context)!.profile_setup_age_label(AppConstants.minAge, AppConstants.maxAge),
             ),
           ),
         ],
@@ -381,17 +385,17 @@ class _StepGender extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Cinsiyet', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_step_gender, style: AppTextStyles.displayMedium),
           const SizedBox(height: 40),
           _GenderOption(
-            label: 'Kadın',
+            label: AppLocalizations.of(context)!.profile_setup_gender_female,
             icon: Icons.female,
             isSelected: selected == 'female',
             onTap: () => onSelected('female'),
           ),
           const SizedBox(height: 12),
           _GenderOption(
-            label: 'Erkek',
+            label: AppLocalizations.of(context)!.profile_setup_gender_male,
             icon: Icons.male,
             isSelected: selected == 'male',
             onTap: () => onSelected('male'),
@@ -490,13 +494,13 @@ class _StepCityState extends State<_StepCity> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Hangi şehirdesin?', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_city_question, style: AppTextStyles.displayMedium),
           const SizedBox(height: 24),
           TextField(
             controller: _searchCtrl,
             style: AppTextStyles.bodyLarge,
             decoration: InputDecoration(
-              hintText: 'Şehir ara...',
+              hintText: AppLocalizations.of(context)!.profile_setup_city_search,
               prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
               suffixIcon: _searchCtrl.text.isNotEmpty
                   ? GestureDetector(
@@ -510,7 +514,7 @@ class _StepCityState extends State<_StepCity> {
           if (_loading)
             const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.red))
           else if (_filtered.isEmpty)
-            Center(child: Text('Şehir bulunamadı', style: AppTextStyles.bodyMedium))
+            Center(child: Text(AppLocalizations.of(context)!.profile_setup_city_not_found, style: AppTextStyles.bodyMedium))
           else
             ..._filtered.map((c) {
               final name = c['name'] as String;
@@ -550,17 +554,17 @@ class _StepBio extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Kendini anlat', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_bio_title, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('Opsiyonel — max 200 karakter', style: AppTextStyles.bodyMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_bio_subtitle, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 32),
           TextField(
             controller: bioController,
             maxLength: AppConstants.maxBioLength,
             maxLines: 5,
             style: AppTextStyles.bodyLarge,
-            decoration: const InputDecoration(
-              hintText: 'Kısaca kendini tanıt...',
+            decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.profile_setup_bio_hint,
               alignLabelWithHint: true,
             ),
           ),
@@ -584,20 +588,20 @@ class _StepJobEducation extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('İş & Eğitim', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_job_title, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('Opsiyonel', style: AppTextStyles.bodyMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_step_job_edu, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 32),
           TextField(
             controller: jobController,
             style: AppTextStyles.bodyLarge,
-            decoration: const InputDecoration(labelText: 'Meslek'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_job_label),
           ),
           const SizedBox(height: 20),
           TextField(
             controller: educationController,
             style: AppTextStyles.bodyLarge,
-            decoration: const InputDecoration(labelText: 'Okul / Üniversite'),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_education_label),
           ),
         ],
       ),
@@ -612,17 +616,40 @@ class _StepInterests extends StatelessWidget {
 
   const _StepInterests({required this.allInterests, required this.selected, required this.onToggle});
 
+  String _label(String key, AppLocalizations l10n) {
+    switch (key) {
+      case 'art': return l10n.profile_setup_interest_art;
+      case 'music': return l10n.profile_setup_interest_music;
+      case 'sports': return l10n.profile_setup_interest_sports;
+      case 'books': return l10n.profile_setup_interest_books;
+      case 'travel': return l10n.profile_setup_interest_travel;
+      case 'food': return l10n.profile_setup_interest_food;
+      case 'film': return l10n.profile_setup_interest_film;
+      case 'theatre': return l10n.profile_setup_interest_theatre;
+      case 'dance': return l10n.profile_setup_interest_dance;
+      case 'yoga': return l10n.profile_setup_interest_yoga;
+      case 'photography': return l10n.profile_setup_interest_photography;
+      case 'games': return l10n.profile_setup_interest_games;
+      case 'technology': return l10n.profile_setup_interest_technology;
+      case 'nature': return l10n.profile_setup_interest_nature;
+      case 'history': return l10n.profile_setup_interest_history;
+      case 'fashion': return l10n.profile_setup_interest_fashion;
+      default: return key;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('İlgi alanları', style: AppTextStyles.displayMedium),
+          Text(l10n.profile_setup_interests_title, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('En az 3 seç', style: AppTextStyles.bodyMedium),
+          Text(l10n.profile_setup_interests_subtitle, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 24),
           Wrap(
             spacing: 8,
@@ -630,7 +657,7 @@ class _StepInterests extends StatelessWidget {
             children: allInterests.map((interest) {
               final isSelected = selected.contains(interest);
               return FilterChip(
-                label: Text(interest),
+                label: Text(_label(interest, l10n)),
                 selected: isSelected,
                 onSelected: (_) => onToggle(interest),
                 backgroundColor: AppColors.glassBg,
@@ -657,26 +684,27 @@ class _StepShowGender extends StatelessWidget {
 
   const _StepShowGender({required this.selected, required this.onSelected});
 
-  static const _options = [
-    ('opposite', 'Karşı cinsiyet', Icons.swap_horiz),
-    ('all', 'Hepsi', Icons.people_outline),
-    ('female', 'Kadınlar', Icons.female),
-    ('male', 'Erkekler', Icons.male),
+  List<(String, String, IconData)> _getOptions(AppLocalizations l10n) => [
+    ('opposite', l10n.profile_setup_show_gender_opposite, Icons.swap_horiz),
+    ('all', l10n.profile_setup_show_gender_all, Icons.people_outline),
+    ('female', l10n.profile_setup_show_gender_female, Icons.female),
+    ('male', l10n.profile_setup_show_gender_male, Icons.male),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Kimlerin davetlerini görmek istiyorsun?', style: AppTextStyles.displayMedium),
+          Text(l10n.profile_setup_show_gender_title, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('Feedinde yalnızca bu kişilerin davetleri görünür', style: AppTextStyles.bodyMedium),
+          Text(l10n.profile_setup_show_gender_subtitle, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 32),
-          ..._options.map((opt) => Padding(
+          ..._getOptions(l10n).map((opt) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: GlassCard(
                   borderColor: selected == opt.$1 ? AppColors.red : AppColors.glassBorder,
@@ -714,13 +742,13 @@ class _StepAgeRange extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Hangi yaş aralığında birini arıyorsun?', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_age_range_title, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('Feedinde yalnızca bu yaş aralığındaki davetler görünür', style: AppTextStyles.bodyMedium),
+          Text(AppLocalizations.of(context)!.profile_setup_age_range_subtitle, style: AppTextStyles.bodyMedium),
           const SizedBox(height: 40),
           Center(
             child: Text(
-              '$minAge — $maxAge yaş',
+              AppLocalizations.of(context)!.profile_setup_age_range_value(minAge, maxAge),
               style: AppTextStyles.titleMedium.copyWith(fontSize: 22),
             ),
           ),
@@ -757,9 +785,9 @@ class _StepPrompts extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Birkaç soru', style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.profile_setup_prompts_title, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Opsiyonel — profilini zenginleştirir', style: AppTextStyles.bodyMedium),
+            Text(AppLocalizations.of(context)!.profile_setup_prompts_subtitle, style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             ...questions.entries.map((e) => Padding(
                   padding: const EdgeInsets.only(bottom: 20),
@@ -772,7 +800,7 @@ class _StepPrompts extends StatelessWidget {
                         style: AppTextStyles.bodyLarge,
                         initialValue: answers[e.key] ?? '',
                         onChanged: (v) => onAnswered(e.key, v),
-                        decoration: const InputDecoration(hintText: 'Cevabın...'),
+                        decoration: InputDecoration(hintText: AppLocalizations.of(context)!.profile_setup_prompts_answer_hint),
                       ),
                     ],
                   ),

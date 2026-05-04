@@ -76,17 +76,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showComingSoon(BuildContext context, String title) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title, style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
-        content: const Text('Bu özellik yakında geliyor.', style: TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 14)),
+        content: Text(l10n.settings_coming_soon, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 14)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Tamam', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+            child: Text(l10n.settings_ok, style: const TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
           ),
         ],
       ),
@@ -96,6 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _showAbout(BuildContext context) async {
     final info = await PackageInfo.fromPlatform();
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -108,13 +110,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             Text('v${info.version} (${info.buildNumber})', style: const TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white38, fontSize: 12)),
             const SizedBox(height: 8),
-            const Text('Premium sosyal davet uygulaması.', style: TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 13)),
+            Text(l10n.settings_about_subtitle, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 13)),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Tamam', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+            child: Text(l10n.settings_ok, style: const TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
           ),
         ],
       ),
@@ -140,18 +142,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final json = const JsonEncoder.withIndent('  ').convert(data);
       await SharePlus.instance.share(ShareParams(
         text: json,
-        subject: 'SoulChoice Veri Dışa Aktarma',
+        subject: AppLocalizations.of(context)!.settings_share_subject,
       ));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AuroraTheme.auroraRed),
+          SnackBar(content: Text(AppLocalizations.of(context)!.settings_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
         );
       }
     }
   }
 
   Future<void> _showQuietHoursPicker(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     bool localEnabled = _quietEnabled;
     TimeOfDay localStart = _quietStart;
     TimeOfDay localEnd = _quietEnd;
@@ -178,12 +181,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     Container(width: 36, height: 4, decoration: BoxDecoration(color: AuroraTheme.glassBorder, borderRadius: BorderRadius.circular(2))),
                     const SizedBox(height: 20),
-                    const Text('Gece sessizliği', style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white)),
+                    Text(l10n.settings_quiet_hours_title, style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white)),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Aktif', style: TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 14)),
+                        Text(l10n.settings_quiet_active, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 14)),
                         Switch(
                           value: localEnabled,
                           activeColor: AuroraTheme.auroraRed,
@@ -197,7 +200,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         children: [
                           Expanded(
                             child: _TimeButton(
-                              label: 'Başlangıç',
+                              label: l10n.settings_quiet_start,
                               time: localStart,
                               onTap: () async {
                                 final t = await showTimePicker(context: ctx, initialTime: localStart);
@@ -208,7 +211,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: _TimeButton(
-                              label: 'Bitiş',
+                              label: l10n.settings_quiet_end,
                               time: localEnd,
                               onTap: () async {
                                 final t = await showTimePicker(context: ctx, initialTime: localEnd);
@@ -242,7 +245,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        child: const Text('Kaydet', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                        child: Text(l10n.btn_save, style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
                       ),
                     ),
                   ],
@@ -256,6 +259,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showAgeRangePicker(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     int localMin = _minAge;
     int localMax = _maxAge;
     showModalBottomSheet(
@@ -286,9 +290,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Yaş aralığı',
-                      style: TextStyle(
+                    Text(
+                      l10n.settings_age_range_title,
+                      style: const TextStyle(
                         fontFamily: 'Fraunces',
                         fontStyle: FontStyle.italic,
                         fontSize: 20,
@@ -297,7 +301,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '$localMin — $localMax yaş',
+                      l10n.settings_age_range_value(localMin, localMax),
                       style: TextStyle(
                         fontFamily: 'JetBrainsMono',
                         fontSize: 13,
@@ -341,7 +345,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        child: const Text('Kaydet', style: TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                        child: Text(l10n.btn_save, style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
                       ),
                     ),
                   ],
@@ -367,20 +371,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  static const _showGenderOptions = [
-    ('opposite', 'Karşı cinsiyet'),
-    ('all', 'Hepsi'),
-    ('female', 'Kadınlar'),
-    ('male', 'Erkekler'),
+  List<(String, String)> _genderOptions(AppLocalizations l) => [
+    ('opposite', l.settings_show_gender_opposite),
+    ('all', l.settings_show_gender_all),
+    ('female', l.settings_show_gender_female),
+    ('male', l.settings_show_gender_male),
   ];
 
-  String _showGenderLabel() {
-    return _showGenderOptions
-        .firstWhere((o) => o.$1 == _showGender, orElse: () => _showGenderOptions.first)
-        .$2;
+  String _showGenderLabel(BuildContext context) {
+    final opts = _genderOptions(AppLocalizations.of(context)!);
+    return opts.firstWhere((o) => o.$1 == _showGender, orElse: () => opts.first).$2;
   }
 
   void _showShowGenderPicker(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final opts = _genderOptions(l10n);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -409,8 +414,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Gösterim tercihi',
+                    Text(
+                      l10n.settings_display_pref_title,
                       style: TextStyle(
                         fontFamily: 'Fraunces',
                         fontStyle: FontStyle.italic,
@@ -419,7 +424,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    ..._showGenderOptions.map((opt) => _LangTile(
+                    ...opts.map((opt) => _LangTile(
                           flag: opt.$1 == 'opposite'
                               ? '⇄'
                               : opt.$1 == 'all'
@@ -614,13 +619,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         _SettingsTile(
                           icon: Icons.visibility_outlined,
-                          label: 'Gösterim tercihi',
-                          value: _showGenderLabel(),
+                          label: l10n.settings_display_pref_title,
+                          value: _showGenderLabel(context),
                           onTap: () => _showShowGenderPicker(context),
                         ),
                         _SettingsTile(
                           icon: Icons.people_outline,
-                          label: 'Yaş aralığı',
+                          label: l10n.settings_age_range_title,
                           value: '$_minAge–$_maxAge',
                           onTap: () => _showAgeRangePicker(context),
                         ),
@@ -679,21 +684,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const SizedBox(height: 16),
                     // Gizlilik
                     _Section(
-                      title: 'GİZLİLİK & GÜVENLİK',
+                      title: l10n.settings_privacy_section,
                       items: [
                         _SettingsTile(
                           icon: Icons.block_outlined,
-                          label: 'Engellenen kullanıcılar',
+                          label: l10n.settings_blocked_users,
                           onTap: () => context.push('/settings/blocked-users'),
                         ),
                         _SettingsTile(
                           icon: Icons.location_on_outlined,
-                          label: 'Konum izni',
+                          label: l10n.settings_location_permission,
                           onTap: () => openAppSettings(),
                         ),
                         _SettingsTile(
                           icon: Icons.camera_alt_outlined,
-                          label: 'Kamera izni',
+                          label: l10n.settings_camera_permission,
                           onTap: () => openAppSettings(),
                         ),
                       ],
@@ -701,16 +706,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const SizedBox(height: 16),
                     // Destek
                     _Section(
-                      title: 'DESTEK',
+                      title: l10n.settings_support_section,
                       items: [
                         _SettingsTile(
                           icon: Icons.help_outline,
-                          label: 'Yardım & Destek',
+                          label: l10n.settings_help,
                           onTap: () => launchUrl(Uri.parse('mailto:support@soulchoice.app')),
                         ),
                         _SettingsTile(
                           icon: Icons.info_outline,
-                          label: 'Hakkında',
+                          label: l10n.settings_about,
                           onTap: () => _showAbout(context),
                         ),
                       ],
@@ -727,8 +732,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         } catch (_) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Çıkış yapılamadı. Lütfen tekrar deneyin.'),
+                              SnackBar(
+                                content: Text(AppLocalizations.of(context)!.settings_logout_error),
                               ),
                             );
                           }
@@ -1028,23 +1033,24 @@ class _VerificationCard extends StatelessWidget {
     Color color;
     bool showRetake = false;
 
+    final l10n = AppLocalizations.of(context)!;
     switch (selfieStatus) {
       case 'pending':
         emoji = '⏳';
-        label = 'Selfie inceleniyor';
+        label = l10n.settings_selfie_pending;
         color = const Color(0xFFF59E0B);
       case 'approved':
         emoji = '✅';
-        label = 'Doğrulanmış hesap';
+        label = l10n.settings_selfie_approved;
         color = AuroraTheme.auroraBlue;
       case 'rejected':
         emoji = '❌';
-        label = 'Selfie reddedildi — yeniden yükle';
+        label = l10n.settings_selfie_rejected;
         color = AuroraTheme.auroraRed;
         showRetake = true;
       default:
         emoji = '🔲';
-        label = 'Henüz selfie yüklenmedi';
+        label = l10n.settings_selfie_none;
         color = Colors.white.withOpacity(0.35);
         showRetake = true;
     }
@@ -1068,9 +1074,9 @@ class _VerificationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Doğrulama durumu',
-                  style: TextStyle(
+                Text(
+                  l10n.settings_verification_status,
+                  style: const TextStyle(
                     fontFamily: 'Manrope',
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
@@ -1092,8 +1098,8 @@ class _VerificationCard extends StatelessWidget {
           if (showRetake)
             GestureDetector(
               onTap: onRetake,
-              child: const Text(
-                'Yeniden Yükle',
+              child: Text(
+                l10n.settings_reupload,
                 style: TextStyle(
                   fontFamily: 'JetBrainsMono',
                   fontSize: 10,

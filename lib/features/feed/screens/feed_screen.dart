@@ -11,6 +11,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitations_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -65,7 +66,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           if (!mounted) return;
           setState(() {
             _selectedCityId = id;
-            _selectedCityName = name ?? 'Tüm Şehirler';
+            _selectedCityName = name ?? AppLocalizations.of(context)!.feed_all_cities;
           });
         },
       ),
@@ -289,8 +290,8 @@ class _StoryBar extends ConsumerWidget {
               children: [
                 Text(
                   flowType == InvitationFlowType.invite
-                      ? 'AKTİF DAVETLER'
-                      : 'AKTİF İSTEKLER',
+                      ? AppLocalizations.of(context)!.feed_active_invitations
+                      : AppLocalizations.of(context)!.feed_active_requests,
                   style: AuroraTheme.monoLabel.copyWith(
                     fontSize: 9,
                     letterSpacing: 1.2,
@@ -309,9 +310,9 @@ class _StoryBar extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(100),
                   ),
-                  child: const Text(
-                    '24 SAAT',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.feed_24h_badge,
+                    style: const TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
@@ -536,7 +537,7 @@ class _TabBarState extends State<_TabBar> {
             child: GestureDetector(
               onTap: () => widget.controller.animateTo(0),
               child: _AuroraPillTab(
-                label: 'Davetler',
+                label: AppLocalizations.of(context)!.feed_tab_invitations,
                 color: AuroraTheme.auroraRed,
                 active: isInvite,
               ),
@@ -547,7 +548,7 @@ class _TabBarState extends State<_TabBar> {
             child: GestureDetector(
               onTap: () => widget.controller.animateTo(1),
               child: _AuroraPillTab(
-                label: 'İstekler',
+                label: AppLocalizations.of(context)!.feed_tab_requests,
                 color: AuroraTheme.auroraBlue,
                 active: !isInvite,
               ),
@@ -866,12 +867,13 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
         ),
       ),
       error: (e, _) => Center(
-        child: Text('Hata: $e',
+        child: Text(AppLocalizations.of(context)!.feed_error(e.toString()),
             style: TextStyle(
                 color: AuroraTheme.textSecondary,
                 fontFamily: 'Manrope')),
       ),
       data: (invitations) {
+        final l10n = AppLocalizations.of(context)!;
         if (invitations.isEmpty) {
           return Center(
             child: Column(
@@ -885,7 +887,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Henüz davet yok',
+                  l10n.feed_no_invitations,
                   style: TextStyle(
                     fontFamily: 'Fraunces',
                     fontStyle: FontStyle.italic,
@@ -895,7 +897,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'İlk daveti sen aç!',
+                  l10n.feed_be_first,
                   style: AuroraTheme.monoLabel,
                 ),
               ],
@@ -912,14 +914,14 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 children: [
                   Text(
                     flowType == InvitationFlowType.invite
-                        ? 'GÜNÜN DAVETLERİ'
-                        : 'GÜNÜN İSTEKLERİ',
+                        ? l10n.feed_todays_invitations
+                        : l10n.feed_todays_requests,
                     style: AuroraTheme.monoLabel,
                   ),
                   const SizedBox(width: 6),
                   ShaderMask(
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                    child: const Text('· KAYDIR →',
+                    child: Text(l10n.feed_swipe_hint,
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
                   ),
                 ],
@@ -1035,9 +1037,16 @@ class InvitationCard extends StatelessWidget {
     return '$h:$m:$s';
   }
 
-  /// "SALI · 20:30 · VENUE" formatında mono caps meta satırı
-  String _metaLabel(DateTime dt) {
-    const days = ['PAZARTESİ', 'SALI', 'ÇARŞAMBA', 'PERŞEMBE', 'CUMA', 'CUMARTESİ', 'PAZAR'];
+  String _metaLabel(AppLocalizations l10n, DateTime dt) {
+    final days = [
+      l10n.inv_detail_weekday_mon_full.toUpperCase(),
+      l10n.inv_detail_weekday_tue_full.toUpperCase(),
+      l10n.inv_detail_weekday_wed_full.toUpperCase(),
+      l10n.inv_detail_weekday_thu_full.toUpperCase(),
+      l10n.inv_detail_weekday_fri_full.toUpperCase(),
+      l10n.inv_detail_weekday_sat_full.toUpperCase(),
+      l10n.inv_detail_weekday_sun_full.toUpperCase(),
+    ];
     final day = days[dt.weekday - 1];
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
@@ -1047,6 +1056,7 @@ class InvitationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isInviteFlow = flowType == InvitationFlowType.invite;
     final glowColor = isInviteFlow ? AuroraTheme.auroraRed : AuroraTheme.auroraBlue;
 
@@ -1261,7 +1271,7 @@ class InvitationCard extends StatelessWidget {
                     // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
                     if (eventDate != null)
                       Text(
-                        _metaLabel(eventDate!),
+                        _metaLabel(l10n, eventDate!),
                         style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
                       ),
                     const SizedBox(height: 5),
@@ -1290,7 +1300,7 @@ class InvitationCard extends StatelessWidget {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          isInviteFlow ? 'Gelmek isterim' : 'Katılmak isterim',
+                          isInviteFlow ? l10n.feed_cta_invite : l10n.feed_cta_request,
                           style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
                         ),
                       ),
@@ -1421,8 +1431,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                 child: ShaderMask(
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Text(
-                    'Şehir Seç',
+                  child: Text(
+                    AppLocalizations.of(context)!.feed_city_picker_title,
                     style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
@@ -1451,7 +1461,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                         color: Colors.white,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Şehir ara…',
+                        hintText: AppLocalizations.of(context)!.feed_city_search_hint,
                         hintStyle: TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 14,
@@ -1514,7 +1524,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                           // "Tüm Şehirler" yalnızca arama yokken
                           if (_query.isEmpty)
                             _CityRow(
-                              name: 'Tüm Şehirler',
+                              name: AppLocalizations.of(context)!.feed_all_cities,
                               emoji: '🌍',
                               selected: widget.selectedCityId == null,
                               onTap: () => widget.onCitySelected(null, null),
@@ -1530,7 +1540,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               padding: const EdgeInsets.all(32),
                               child: Center(
                                 child: Text(
-                                  '"$_query" için şehir bulunamadı',
+                                  AppLocalizations.of(context)!.feed_city_not_found(_query),
                                   style: TextStyle(
                                     fontFamily: 'Manrope',
                                     fontSize: 14,

@@ -7,6 +7,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../providers/applications_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class ApplicantsScreen extends ConsumerWidget {
   final String invitationId;
@@ -24,12 +25,12 @@ class ApplicantsScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => context.pop(),
         ),
-        title: Text('Başvuranlar', style: AppTextStyles.titleMedium),
+        title: Text(AppLocalizations.of(context)!.applicants_title, style: AppTextStyles.titleMedium),
         actions: [
           async.maybeWhen(
             data: (list) => Padding(
               padding: const EdgeInsets.only(right: 16),
-              child: Center(child: Text('${list.length} kişi', style: AppTextStyles.mono)),
+              child: Center(child: Text(AppLocalizations.of(context)!.applicants_count(list.length), style: AppTextStyles.mono)),
             ),
             orElse: () => const SizedBox.shrink(),
           ),
@@ -49,7 +50,7 @@ class ApplicantsScreen extends ConsumerWidget {
                   children: [
                     const Icon(Icons.people_outline, color: AppColors.textTertiary, size: 48),
                     const SizedBox(height: 12),
-                    Text('Henüz başvuru yok', style: AppTextStyles.bodyMedium),
+                    Text(AppLocalizations.of(context)!.applicants_empty, style: AppTextStyles.bodyMedium),
                   ],
                 ),
               );
@@ -171,11 +172,12 @@ class _SelectButtonState extends State<_SelectButton> {
       }
     } on PostgrestException catch (e) {
       if (mounted) {
+        final l = AppLocalizations.of(context)!;
         final msg = e.message.contains('invitation_not_active')
-            ? 'Bu davet zaten eşleşti'
+            ? l.applicants_error_already_matched
             : e.message.contains('not_authorized')
-                ? 'Yetki hatası'
-                : 'Hata: ${e.message}';
+                ? l.applicants_error_not_authorized
+                : l.applicants_error_generic(e.message);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: AppColors.error),
         );
@@ -184,7 +186,7 @@ class _SelectButtonState extends State<_SelectButton> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.applicants_error_generic(e.toString())), backgroundColor: AppColors.error),
         );
         setState(() => _loading = false);
       }
@@ -205,7 +207,7 @@ class _SelectButtonState extends State<_SelectButton> {
         ),
         child: _loading
             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text('Seç', style: AppTextStyles.labelMedium.copyWith(color: AppColors.textPrimary)),
+            : Text(AppLocalizations.of(context)!.applicants_select_btn, style: AppTextStyles.labelMedium.copyWith(color: AppColors.textPrimary)),
       ),
     );
   }

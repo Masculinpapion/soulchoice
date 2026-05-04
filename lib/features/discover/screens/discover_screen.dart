@@ -11,6 +11,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart' show ScButton;
 import '../providers/discover_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Deterministik aspect ratio — hash bazlı, iki seçenek
 double _cardAspect(String id) =>
@@ -44,8 +45,8 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
-                    'Keşfet',
-                    style: TextStyle(
+                    AppLocalizations.of(context)!.discover_title,
+                    style: const TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
                       fontSize: MediaQuery.of(context).size.width < 360 ? 25.5 : 30,
@@ -60,7 +61,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
-                  'TÜM AKTİF DAVETLER',
+                  AppLocalizations.of(context)!.discover_all_invitations_label,
                   style: AuroraTheme.monoLabel,
                 ),
               ),
@@ -73,7 +74,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
                     _FilterChip(
-                      label: 'Hepsi',
+                      label: AppLocalizations.of(context)!.discover_filter_all,
                       emoji: '✦',
                       selected: _selectedCategory == null,
                       onTap: () => setState(() => _selectedCategory = null),
@@ -96,7 +97,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 child: async.when(
                   loading: () => const _LoadingGrid(),
                   error: (e, _) =>
-                      _ErrorState(onRetry: () => ref.invalidate(discoverProvider)),
+                      _ErrorState(message: AppLocalizations.of(context)!.discover_error, retryLabel: AppLocalizations.of(context)!.btn_try_again, onRetry: () => ref.invalidate(discoverProvider)),
                   data: (allInvitations) {
                     final invitations = _selectedCategory == null
                         ? allInvitations
@@ -105,6 +106,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                             .toList();
                     if (invitations.isEmpty) {
                       return _EmptyState(
+                        title: AppLocalizations.of(context)!.discover_empty_title,
+                        subtitle: AppLocalizations.of(context)!.discover_empty_subtitle,
+                        btnLabel: AppLocalizations.of(context)!.discover_btn_create,
                         onCreateTap: () =>
                             context.push('/invitation/create'),
                       );
@@ -241,8 +245,8 @@ class _DiscoverCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           inv.cityName?.isNotEmpty == true
-                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: 'tr')}'
-                              : timeago.format(inv.createdAt, locale: 'tr'),
+                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: 'ru')}'
+                              : timeago.format(inv.createdAt, locale: 'ru'),
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,
@@ -349,8 +353,11 @@ class _DiscoverCard extends StatelessWidget {
 
 // ── Boş durum ─────────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String btnLabel;
   final VoidCallback onCreateTap;
-  const _EmptyState({required this.onCreateTap});
+  const _EmptyState({required this.title, required this.subtitle, required this.btnLabel, required this.onCreateTap});
 
   @override
   Widget build(BuildContext context) {
@@ -362,9 +369,9 @@ class _EmptyState extends StatelessWidget {
           children: [
             const Text('🎭', style: TextStyle(fontSize: 64)),
             const SizedBox(height: 24),
-            const Text(
-              'Henüz aktif davet yok',
-              style: TextStyle(
+            Text(
+              title,
+              style: const TextStyle(
                 fontFamily: 'Fraunces',
                 fontStyle: FontStyle.italic,
                 fontSize: 22,
@@ -374,7 +381,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'İlk davetini sen aç, burada görünsün',
+              subtitle,
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 14,
@@ -383,7 +390,7 @@ class _EmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            ScButton(label: '+ Davet Aç', onPressed: onCreateTap),
+            ScButton(label: btnLabel, onPressed: onCreateTap),
           ],
         ),
       ),
@@ -417,8 +424,10 @@ class _LoadingGrid extends StatelessWidget {
 
 // ── Hata durumu ───────────────────────────────────────────────────────────────
 class _ErrorState extends StatelessWidget {
+  final String message;
+  final String retryLabel;
   final VoidCallback onRetry;
-  const _ErrorState({required this.onRetry});
+  const _ErrorState({required this.message, required this.retryLabel, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -427,7 +436,7 @@ class _ErrorState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Bağlantı hatası',
+            message,
             style: TextStyle(
                 fontFamily: 'Manrope',
                 color: AuroraTheme.textSecondary),
@@ -435,8 +444,8 @@ class _ErrorState extends StatelessWidget {
           const SizedBox(height: 16),
           TextButton(
             onPressed: onRetry,
-            child: const Text('Tekrar dene',
-                style: TextStyle(color: AuroraTheme.auroraRed)),
+            child: Text(retryLabel,
+                style: const TextStyle(color: AuroraTheme.auroraRed)),
           ),
         ],
       ),

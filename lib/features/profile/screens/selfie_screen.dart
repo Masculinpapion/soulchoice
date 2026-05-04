@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class SelfieScreen extends StatefulWidget {
   const SelfieScreen({super.key});
@@ -69,7 +70,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('${AppLocalizations.of(context)!.error_generic}: $e'), backgroundColor: AppColors.error),
         );
         setState(() => _isUploading = false);
       }
@@ -94,10 +95,10 @@ class _SelfieScreenState extends State<SelfieScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Selfie doğrulaması', style: AppTextStyles.displayMedium),
+                Text(AppLocalizations.of(context)!.selfie_title, style: AppTextStyles.displayMedium),
                 const SizedBox(height: 8),
                 Text(
-                  'Güvenli bir topluluk için profilini manuel olarak onaylıyoruz',
+                  AppLocalizations.of(context)!.selfie_subtitle,
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: 32),
@@ -124,7 +125,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                               children: [
                                 const Icon(Icons.camera_front, size: 48, color: AppColors.textTertiary),
                                 const SizedBox(height: 12),
-                                Text('Selfie çek', style: AppTextStyles.bodyMedium),
+                                Text(AppLocalizations.of(context)!.selfie_take_btn, style: AppTextStyles.bodyMedium),
                               ],
                             ),
                     ),
@@ -134,17 +135,17 @@ class _SelfieScreenState extends State<SelfieScreen> {
                 GlassCard(
                   child: Column(
                     children: [
-                      _Tip(icon: Icons.light_mode_outlined, text: 'İyi aydınlıklı bir ortamda çek'),
+                      _Tip(icon: Icons.light_mode_outlined, text: AppLocalizations.of(context)!.selfie_tip_lighting),
                       const SizedBox(height: 10),
-                      _Tip(icon: Icons.face_outlined, text: 'Yüzün açıkça görünsün'),
+                      _Tip(icon: Icons.face_outlined, text: AppLocalizations.of(context)!.selfie_tip_face),
                       const SizedBox(height: 10),
-                      _Tip(icon: Icons.timer_outlined, text: 'Admin 24 saat içinde onaylar'),
+                      _Tip(icon: Icons.timer_outlined, text: AppLocalizations.of(context)!.selfie_tip_approval),
                     ],
                   ),
                 ),
                 const Spacer(),
                 ScButton(
-                  label: 'Gönder',
+                  label: AppLocalizations.of(context)!.selfie_submit_btn,
                   onPressed: _selfie != null ? _submit : null,
                   isLoading: _isUploading,
                 ),

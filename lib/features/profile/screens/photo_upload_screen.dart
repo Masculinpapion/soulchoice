@@ -17,6 +17,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Her slot ya boş, ya yeni yerel dosya, ya da mevcut uzak fotoğraf
 class _PhotoEntry {
@@ -116,8 +117,8 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           if (!result.isGranted) {
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Galeri iznine ihtiyaç var. Lütfen ayarlardan izin verin.'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.photo_upload_permission_error),
                 backgroundColor: AppColors.error,
               ),
             );
@@ -156,7 +157,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Fotoğraf seçilemedi: $e'),
+          content: Text(AppLocalizations.of(context)!.photo_upload_pick_error(e.toString())),
           backgroundColor: AppColors.error,
         ),
       );
@@ -315,7 +316,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Yükleme hatası: $e'),
+              content: Text(AppLocalizations.of(context)!.photo_upload_error(e.toString())),
               backgroundColor: AppColors.error),
         );
       }
@@ -349,13 +350,13 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                     children: [
                       Text(
                         widget.isEditing
-                            ? 'Fotoğraflarını düzenle'
-                            : 'Fotoğraflarını ekle',
+                            ? AppLocalizations.of(context)!.photo_upload_title_edit
+                            : AppLocalizations.of(context)!.photo_upload_title_add,
                         style: AppTextStyles.displayMedium,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Min ${AppConstants.minPhotos}, max ${AppConstants.maxPhotos} fotoğraf  •  $_filledCount / ${AppConstants.maxPhotos}',
+                        AppLocalizations.of(context)!.photo_upload_subtitle(AppConstants.minPhotos, AppConstants.maxPhotos, _filledCount, AppConstants.maxPhotos),
                         style: AppTextStyles.mono,
                       ),
                       const SizedBox(height: 32),
@@ -380,7 +381,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                       ),
                       const SizedBox(height: 24),
                       ScButton(
-                        label: widget.isEditing ? 'Kaydet' : 'Devam',
+                        label: widget.isEditing ? AppLocalizations.of(context)!.photo_upload_btn_save : AppLocalizations.of(context)!.photo_upload_btn_continue,
                         onPressed: _canSave && !_isUploading ? _save : null,
                         isLoading: _isUploading,
                       ),
@@ -459,7 +460,7 @@ class _PhotoSlot extends StatelessWidget {
                     ),
                     if (isPrimary) ...[
                       const SizedBox(height: 6),
-                      Text('Ana fotoğraf',
+                      Text(AppLocalizations.of(context)!.photo_upload_primary_label,
                           style: AppTextStyles.monoSmall
                               .copyWith(color: AppColors.red)),
                     ],
@@ -521,7 +522,7 @@ class _PhotoSlot extends StatelessWidget {
                     color: AppColors.red,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text('Ana',
+                  child: Text(AppLocalizations.of(context)!.photo_upload_primary_badge,
                       style: AppTextStyles.monoSmall
                           .copyWith(color: AppColors.textPrimary)),
                 ),
@@ -571,9 +572,9 @@ class _CropScreenState extends State<_CropScreen> {
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(null),
         ),
-        title: const Text(
-          'Fotoğrafı düzenle',
-          style: TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 16),
+        title: Text(
+          AppLocalizations.of(context)!.photo_crop_title,
+          style: const TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 16),
         ),
         actions: [
           TextButton(
@@ -582,7 +583,7 @@ class _CropScreenState extends State<_CropScreen> {
               _controller.crop();
             },
             child: Text(
-              'Uygula',
+              AppLocalizations.of(context)!.photo_crop_apply,
               style: TextStyle(
                 fontFamily: 'JetBrainsMono',
                 fontWeight: FontWeight.w700,
@@ -605,7 +606,7 @@ class _CropScreenState extends State<_CropScreen> {
                     setState(() => _isCropping = false);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Kırpma hatası: ${result.cause}'),
+                        content: Text(AppLocalizations.of(context)!.photo_crop_error(result.cause.toString())),
                         backgroundColor: AppColors.error,
                       ),
                     );

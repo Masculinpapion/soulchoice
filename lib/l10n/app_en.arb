@@ -37,5 +37,552 @@
   "settings_notification_prefs": "Notification preferences",
   "settings_do_not_disturb": "Do not disturb",
   "settings_active_devices": "Active devices",
-  "settings_download_data": "Download my data"
+  "settings_download_data": "Download my data",
+
+  "phone_title": "Enter your\nphone number",
+  "phone_subtitle": "We will send you a verification code",
+  "phone_error_empty": "Enter phone number",
+  "phone_error_connection": "Connection error, please try again",
+  "phone_terms": "By continuing you accept the Terms of Use",
+
+  "otp_title": "Enter the code",
+  "otp_sent_to": "Sent to: ",
+  "otp_resend_countdown": "Resend ({seconds}s)",
+  "@otp_resend_countdown": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "otp_resend": "Resend",
+  "otp_verify": "Verify",
+  "otp_error_failed": "Verification failed",
+
+  "perm_notification_title": "Allow notifications",
+  "perm_notification_desc": "Required to notify you of new messages when selected",
+  "perm_location_title": "Share your location",
+  "perm_location_desc": "We need your location to show nearby invitations",
+  "perm_photos_title": "Access photo gallery",
+  "perm_photos_desc": "Required to add photos to your profile",
+  "perm_grant": "Allow",
+  "perm_not_now": "Not now",
+  "perm_denied_hint": "You can grant this permission from settings to use this feature",
+  "perm_go_to_settings": "Go to settings",
+
+  "feed_all_cities": "All Cities",
+  "feed_active_invitations": "ACTIVE INVITATIONS",
+  "feed_active_requests": "ACTIVE REQUESTS",
+  "feed_24h_badge": "24 HRS",
+  "feed_error": "Error: {error}",
+  "@feed_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "feed_no_invitations": "No invitations yet",
+  "feed_be_first": "Be the first to open one!",
+  "feed_todays_invitations": "TODAY'S INVITATIONS",
+  "feed_todays_requests": "TODAY'S REQUESTS",
+  "feed_swipe_hint": "· SWIPE →",
+  "feed_cta_invite": "I want to come",
+  "feed_cta_request": "I want to join",
+  "feed_city_picker_title": "Select City",
+  "feed_city_search_hint": "Search city…",
+  "feed_city_not_found": "No city found for \"{query}\"",
+  "@feed_city_not_found": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "feed_tab_invitations": "Invitations",
+  "feed_tab_requests": "Requests",
+  "feed_city_name_moscow": "Moscow",
+
+  "discover_title": "Discover",
+  "discover_all_invitations_label": "ALL ACTIVE INVITATIONS",
+  "discover_filter_all": "All",
+  "discover_empty_title": "No active invitations yet",
+  "discover_empty_subtitle": "Be the first to open one here",
+  "discover_btn_create": "+ Create Invitation",
+  "discover_error": "Connection error",
+
+  "applicants_title": "Applicants",
+  "applicants_count": "{count} people",
+  "@applicants_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "applicants_empty": "No applications yet",
+  "applicants_select_btn": "Select",
+  "applicants_error_already_matched": "This invitation is already matched",
+  "applicants_error_not_authorized": "Authorization error",
+  "applicants_error_generic": "Error: {message}",
+  "@applicants_error_generic": {
+    "placeholders": {
+      "message": { "type": "String" }
+    }
+  },
+
+  "create_inv_step_flow_type": "Invitation type",
+  "create_inv_step_category": "Category",
+  "create_inv_step_title": "Title",
+  "create_inv_step_description": "Description",
+  "create_inv_step_venue": "Venue",
+  "create_inv_step_datetime": "Date & Time",
+  "create_inv_step_duration": "Duration",
+  "create_inv_validation_category": "Please select a category",
+  "create_inv_validation_title": "Title cannot be empty",
+  "create_inv_validation_venue": "Venue name cannot be empty",
+  "create_inv_validation_date": "Please select a date and time",
+  "create_inv_error_publish": "Error: {error}",
+  "@create_inv_error_publish": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "create_inv_btn_next": "Next",
+  "create_inv_btn_publish": "Publish",
+  "create_inv_flow_invite_title": "I'm treating",
+  "create_inv_flow_invite_subtitle": "I want to take someone along, my treat",
+  "create_inv_flow_request_title": "I want to go",
+  "create_inv_flow_request_subtitle": "I have a place in mind, looking for someone to join",
+  "create_inv_flow_question": "What do you want to open?",
+  "create_inv_category_question": "What experience are you sharing?",
+  "create_inv_title_subtitle": "Short and catchy — will appear large in the feed",
+  "create_inv_title_label": "Title",
+  "create_inv_desc_invite_hint": "Where are you going, what kind of person are you looking for?",
+  "create_inv_desc_request_hint": "Where do you want to go, what kind of person are you looking for?",
+  "create_inv_desc_input_hint": "Write the details...",
+  "create_inv_venue_question": "Where?",
+  "create_inv_venue_subtitle": "Short venue name — café, restaurant, park",
+  "create_inv_venue_label": "Venue name",
+  "create_inv_venue_placeholder": "E.g. White Rabbit, Gorki Park...",
+  "create_inv_duration_question": "How long should the invitation last?",
+  "create_inv_duration_subtitle": "After this time the invitation disappears from the feed",
+  "create_inv_duration_6h": "6 hours",
+  "create_inv_duration_6h_desc": "Short-term — for today",
+  "create_inv_duration_12h": "12 hours",
+  "create_inv_duration_12h_desc": "Half a day",
+  "create_inv_duration_24h": "24 hours",
+  "create_inv_duration_24h_desc": "Standard — 1 day",
+  "create_inv_duration_48h": "48 hours",
+  "create_inv_duration_48h_desc": "Long-term — 2 days",
+  "create_inv_datetime_question": "When?",
+  "create_inv_datetime_subtitle": "Select the event date and time",
+  "create_inv_datetime_placeholder": "Select date & time",
+
+  "decision_selected_title": "You've been selected!",
+  "decision_selected_body": "{name} has selected you for the \"{title}\" invitation.\nDo you want to accept?",
+  "@decision_selected_body": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "title": { "type": "String" }
+    }
+  },
+  "decision_time_remaining": "time remaining",
+  "decision_accept": "Yes, I accept",
+  "decision_reject": "No, decline",
+  "decision_fallback_name": "Person",
+  "decision_error": "Error: {error}",
+  "@decision_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "inv_detail_not_found": "Invitation not found",
+  "inv_detail_delete_title": "Delete invitation",
+  "inv_detail_delete_body": "Are you sure you want to delete this invitation? This cannot be undone.",
+  "inv_detail_delete_cancel": "Cancel",
+  "inv_detail_delete_confirm": "Delete",
+  "inv_detail_status_closed": "This invitation is closed",
+  "inv_detail_status_meeting": "Meeting",
+  "inv_detail_status_decision": "DECISION TIME",
+  "inv_detail_status_awaiting": "AWAITING SELECTION",
+  "inv_detail_status_remaining": "TIME REMAINING",
+  "inv_detail_status_expired": "Expired",
+  "inv_detail_day_mon": "Mon",
+  "inv_detail_day_tue": "Tue",
+  "inv_detail_day_wed": "Wed",
+  "inv_detail_day_thu": "Thu",
+  "inv_detail_day_fri": "Fri",
+  "inv_detail_day_sat": "Sat",
+  "inv_detail_day_sun": "Sun",
+  "inv_detail_directions": "Directions",
+  "inv_detail_section_invitation": "INVITATION",
+  "inv_detail_section_details": "DETAILS",
+  "inv_detail_section_host": "HOST",
+  "inv_detail_host_label": "Invitation host",
+  "inv_detail_applicants_btn": "View Applicants",
+  "inv_detail_loading": "Loading...",
+  "inv_detail_error_label": "Error",
+  "inv_detail_apply_invite": "I want to come",
+  "inv_detail_apply_request": "I want to join",
+  "inv_detail_apply_sending": "Sending...",
+  "inv_detail_withdraw_title": "Withdraw application",
+  "inv_detail_withdraw_body": "Are you sure you want to withdraw your application for this invitation?",
+  "inv_detail_withdraw_cancel": "Cancel",
+  "inv_detail_withdraw_confirm": "Withdraw",
+  "inv_detail_withdraw_btn": "Withdraw Application",
+  "inv_detail_withdrawing": "Cancelling...",
+  "inv_detail_selected_btn": "Selected — Make your decision",
+  "inv_detail_accepted_btn": "✓ Accepted",
+  "inv_detail_apply_sent_title": "Application Sent",
+  "inv_detail_apply_sent_body": "Wait for the invitation owner to make their choice",
+  "inv_detail_error": "Error: {error}",
+  "@inv_detail_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "inv_detail_duration_days_hours": "{days}d {hours}h",
+  "@inv_detail_duration_days_hours": {
+    "placeholders": {
+      "days": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "inv_detail_duration_hours_min": "{hours}h {min}m",
+  "@inv_detail_duration_hours_min": {
+    "placeholders": {
+      "hours": { "type": "int" },
+      "min": { "type": "int" }
+    }
+  },
+  "inv_detail_duration_min": "{min}m",
+  "@inv_detail_duration_min": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "inv_detail_weekday_mon_full": "Monday",
+  "inv_detail_weekday_tue_full": "Tuesday",
+  "inv_detail_weekday_wed_full": "Wednesday",
+  "inv_detail_weekday_thu_full": "Thursday",
+  "inv_detail_weekday_fri_full": "Friday",
+  "inv_detail_weekday_sat_full": "Saturday",
+  "inv_detail_weekday_sun_full": "Sunday",
+
+  "chat_archived": "This chat is archived",
+  "chat_meeting_question": "Did your meeting happen?",
+  "chat_yes_we_met": "Yes, we met",
+  "chat_other_no_show": "The other person didn't come",
+  "chat_send_error": "Could not send: {error}",
+  "@chat_send_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "chat_meeting_saved": "Thanks! Meeting recorded.",
+  "chat_noted": "Noted.",
+  "chat_other_age": "{age} years old",
+  "@chat_other_age": {
+    "placeholders": {
+      "age": { "type": "int" }
+    }
+  },
+  "chat_empty_hint": "Be the first to send a message!",
+  "chat_input_hint": "Write a message...",
+
+  "messages_title": "Messages",
+  "messages_tab_active": "Active",
+  "messages_tab_past": "Past",
+  "messages_connection_error": "Connection error",
+  "messages_no_preview": "No messages yet",
+  "messages_empty_past": "No past chats",
+  "messages_empty_active": "No active chats yet",
+  "messages_empty_hint": "Open an invitation or apply to an existing one",
+  "messages_btn_create": "Create Invitation",
+
+  "notifications_title": "Notifications",
+  "notifications_mark_all_read": "Mark all read",
+  "notifications_error": "Error: {error}",
+  "@notifications_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "notifications_empty": "No notifications yet",
+
+  "photo_upload_title_edit": "Edit your photos",
+  "photo_upload_title_add": "Add your photos",
+  "photo_upload_subtitle": "Min {min} max {max} photos • {filled} / {total}",
+  "@photo_upload_subtitle": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" },
+      "filled": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "photo_upload_primary_label": "Primary photo",
+  "photo_upload_primary_badge": "Main",
+  "photo_upload_permission_error": "Gallery permission required. Please allow from settings.",
+  "photo_upload_pick_error": "Could not pick photo: {error}",
+  "@photo_upload_pick_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photo_upload_error": "Upload error: {error}",
+  "@photo_upload_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "photo_upload_btn_save": "Save",
+  "photo_upload_btn_continue": "Continue",
+  "photo_crop_title": "Edit photo",
+  "photo_crop_apply": "Apply",
+  "photo_crop_error": "Crop error: {error}",
+  "@photo_crop_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "profile_setup_step_name_age": "Name & age",
+  "profile_setup_step_gender": "Gender",
+  "profile_setup_step_city": "City",
+  "profile_setup_step_bio": "Bio",
+  "profile_setup_step_job_edu": "Work / Education",
+  "profile_setup_step_interests": "Interests",
+  "profile_setup_step_prompts": "Questions",
+  "profile_setup_step_show_gender": "Display preference",
+  "profile_setup_step_age_range": "Age range",
+  "profile_setup_validation_name": "Name cannot be empty",
+  "profile_setup_validation_age": "Age must be between {min} and {max}",
+  "@profile_setup_validation_age": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_error": "Error: {error}",
+  "@profile_setup_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "profile_setup_btn_next": "Next",
+  "profile_setup_btn_add_photos": "Add photos",
+  "profile_setup_name_question": "What's your name?",
+  "profile_setup_name_label": "Name",
+  "profile_setup_age_label": "Age ({min}-{max})",
+  "@profile_setup_age_label": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_gender_title": "Gender",
+  "profile_setup_gender_female": "Female",
+  "profile_setup_gender_male": "Male",
+  "profile_setup_city_question": "What city are you in?",
+  "profile_setup_city_search": "Search city...",
+  "profile_setup_city_not_found": "City not found",
+  "profile_setup_bio_title": "Tell us about yourself",
+  "profile_setup_bio_subtitle": "Optional — max 200 characters",
+  "profile_setup_bio_hint": "Briefly introduce yourself...",
+  "profile_setup_job_title": "Work & Education",
+  "profile_setup_job_subtitle": "Optional",
+  "profile_setup_job_label": "Occupation",
+  "profile_setup_education_label": "School / University",
+  "profile_setup_interests_title": "Interests",
+  "profile_setup_interests_subtitle": "Select at least 3",
+  "profile_setup_prompts_title": "A few questions",
+  "profile_setup_prompts_subtitle": "Optional — enriches your profile",
+  "profile_setup_prompts_answer_hint": "Your answer...",
+  "profile_setup_show_gender_title": "Whose invitations do you want to see?",
+  "profile_setup_show_gender_subtitle": "Only invitations from these people will appear in your feed",
+  "profile_setup_show_gender_opposite": "Opposite gender",
+  "profile_setup_show_gender_all": "Everyone",
+  "profile_setup_show_gender_female": "Women",
+  "profile_setup_show_gender_male": "Men",
+  "profile_setup_age_range_title": "What age range are you looking for?",
+  "profile_setup_age_range_subtitle": "Only invitations in this age range will appear in your feed",
+  "profile_setup_age_range_value": "{min} — {max} years",
+  "@profile_setup_age_range_value": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "profile_setup_prompt_favorite_restaurant": "My favourite restaurant...",
+  "profile_setup_prompt_last_book": "The last book I read...",
+  "profile_setup_prompt_perfect_evening": "A perfect evening...",
+  "profile_setup_prompt_travel_dream": "My dream trip...",
+  "profile_setup_interest_art": "Art",
+  "profile_setup_interest_music": "Music",
+  "profile_setup_interest_sports": "Sports",
+  "profile_setup_interest_books": "Books",
+  "profile_setup_interest_travel": "Travel",
+  "profile_setup_interest_food": "Food",
+  "profile_setup_interest_film": "Film",
+  "profile_setup_interest_theatre": "Theatre",
+  "profile_setup_interest_dance": "Dance",
+  "profile_setup_interest_yoga": "Yoga",
+  "profile_setup_interest_photography": "Photography",
+  "profile_setup_interest_games": "Games",
+  "profile_setup_interest_technology": "Technology",
+  "profile_setup_interest_nature": "Nature",
+  "profile_setup_interest_history": "History",
+  "profile_setup_interest_fashion": "Fashion",
+
+  "profile_view_not_found": "Profile not found",
+  "profile_view_hint_name_age": "Name and age missing",
+  "profile_view_hint_photo": "Add a photo",
+  "profile_view_hint_bio": "Add a bio",
+  "profile_view_hint_interests": "Add interests",
+  "profile_view_hint_selfie_pending": "Selfie under review...",
+  "profile_view_hint_selfie_upload": "Upload selfie",
+  "profile_view_hint_prompt": "Answer a question",
+  "profile_view_completion": "{score}% complete",
+  "@profile_view_completion": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "profile_view_section_interests": "Interests",
+  "profile_view_section_prompts": "Expressions",
+  "profile_view_cta_edit": "Edit Profile",
+  "profile_view_cta_come": "I want to come",
+  "profile_view_action_block": "Block user",
+  "profile_view_action_block_confirm": "Block",
+  "profile_view_action_block_cancel": "Cancel",
+  "profile_view_action_report": "Report",
+  "profile_view_action_cancel": "Cancel",
+  "profile_view_blocked_snack": "{name} blocked",
+  "@profile_view_blocked_snack": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "report_title": "Report user",
+  "report_why": "Why are you reporting?",
+  "report_reason_inappropriate": "Inappropriate content / photo",
+  "report_reason_harassment": "Harassment or threats",
+  "report_reason_spam": "Spam or fake account",
+  "report_reason_illegal": "Illegal activity",
+  "report_reason_other": "Other",
+  "report_desc_label": "Description (optional)",
+  "report_desc_hint": "You can add more detail...",
+  "report_btn_sending": "Sending...",
+  "report_btn_submit": "Submit report",
+  "report_error_no_reason": "Please select a reason",
+  "report_success": "Your report has been received, we will review it",
+  "report_error": "Error: {error}",
+  "@report_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "selfie_title": "Selfie verification",
+  "selfie_subtitle": "We manually verify your profile for a safe community",
+  "selfie_take_btn": "Take selfie",
+  "selfie_tip_lighting": "Take in a well-lit environment",
+  "selfie_tip_face": "Your face should be clearly visible",
+  "selfie_tip_approval": "Admin approves within 24 hours",
+  "selfie_submit_btn": "Submit",
+
+  "blocked_users_title": "Blocked Users",
+  "blocked_users_empty": "No blocked users",
+  "blocked_users_unblock_btn": "Unblock",
+
+  "delete_account_title": "Delete Account",
+  "delete_account_heading": "This cannot be undone",
+  "delete_account_body": "If you delete your account, all your data, messages, matches and photos will be permanently deleted. This cannot be undone.",
+  "delete_account_warn_profile": "Your profile and all photos will be deleted",
+  "delete_account_warn_messages": "Your entire message history will be deleted",
+  "delete_account_warn_invitations": "Your active invitations and applications will be deleted",
+  "delete_account_warn_phone": "You cannot re-register with the same phone number",
+  "delete_account_checkbox": "Yes, I want to permanently delete my account",
+  "delete_account_btn_delete": "Permanently Delete Account",
+  "delete_account_btn_cancel": "Cancel",
+  "delete_account_success": "Your account has been marked for deletion. It will be permanently removed shortly.",
+  "delete_account_error": "An error occurred. Please try again.",
+
+  "settings_coming_soon": "This feature is coming soon.",
+  "settings_ok": "OK",
+  "settings_about_subtitle": "Premium social invitation app.",
+  "settings_share_subject": "SoulChoice Data Export",
+  "settings_error": "Error: {error}",
+  "@settings_error": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "settings_quiet_hours_title": "Night quiet hours",
+  "settings_quiet_active": "Active",
+  "settings_quiet_start": "Start",
+  "settings_quiet_end": "End",
+  "settings_age_range_title": "Age range",
+  "settings_age_range_value": "{min} — {max} years",
+  "@settings_age_range_value": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "settings_display_pref_title": "Display preference",
+  "settings_privacy_section": "PRIVACY & SECURITY",
+  "settings_blocked_users": "Blocked users",
+  "settings_location_permission": "Location permission",
+  "settings_camera_permission": "Camera permission",
+  "settings_support_section": "SUPPORT",
+  "settings_help": "Help & Support",
+  "settings_about": "About",
+  "settings_logout_error": "Could not sign out. Please try again.",
+  "settings_selfie_pending": "Selfie under review",
+  "settings_selfie_approved": "Verified account",
+  "settings_selfie_rejected": "Selfie rejected — re-upload",
+  "settings_selfie_none": "No selfie uploaded yet",
+  "settings_verification_status": "Verification status",
+  "settings_reupload": "Re-upload",
+  "settings_show_gender_opposite": "Opposite gender",
+  "settings_show_gender_all": "Everyone",
+  "settings_show_gender_female": "Women",
+  "settings_show_gender_male": "Men",
+
+  "admin_title": "Moderation",
+  "admin_tab_selfies": "Selfie Reviews",
+  "admin_tab_reports": "Reports",
+  "admin_reject_reason_title": "Rejection reason",
+  "admin_reject_reason_no_face": "Face not visible",
+  "admin_reject_reason_inappropriate": "Inappropriate content",
+  "admin_reject_reason_mismatch": "Different person (doesn't match profile photo)",
+  "admin_reject_reason_quality": "Low quality / blurry",
+  "admin_reject_reason_other": "Other",
+  "admin_btn_cancel": "Cancel",
+  "admin_btn_reject": "Reject",
+  "admin_selfies_empty": "No pending selfies",
+  "admin_view_profile": "View profile",
+  "admin_photo_label_profile": "Profile Photo",
+  "admin_photo_label_selfie": "Selfie",
+  "admin_btn_approve": "✅ Approve",
+  "admin_btn_reject_action": "❌ Reject",
+  "admin_reports_empty": "No pending reports",
+  "admin_report_about": "report about {name}",
+  "@admin_report_about": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "admin_reporter_label": "Reporter: {name}",
+  "@admin_reporter_label": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "admin_reason_label": "Reason: {reason}",
+  "@admin_reason_label": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "admin_user_banned": "User banned",
+  "admin_btn_ban": "Ban",
+  "admin_btn_dismiss": "Dismiss"
 }

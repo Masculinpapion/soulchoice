@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class DecisionScreen extends StatefulWidget {
   final String invitationId;
@@ -104,7 +105,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.decision_error(e.toString())), backgroundColor: AppColors.error),
         );
         setState(() => _isLoading = false);
       }
@@ -127,7 +128,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final name = _applicantName ?? 'Kişi';
+    final name = _applicantName ?? AppLocalizations.of(context)!.decision_fallback_name;
     final title = _invitationTitle ?? '...';
 
     return Scaffold(
@@ -163,26 +164,26 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                   ),
                 ),
                 const SizedBox(height: 40),
-                Text('Seçildiniz!', style: AppTextStyles.displayLarge),
+                Text(AppLocalizations.of(context)!.decision_selected_title, style: AppTextStyles.displayLarge),
                 const SizedBox(height: 12),
                 Text(
-                  '$name sizi "$title" davetine seçti.\nKabul etmek istiyor musunuz?',
+                  AppLocalizations.of(context)!.decision_selected_body(name, title),
                   style: AppTextStyles.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 Text(_timeLabel, style: AppTextStyles.monoLarge.copyWith(color: AppColors.red)),
-                Text('kalan süre', style: AppTextStyles.monoSmall),
+                Text(AppLocalizations.of(context)!.decision_time_remaining, style: AppTextStyles.monoSmall),
                 const Spacer(),
                 ScButton(
-                  label: 'Evet, kabul ediyorum',
+                  label: AppLocalizations.of(context)!.decision_accept,
                   onPressed: _isLoading ? null : _accept,
                   isLoading: _isLoading,
                   icon: Icons.check_circle_outline,
                 ),
                 const SizedBox(height: 12),
                 ScButton(
-                  label: 'Hayır, reddet',
+                  label: AppLocalizations.of(context)!.decision_reject,
                   variant: ScButtonVariant.ghost,
                   onPressed: _isLoading ? null : _reject,
                 ),

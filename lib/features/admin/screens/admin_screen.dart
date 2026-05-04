@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -42,7 +43,7 @@ class _AdminScreenState extends State<AdminScreen>
               color: AppColors.textPrimary, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text('Moderasyon', style: AppTextStyles.titleMedium),
+        title: Text(AppLocalizations.of(context)!.admin_title, style: AppTextStyles.titleMedium),
         bottom: TabBar(
           controller: _tabController,
           labelStyle: AppTextStyles.labelMedium,
@@ -50,9 +51,9 @@ class _AdminScreenState extends State<AdminScreen>
           labelColor: AppColors.red,
           unselectedLabelColor: AppColors.textTertiary,
           indicatorColor: AppColors.red,
-          tabs: const [
-            Tab(text: 'Selfie Onayları'),
-            Tab(text: 'Şikayetler'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.admin_tab_selfies),
+            Tab(text: AppLocalizations.of(context)!.admin_tab_reports),
           ],
         ),
       ),
@@ -87,12 +88,12 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
   List<Map<String, dynamic>> _users = [];
   bool _loading = true;
 
-  static const _rejectReasons = [
-    'Yüz görünmüyor',
-    'Uygunsuz içerik',
-    'Farklı kişi (profil fotosu ile uyuşmuyor)',
-    'Düşük kalite / bulanık',
-    'Diğer',
+  List<String> _rejectReasons(AppLocalizations l) => [
+    l.admin_reject_reason_no_face,
+    l.admin_reject_reason_inappropriate,
+    l.admin_reject_reason_mismatch,
+    l.admin_reject_reason_quality,
+    l.admin_reject_reason_other,
   ];
 
   @override
@@ -127,6 +128,8 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
   }
 
   Future<void> _showRejectDialog(String userId) async {
+    final l = AppLocalizations.of(context)!;
+    final reasons = _rejectReasons(l);
     int? selectedReason;
     await showDialog(
       context: context,
@@ -135,10 +138,10 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
           backgroundColor: AppColors.bgCard,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Reddetme sebebi', style: AppTextStyles.titleMedium),
+          title: Text(l.admin_reject_reason_title, style: AppTextStyles.titleMedium),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            children: _rejectReasons.asMap().entries.map((e) {
+            children: reasons.asMap().entries.map((e) {
               return RadioListTile<int>(
                 value: e.key,
                 groupValue: selectedReason,
@@ -151,7 +154,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text('İptal',
+              child: Text(l.admin_btn_cancel,
                   style: AppTextStyles.labelMedium
                       .copyWith(color: AppColors.textTertiary)),
             ),
@@ -162,12 +165,11 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                       Navigator.pop(ctx);
                       await Supabase.instance.client.from('users').update({
                         'selfie_status': 'rejected',
-                        'selfie_rejected_reason':
-                            _rejectReasons[selectedReason!],
+                        'selfie_rejected_reason': reasons[selectedReason!],
                       }).eq('id', userId);
                       _load();
                     },
-              child: Text('Reddet',
+              child: Text(l.admin_btn_reject,
                   style:
                       AppTextStyles.labelMedium.copyWith(color: AppColors.error)),
             ),
@@ -199,7 +201,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
             const Icon(Icons.check_circle_outline,
                 color: AppColors.success, size: 48),
             const SizedBox(height: 12),
-            Text('Bekleyen selfie yok', style: AppTextStyles.bodyMedium),
+            Text(AppLocalizations.of(context)!.admin_selfies_empty, style: AppTextStyles.bodyMedium),
           ],
         ),
       );
@@ -245,7 +247,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () => context.push('/profile/${u['id']}'),
-                        child: Text('Profili gör',
+                        child: Text(AppLocalizations.of(context)!.admin_view_profile,
                             style: AppTextStyles.monoSmall.copyWith(
                                 color: AppColors.gradientStart)),
                       ),
@@ -258,14 +260,16 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                       Expanded(
                         child: _PhotoBox(
                           url: profileUrl,
-                          label: 'Profil Fotoğrafı',
+                          label: AppLocalizations.of(context)!.admin_photo_label_profile,
+                          isSelfie: false,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: _PhotoBox(
                           url: selfieUrl,
-                          label: 'Selfie',
+                          label: AppLocalizations.of(context)!.admin_photo_label_selfie,
+                          isSelfie: true,
                         ),
                       ),
                     ],
@@ -286,7 +290,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                                   color: AppColors.success.withOpacity(0.5)),
                             ),
                             child: Center(
-                              child: Text('✅ Onayla',
+                              child: Text(AppLocalizations.of(context)!.admin_btn_approve,
                                   style: AppTextStyles.labelMedium
                                       .copyWith(color: AppColors.success)),
                             ),
@@ -307,7 +311,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                                   color: AppColors.error.withOpacity(0.5)),
                             ),
                             child: Center(
-                              child: Text('❌ Reddet',
+                              child: Text(AppLocalizations.of(context)!.admin_btn_reject_action,
                                   style: AppTextStyles.labelMedium
                                       .copyWith(color: AppColors.error)),
                             ),
@@ -329,7 +333,8 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
 class _PhotoBox extends StatelessWidget {
   final String? url;
   final String label;
-  const _PhotoBox({this.url, required this.label});
+  final bool isSelfie;
+  const _PhotoBox({this.url, required this.label, required this.isSelfie});
 
   @override
   Widget build(BuildContext context) {
@@ -368,7 +373,7 @@ class _PhotoBox extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            label == 'Selfie'
+            isSelfie
                 ? Icons.camera_front
                 : Icons.person_outline,
             color: AppColors.textTertiary,
@@ -427,8 +432,8 @@ class _ReportsTabState extends State<_ReportsTab> {
     await Supabase.instance.client
         .from('users')
         .update({'banned': true}).eq('id', userId);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Kullanıcı banlandı'),
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(AppLocalizations.of(context)!.admin_user_banned),
       backgroundColor: AppColors.error,
     ));
   }
@@ -462,7 +467,7 @@ class _ReportsTabState extends State<_ReportsTab> {
             const Icon(Icons.shield_outlined,
                 color: AppColors.success, size: 48),
             const SizedBox(height: 12),
-            Text('Bekleyen şikayet yok', style: AppTextStyles.bodyMedium),
+            Text(AppLocalizations.of(context)!.admin_reports_empty, style: AppTextStyles.bodyMedium),
           ],
         ),
       );
@@ -490,16 +495,16 @@ class _ReportsTabState extends State<_ReportsTab> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          '${reported?['name'] ?? '—'} hakkında şikayet',
+                          AppLocalizations.of(context)!.admin_report_about(reported?['name'] ?? '—'),
                           style: AppTextStyles.titleMedium,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text('Şikayetçi: ${reporter?['name'] ?? '—'}',
+                  Text(AppLocalizations.of(context)!.admin_reporter_label(reporter?['name'] ?? '—'),
                       style: AppTextStyles.monoSmall),
-                  Text('Sebep: ${r['reason'] ?? '—'}',
+                  Text(AppLocalizations.of(context)!.admin_reason_label(r['reason'] as String? ?? '—'),
                       style: AppTextStyles.bodyMedium),
                   if ((r['description'] as String?)?.isNotEmpty == true)
                     Text(r['description'] as String,
@@ -509,13 +514,13 @@ class _ReportsTabState extends State<_ReportsTab> {
                   Row(
                     children: [
                       _ActionBtn(
-                        label: 'Banlat',
+                        label: AppLocalizations.of(context)!.admin_btn_ban,
                         color: AppColors.error,
                         onTap: () => _banUser(reported?['id'] as String? ?? ''),
                       ),
                       const SizedBox(width: 8),
                       _ActionBtn(
-                        label: 'Reddet',
+                        label: AppLocalizations.of(context)!.admin_btn_dismiss,
                         color: AppColors.textTertiary,
                         onTap: () => _dismiss(r['id'] as String),
                       ),

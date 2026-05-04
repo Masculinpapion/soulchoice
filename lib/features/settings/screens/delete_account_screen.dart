@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -29,10 +30,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       await client.auth.signOut();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Hesabınız silinmek üzere işaretlendi. En kısa sürede kalıcı olarak kaldırılacak.',
-            ),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.delete_account_success),
           ),
         );
         context.go('/splash');
@@ -41,7 +40,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       if (mounted) {
         setState(() => _isDeleting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bir hata oluştu. Lütfen tekrar deneyin.')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.delete_account_error)),
         );
       }
     }
@@ -57,7 +56,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () => context.pop(),
         ),
-        title: Text('Hesabı Sil', style: AppTextStyles.titleMedium),
+        title: Text(AppLocalizations.of(context)!.delete_account_title, style: AppTextStyles.titleMedium),
       ),
       body: AmbientBackground(
         child: Padding(
@@ -76,23 +75,23 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                 child: const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 28),
               ),
               const SizedBox(height: 24),
-              Text('Bu işlem geri alınamaz', style: AppTextStyles.headingLarge.copyWith(color: AppColors.error)),
+              Text(AppLocalizations.of(context)!.delete_account_heading, style: AppTextStyles.headingLarge.copyWith(color: AppColors.error)),
               const SizedBox(height: 16),
               Text(
-                'Hesabını silersen tüm verilerin, mesajların, eşleşmelerin ve fotoğrafların kalıcı olarak silinecek. Bu işlem geri alınamaz.',
+                AppLocalizations.of(context)!.delete_account_body,
                 style: AppTextStyles.bodyLarge,
               ),
               const SizedBox(height: 24),
               GlassCard(
                 child: Column(
                   children: [
-                    _WarnItem(text: 'Tüm profilin ve fotoğrafların silinir'),
+                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_profile),
                     const SizedBox(height: 10),
-                    _WarnItem(text: 'Tüm mesajlaşma geçmişin silinir'),
+                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_messages),
                     const SizedBox(height: 10),
-                    _WarnItem(text: 'Aktif davetlerin ve başvuruların silinir'),
+                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_invitations),
                     const SizedBox(height: 10),
-                    _WarnItem(text: 'Aynı telefon numarasıyla tekrar kayıt olunamaz'),
+                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_phone),
                   ],
                 ),
               ),
@@ -108,10 +107,10 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                       activeColor: AppColors.error,
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Evet, hesabımı kalıcı olarak silmek istiyorum',
-                        style: TextStyle(color: AppColors.textPrimary, fontFamily: 'Manrope', fontSize: 14),
+                        AppLocalizations.of(context)!.delete_account_checkbox,
+                        style: const TextStyle(color: AppColors.textPrimary, fontFamily: 'Manrope', fontSize: 14),
                       ),
                     ),
                   ],
@@ -120,14 +119,14 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               const Spacer(),
               if (_confirmed)
                 ScButton(
-                  label: 'Hesabı Kalıcı Olarak Sil',
+                  label: AppLocalizations.of(context)!.delete_account_btn_delete,
                   onPressed: _delete,
                   isLoading: _isDeleting,
                   icon: Icons.fingerprint,
                 ),
               const SizedBox(height: 12),
               ScButton(
-                label: 'İptal',
+                label: AppLocalizations.of(context)!.delete_account_btn_cancel,
                 variant: ScButtonVariant.secondary,
                 onPressed: () => context.pop(),
               ),

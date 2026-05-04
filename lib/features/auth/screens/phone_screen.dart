@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class PhoneScreen extends ConsumerStatefulWidget {
   const PhoneScreen({super.key});
@@ -35,7 +36,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     setState(() => _error = null);
     final rawPhone = _phoneController.text.trim();
     if (rawPhone.isEmpty) {
-      setState(() => _error = 'Telefon numarası girin');
+      setState(() => _error = AppLocalizations.of(context)!.phone_error_empty);
       return;
     }
     final phone = '$_countryCode$rawPhone';
@@ -46,7 +47,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     } on AuthException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Bağlantı hatası, tekrar deneyin');
+      if (mounted) setState(() => _error = AppLocalizations.of(context)!.phone_error_connection);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -78,11 +79,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                       color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 24),
-                Text('Telefon\nnumaranı gir',
+                Text(AppLocalizations.of(context)!.phone_title,
                     style: AppTextStyles.displayMedium),
                 const SizedBox(height: 10),
                 Text(
-                  'Sana bir doğrulama kodu göndereceğiz',
+                  AppLocalizations.of(context)!.phone_subtitle,
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: 40),
@@ -168,14 +169,14 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 ],
                 const Spacer(),
                 ScButton(
-                  label: 'Devam et',
+                  label: AppLocalizations.of(context)!.btn_continue,
                   onPressed: _sendOtp,
                   isLoading: _isLoading,
                 ),
                 const SizedBox(height: 18),
                 Center(
                   child: Text(
-                    'Devam ederek Kullanım Koşulları\'nı\nkabul etmiş olursunuz',
+                    AppLocalizations.of(context)!.phone_terms,
                     style: AppTextStyles.bodyMedium.copyWith(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),

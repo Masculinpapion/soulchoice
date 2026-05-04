@@ -10,6 +10,7 @@ import '../../../features/feed/providers/invitations_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 
 class CreateInvitationScreen extends ConsumerStatefulWidget {
   const CreateInvitationScreen({super.key});
@@ -34,14 +35,16 @@ class _CreateInvitationScreenState
   int _expiryHours = 24;
   bool _isPublishing = false;
 
-  static const _steps = [
-    'Davet tipi',
-    'Kategori',
-    'Başlık',
-    'Açıklama',
-    'Yer',
-    'Tarih & Saat',
-    'Davet süresi',
+  static const _stepCount = 7;
+
+  List<String> _getSteps(AppLocalizations l10n) => [
+    l10n.create_inv_step_flow_type,
+    l10n.create_inv_step_category,
+    l10n.create_inv_step_title,
+    l10n.create_inv_step_description,
+    l10n.create_inv_step_venue,
+    l10n.create_inv_step_datetime,
+    l10n.create_inv_step_duration,
   ];
 
   @override
@@ -53,22 +56,23 @@ class _CreateInvitationScreenState
     super.dispose();
   }
 
-  String? _validateCurrentStep() {
+  String? _validateCurrentStep(AppLocalizations l10n) {
     switch (_step) {
       case 1:
-        if (_category == null) return 'Bir kategori seçmelisin';
+        if (_category == null) return l10n.create_inv_validation_category;
       case 2:
-        if (_titleController.text.trim().isEmpty) return 'Başlık boş bırakılamaz';
+        if (_titleController.text.trim().isEmpty) return l10n.create_inv_validation_title;
       case 4:
-        if (_venueController.text.trim().isEmpty) return 'Mekan adı boş bırakılamaz';
+        if (_venueController.text.trim().isEmpty) return l10n.create_inv_validation_venue;
       case 5:
-        if (_eventDate == null) return 'Tarih ve saat seçmelisin';
+        if (_eventDate == null) return l10n.create_inv_validation_date;
     }
     return null;
   }
 
   void _next() {
-    final error = _validateCurrentStep();
+    final l10n = AppLocalizations.of(context)!;
+    final error = _validateCurrentStep(l10n);
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -82,7 +86,7 @@ class _CreateInvitationScreenState
       );
       return;
     }
-    if (_step < _steps.length - 1) {
+    if (_step < _stepCount - 1) {
       setState(() => _step++);
       _pageController.nextPage(
           duration: const Duration(milliseconds: 350),
@@ -185,7 +189,7 @@ class _CreateInvitationScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Hata: $e'),
+              content: Text(AppLocalizations.of(context)!.create_inv_error_publish(e.toString())),
               backgroundColor: AppColors.error),
         );
       }
@@ -196,6 +200,8 @@ class _CreateInvitationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final steps = _getSteps(l10n);
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       body: AmbientBackground(
@@ -214,7 +220,7 @@ class _CreateInvitationScreenState
                     ),
                     Expanded(
                       child: _GradientProgressBar(
-                        value: (_step + 1) / _steps.length,
+                        value: (_step + 1) / _stepCount,
                       ),
                     ),
                   ],
@@ -227,10 +233,10 @@ class _CreateInvitationScreenState
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _StepDots(
-                        total: _steps.length, current: _step),
+                        total: _stepCount, current: _step),
                     const SizedBox(width: 10),
                     Text(
-                      _steps[_step],
+                      steps[_step],
                       style: AppTextStyles.monoSmall.copyWith(
                           color: AppColors.textSecondary),
                     ),
@@ -272,10 +278,10 @@ class _CreateInvitationScreenState
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
                 child: ScButton(
                   label:
-                      _step < _steps.length - 1 ? 'Devam' : 'Yayınla',
+                      _step < _stepCount - 1 ? l10n.create_inv_btn_next : l10n.create_inv_btn_publish,
                   onPressed: _isPublishing ? null : _next,
                   isLoading:
-                      _isPublishing && _step == _steps.length - 1,
+                      _isPublishing && _step == _stepCount - 1,
                 ),
               ),
             ],
@@ -365,12 +371,12 @@ class _StepFlowType extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Ne açmak istiyorsun?',
+          Text(AppLocalizations.of(context)!.create_inv_flow_question,
               style: AppTextStyles.displayMedium),
           const SizedBox(height: 40),
           _FlowTypeCard(
-            title: 'Ismarlıyorum',
-            subtitle: 'Birini de götürmek istiyorum, masraf benden',
+            title: AppLocalizations.of(context)!.create_inv_flow_invite_title,
+            subtitle: AppLocalizations.of(context)!.create_inv_flow_invite_subtitle,
             icon: Icons.wine_bar_rounded,
             gradientColors: const [Color(0xFFFF2D55), Color(0xFF8B5CF6)],
             isSelected: selected == InvitationFlowType.invite,
@@ -378,8 +384,8 @@ class _StepFlowType extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _FlowTypeCard(
-            title: 'İstiyorum',
-            subtitle: 'Gitmek istediğim bir yer var, birlikte gelen olsun',
+            title: AppLocalizations.of(context)!.create_inv_flow_request_title,
+            subtitle: AppLocalizations.of(context)!.create_inv_flow_request_subtitle,
             icon: Icons.explore_rounded,
             gradientColors: const [Color(0xFF2D7FFF), Color(0xFF8B5CF6)],
             isSelected: selected == InvitationFlowType.request,
@@ -489,9 +495,9 @@ class _StepCategory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text('Kategori', style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.create_inv_step_category, style: AppTextStyles.displayMedium),
           const SizedBox(height: 8),
-          Text('Hangi deneyimi paylaşıyorsunuz?',
+          Text(AppLocalizations.of(context)!.create_inv_category_question,
               style: AppTextStyles.bodyMedium),
           const SizedBox(height: 32),
           Wrap(
@@ -565,10 +571,10 @@ class _StepTitle extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Başlık', style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.create_inv_step_title, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
             Text(
-              'Kısa ve çarpıcı — feed\'de büyük görünecek',
+              AppLocalizations.of(context)!.create_inv_title_subtitle,
               style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: 32),
@@ -576,7 +582,7 @@ class _StepTitle extends StatelessWidget {
               controller: controller,
               maxLength: 60,
               style: AppTextStyles.feedCardTitle.copyWith(fontSize: 20),
-              decoration: const InputDecoration(labelText: 'Başlık'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.create_inv_title_label),
             ),
           ],
         ),
@@ -594,9 +600,10 @@ class _StepDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final subtitle = flowType == InvitationFlowType.invite
-        ? 'Nereye gidiyorsun, Nasıl birini arıyorsun?'
-        : 'Nereye gitmek istiyorsun, Nasıl birini arıyorsun?';
+        ? l10n.create_inv_desc_invite_hint
+        : l10n.create_inv_desc_request_hint;
     return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -604,7 +611,7 @@ class _StepDescription extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Açıklama', style: AppTextStyles.displayMedium),
+            Text(l10n.create_inv_step_description, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
             Text(subtitle, style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
@@ -613,8 +620,8 @@ class _StepDescription extends StatelessWidget {
               maxLines: 4,
               maxLength: 300,
               style: AppTextStyles.bodyLarge,
-              decoration: const InputDecoration(
-                hintText: 'Detayları yaz...',
+              decoration: InputDecoration(
+                hintText: l10n.create_inv_desc_input_hint,
                 alignLabelWithHint: true,
               ),
             ),
@@ -639,17 +646,17 @@ class _StepVenue extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Nerede?', style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.create_inv_venue_question, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Kısa bir mekan adı — kafe, restoran, park gibi',
+            Text(AppLocalizations.of(context)!.create_inv_venue_subtitle,
                 style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
               style: AppTextStyles.bodyLarge,
-              decoration: const InputDecoration(
-                labelText: 'Mekan adı',
-                hintText: 'Örn. White Rabbit, Gorki Park...',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.create_inv_venue_label,
+                hintText: AppLocalizations.of(context)!.create_inv_venue_placeholder,
                 prefixIcon: Icon(Icons.location_on_outlined,
                     color: AppColors.textTertiary),
               ),
@@ -669,25 +676,27 @@ class _StepDuration extends StatelessWidget {
 
   const _StepDuration({required this.selected, required this.onSelected});
 
-  static const _options = [
-    (6, '6 saat', 'Kısa vadeli — bugün için'),
-    (12, '12 saat', 'Yarım gün'),
-    (24, '24 saat', 'Standart — 1 gün'),
-    (48, '48 saat', 'Uzun vadeli — 2 gün'),
+  List<(int, String, String)> _options(AppLocalizations l10n) => [
+    (6, l10n.create_inv_duration_6h, l10n.create_inv_duration_6h_desc),
+    (12, l10n.create_inv_duration_12h, l10n.create_inv_duration_12h_desc),
+    (24, l10n.create_inv_duration_24h, l10n.create_inv_duration_24h_desc),
+    (48, l10n.create_inv_duration_48h, l10n.create_inv_duration_48h_desc),
   ];
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Davet ne kadar sürsün?', style: AppTextStyles.displayMedium),
+            Text(l10n.create_inv_duration_question, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Bu süre sonunda davet feedden kalkar', style: AppTextStyles.bodyMedium),
+            Text(l10n.create_inv_duration_subtitle, style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
-            ..._options.map((opt) => Padding(
+            ..._options(l10n).map((opt) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: GestureDetector(
                     onTap: () => onSelected(opt.$1),
@@ -762,9 +771,9 @@ class _StepDateTime extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text('Ne zaman?', style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.create_inv_datetime_question, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text('Etkinlik tarih ve saatini seçin',
+            Text(AppLocalizations.of(context)!.create_inv_datetime_subtitle,
                 style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             GlassCard(
@@ -801,7 +810,7 @@ class _StepDateTime extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   Text(
-                    date != null ? _format(date!) : 'Tarih & saat seç',
+                    date != null ? _format(date!) : AppLocalizations.of(context)!.create_inv_datetime_placeholder,
                     style: AppTextStyles.bodyLarge.copyWith(
                       color: date != null
                           ? AppColors.textPrimary

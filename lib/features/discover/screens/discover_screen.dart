@@ -284,17 +284,42 @@ class _DiscoverCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 6),
                               Flexible(
-                                child: Text(
-                                  ownerAge > 0
-                                      ? '$ownerName, $ownerAge'
-                                      : ownerName,
-                                  style: const TextStyle(
-                                    fontFamily: 'Manrope',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 11,
-                                    color: Colors.white,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        ownerAge > 0
+                                            ? '$ownerName, $ownerAge'
+                                            : ownerName,
+                                        style: const TextStyle(
+                                          fontFamily: 'Manrope',
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 11,
+                                          color: Colors.white,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (inv.owner?.verified == true) ...[
+                                      const SizedBox(width: 4),
+                                      Container(
+                                        width: 14,
+                                        height: 14,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AuroraTheme.auroraBlue,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AuroraTheme.auroraBlue.withOpacity(0.5),
+                                              blurRadius: 8,
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(Icons.check, size: 9, color: Colors.white),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
                             ],

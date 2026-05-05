@@ -45,7 +45,7 @@ extension InvitationCategoryExt on InvitationCategory {
       case InvitationCategory.food:
         return '🍽';
       case InvitationCategory.bar:
-        return '🍸';
+        return '🥂';
       case InvitationCategory.concert:
         return '♫';
       case InvitationCategory.travel:
@@ -59,7 +59,7 @@ extension InvitationCategoryExt on InvitationCategory {
       case InvitationCategory.coffee:
         return '☕';
       case InvitationCategory.gift:
-        return '🎁';
+        return '💎';
     }
   }
 }

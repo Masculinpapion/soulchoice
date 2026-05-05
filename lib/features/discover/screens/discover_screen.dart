@@ -46,7 +46,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
                     AppLocalizations.of(context)!.discover_title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
                       fontSize: MediaQuery.of(context).size.width < 360 ? 25.5 : 30,

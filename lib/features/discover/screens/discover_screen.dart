@@ -57,15 +57,6 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   ),
                 ),
               ),
-              // Mono label
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Text(
-                  AppLocalizations.of(context)!.discover_all_invitations_label,
-                  style: AuroraTheme.monoLabel,
-                ),
-              ),
-
               // Filtre chip'leri
               SizedBox(
                 height: 36,

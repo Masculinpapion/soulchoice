@@ -38,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 3600));
     if (!mounted) return;
 
     final session = Supabase.instance.client.auth.currentSession;

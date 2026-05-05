@@ -25,7 +25,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   late TabController _tabController;
   InvitationCategory? _selectedCategory;
   String? _selectedCityId;
-  String _selectedCityName = 'Moskova';
+  String? _selectedCityName;
 
   void _onTabChanged() => setState(() {});
 
@@ -41,7 +41,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     final data = await Supabase.instance.client
         .from('cities')
         .select('id')
-        .eq('name', 'Moskova')
+        .eq('name', 'Moscow')
         .maybeSingle();
     if (!mounted || data == null) return;
     setState(() => _selectedCityId = data['id'] as String);
@@ -82,7 +82,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           child: Column(
             children: [
               _Header(
-                cityName: _selectedCityName,
+                cityName: _selectedCityName ?? AppLocalizations.of(context)!.feed_city_name_moscow,
                 onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
               ),

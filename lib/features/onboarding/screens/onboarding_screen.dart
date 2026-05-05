@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -150,7 +151,7 @@ class _OnboardingPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Pill3D(color: data.pillColor),
+          _Pill(color: data.pillColor, isBlue: data.pillColor == AppColors.blue, delay: Duration.zero),
           const SizedBox(height: 48),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -188,130 +189,141 @@ class _OnboardingPage extends StatelessWidget {
   }
 }
 
-// ─── Gerçek 3D silindir hap ───────────────────────────────────────────────────
+// ─── Aurora animasyonlu hap ───────────────────────────────────────────────────
 
-class _Pill3D extends StatelessWidget {
+class _Pill extends StatefulWidget {
   final Color color;
-  const _Pill3D({required this.color});
+  final bool isBlue;
+  final Duration delay;
+  const _Pill({required this.color, this.isBlue = false, this.delay = Duration.zero});
+  @override
+  State<_Pill> createState() => _PillState();
+}
+
+class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+  late Animation<double> _float;
+  late Animation<double> _glow;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    _scale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.0, 0.4, curve: Curves.elasticOut))
+    );
+    _float = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.4, 1.0, curve: Curves.easeInOut))
+    );
+    _glow = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _ctrl, curve: const Interval(0.4, 1.0, curve: Curves.easeInOut))
+    );
+    Future.delayed(widget.delay, () {
+      if (mounted) _ctrl.repeat(reverse: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    const w = 48.0;
-    const h = 114.0;
-    const radius = 24.0;
+    final isRed = !widget.isBlue;
+    final glowColor = isRed
+        ? const Color(0xFFFF2D55)
+        : const Color(0xFF2D7FFF);
 
-    final dark = Color.lerp(color, Colors.black, 0.42)!;
-    final darkEdge = Color.lerp(color, Colors.black, 0.28)!;
-    final isBlue = color == AppColors.blue;
-    final isGold = color == AppColors.gold;
-
-    return Container(
-      width: w,
-      height: h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(radius),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(isGold ? 0.40 : 0.55),
-            blurRadius: 30,
-            spreadRadius: 0,
-            offset: const Offset(0, 8),
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (context, child) {
+        final floatOffset = math.sin(_float.value * math.pi) * (isRed ? -12.0 : 12.0);
+        final glowRadius = 8.0 + _glow.value * 22.0;
+        return Transform.translate(
+          offset: Offset(0, floatOffset),
+          child: Transform.scale(
+            scale: _scale.value.clamp(0.0, 1.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(26),
+                boxShadow: [
+                  BoxShadow(
+                    color: glowColor.withOpacity(0.3 + _glow.value * 0.6),
+                    blurRadius: glowRadius,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(26),
+                child: SizedBox(
+                  width: 52,
+                  height: 126,
+                  child: Stack(
+                    children: [
+                      // Ana gövde
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: RadialGradient(
+                            center: const Alignment(-0.3, -0.5),
+                            radius: 1.2,
+                            colors: isRed
+                                ? const [Color(0xFFFF8080), Color(0xFFDD1122), Color(0xFF880008), Color(0xFFCC1122)]
+                                : const [Color(0xFF8AB4FF), Color(0xFF1A44EE), Color(0xFF000FAA), Color(0xFF1A44EE)],
+                            stops: const [0.0, 0.3, 0.65, 1.0],
+                          ),
+                        ),
+                      ),
+                      // Ana parlama
+                      Positioned(
+                        top: 9, left: 8,
+                        child: Transform.rotate(
+                          angle: -0.31,
+                          child: Container(
+                            width: 12, height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.38),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // İkinci parlama
+                      Positioned(
+                        top: 12, left: 18,
+                        child: Transform.rotate(
+                          angle: -0.31,
+                          child: Container(
+                            width: 6, height: 22,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Orta çizgi
+                      Positioned(
+                        top: 62, left: 0, right: 0,
+                        child: Container(height: 1.5, color: Colors.black.withOpacity(0.45)),
+                      ),
+                      // Mavi için cam efekti
+                      if (!isRed)
+                        Positioned(
+                          top: 63, left: 0, right: 0, bottom: 0,
+                          child: Container(color: const Color(0xFF6496FF).withOpacity(0.1)),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.45),
-            blurRadius: 16,
-            offset: const Offset(3, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [dark, color, color, darkEdge],
-                    stops: const [0.0, 0.28, 0.62, 1.0],
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(isBlue ? 0.18 : 0.32),
-                    ],
-                    stops: const [0.45, 1.0],
-                  ),
-                ),
-              ),
-            ),
-            if (isBlue || isGold)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        Colors.transparent,
-                        Colors.white.withOpacity(0.10),
-                        Colors.white.withOpacity(0.07),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.20, 0.44, 0.66, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-            Positioned(
-              left: w * 0.13,
-              top: h * 0.09,
-              width: w * 0.19,
-              height: h * 0.63,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(w * 0.10),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Colors.white.withOpacity(isBlue ? 0.75 : 0.58),
-                      Colors.white.withOpacity(0.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: w * 0.15,
-              top: h * 0.055,
-              width: w * 0.22,
-              height: w * 0.22,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.white.withOpacity(isBlue ? 0.95 : 0.88),
-                      Colors.white.withOpacity(0.0),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

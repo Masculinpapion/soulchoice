@@ -594,5 +594,7 @@
   "category_culture": "Kültür",
   "category_cinema": "Sinema",
   "category_theater": "Tiyatro",
-  "category_coffee": "Kahve"
+  "category_coffee": "Kahve",
+  "category_bar": "Bar",
+  "category_gift": "Hediye"
 }

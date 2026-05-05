@@ -6,12 +6,14 @@ enum InvitationFlowType { invite, request }
 enum InvitationStatus { active, matched, closed, cancelled }
 enum InvitationCategory {
   food,
+  bar,
   concert,
   travel,
   culture,
   cinema,
   theater,
   coffee,
+  gift,
 }
 
 extension InvitationCategoryExt on InvitationCategory {
@@ -19,6 +21,8 @@ extension InvitationCategoryExt on InvitationCategory {
     switch (this) {
       case InvitationCategory.food:
         return l10n.category_food;
+      case InvitationCategory.bar:
+        return l10n.category_bar;
       case InvitationCategory.concert:
         return l10n.category_concert;
       case InvitationCategory.travel:
@@ -31,6 +35,8 @@ extension InvitationCategoryExt on InvitationCategory {
         return l10n.category_theater;
       case InvitationCategory.coffee:
         return l10n.category_coffee;
+      case InvitationCategory.gift:
+        return l10n.category_gift;
     }
   }
 
@@ -38,6 +44,8 @@ extension InvitationCategoryExt on InvitationCategory {
     switch (this) {
       case InvitationCategory.food:
         return '🍽';
+      case InvitationCategory.bar:
+        return '🍸';
       case InvitationCategory.concert:
         return '♫';
       case InvitationCategory.travel:
@@ -50,6 +58,8 @@ extension InvitationCategoryExt on InvitationCategory {
         return '🎭';
       case InvitationCategory.coffee:
         return '☕';
+      case InvitationCategory.gift:
+        return '🎁';
     }
   }
 }

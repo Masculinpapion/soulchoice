@@ -594,5 +594,7 @@
   "category_culture": "Culture",
   "category_cinema": "Cinema",
   "category_theater": "Theatre",
-  "category_coffee": "Coffee"
+  "category_coffee": "Coffee",
+  "category_bar": "Bar",
+  "category_gift": "Gift"
 }

@@ -594,5 +594,7 @@
   "category_culture": "Культура",
   "category_cinema": "Кино",
   "category_theater": "Театр",
-  "category_coffee": "Кофе"
+  "category_coffee": "Кофе",
+  "category_bar": "Бар",
+  "category_gift": "Подарок"
 }

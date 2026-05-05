@@ -1353,6 +1353,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
     final data = await Supabase.instance.client
         .from('cities')
         .select('id, name_en, name_ru, name_tr')
+        .eq('is_active', true)
         .order('name_en');
     if (!mounted) return;
     setState(() {

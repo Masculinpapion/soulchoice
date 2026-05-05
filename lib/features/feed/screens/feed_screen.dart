@@ -41,7 +41,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     final data = await Supabase.instance.client
         .from('cities')
         .select('id')
-        .eq('name', 'Moscow')
+        .eq('name_en', 'Moscow')
         .maybeSingle();
     if (!mounted || data == null) return;
     setState(() => _selectedCityId = data['id'] as String);
@@ -1330,7 +1330,7 @@ class _CityPickerSheet extends StatefulWidget {
 }
 
 class _CityPickerSheetState extends State<_CityPickerSheet> {
-  List<({String id, String name})>? _cities;
+  List<({String id, String nameEn, String nameRu, String nameTr})>? _cities;
   final _searchController = TextEditingController();
   String _query = '';
 
@@ -1352,36 +1352,46 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   Future<void> _fetchCities() async {
     final data = await Supabase.instance.client
         .from('cities')
-        .select('id, name')
-        .order('name');
+        .select('id, name_en, name_ru, name_tr')
+        .order('name_en');
     if (!mounted) return;
     setState(() {
       _cities = (data as List)
-          .map((r) => (id: r['id'] as String, name: r['name'] as String))
+          .map((r) => (
+                id: r['id'] as String,
+                nameEn: (r['name_en'] as String?) ?? '',
+                nameRu: (r['name_ru'] as String?) ?? '',
+                nameTr: (r['name_tr'] as String?) ?? '',
+              ))
           .toList();
     });
   }
 
-  List<({String id, String name})> get _filtered {
+  String _locName({required String nameEn, required String nameRu, required String nameTr}) {
+    final code = Localizations.localeOf(context).languageCode;
+    if (code == 'ru' && nameRu.isNotEmpty) return nameRu;
+    if (code == 'tr' && nameTr.isNotEmpty) return nameTr;
+    return nameEn;
+  }
+
+  List<({String id, String nameEn, String nameRu, String nameTr})> get _filtered {
     if (_cities == null) return [];
     if (_query.isEmpty) return _cities!;
     return _cities!
-        .where((c) => c.name.toLowerCase().contains(_query))
+        .where((c) =>
+            c.nameEn.toLowerCase().contains(_query) ||
+            c.nameRu.toLowerCase().contains(_query) ||
+            c.nameTr.toLowerCase().contains(_query))
         .toList();
   }
 
-  String _cityEmoji(String name) {
-    switch (name.toLowerCase()) {
-      case 'moskova':
+  String _cityEmoji(String nameEn) {
+    switch (nameEn.toLowerCase()) {
       case 'moscow':
       case 'saint petersburg':
-      case 'st. petersburg':
-      case 'petersburg':
         return '🇷🇺';
       case 'istanbul':
-      case 'i̇stanbul':
         return '🇹🇷';
-      case 'londra':
       case 'london':
         return '🇬🇧';
       case 'dubai':
@@ -1529,12 +1539,15 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               selected: widget.selectedCityId == null,
                               onTap: () => widget.onCitySelected(null, null),
                             ),
-                          ...filtered.map((c) => _CityRow(
-                                name: c.name,
-                                emoji: _cityEmoji(c.name),
-                                selected: widget.selectedCityId == c.id,
-                                onTap: () => widget.onCitySelected(c.id, c.name),
-                              )),
+                          ...filtered.map((c) {
+                            final displayName = _locName(nameEn: c.nameEn, nameRu: c.nameRu, nameTr: c.nameTr);
+                            return _CityRow(
+                              name: displayName,
+                              emoji: _cityEmoji(c.nameEn),
+                              selected: widget.selectedCityId == c.id,
+                              onTap: () => widget.onCitySelected(c.id, displayName),
+                            );
+                          }),
                           if (filtered.isEmpty)
                             Padding(
                               padding: const EdgeInsets.all(32),

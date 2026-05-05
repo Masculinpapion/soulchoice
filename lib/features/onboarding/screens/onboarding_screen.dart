@@ -210,7 +210,7 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
       duration: const Duration(milliseconds: 3200),
     );
     Future.delayed(widget.delay, () {
-      if (mounted) _ctrl.repeat(reverse: true);
+      if (mounted) _ctrl.repeat();
     });
   }
 
@@ -226,9 +226,7 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
       animation: _ctrl,
       builder: (context, _) {
         final t = _ctrl.value;
-        final floatY = widget.isBlue
-            ? math.sin(t * math.pi) * 8.0
-            : -math.sin(t * math.pi) * 8.0;
+        final floatY = math.sin(t * 2 * math.pi) * 10.0;
         final glowOpacity = 0.18 + t * 0.14;
         final glowColor = widget.isBlue
             ? const Color(0xFF2D7FFF)

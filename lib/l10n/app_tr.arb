@@ -458,6 +458,8 @@
       "name": { "type": "String" }
     }
   },
+  "profile_view_block_confirm_body": "Bu kullanıcıyı engellemek istediğine emin misin?",
+  "profile_view_anonymous_user": "Kullanıcı",
 
   "report_title": "Kullanıcıyı şikayet et",
   "report_why": "Neden şikayet ediyorsun?",

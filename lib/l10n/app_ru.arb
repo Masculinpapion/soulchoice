@@ -458,6 +458,8 @@
       "name": { "type": "String" }
     }
   },
+  "profile_view_block_confirm_body": "Вы уверены, что хотите заблокировать этого пользователя?",
+  "profile_view_anonymous_user": "Пользователь",
 
   "report_title": "Пожаловаться на пользователя",
   "report_why": "Почему ты жалуешься?",

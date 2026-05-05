@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
@@ -28,6 +29,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     final promptsAsync = ref.watch(userPromptsProvider(userId));
     final currentUid = Supabase.instance.client.auth.currentUser?.id;
     final isOwnProfile = currentUid == userId;
+    final l10n = AppLocalizations.of(context)!;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -62,7 +64,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             if (user == null) {
               return AmbientBackground(
                 child: Center(
-                  child: Text('Profil bulunamadı',
+                  child: Text(l10n.profile_view_not_found,
                       style: TextStyle(
                           fontFamily: 'Manrope',
                           color: AuroraTheme.textSecondary)),
@@ -159,8 +161,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 
                             // İlgi Alanları
                             if (interests.isNotEmpty) ...[
-                              const _EditSectionHeader(
-                                  label: 'İlgi Alanları'),
+                              _EditSectionHeader(
+                                  label: l10n.profile_view_section_interests),
                               const SizedBox(height: 16),
                               SizedBox(
                                 height: 42,
@@ -195,8 +197,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                   children: [
-                                    const _EditSectionHeader(
-                                        label: 'İfadeler'),
+                                    _EditSectionHeader(
+                                        label: l10n.profile_view_section_prompts),
                                     const SizedBox(height: 16),
                                     ...list.asMap().entries.map((e) =>
                                         Padding(
@@ -208,7 +210,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                           child: _EditPromptCard(
                                             question: _questionLabel(
                                                 e.value['question_key']
-                                                    as String),
+                                                    as String, l10n),
                                             answer: e.value['answer']
                                                 as String,
                                             index: e.key,
@@ -227,8 +229,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                   top: 8, bottom: 32),
                               child: _EditorialCTA(
                                 label: isOwnProfile
-                                    ? 'Profili Düzenle'
-                                    : 'Gelmek isterim',
+                                    ? l10n.profile_view_cta_edit
+                                    : l10n.profile_view_cta_come,
                                 onTap: isOwnProfile
                                     ? () =>
                                         context.push('/profile/setup')
@@ -258,6 +260,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     required String selfieStatus,
     required AsyncValue promptsAsync,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     int score = 0;
     String? hint;
     String? route;
@@ -268,7 +271,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (hasName && hasAge) {
       score += 20;
     } else {
-      hint ??= 'Ad ve yaş eksik';
+      hint ??= l10n.profile_view_hint_name_age;
       route ??= '/profile/setup';
     }
 
@@ -276,7 +279,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (photos.isNotEmpty) {
       score += 20;
     } else {
-      hint ??= 'Fotoğraf ekle';
+      hint ??= l10n.profile_view_hint_photo;
       route ??= '/profile/photos';
     }
 
@@ -284,7 +287,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (bio != null && bio.isNotEmpty) {
       score += 15;
     } else {
-      hint ??= 'Bio ekle';
+      hint ??= l10n.profile_view_hint_bio;
       route ??= '/profile/setup';
     }
 
@@ -292,7 +295,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (interests.isNotEmpty) {
       score += 15;
     } else {
-      hint ??= 'İlgi alanları ekle';
+      hint ??= l10n.profile_view_hint_interests;
       route ??= '/profile/setup';
     }
 
@@ -300,7 +303,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (selfieStatus == 'approved') {
       score += 20;
     } else {
-      hint ??= selfieStatus == 'pending' ? 'Selfie inceleniyor...' : 'Selfie yükle';
+      hint ??= selfieStatus == 'pending' ? l10n.profile_view_hint_selfie_pending : l10n.profile_view_hint_selfie_upload;
       route ??= selfieStatus == 'pending' ? null : '/profile/selfie';
     }
 
@@ -312,7 +315,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     if (hasPrompt) {
       score += 10;
     } else {
-      hint ??= 'Bir soruyu cevapla';
+      hint ??= l10n.profile_view_hint_prompt;
       route ??= '/profile/setup';
     }
 
@@ -323,14 +326,14 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     );
   }
 
-  String _questionLabel(String key) {
-    const labels = {
-      'favorite_restaurant': 'Favori restoranım...',
-      'last_book': 'Son okuduğum kitap...',
-      'perfect_evening': 'Mükemmel bir akşam...',
-      'travel_dream': 'Hayalimdeki seyahat...',
-    };
-    return labels[key] ?? key;
+  String _questionLabel(String key, AppLocalizations l10n) {
+    switch (key) {
+      case 'favorite_restaurant': return l10n.profile_setup_prompt_favorite_restaurant;
+      case 'last_book': return l10n.profile_setup_prompt_last_book;
+      case 'perfect_evening': return l10n.profile_setup_prompt_perfect_evening;
+      case 'travel_dream': return l10n.profile_setup_prompt_travel_dream;
+      default: return key;
+    }
   }
 
   void _showActionSheet(BuildContext context, String targetUserId) {
@@ -381,7 +384,7 @@ class _ProfileCompletionCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '%$score tamamlandı',
+                      AppLocalizations.of(context)!.profile_view_completion(score),
                       style: TextStyle(
                         fontFamily: 'JetBrainsMono',
                         fontSize: 12,
@@ -772,9 +775,6 @@ class _DotIndicator extends StatelessWidget {
       );
 }
 
-// Dart'ın toUpperCase() 'i'→'I' yapar ama Türkçe'de 'i'→'İ' olmalı
-String _trUpper(String s) => s.replaceAll('i', 'İ').toUpperCase();
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Editorial Section Header
 // ─────────────────────────────────────────────────────────────────────────────
@@ -799,7 +799,7 @@ class _EditSectionHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            _trUpper(label),
+            label.toUpperCase(),
             style: TextStyle(
               fontFamily: 'JetBrainsMono',
               fontSize: 11,
@@ -957,7 +957,7 @@ class _EditPromptCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _trUpper(question),
+                    question.toUpperCase(),
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 10,
@@ -1213,6 +1213,7 @@ class _ActionSheet extends StatelessWidget {
   const _ActionSheet({required this.targetUserId, this.targetName});
 
   Future<void> _block(BuildContext ctx) async {
+    final l10n = AppLocalizations.of(ctx)!;
     Navigator.pop(ctx);
     final confirmed = await showDialog<bool>(
       context: ctx,
@@ -1220,16 +1221,16 @@ class _ActionSheet extends StatelessWidget {
         backgroundColor: const Color(0xFF0D0D12),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Kullanıcıyı engelle',
-          style: TextStyle(
+        title: Text(
+          l10n.profile_view_action_block,
+          style: const TextStyle(
               fontFamily: 'Fraunces',
               fontStyle: FontStyle.italic,
               fontSize: 18,
               color: Colors.white),
         ),
         content: Text(
-          'Bu kullanıcıyı engellemek istediğine emin misin?',
+          l10n.profile_view_block_confirm_body,
           style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 14,
@@ -1238,15 +1239,15 @@ class _ActionSheet extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Vazgeç',
+            child: Text(l10n.profile_view_action_block_cancel,
                 style: TextStyle(
                     fontFamily: 'Manrope',
                     color: AuroraTheme.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Engelle',
-                style: TextStyle(
+            child: Text(l10n.profile_view_action_block_confirm,
+                style: const TextStyle(
                     fontFamily: 'Manrope',
                     color: AuroraTheme.auroraRed,
                     fontWeight: FontWeight.w700)),
@@ -1263,7 +1264,7 @@ class _ActionSheet extends StatelessWidget {
     });
     if (ctx.mounted) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text('${targetName ?? 'Kullanıcı'} engellendi'),
+        content: Text(l10n.profile_view_blocked_snack(targetName ?? l10n.profile_view_anonymous_user)),
         backgroundColor: const Color(0xFF10B981),
       ));
       ctx.pop();
@@ -1271,73 +1272,76 @@ class _ActionSheet extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(28)),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D0D12).withOpacity(0.90),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
-              border:
-                  Border(top: BorderSide(color: AuroraTheme.glassBorder)),
-            ),
-            child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 12),
-                  Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      gradient: AuroraTheme.redBlueGradient,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ClipRRect(
+      borderRadius:
+          const BorderRadius.vertical(top: Radius.circular(28)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D0D12).withOpacity(0.90),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(28)),
+            border:
+                Border(top: BorderSide(color: AuroraTheme.glassBorder)),
+          ),
+          child: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    gradient: AuroraTheme.redBlueGradient,
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  const SizedBox(height: 8),
-                  ListTile(
-                    leading: const Icon(Icons.block,
-                        color: AuroraTheme.auroraRed),
-                    title: const Text('Kullanıcıyı engelle',
-                        style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 15,
-                            color: Colors.white)),
-                    onTap: () => _block(context),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.flag_outlined,
-                        color: AuroraTheme.auroraGold),
-                    title: const Text('Rapor et',
-                        style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 15,
-                            color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push('/report/$targetUserId');
-                    },
-                  ),
-                  ListTile(
-                    leading:
-                        Icon(Icons.close, color: AuroraTheme.textMuted),
-                    title: Text('İptal',
-                        style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 15,
-                            color: AuroraTheme.textSecondary)),
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                ListTile(
+                  leading: const Icon(Icons.block,
+                      color: AuroraTheme.auroraRed),
+                  title: Text(l10n.profile_view_action_block,
+                      style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: Colors.white)),
+                  onTap: () => _block(context),
+                ),
+                ListTile(
+                  leading: Icon(Icons.flag_outlined,
+                      color: AuroraTheme.auroraGold),
+                  title: Text(l10n.profile_view_action_report,
+                      style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/report/$targetUserId');
+                  },
+                ),
+                ListTile(
+                  leading:
+                      Icon(Icons.close, color: AuroraTheme.textMuted),
+                  title: Text(l10n.profile_view_action_cancel,
+                      style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          color: AuroraTheme.textSecondary)),
+                  onTap: () => Navigator.pop(context),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _PhotoViewerPage extends StatefulWidget {

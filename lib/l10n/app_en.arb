@@ -458,6 +458,8 @@
       "name": { "type": "String" }
     }
   },
+  "profile_view_block_confirm_body": "Are you sure you want to block this user?",
+  "profile_view_anonymous_user": "User",
 
   "report_title": "Report user",
   "report_why": "Why are you reporting?",

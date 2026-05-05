@@ -10,15 +10,28 @@ final discoverProvider =
   final currentUserId = ref.read(currentUserIdProvider);
   final client = Supabase.instance.client;
 
-  // Fetch blocked user IDs
+  // Fetch current user gender + show_gender + blocked IDs
   List<String> blockedIds = [];
+  String? myGender;
+  String? targetGender;
   if (currentUserId != null) {
-    final blocks = await client
-        .from('blocks')
-        .select('blocked_id')
-        .eq('blocker_id', currentUserId);
-    blockedIds =
-        (blocks as List).map((b) => b['blocked_id'] as String).toList();
+    final results = await Future.wait<dynamic>([
+      client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
+      client.from('users').select('gender, show_gender').eq('id', currentUserId).maybeSingle(),
+    ]);
+    blockedIds = ((results[0] as List).map((b) => b['blocked_id'] as String).toList());
+    final userRow = results[1] as Map<String, dynamic>?;
+    myGender = userRow?['gender'] as String?;
+    final showGender = userRow?['show_gender'] as String? ?? 'opposite';
+    if (showGender == 'opposite') {
+      targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
+    } else if (showGender == 'male') {
+      targetGender = 'male';
+    } else if (showGender == 'female') {
+      targetGender = 'female';
+    } else {
+      targetGender = null;
+    }
   }
 
   var query = client.from('invitations').select(
@@ -73,7 +86,10 @@ final discoverProvider =
       ownerPhotoUrl: ownerPhotoUrl,
       cityName: cityName,
     );
-  }).whereType<InvitationModel>().where((inv) => inv.ownerPhotoUrl != null).toList();
+  }).whereType<InvitationModel>()
+      .where((inv) => inv.ownerPhotoUrl != null)
+      .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
+      .toList();
 
   list.shuffle();
   return list;

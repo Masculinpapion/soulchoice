@@ -59,7 +59,7 @@ extension InvitationCategoryExt on InvitationCategory {
       case InvitationCategory.coffee:
         return '☕';
       case InvitationCategory.gift:
-        return '💎';
+        return '🎁';
     }
   }
 }

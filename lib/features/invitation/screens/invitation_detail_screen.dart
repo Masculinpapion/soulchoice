@@ -22,12 +22,8 @@ class InvitationDetailScreen extends ConsumerStatefulWidget {
 
 class _InvitationDetailScreenState
     extends ConsumerState<InvitationDetailScreen> {
-  final _photoCtrl = PageController();
-  int _photoPage = 0;
-
   @override
   void dispose() {
-    _photoCtrl.dispose();
     super.dispose();
   }
 
@@ -122,55 +118,22 @@ class _InvitationDetailScreenState
                       height: heroH,
                       child: Stack(
                         children: [
-                          // a. Fotoğraf carousel
+                          // a. Ana fotoğraf
                           Positioned.fill(
-                            child: sortedOwnerPhotos.isEmpty
-                                ? _FallbackBg()
-                                : PageView.builder(
-                                    controller: _photoCtrl,
-                                    itemCount: sortedOwnerPhotos.length,
-                                    onPageChanged: (i) =>
-                                        setState(() => _photoPage = i),
-                                    itemBuilder: (_, i) {
-                                      final url = sortedOwnerPhotos[i]
-                                          ['url'] as String?;
-                                      return url != null
-                                          ? CachedNetworkImage(
-                                              imageUrl: url,
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.topCenter,
-                                              errorWidget: (_, __, ___) =>
-                                                  _FallbackBg(),
-                                            )
-                                          : _FallbackBg();
-                                    },
-                                  ),
+                            child: () {
+                              final url = sortedOwnerPhotos.isNotEmpty
+                                  ? sortedOwnerPhotos[0]['url'] as String?
+                                  : null;
+                              return url != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: url,
+                                      fit: BoxFit.cover,
+                                      alignment: Alignment.topCenter,
+                                      errorWidget: (_, __, ___) => _FallbackBg(),
+                                    )
+                                  : _FallbackBg();
+                            }(),
                           ),
-                          // a2. Foto sayfa noktaları
-                          if (sortedOwnerPhotos.length > 1)
-                            Positioned(
-                              top: MediaQuery.of(context).padding.top + 56,
-                              left: 0,
-                              right: 0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(
-                                  sortedOwnerPhotos.length,
-                                  (i) => AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                                    width: i == _photoPage ? 16 : 5,
-                                    height: 5,
-                                    decoration: BoxDecoration(
-                                      color: i == _photoPage
-                                          ? Colors.white
-                                          : Colors.white.withOpacity(0.35),
-                                      borderRadius: BorderRadius.circular(3),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
 
                           // b. Üst scrim
                           Positioned(

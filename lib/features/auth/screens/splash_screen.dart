@@ -38,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 6500));
+    await Future.delayed(const Duration(milliseconds: 3200));
     if (!mounted) return;
 
     final session = Supabase.instance.client.auth.currentSession;
@@ -135,7 +135,7 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 6400),
+      duration: const Duration(milliseconds: 3200),
     );
     Future.delayed(widget.delay, () {
       if (mounted) _ctrl.forward();
@@ -309,3 +309,4 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
     );
   }
 }
+

@@ -763,7 +763,7 @@ class _CategoryChips extends StatelessWidget {
                           style: const TextStyle(fontSize: 13, height: 1.2)),
                     const SizedBox(width: 5),
                     Text(
-                      c.label,
+                      c.labelFor(AppLocalizations.of(context)!),
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontWeight: FontWeight.w600,
@@ -1050,7 +1050,7 @@ class InvitationCard extends StatelessWidget {
     final day = days[dt.weekday - 1];
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
-    final venue = venueName.isNotEmpty ? venueName.toUpperCase() : category.label.toUpperCase();
+    final venue = venueName.isNotEmpty ? venueName.toUpperCase() : category.labelFor(l10n).toUpperCase();
     return '$day · $h:$m · $venue';
   }
 
@@ -1183,7 +1183,7 @@ class InvitationCard extends StatelessWidget {
                                   ],
                                 ),
                                 Text(
-                                  ownerCity?.isNotEmpty == true ? ownerCity! : category.label,
+                                  ownerCity?.isNotEmpty == true ? ownerCity! : category.labelFor(l10n),
                                   style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white.withOpacity(0.60)),
                                   overflow: TextOverflow.ellipsis,
                                 ),

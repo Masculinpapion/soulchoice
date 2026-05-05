@@ -1,3 +1,5 @@
+import 'package:soulchoice/l10n/app_localizations.dart';
+
 import 'user_model.dart';
 
 enum InvitationFlowType { invite, request }
@@ -13,22 +15,22 @@ enum InvitationCategory {
 }
 
 extension InvitationCategoryExt on InvitationCategory {
-  String get label {
+  String labelFor(AppLocalizations l10n) {
     switch (this) {
       case InvitationCategory.food:
-        return 'Yemek';
+        return l10n.category_food;
       case InvitationCategory.concert:
-        return 'Konser';
+        return l10n.category_concert;
       case InvitationCategory.travel:
-        return 'Seyahat';
+        return l10n.category_travel;
       case InvitationCategory.culture:
-        return 'Kültür';
+        return l10n.category_culture;
       case InvitationCategory.cinema:
-        return 'Sinema';
+        return l10n.category_cinema;
       case InvitationCategory.theater:
-        return 'Tiyatro';
+        return l10n.category_theater;
       case InvitationCategory.coffee:
-        return 'Kahve';
+        return l10n.category_coffee;
     }
   }
 

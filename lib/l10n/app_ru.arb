@@ -584,5 +584,13 @@
   },
   "admin_user_banned": "Пользователь заблокирован",
   "admin_btn_ban": "Заблокировать",
-  "admin_btn_dismiss": "Отклонить"
+  "admin_btn_dismiss": "Отклонить",
+
+  "category_food": "Еда",
+  "category_concert": "Концерт",
+  "category_travel": "Путешествие",
+  "category_culture": "Культура",
+  "category_cinema": "Кино",
+  "category_theater": "Театр",
+  "category_coffee": "Кофе"
 }

@@ -584,5 +584,13 @@
   },
   "admin_user_banned": "Kullanıcı yasaklandı",
   "admin_btn_ban": "Yasakla",
-  "admin_btn_dismiss": "Kapat"
+  "admin_btn_dismiss": "Kapat",
+
+  "category_food": "Yemek",
+  "category_concert": "Konser",
+  "category_travel": "Seyahat",
+  "category_culture": "Kültür",
+  "category_cinema": "Sinema",
+  "category_theater": "Tiyatro",
+  "category_coffee": "Kahve"
 }

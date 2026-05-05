@@ -80,7 +80,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       onTap: () => setState(() => _selectedCategory = null),
                     ),
                     ...InvitationCategory.values.map((cat) => _FilterChip(
-                          label: cat.label,
+                          label: cat.labelFor(AppLocalizations.of(context)!),
                           emoji: cat.emoji,
                           selected: _selectedCategory == cat,
                           onTap: () => setState(() =>

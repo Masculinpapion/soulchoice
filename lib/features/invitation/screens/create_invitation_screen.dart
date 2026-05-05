@@ -537,7 +537,7 @@ class _StepCategory extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        c.label,
+                        c.labelFor(AppLocalizations.of(context)!),
                         style: AppTextStyles.labelMedium.copyWith(
                           color: isSelected
                               ? AppColors.textPrimary

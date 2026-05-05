@@ -584,5 +584,13 @@
   },
   "admin_user_banned": "User banned",
   "admin_btn_ban": "Ban",
-  "admin_btn_dismiss": "Dismiss"
+  "admin_btn_dismiss": "Dismiss",
+
+  "category_food": "Food",
+  "category_concert": "Concert",
+  "category_travel": "Travel",
+  "category_culture": "Culture",
+  "category_cinema": "Cinema",
+  "category_theater": "Theatre",
+  "category_coffee": "Coffee"
 }

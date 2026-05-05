@@ -244,7 +244,7 @@ class _InvitationDetailScreenState
                                                   fontSize: 13)),
                                           const SizedBox(width: 4),
                                           Text(
-                                            category.label,
+                                            category.labelFor(AppLocalizations.of(context)!),
                                             style: TextStyle(
                                               fontFamily: 'JetBrainsMono',
                                               fontSize: 10,

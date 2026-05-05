@@ -824,18 +824,44 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     final start = length * 500;
     if (!_ringInitialized) {
       _ringInitialized = true;
+      _currentPage = start.toDouble();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pageController.hasClients) {
+          _pageController.jumpToPage(start);
+        }
+      });
+    } else if (_currentPage > maxPage) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
           _pageController.jumpToPage(start);
           setState(() => _currentPage = start.toDouble());
         }
       });
-    } else if (_currentPage > maxPage) {
-      // Filtre değişince mevcut sayfa yeni itemCount dışına çıkabilir → sıfırla
+    } else {
+      // autoDispose sonrası controller page 0'a döner — _currentPage'e geri zıpla
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_pageController.hasClients) return;
+        final cp = _pageController.page ?? 0;
+        if ((_currentPage - cp).abs() > 2) {
+          _pageController.jumpToPage(_currentPage.round());
+        }
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _InvitationList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cityId != widget.cityId ||
+        oldWidget.category != widget.category ||
+        oldWidget.flowType != widget.flowType) {
+      setState(() {
+        _ringInitialized = false;
+        _currentPage = 0;
+      });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
-          _pageController.jumpToPage(start);
-          setState(() => _currentPage = start.toDouble());
+          _pageController.jumpToPage(0);
         }
       });
     }

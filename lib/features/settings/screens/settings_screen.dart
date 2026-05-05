@@ -508,6 +508,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ...[
                       ('ru', '🇷🇺', 'Русский'),
                       ('en', '🇬🇧', 'English'),
+                      ('tr', '🇹🇷', 'Türkçe'),
                     ].map((entry) {
                       final (code, flag, name) = entry;
                       final isSelected =

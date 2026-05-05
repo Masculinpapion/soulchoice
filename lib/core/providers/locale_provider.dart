@@ -9,7 +9,9 @@ final localeProvider = StateNotifierProvider<LocaleNotifier, Locale?>((ref) {
 
 Locale _fromSystem() {
   final code = PlatformDispatcher.instance.locale.languageCode;
-  return Locale(code == 'ru' ? 'ru' : 'en');
+  if (code == 'ru') return const Locale('ru');
+  if (code == 'tr') return const Locale('tr');
+  return const Locale('en');
 }
 
 class LocaleNotifier extends StateNotifier<Locale?> {

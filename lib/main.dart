@@ -49,6 +49,7 @@ class SoulChoiceApp extends ConsumerWidget {
       supportedLocales: const [
         Locale('ru'),
         Locale('en'),
+        Locale('tr'),
       ],
     );
   }

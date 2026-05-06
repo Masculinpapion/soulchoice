@@ -28,6 +28,13 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Restore debug keystore
+        run: |
+          mkdir -p ~/.android
+          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > ~/.android/debug.keystore
+
+      - run: flutter pub get
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-debug

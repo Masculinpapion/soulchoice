@@ -24,12 +24,6 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
 
   static const _commonCountries = [
     ('+7', '🇷🇺 Россия'),
-    ('+90', '🇹🇷 Türkiye'),
-    ('+1', '🇺🇸 USA'),
-    ('+44', '🇬🇧 UK'),
-    ('+49', '🇩🇪 Deutschland'),
-    ('+33', '🇫🇷 France'),
-    ('+971', '🇦🇪 UAE'),
   ];
 
   Future<void> _sendOtp() async {
@@ -103,21 +97,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                            onTap: _showCountryPicker,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(_countryCode,
-                                    style: AppTextStyles.bodyLarge),
-                                const SizedBox(width: 4),
-                                const Icon(Icons.expand_more,
-                                    color: AppColors.textSecondary,
-                                    size: 18),
-                              ],
-                            ),
-                          ),
+                          Text(_countryCode, style: AppTextStyles.bodyLarge),
                           const SizedBox(width: 10),
                           Container(
                               width: 1,

@@ -450,6 +450,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decision_time_remaining => 'kalan süre';
 
   @override
+  String get decision_time_expired => 'Süre doldu';
+
+  @override
   String get decision_accept => 'Evet, kabul ediyorum';
 
   @override

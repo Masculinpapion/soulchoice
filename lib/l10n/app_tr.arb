@@ -180,6 +180,7 @@
     }
   },
   "decision_time_remaining": "kalan süre",
+  "decision_time_expired": "Süre doldu",
   "decision_accept": "Evet, kabul ediyorum",
   "decision_reject": "Hayır, reddediyorum",
   "decision_fallback_name": "Kişi",

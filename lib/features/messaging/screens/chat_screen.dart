@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -194,6 +195,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               _scrollToBottom();
               _markRead();
             }
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'match_id',
+            value: widget.matchId,
+          ),
+          callback: (payload) {
+            if (!mounted) return;
+            final updated = MessageModel.fromJson(payload.newRecord);
+            setState(() {
+              final idx = _messages.indexWhere((m) => m.id == updated.id);
+              if (idx != -1) _messages[idx] = updated;
+            });
           },
         )
         .subscribe();
@@ -592,10 +611,10 @@ class _ChatAppBar extends StatelessWidget {
                         ),
                         child: ClipOval(
                           child: photoUrl != null
-                              ? Image.network(
-                                  photoUrl!,
+                              ? CachedNetworkImage(
+                                  imageUrl: photoUrl!,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => _DefaultAvatar(name: otherName),
+                                  errorWidget: (_, __, ___) => _DefaultAvatar(name: otherName),
                                 )
                               : _DefaultAvatar(name: otherName),
                         ),

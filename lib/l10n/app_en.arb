@@ -180,6 +180,7 @@
     }
   },
   "decision_time_remaining": "time remaining",
+  "decision_time_expired": "Time expired",
   "decision_accept": "Yes, I accept",
   "decision_reject": "No, decline",
   "decision_fallback_name": "Person",

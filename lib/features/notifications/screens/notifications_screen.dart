@@ -43,6 +43,17 @@ class _NotificationsScreenState
           ),
           callback: (_) => ref.invalidate(notificationsProvider),
         )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: uid,
+          ),
+          callback: (_) => ref.invalidate(notificationsProvider),
+        )
         .subscribe();
   }
 

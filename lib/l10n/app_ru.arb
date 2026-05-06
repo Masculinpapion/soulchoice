@@ -180,6 +180,7 @@
     }
   },
   "decision_time_remaining": "осталось времени",
+  "decision_time_expired": "Время истекло",
   "decision_accept": "Да, принимаю",
   "decision_reject": "Нет, отказаться",
   "decision_fallback_name": "Пользователь",

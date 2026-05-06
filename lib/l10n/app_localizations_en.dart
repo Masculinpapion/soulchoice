@@ -448,6 +448,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decision_time_remaining => 'time remaining';
 
   @override
+  String get decision_time_expired => 'Time expired';
+
+  @override
   String get decision_accept => 'Yes, I accept';
 
   @override

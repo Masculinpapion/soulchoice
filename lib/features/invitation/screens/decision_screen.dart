@@ -23,6 +23,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
   late AnimationController _pillController;
   late Animation<double> _pillGlow;
   bool _isLoading = false;
+  bool get _timeExpired => _remainingSeconds == 0;
 
   String? _applicationId;
   String? _applicantId;
@@ -173,11 +174,18 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                 ),
                 const SizedBox(height: 24),
                 Text(_timeLabel, style: AppTextStyles.monoLarge.copyWith(color: AppColors.red)),
-                Text(AppLocalizations.of(context)!.decision_time_remaining, style: AppTextStyles.monoSmall),
+                Text(
+                  _timeExpired
+                      ? AppLocalizations.of(context)!.decision_time_expired
+                      : AppLocalizations.of(context)!.decision_time_remaining,
+                  style: AppTextStyles.monoSmall.copyWith(
+                    color: _timeExpired ? AppColors.error : null,
+                  ),
+                ),
                 const Spacer(),
                 ScButton(
                   label: AppLocalizations.of(context)!.decision_accept,
-                  onPressed: _isLoading ? null : _accept,
+                  onPressed: _isLoading || _timeExpired ? null : _accept,
                   isLoading: _isLoading,
                   icon: Icons.check_circle_outline,
                 ),
@@ -185,7 +193,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                 ScButton(
                   label: AppLocalizations.of(context)!.decision_reject,
                   variant: ScButtonVariant.ghost,
-                  onPressed: _isLoading ? null : _reject,
+                  onPressed: _isLoading || _timeExpired ? null : _reject,
                 ),
                 const SizedBox(height: 8),
               ],

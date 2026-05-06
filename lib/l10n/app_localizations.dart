@@ -916,6 +916,12 @@ abstract class AppLocalizations {
   /// **'time remaining'**
   String get decision_time_remaining;
 
+  /// No description provided for @decision_time_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Time expired'**
+  String get decision_time_expired;
+
   /// No description provided for @decision_accept.
   ///
   /// In en, this message translates to:

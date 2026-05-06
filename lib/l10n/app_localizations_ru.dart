@@ -451,6 +451,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decision_time_remaining => 'осталось времени';
 
   @override
+  String get decision_time_expired => 'Время истекло';
+
+  @override
   String get decision_accept => 'Да, принимаю';
 
   @override

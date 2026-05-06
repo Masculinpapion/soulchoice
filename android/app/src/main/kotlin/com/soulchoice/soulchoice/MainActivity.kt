@@ -1,22 +1,37 @@
 package com.soulchoice.soulchoice
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class MainActivity : FlutterActivity() {
 
     private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(5, TimeUnit.MINUTES)
         .readTimeout(2, TimeUnit.MINUTES)
+        .protocols(listOf(Protocol.HTTP_1_1))
         .build()
+
+    private fun compressToJpeg(bytes: ByteArray): ByteArray {
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            ?: throw IOException("Failed to decode image bytes")
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 82, baos)
+        bitmap.recycle()
+        return baos.toByteArray()
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -32,7 +47,13 @@ class MainActivity : FlutterActivity() {
 
                     thread {
                         try {
-                            val body = bytes.toRequestBody(contentType.toMediaType())
+                            val (uploadBytes, uploadContentType) = if (contentType == "image/png") {
+                                Pair(compressToJpeg(bytes), "image/jpeg")
+                            } else {
+                                Pair(bytes, contentType)
+                            }
+
+                            val body = uploadBytes.toRequestBody(uploadContentType.toMediaType())
                             val request = Request.Builder()
                                 .url(url)
                                 .put(body)
@@ -54,7 +75,7 @@ class MainActivity : FlutterActivity() {
                             }
                         } catch (e: Exception) {
                             runOnUiThread {
-                                result.error("UPLOAD_ERROR", e.message ?: "Unknown error", null)
+                                result.error("UPLOAD_ERROR", "${e.javaClass.simpleName}: ${e.message}", null)
                             }
                         }
                     }

@@ -195,7 +195,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           // Yeni fotoğraf: native HttpURLConnection ile yükle + DB'ye ekle
           // dart:io HttpClient Android 15'te büyük body gönderemiyor (408 timeout);
           // Kotlin HttpURLConnection bu sorunu yaşamıyor.
-          final path = '$uid/${_uniqueId()}.png';
+          final path = '$uid/${_uniqueId()}.jpg';
           final accessToken = client.auth.currentSession!.accessToken;
 
           await NativeUploader.uploadBytes(

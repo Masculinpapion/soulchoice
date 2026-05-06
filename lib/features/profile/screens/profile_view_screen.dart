@@ -83,8 +83,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             final education = user['education'] as String?;
             final city = user['city'] as Map<String, dynamic>?;
             final cityName = city?['name'] as String? ?? '';
-            final interests =
-                (user['interests'] as List?)?.cast<String>() ?? [];
+            final interests = ((user['interests'] as List?)?.cast<String>() ?? [])
+                .toSet().toList();
             final photos = photosAsync.asData?.value ?? [];
 
             Widget trailing;
@@ -170,7 +170,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                 children: List.generate(
                                   interests.length,
                                   (i) => _EditInterestPill(
-                                    label: interests[i],
+                                    label: _interestLabel(interests[i], l10n),
                                     isFirst: i == 0,
                                   ),
                                 ),
@@ -881,6 +881,28 @@ class _EditBio extends StatelessWidget {
           ],
         ),
       );
+}
+
+String _interestLabel(String key, AppLocalizations l10n) {
+  switch (key) {
+    case 'art': return l10n.profile_setup_interest_art;
+    case 'music': return l10n.profile_setup_interest_music;
+    case 'sports': return l10n.profile_setup_interest_sports;
+    case 'books': return l10n.profile_setup_interest_books;
+    case 'travel': return l10n.profile_setup_interest_travel;
+    case 'food': return l10n.profile_setup_interest_food;
+    case 'film': return l10n.profile_setup_interest_film;
+    case 'theatre': return l10n.profile_setup_interest_theatre;
+    case 'dance': return l10n.profile_setup_interest_dance;
+    case 'yoga': return l10n.profile_setup_interest_yoga;
+    case 'photography': return l10n.profile_setup_interest_photography;
+    case 'games': return l10n.profile_setup_interest_games;
+    case 'technology': return l10n.profile_setup_interest_technology;
+    case 'nature': return l10n.profile_setup_interest_nature;
+    case 'history': return l10n.profile_setup_interest_history;
+    case 'fashion': return l10n.profile_setup_interest_fashion;
+    default: return key;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

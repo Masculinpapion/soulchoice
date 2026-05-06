@@ -203,7 +203,7 @@ class _InvitationDetailScreenState
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           category == InvitationCategory.bar
-                                              ? Image.asset('assets/icons/bar.png', width: 18, height: 18)
+                                              ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                                               : Text(category.emoji,
                                                   style: const TextStyle(fontSize: 13)),
                                           const SizedBox(width: 4),

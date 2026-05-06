@@ -759,7 +759,7 @@ class _CategoryChips extends StatelessWidget {
                         ),
                       )
                     else if (c == InvitationCategory.bar)
-                      Image.asset('assets/icons/bar.png', width: 16, height: 16)
+                      Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else
                       Text(c.emoji,
                           style: const TextStyle(fontSize: 13, height: 1.2)),
@@ -1243,7 +1243,7 @@ class InvitationCard extends StatelessWidget {
                       ),
                       child: Center(
                         child: category == InvitationCategory.bar
-                            ? Image.asset('assets/icons/bar.png', width: 20, height: 20)
+                            ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : Text(
                                 category.emoji,
                                 style: TextStyle(

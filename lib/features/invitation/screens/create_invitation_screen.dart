@@ -529,7 +529,7 @@ class _StepCategory extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       c == InvitationCategory.bar
-                          ? Image.asset('assets/icons/bar.png', width: 32, height: 32)
+                          ? Image.asset('assets/icons/bar.png', width: 28, height: 28)
                           : Text(
                               c.emoji,
                               style: TextStyle(

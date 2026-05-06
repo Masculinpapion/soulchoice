@@ -74,7 +74,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           label: cat.labelFor(AppLocalizations.of(context)!),
                           emoji: cat.emoji,
                           iconWidget: cat == InvitationCategory.bar
-                              ? Image.asset('assets/icons/bar.png', width: 16, height: 16)
+                              ? Image.asset('assets/icons/bar.png', width: 12, height: 12)
                               : null,
                           selected: _selectedCategory == cat,
                           onTap: () => setState(() =>
@@ -351,7 +351,7 @@ class _DiscoverCard extends StatelessWidget {
                           ),
                         ),
                         child: inv.category == InvitationCategory.bar
-                            ? Image.asset('assets/icons/bar.png', width: 20, height: 20)
+                            ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : Text(
                                 inv.category.emoji,
                                 style: TextStyle(

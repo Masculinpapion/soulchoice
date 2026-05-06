@@ -526,50 +526,38 @@ class _HeroSectionState extends State<_HeroSection> {
                 setState(() => _current = i);
                 widget.onPageChanged(i);
               },
-              itemBuilder: (_, i) => CachedNetworkImage(
-                imageUrl: widget.photos[i]['url'] as String,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
+              itemBuilder: (context, i) => GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTapUp: widget.photos.length > 1
+                    ? (details) {
+                        final w = MediaQuery.of(context).size.width;
+                        if (details.localPosition.dx < w / 2) {
+                          if (_current > 0) {
+                            _ctrl.previousPage(
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                            );
+                          }
+                        } else {
+                          if (_current < widget.photos.length - 1) {
+                            _ctrl.nextPage(
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                            );
+                          }
+                        }
+                      }
+                    : null,
+                child: CachedNetworkImage(
+                  imageUrl: widget.photos[i]['url'] as String,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
+                ),
               ),
             )
           else
             _NoPhotoPlaceholder(),
-
-          // ── tap zones: sol yarı → önceki, sağ yarı → sonraki ──────────
-          if (widget.photos.length > 1)
-            Positioned.fill(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        if (_current > 0) {
-                          _ctrl.previousPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        if (_current < widget.photos.length - 1) {
-                          _ctrl.nextPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOut,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
           // ── b. Top scrim ──────────────────────────────────────────────
           Positioned(

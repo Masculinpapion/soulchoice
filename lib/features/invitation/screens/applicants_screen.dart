@@ -19,27 +19,31 @@ class ApplicantsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(AppLocalizations.of(context)!.applicants_title, style: AppTextStyles.titleMedium),
-        actions: [
-          async.maybeWhen(
-            data: (list) => Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(child: Text(AppLocalizations.of(context)!.applicants_count(list.length), style: AppTextStyles.mono)),
-            ),
-            orElse: () => const SizedBox.shrink(),
-          ),
-        ],
-      ),
       body: AmbientBackground(
         child: SafeArea(
-          top: false,
-          child: async.when(
+          child: Column(
+            children: [
+              // Top bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 16, 0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      onPressed: () => context.pop(),
+                    ),
+                    Expanded(
+                      child: Text(AppLocalizations.of(context)!.applicants_title, style: AppTextStyles.titleMedium),
+                    ),
+                    async.maybeWhen(
+                      data: (list) => Text(AppLocalizations.of(context)!.applicants_count(list.length), style: AppTextStyles.mono),
+                      orElse: () => const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+              ),
+              // Content
+              Expanded(child: async.when(
           loading: () => const Center(child: CircularProgressIndicator(color: AppColors.red)),
           error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: AppColors.textSecondary))),
           data: (applicants) {
@@ -121,10 +125,12 @@ class ApplicantsScreen extends ConsumerWidget {
               ),
             );
           },
-        ),
-        ),
+          )),
+        ],
       ),
-    );
+    ),
+  ),
+);
   }
 }
 

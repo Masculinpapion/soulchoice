@@ -233,7 +233,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                     : l10n.profile_view_cta_come,
                                 onTap: isOwnProfile
                                     ? () =>
-                                        context.push('/profile/setup')
+                                        context.push('/profile/setup', extra: 'edit')
                                     : () => context.pop(),
                               ),
                             ),
@@ -322,7 +322,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     return _ProfileCompletionCard(
       score: score,
       hint: score == 100 ? null : hint,
-      onTap: route != null ? () => context.push(route!) : null,
+      onTap: route != null ? () => context.push(route!, extra: 'edit') : null,
     );
   }
 

@@ -539,6 +539,41 @@ class _HeroSectionState extends State<_HeroSection> {
           else
             _NoPhotoPlaceholder(),
 
+          // ── tap zones: sol yarı → önceki, sağ yarı → sonraki ──────────
+          if (widget.photos.length > 1)
+            Positioned.fill(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        if (_current > 0) {
+                          _ctrl.previousPage(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOut,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        if (_current < widget.photos.length - 1) {
+                          _ctrl.nextPage(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOut,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
           // ── b. Top scrim ──────────────────────────────────────────────
           Positioned(
             top: 0,

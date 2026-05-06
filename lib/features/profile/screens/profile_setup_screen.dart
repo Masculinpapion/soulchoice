@@ -331,7 +331,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: ScButton(label: _step < _stepCount - 1 ? l10n.profile_setup_btn_next : l10n.profile_setup_btn_add_photos, onPressed: _isSaving ? null : _next, isLoading: _isSaving),
+                child: ScButton(label: l10n.profile_setup_btn_next, onPressed: _isSaving ? null : _next, isLoading: _isSaving),
               ),
             ],
           ),

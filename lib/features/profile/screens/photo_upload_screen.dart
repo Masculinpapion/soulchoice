@@ -306,14 +306,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
-        ),
-      ),
       body: AmbientBackground(
         child: SafeArea(
           child: _isLoading
@@ -321,10 +313,17 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2, color: AppColors.red))
               : Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+                        onPressed: () => context.pop(),
+                        padding: EdgeInsets.zero,
+                        alignment: Alignment.centerLeft,
+                      ),
+                      const SizedBox(height: 16),
                       Text(
                         widget.isEditing
                             ? AppLocalizations.of(context)!.photo_upload_title_edit
@@ -362,7 +361,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                         onPressed: _canSave && !_isUploading ? _save : null,
                         isLoading: _isUploading,
                       ),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 ),

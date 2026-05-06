@@ -1,14 +1,11 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/supabase_constants.dart';
@@ -19,21 +16,21 @@ import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
-// Her slot ya boş, ya yeni yerel dosya, ya da mevcut uzak fotoğraf
+// Her slot ya boş, ya yeni local bytes, ya da mevcut uzak fotoğraf
 class _PhotoEntry {
-  final File? file;
+  final Uint8List? bytes; // yeni fotoğraf — memory'de tutulur, file I/O yok
   final String? url;
   final String? remoteId;
 
-  const _PhotoEntry._({this.file, this.url, this.remoteId});
+  const _PhotoEntry._({this.bytes, this.url, this.remoteId});
 
   static const empty = _PhotoEntry._();
-  factory _PhotoEntry.local(File f) => _PhotoEntry._(file: f);
+  factory _PhotoEntry.local(Uint8List b) => _PhotoEntry._(bytes: b);
   factory _PhotoEntry.remote(String u, String id) =>
       _PhotoEntry._(url: u, remoteId: id);
 
-  bool get isEmpty => file == null && url == null;
-  bool get isLocal => file != null;
+  bool get isEmpty => bytes == null && url == null;
+  bool get isLocal => bytes != null;
   bool get isRemote => url != null;
 }
 
@@ -121,25 +118,8 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       );
       if (croppedBytes == null || !mounted) return;
 
-      // Kırpılmış bytes'ı sıkıştır (max 1080px, quality 72) → upload hızını artırır
-      final compressed = await FlutterImageCompress.compressWithList(
-        croppedBytes,
-        minWidth: 1080,
-        minHeight: 1440,
-        quality: 72,
-        format: CompressFormat.jpeg,
-      );
-
-      // Sıkıştırılmış bytes'ı geçici dosyaya yaz
-      final tmpDir = await getTemporaryDirectory();
-      final tmpFile = File(
-        '${tmpDir.path}/crop_${DateTime.now().millisecondsSinceEpoch}.jpg',
-      );
-      await tmpFile.writeAsBytes(compressed);
-
-      // Slot'ta zaten bir local temp dosya varsa üzerine yazılmadan önce sil
-      _photos[index].file?.delete().catchError((_) {});
-      setState(() => _photos[index] = _PhotoEntry.local(tmpFile));
+      // croppedBytes'ı direkt memory'de sakla — dosya yazmak yok, compression yok
+      setState(() => _photos[index] = _PhotoEntry.local(croppedBytes));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -152,7 +132,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   }
 
   void _removePhoto(int index) {
-    _photos[index].file?.delete().catchError((_) {});
     setState(() => _photos[index] = _PhotoEntry.empty);
   }
 
@@ -211,16 +190,12 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
         if (entry.isLocal) {
           // Yeni fotoğraf: storage'a yükle + DB'ye ekle
-          final file = entry.file!;
-          final path = '$uid/${_uniqueId()}.jpg';
+          final path = '$uid/${_uniqueId()}.png';
 
-          // uploadBinary kullan — File.upload() Dart HTTP client'ta body
-          // göndermeden uzun süre bekleyebiliyor (platform bug)
-          final bytes = await file.readAsBytes();
           await client.storage
               .from(SupabaseConstants.profilePhotosBucket)
-              .uploadBinary(path, bytes,
-                  fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
+              .uploadBinary(path, entry.bytes!,
+                  fileOptions: const FileOptions(upsert: true, contentType: 'image/png'));
           uploadedPaths.add(path); // rollback: upload başarılı, izle
 
           final url = client.storage
@@ -237,8 +212,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           }).select('id').single();
           insertedDbIds.add(inserted['id'] as String); // rollback: DB kaydı izle
           keptIds.add(inserted['id'] as String);
-          // Upload tamamlandı, geçici dosyaya artık gerek yok
-          file.delete().catchError((_) {});
         } else {
           // Mevcut fotoğraf: sıra ve primary güncelle
           await client
@@ -408,7 +381,7 @@ class _PhotoSlot extends StatelessWidget {
           children: [
             // Fotoğraf (yerel file veya uzak URL)
             if (entry.isLocal)
-              Image.file(entry.file!, fit: BoxFit.cover)
+              Image.memory(entry.bytes!, fit: BoxFit.cover)
             else if (entry.isRemote)
               CachedNetworkImage(
                 imageUrl: entry.url!,

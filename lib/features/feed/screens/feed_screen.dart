@@ -758,6 +758,8 @@ class _CategoryChips extends StatelessWidget {
                           color: isSelected ? Colors.white : AuroraTheme.auroraRed,
                         ),
                       )
+                    else if (c == InvitationCategory.bar)
+                      Image.asset('assets/icons/bar.png', width: 18, height: 18)
                     else
                       Text(c.emoji,
                           style: const TextStyle(fontSize: 13, height: 1.2)),
@@ -1240,13 +1242,15 @@ class InvitationCard extends StatelessWidget {
                         border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
                       ),
                       child: Center(
-                        child: Text(
-                          category.emoji,
-                          style: TextStyle(
-                            fontSize: category == InvitationCategory.concert ? 18 : 14,
-                            color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                          ),
-                        ),
+                        child: category == InvitationCategory.bar
+                            ? Image.asset('assets/icons/bar.png', width: 20, height: 20)
+                            : Text(
+                                category.emoji,
+                                style: TextStyle(
+                                  fontSize: category == InvitationCategory.concert ? 18 : 14,
+                                  color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                                ),
+                              ),
                       ),
                     ),
                   ),

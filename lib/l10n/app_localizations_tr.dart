@@ -775,6 +775,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_step_age_range => 'Yaş aralığı';
 
   @override
+  String get profile_setup_validation_gender => 'Cinsiyet seçimi zorunludur';
+
+  @override
+  String get profile_setup_validation_city => 'Şehir seçimi zorunludur';
+
+  @override
   String get profile_setup_validation_name => 'İsim boş olamaz';
 
   @override

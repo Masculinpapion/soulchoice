@@ -350,6 +350,8 @@
   "profile_setup_step_prompts": "Sorular",
   "profile_setup_step_show_gender": "Gösterim tercihi",
   "profile_setup_step_age_range": "Yaş aralığı",
+  "profile_setup_validation_gender": "Cinsiyet seçimi zorunludur",
+  "profile_setup_validation_city": "Şehir seçimi zorunludur",
   "profile_setup_validation_name": "İsim boş olamaz",
   "profile_setup_validation_age": "Yaş {min} ile {max} arasında olmalı",
   "@profile_setup_validation_age": {

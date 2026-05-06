@@ -774,6 +774,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_step_age_range => 'Age range';
 
   @override
+  String get profile_setup_validation_gender => 'Please select a gender';
+
+  @override
+  String get profile_setup_validation_city => 'Please select a city';
+
+  @override
   String get profile_setup_validation_name => 'Name cannot be empty';
 
   @override

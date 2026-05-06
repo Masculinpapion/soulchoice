@@ -350,6 +350,8 @@
   "profile_setup_step_prompts": "Questions",
   "profile_setup_step_show_gender": "Display preference",
   "profile_setup_step_age_range": "Age range",
+  "profile_setup_validation_gender": "Please select a gender",
+  "profile_setup_validation_city": "Please select a city",
   "profile_setup_validation_name": "Name cannot be empty",
   "profile_setup_validation_age": "Age must be between {min} and {max}",
   "@profile_setup_validation_age": {

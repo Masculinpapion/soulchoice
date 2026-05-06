@@ -350,6 +350,8 @@
   "profile_setup_step_prompts": "Вопросы",
   "profile_setup_step_show_gender": "Настройки показа",
   "profile_setup_step_age_range": "Возрастной диапазон",
+  "profile_setup_validation_gender": "Пожалуйста, выберите пол",
+  "profile_setup_validation_city": "Пожалуйста, выберите город",
   "profile_setup_validation_name": "Имя не может быть пустым",
   "profile_setup_validation_age": "Возраст должен быть от {min} до {max}",
   "@profile_setup_validation_age": {

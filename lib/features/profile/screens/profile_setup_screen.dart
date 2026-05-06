@@ -150,6 +150,20 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         return;
       }
     }
+    if (_step == 1 && (_gender == null || _gender!.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.profile_setup_validation_gender),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+    if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.profile_setup_validation_city),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
     if (_step < _stepCount - 1) {
       setState(() => _step++);
       _pageController.nextPage(

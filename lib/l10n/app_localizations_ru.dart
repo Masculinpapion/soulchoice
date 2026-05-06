@@ -777,6 +777,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_step_age_range => 'Возрастной диапазон';
 
   @override
+  String get profile_setup_validation_gender => 'Пожалуйста, выберите пол';
+
+  @override
+  String get profile_setup_validation_city => 'Пожалуйста, выберите город';
+
+  @override
   String get profile_setup_validation_name => 'Имя не может быть пустым';
 
   @override

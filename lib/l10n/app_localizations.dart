@@ -1510,6 +1510,9 @@ abstract class AppLocalizations {
   /// **'Age range'**
   String get profile_setup_step_age_range;
 
+  String get profile_setup_validation_gender;
+  String get profile_setup_validation_city;
+
   /// No description provided for @profile_setup_validation_name.
   ///
   /// In en, this message translates to:

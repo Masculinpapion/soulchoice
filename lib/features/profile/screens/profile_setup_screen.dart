@@ -235,6 +235,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
+      resizeToAvoidBottomInset: true,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -342,30 +343,32 @@ class _StepNameAge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_name_question, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 32),
-          TextField(
-            controller: nameController,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_name_label),
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            keyboardType: TextInputType.number,
-            style: AppTextStyles.bodyLarge,
-            initialValue: age?.toString(),
-            onChanged: (v) => onAgeChanged(int.tryParse(v)),
-            decoration: InputDecoration(
-              labelText: AppLocalizations.of(context)!.profile_setup_age_label(AppConstants.minAge, AppConstants.maxAge),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_name_question, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 32),
+            TextField(
+              controller: nameController,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_name_label),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              style: AppTextStyles.bodyLarge,
+              initialValue: age?.toString(),
+              onChanged: (v) => onAgeChanged(int.tryParse(v)),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.profile_setup_age_label(AppConstants.minAge, AppConstants.maxAge),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -379,28 +382,30 @@ class _StepGender extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_step_gender, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 40),
-          _GenderOption(
-            label: AppLocalizations.of(context)!.profile_setup_gender_female,
-            icon: Icons.female,
-            isSelected: selected == 'female',
-            onTap: () => onSelected('female'),
-          ),
-          const SizedBox(height: 12),
-          _GenderOption(
-            label: AppLocalizations.of(context)!.profile_setup_gender_male,
-            icon: Icons.male,
-            isSelected: selected == 'male',
-            onTap: () => onSelected('male'),
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_step_gender, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 40),
+            _GenderOption(
+              label: AppLocalizations.of(context)!.profile_setup_gender_female,
+              icon: Icons.female,
+              isSelected: selected == 'female',
+              onTap: () => onSelected('female'),
+            ),
+            const SizedBox(height: 12),
+            _GenderOption(
+              label: AppLocalizations.of(context)!.profile_setup_gender_male,
+              icon: Icons.male,
+              isSelected: selected == 'male',
+              onTap: () => onSelected('male'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -488,54 +493,56 @@ class _StepCityState extends State<_StepCity> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_city_question, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 24),
-          TextField(
-            controller: _searchCtrl,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.profile_setup_city_search,
-              prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
-              suffixIcon: _searchCtrl.text.isNotEmpty
-                  ? GestureDetector(
-                      onTap: () => _searchCtrl.clear(),
-                      child: const Icon(Icons.close, color: AppColors.textTertiary, size: 18),
-                    )
-                  : null,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_city_question, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 24),
+            TextField(
+              controller: _searchCtrl,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.profile_setup_city_search,
+                prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
+                suffixIcon: _searchCtrl.text.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () => _searchCtrl.clear(),
+                        child: const Icon(Icons.close, color: AppColors.textTertiary, size: 18),
+                      )
+                    : null,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          if (_loading)
-            const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.red))
-          else if (_filtered.isEmpty)
-            Center(child: Text(AppLocalizations.of(context)!.profile_setup_city_not_found, style: AppTextStyles.bodyMedium))
-          else
-            ..._filtered.map((c) {
-              final name = c['name'] as String;
-              final isSelected = widget.selectedCityId == name;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: GlassCard(
-                  borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
-                  onTap: () => widget.onSelected(name),
-                  child: Row(
-                    children: [
-                      Text(name, style: AppTextStyles.bodyLarge),
-                      const Spacer(),
-                      if (isSelected)
-                        const Icon(Icons.check_circle, color: AppColors.red, size: 20),
-                    ],
+            const SizedBox(height: 20),
+            if (_loading)
+              const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.red))
+            else if (_filtered.isEmpty)
+              Center(child: Text(AppLocalizations.of(context)!.profile_setup_city_not_found, style: AppTextStyles.bodyMedium))
+            else
+              ..._filtered.map((c) {
+                final name = c['name'] as String;
+                final isSelected = widget.selectedCityId == name;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: GlassCard(
+                    borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
+                    onTap: () => widget.onSelected(name),
+                    child: Row(
+                      children: [
+                        Text(name, style: AppTextStyles.bodyLarge),
+                        const Spacer(),
+                        if (isSelected)
+                          const Icon(Icons.check_circle, color: AppColors.red, size: 20),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
-        ],
+                );
+              }),
+          ],
+        ),
       ),
     );
   }
@@ -548,27 +555,29 @@ class _StepBio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_bio_title, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.profile_setup_bio_subtitle, style: AppTextStyles.bodyMedium),
-          const SizedBox(height: 32),
-          TextField(
-            controller: bioController,
-            maxLength: AppConstants.maxBioLength,
-            maxLines: 5,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.profile_setup_bio_hint,
-              alignLabelWithHint: true,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_bio_title, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text(AppLocalizations.of(context)!.profile_setup_bio_subtitle, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 32),
+            TextField(
+              controller: bioController,
+              maxLength: AppConstants.maxBioLength,
+              maxLines: 5,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.profile_setup_bio_hint,
+                alignLabelWithHint: true,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -582,28 +591,30 @@ class _StepJobEducation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_job_title, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.profile_setup_step_job_edu, style: AppTextStyles.bodyMedium),
-          const SizedBox(height: 32),
-          TextField(
-            controller: jobController,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_job_label),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            controller: educationController,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_education_label),
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_job_title, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text(AppLocalizations.of(context)!.profile_setup_step_job_edu, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 32),
+            TextField(
+              controller: jobController,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_job_label),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: educationController,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_education_label),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -641,38 +652,40 @@ class _StepInterests extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(l10n.profile_setup_interests_title, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 8),
-          Text(l10n.profile_setup_interests_subtitle, style: AppTextStyles.bodyMedium),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: allInterests.map((interest) {
-              final isSelected = selected.contains(interest);
-              return FilterChip(
-                label: Text(_label(interest, l10n)),
-                selected: isSelected,
-                onSelected: (_) => onToggle(interest),
-                backgroundColor: AppColors.glassBg,
-                selectedColor: AppColors.red.withOpacity(0.2),
-                checkmarkColor: AppColors.red,
-                side: BorderSide(
-                  color: isSelected ? AppColors.red : AppColors.glassBorder,
-                ),
-                labelStyle: AppTextStyles.labelMedium.copyWith(
-                  color: isSelected ? AppColors.red : AppColors.textSecondary,
-                ),
-              );
-            }).toList(),
-          ),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(l10n.profile_setup_interests_title, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text(l10n.profile_setup_interests_subtitle, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: allInterests.map((interest) {
+                final isSelected = selected.contains(interest);
+                return FilterChip(
+                  label: Text(_label(interest, l10n)),
+                  selected: isSelected,
+                  onSelected: (_) => onToggle(interest),
+                  backgroundColor: AppColors.glassBg,
+                  selectedColor: AppColors.red.withOpacity(0.2),
+                  checkmarkColor: AppColors.red,
+                  side: BorderSide(
+                    color: isSelected ? AppColors.red : AppColors.glassBorder,
+                  ),
+                  labelStyle: AppTextStyles.labelMedium.copyWith(
+                    color: isSelected ? AppColors.red : AppColors.textSecondary,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -694,34 +707,36 @@ class _StepShowGender extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(l10n.profile_setup_show_gender_title, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 8),
-          Text(l10n.profile_setup_show_gender_subtitle, style: AppTextStyles.bodyMedium),
-          const SizedBox(height: 32),
-          ..._getOptions(l10n).map((opt) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: GlassCard(
-                  borderColor: selected == opt.$1 ? AppColors.red : AppColors.glassBorder,
-                  onTap: () => onSelected(opt.$1),
-                  child: Row(
-                    children: [
-                      Icon(opt.$3, color: selected == opt.$1 ? AppColors.red : AppColors.textSecondary, size: 26),
-                      const SizedBox(width: 16),
-                      Text(opt.$2, style: AppTextStyles.titleMedium),
-                      const Spacer(),
-                      if (selected == opt.$1)
-                        const Icon(Icons.check_circle, color: AppColors.red, size: 22),
-                    ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(l10n.profile_setup_show_gender_title, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text(l10n.profile_setup_show_gender_subtitle, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 32),
+            ..._getOptions(l10n).map((opt) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: GlassCard(
+                    borderColor: selected == opt.$1 ? AppColors.red : AppColors.glassBorder,
+                    onTap: () => onSelected(opt.$1),
+                    child: Row(
+                      children: [
+                        Icon(opt.$3, color: selected == opt.$1 ? AppColors.red : AppColors.textSecondary, size: 26),
+                        const SizedBox(width: 16),
+                        Text(opt.$2, style: AppTextStyles.titleMedium),
+                        const Spacer(),
+                        if (selected == opt.$1)
+                          const Icon(Icons.check_circle, color: AppColors.red, size: 22),
+                      ],
+                    ),
                   ),
-                ),
-              )),
-        ],
+                )),
+          ],
+        ),
       ),
     );
   }
@@ -736,34 +751,36 @@ class _StepAgeRange extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.profile_setup_age_range_title, style: AppTextStyles.displayMedium),
-          const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.profile_setup_age_range_subtitle, style: AppTextStyles.bodyMedium),
-          const SizedBox(height: 40),
-          Center(
-            child: Text(
-              AppLocalizations.of(context)!.profile_setup_age_range_value(minAge, maxAge),
-              style: AppTextStyles.titleMedium.copyWith(fontSize: 22),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(AppLocalizations.of(context)!.profile_setup_age_range_title, style: AppTextStyles.displayMedium),
+            const SizedBox(height: 8),
+            Text(AppLocalizations.of(context)!.profile_setup_age_range_subtitle, style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 40),
+            Center(
+              child: Text(
+                AppLocalizations.of(context)!.profile_setup_age_range_value(minAge, maxAge),
+                style: AppTextStyles.titleMedium.copyWith(fontSize: 22),
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          RangeSlider(
-            values: RangeValues(minAge.toDouble(), maxAge.toDouble()),
-            min: 21,
-            max: 60,
-            divisions: 39,
-            activeColor: AppColors.red,
-            inactiveColor: AppColors.glassBorder,
-            labels: RangeLabels('$minAge', '$maxAge'),
-            onChanged: (v) => onChanged(v.start.round(), v.end.round()),
-          ),
-        ],
+            const SizedBox(height: 16),
+            RangeSlider(
+              values: RangeValues(minAge.toDouble(), maxAge.toDouble()),
+              min: 21,
+              max: 60,
+              divisions: 39,
+              activeColor: AppColors.red,
+              inactiveColor: AppColors.glassBorder,
+              labels: RangeLabels('$minAge', '$maxAge'),
+              onChanged: (v) => onChanged(v.start.round(), v.end.round()),
+            ),
+          ],
+        ),
       ),
     );
   }

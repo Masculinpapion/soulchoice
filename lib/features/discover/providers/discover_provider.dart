@@ -92,5 +92,8 @@ final discoverProvider =
       .toList();
 
   list.shuffle();
-  return list;
+
+  // Kullanıcı başına 1 kart — aynı kişinin birden fazla daveti olsa bile
+  final seen = <String>{};
+  return list.where((inv) => inv.owner?.id != null && seen.add(inv.owner!.id)).toList();
 });

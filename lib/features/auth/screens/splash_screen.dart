@@ -25,7 +25,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1400),
     );
     _fadeIn = CurvedAnimation(
         parent: _controller,
@@ -38,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 3200));
+    await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
 
     final session = Supabase.instance.client.auth.currentSession;
@@ -135,7 +135,7 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 1200),
     );
     Future.delayed(widget.delay, () {
       if (mounted) _ctrl.forward();
@@ -155,8 +155,8 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
       builder: (context, _) {
         final t = _ctrl.value;
         final floatY = widget.isBlue
-            ? -math.sin(t * 4 * math.pi) * 10.0
-            : math.sin(t * 4 * math.pi) * 10.0;
+            ? -math.sin(t * 2 * math.pi) * 12.0
+            : math.sin(t * 2 * math.pi) * 12.0;
         final glowOpacity = 0.18 + t * 0.14;
         final glowColor = widget.isBlue
             ? const Color(0xFF2D7FFF)

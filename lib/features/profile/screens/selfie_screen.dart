@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,9 +46,23 @@ class _SelfieScreenState extends State<SelfieScreen> {
       final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       final bytes = await selfie.readAsBytes();
-      await client.storage
-          .from(SupabaseConstants.selfiesBucket)
-          .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
+      final accessToken = client.auth.currentSession!.accessToken;
+      final dio = Dio();
+      await dio.put(
+        '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.selfiesBucket}/$path',
+        data: Stream.fromIterable([bytes]),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'apikey': SupabaseConstants.supabaseAnonKey,
+            'Content-Type': 'image/jpeg',
+            'Content-Length': bytes.length,
+            'x-upsert': 'true',
+          },
+          sendTimeout: const Duration(minutes: 5),
+          receiveTimeout: const Duration(minutes: 1),
+        ),
+      );
 
       final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);
 

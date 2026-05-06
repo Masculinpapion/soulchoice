@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crop_your_image/crop_your_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -191,13 +192,28 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
         final isPrimary = orderIdx == 0;
 
         if (entry.isLocal) {
-          // Yeni fotoğraf: storage'a yükle + DB'ye ekle
+          // Yeni fotoğraf: dio ile storage'a yükle + DB'ye ekle
+          // dart:io HttpClient Android 15'te büyük body'leri asla göndermiyor (408);
+          // dio OkHttp kullandığı için bu sorunu yaşamıyor.
           final path = '$uid/${_uniqueId()}.png';
+          final accessToken = client.auth.currentSession!.accessToken;
 
-          await client.storage
-              .from(SupabaseConstants.profilePhotosBucket)
-              .uploadBinary(path, entry.bytes!,
-                  fileOptions: const FileOptions(upsert: true, contentType: 'image/png'));
+          final dio = Dio();
+          await dio.put(
+            '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.profilePhotosBucket}/$path',
+            data: Stream.fromIterable([entry.bytes!]),
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $accessToken',
+                'apikey': SupabaseConstants.supabaseAnonKey,
+                'Content-Type': 'image/png',
+                'Content-Length': entry.bytes!.length,
+                'x-upsert': 'true',
+              },
+              sendTimeout: const Duration(minutes: 5),
+              receiveTimeout: const Duration(minutes: 1),
+            ),
+          );
           uploadedPaths.add(path); // rollback: upload başarılı, izle
 
           final url = client.storage

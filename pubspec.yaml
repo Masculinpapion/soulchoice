@@ -60,6 +60,10 @@ dependencies:
   package_info_plus: ^8.3.0
   connectivity_plus: ^6.1.4
 
+  # HTTP client for large uploads (dart:io HttpClient hangs on Android 15)
+  dio: ^5.8.0+1
+  http_parser: ^4.1.2
+
   # Analytics & Monitoring
   sentry_flutter: ^9.0.0
 

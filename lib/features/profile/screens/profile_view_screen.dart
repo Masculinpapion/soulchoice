@@ -118,8 +118,11 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                     children: [
                       // ── Hero %74.9 ────────────────────────────────────
                       _HeroSection(
+                        key: photos.isNotEmpty
+                            ? ValueKey('hero-${photos[0]['id']}')
+                            : const ValueKey('hero-empty'),
                         photos: photos,
-                        initialIndex: _photoIndex,
+                        initialIndex: 0,
                         onPageChanged: (i) =>
                             setState(() => _photoIndex = i),
                         onBack: () => context.pop(),

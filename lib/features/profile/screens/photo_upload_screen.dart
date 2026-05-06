@@ -223,10 +223,14 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           keptIds.add(inserted['id'] as String);
         } else {
           // Mevcut fotoğraf: sıra ve primary güncelle
-          await client
+          final updated = await client
               .from('user_photos')
               .update({'order_index': orderIdx, 'is_primary': isPrimary})
-              .eq('id', entry.remoteId!);
+              .eq('id', entry.remoteId!)
+              .select('id');
+          if ((updated as List).isEmpty) {
+            throw Exception('photo_update_failed:${entry.remoteId}');
+          }
           keptIds.add(entry.remoteId!);
         }
       }

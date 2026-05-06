@@ -202,9 +202,10 @@ class _InvitationDetailScreenState
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(category.emoji,
-                                              style: const TextStyle(
-                                                  fontSize: 13)),
+                                          category == InvitationCategory.bar
+                                              ? Image.asset('assets/icons/bar.png', width: 18, height: 18)
+                                              : Text(category.emoji,
+                                                  style: const TextStyle(fontSize: 13)),
                                           const SizedBox(width: 4),
                                           Text(
                                             category.labelFor(AppLocalizations.of(context)!),

@@ -347,13 +347,15 @@ class _DiscoverCard extends StatelessWidget {
                             width: 0.8,
                           ),
                         ),
-                        child: Text(
-                          inv.category.emoji,
-                          style: TextStyle(
-                            fontSize: inv.category == InvitationCategory.concert ? 17 : 13,
-                            color: inv.category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                          ),
-                        ),
+                        child: inv.category == InvitationCategory.bar
+                            ? Image.asset('assets/icons/bar.png', width: 20, height: 20)
+                            : Text(
+                                inv.category.emoji,
+                                style: TextStyle(
+                                  fontSize: inv.category == InvitationCategory.concert ? 17 : 13,
+                                  color: inv.category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                                ),
+                              ),
                       ),
                     ),
                   ),

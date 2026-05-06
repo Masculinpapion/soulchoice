@@ -759,7 +759,7 @@ class _CategoryChips extends StatelessWidget {
                         ),
                       )
                     else if (c == InvitationCategory.bar)
-                      Image.asset('assets/icons/bar.png', width: 18, height: 18)
+                      Image.asset('assets/icons/bar.png', width: 16, height: 16)
                     else
                       Text(c.emoji,
                           style: const TextStyle(fontSize: 13, height: 1.2)),
@@ -1709,13 +1709,15 @@ class _CardFallbackGradient extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            category.emoji,
-            style: TextStyle(
-              fontSize: 80,
-              color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-            ),
-          ),
+          category == InvitationCategory.bar
+              ? Image.asset('assets/icons/bar.png', width: 80, height: 80)
+              : Text(
+                  category.emoji,
+                  style: TextStyle(
+                    fontSize: 80,
+                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                  ),
+                ),
           const SizedBox(height: 28),
           Container(
             width: 90,

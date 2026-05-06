@@ -212,13 +212,15 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
         if (entry.isLocal) {
           // Yeni fotoğraf: storage'a yükle + DB'ye ekle
           final file = entry.file!;
-          final ext = file.path.split('.').last.toLowerCase();
-          final path = '$uid/${_uniqueId()}.$ext';
+          final path = '$uid/${_uniqueId()}.jpg';
 
+          // uploadBinary kullan — File.upload() Dart HTTP client'ta body
+          // göndermeden uzun süre bekleyebiliyor (platform bug)
+          final bytes = await file.readAsBytes();
           await client.storage
               .from(SupabaseConstants.profilePhotosBucket)
-              .upload(path, file,
-                  fileOptions: const FileOptions(upsert: true));
+              .uploadBinary(path, bytes,
+                  fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
           uploadedPaths.add(path); // rollback: upload başarılı, izle
 
           final url = client.storage

@@ -42,12 +42,12 @@ class _SelfieScreenState extends State<SelfieScreen> {
       final uid = client.auth.currentUser?.id;
       final selfie = _selfie;
       if (uid == null || selfie == null) return;
-      final ext = selfie.path.split('.').last;
-      final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
+      final bytes = await selfie.readAsBytes();
       await client.storage
           .from(SupabaseConstants.selfiesBucket)
-          .upload(path, selfie, fileOptions: const FileOptions(upsert: true));
+          .uploadBinary(path, bytes, fileOptions: const FileOptions(upsert: true, contentType: 'image/jpeg'));
 
       final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);
 

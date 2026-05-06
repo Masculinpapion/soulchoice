@@ -430,6 +430,12 @@ abstract class AppLocalizations {
   /// **'Required to add photos to your profile'**
   String get perm_photos_desc;
 
+  /// No description provided for @perm_camera_title.
+  String get perm_camera_title;
+
+  /// No description provided for @perm_camera_desc.
+  String get perm_camera_desc;
+
   /// No description provided for @perm_grant.
   ///
   /// In en, this message translates to:

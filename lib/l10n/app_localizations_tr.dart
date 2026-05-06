@@ -185,6 +185,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get perm_photos_desc => 'Profiline fotoğraf eklemek için gerekli';
 
   @override
+  String get perm_camera_title => 'Kameraya erişime izin ver';
+
+  @override
+  String get perm_camera_desc => 'Kimlik doğrulama için selfie çekmek gerekli';
+
+  @override
   String get perm_grant => 'İzin ver';
 
   @override

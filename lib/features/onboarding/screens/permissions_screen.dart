@@ -22,7 +22,7 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  final List<bool?> _results = [null, null, null];
+  final List<bool?> _results = [null, null, null, null];
 
   static List<_PermissionStep> _getSteps(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -41,6 +41,11 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         emoji: '📷',
         title: l.perm_photos_title,
         description: l.perm_photos_desc,
+      ),
+      _PermissionStep(
+        emoji: '🤳',
+        title: l.perm_camera_title,
+        description: l.perm_camera_desc,
       ),
     ];
   }
@@ -63,6 +68,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
           return Permission.storage.request();
         }
         return status;
+      case 3:
+        return Permission.camera.request();
       default:
         return PermissionStatus.denied;
     }

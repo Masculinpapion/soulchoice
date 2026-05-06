@@ -184,6 +184,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get perm_photos_desc => 'Нужно для добавления фотографий в профиль';
 
   @override
+  String get perm_camera_title => 'Разрешить доступ к камере';
+
+  @override
+  String get perm_camera_desc => 'Нужно для фотографирования селфи при верификации';
+
+  @override
   String get perm_grant => 'Разрешить';
 
   @override

@@ -270,7 +270,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       ref.invalidate(userPhotosProvider(uid));
       ref.invalidate(userProfileProvider(uid));
       if (widget.isEditing) {
-        context.pop();
+        context.go('/my-profile');
       } else {
         context.go('/profile/selfie');
       }

@@ -12,6 +12,7 @@ import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
+import '../../discover/providers/discover_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -307,6 +308,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           if (mounted) {
                             setState(() { _minAge = localMin; _maxAge = localMax; });
                             ref.invalidate(invitationsProvider);
+                            ref.invalidate(discoverProvider);
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -414,6 +416,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             if (mounted) {
                               setState(() => _showGender = opt.$1);
                               ref.invalidate(invitationsProvider);
+                            ref.invalidate(discoverProvider);
                             }
                           },
                         )),

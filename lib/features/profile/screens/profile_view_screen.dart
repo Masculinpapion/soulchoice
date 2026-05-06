@@ -164,15 +164,12 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                               _EditSectionHeader(
                                   label: l10n.profile_view_section_interests),
                               const SizedBox(height: 16),
-                              SizedBox(
-                                height: 42,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: EdgeInsets.zero,
-                                  itemCount: interests.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(width: 8),
-                                  itemBuilder: (_, i) => _EditInterestPill(
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: List.generate(
+                                  interests.length,
+                                  (i) => _EditInterestPill(
                                     label: interests[i],
                                     isFirst: i == 0,
                                   ),

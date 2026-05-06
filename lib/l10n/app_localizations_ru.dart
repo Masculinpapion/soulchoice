@@ -184,12 +184,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get perm_photos_desc => 'Нужно для добавления фотографий в профиль';
 
   @override
-  String get perm_camera_title => 'Разрешить доступ к камере';
-
-  @override
-  String get perm_camera_desc => 'Нужно для фотографирования селфи при верификации';
-
-  @override
   String get perm_grant => 'Разрешить';
 
   @override
@@ -201,6 +195,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get perm_go_to_settings => 'Перейти в настройки';
+
+  @override
+  String get perm_camera_title => 'Разрешить доступ к камере';
+
+  @override
+  String get perm_camera_desc =>
+      'Нужно для фотографирования селфи при верификации';
 
   @override
   String get feed_all_cities => 'Все города';

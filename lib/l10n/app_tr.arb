@@ -67,6 +67,8 @@
   "perm_not_now": "Şimdi değil",
   "perm_denied_hint": "Bu özelliği kullanmak için ayarlardan izin verebilirsin",
   "perm_go_to_settings": "Ayarlara git",
+  "perm_camera_title": "Kameraya erişime izin ver",
+  "perm_camera_desc": "Kimlik doğrulama için selfie çekmek gerekli",
 
   "feed_all_cities": "Tüm Şehirler",
   "feed_active_invitations": "AKTİF DAVETİYELER",

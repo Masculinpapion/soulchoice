@@ -430,12 +430,6 @@ abstract class AppLocalizations {
   /// **'Required to add photos to your profile'**
   String get perm_photos_desc;
 
-  /// No description provided for @perm_camera_title.
-  String get perm_camera_title;
-
-  /// No description provided for @perm_camera_desc.
-  String get perm_camera_desc;
-
   /// No description provided for @perm_grant.
   ///
   /// In en, this message translates to:
@@ -459,6 +453,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to settings'**
   String get perm_go_to_settings;
+
+  /// No description provided for @perm_camera_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera access'**
+  String get perm_camera_title;
+
+  /// No description provided for @perm_camera_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to take a selfie for identity verification'**
+  String get perm_camera_desc;
 
   /// No description provided for @feed_all_cities.
   ///
@@ -1528,7 +1534,16 @@ abstract class AppLocalizations {
   /// **'Age range'**
   String get profile_setup_step_age_range;
 
+  /// No description provided for @profile_setup_validation_gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a gender'**
   String get profile_setup_validation_gender;
+
+  /// No description provided for @profile_setup_validation_city.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a city'**
   String get profile_setup_validation_city;
 
   /// No description provided for @profile_setup_validation_name.

@@ -185,12 +185,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get perm_photos_desc => 'Profiline fotoğraf eklemek için gerekli';
 
   @override
-  String get perm_camera_title => 'Kameraya erişime izin ver';
-
-  @override
-  String get perm_camera_desc => 'Kimlik doğrulama için selfie çekmek gerekli';
-
-  @override
   String get perm_grant => 'İzin ver';
 
   @override
@@ -202,6 +196,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get perm_go_to_settings => 'Ayarlara git';
+
+  @override
+  String get perm_camera_title => 'Kameraya erişime izin ver';
+
+  @override
+  String get perm_camera_desc => 'Kimlik doğrulama için selfie çekmek gerekli';
 
   @override
   String get feed_all_cities => 'Tüm Şehirler';

@@ -183,12 +183,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perm_photos_desc => 'Required to add photos to your profile';
 
   @override
-  String get perm_camera_title => 'Allow camera access';
-
-  @override
-  String get perm_camera_desc => 'Required to take a selfie for identity verification';
-
-  @override
   String get perm_grant => 'Allow';
 
   @override
@@ -200,6 +194,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get perm_go_to_settings => 'Go to settings';
+
+  @override
+  String get perm_camera_title => 'Allow camera access';
+
+  @override
+  String get perm_camera_desc =>
+      'Required to take a selfie for identity verification';
 
   @override
   String get feed_all_cities => 'All Cities';

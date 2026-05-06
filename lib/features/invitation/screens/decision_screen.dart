@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -147,20 +148,20 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                     width: 72,
                     height: 160,
                     decoration: BoxDecoration(
-                      color: AppColors.red,
                       borderRadius: BorderRadius.circular(36),
+                      gradient: AuroraTheme.redBlueGradient,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.redGlow.withOpacity(_pillGlow.value),
+                          color: AuroraTheme.auroraRed.withOpacity(_pillGlow.value * 0.6),
                           blurRadius: 60,
                           spreadRadius: 20,
                         ),
+                        BoxShadow(
+                          color: AuroraTheme.auroraBlue.withOpacity(_pillGlow.value * 0.3),
+                          blurRadius: 40,
+                          spreadRadius: 10,
+                        ),
                       ],
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppColors.red.withOpacity(0.9), AppColors.red, AppColors.red.withOpacity(0.7)],
-                      ),
                     ),
                   ),
                 ),
@@ -173,7 +174,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                Text(_timeLabel, style: AppTextStyles.monoLarge.copyWith(color: AppColors.red)),
+                Text(_timeLabel, style: AppTextStyles.monoLarge.copyWith(color: AuroraTheme.auroraRed)),
                 Text(
                   _timeExpired
                       ? AppLocalizations.of(context)!.decision_time_expired

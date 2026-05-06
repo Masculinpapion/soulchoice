@@ -345,6 +345,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_btn_publish => 'Publish';
 
   @override
+  String get create_inv_btn_update => 'Update';
+
+  @override
   String get create_inv_flow_invite_title => 'I\'m treating';
 
   @override

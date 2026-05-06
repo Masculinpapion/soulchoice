@@ -142,6 +142,7 @@
   },
   "create_inv_btn_next": "Далее",
   "create_inv_btn_publish": "Опубликовать",
+  "create_inv_btn_update": "Обновить",
   "create_inv_flow_invite_title": "Я угощаю",
   "create_inv_flow_invite_subtitle": "Хочу взять кого-нибудь с собой за мой счёт",
   "create_inv_flow_request_title": "Хочу пойти",

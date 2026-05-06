@@ -7,13 +7,15 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../features/feed/providers/invitations_provider.dart';
+import '../../../features/invitation/providers/invitation_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class CreateInvitationScreen extends ConsumerStatefulWidget {
-  const CreateInvitationScreen({super.key});
+  final Map<String, dynamic>? editData;
+  const CreateInvitationScreen({super.key, this.editData});
 
   @override
   ConsumerState<CreateInvitationScreen> createState() =>
@@ -46,6 +48,29 @@ class _CreateInvitationScreenState
     l10n.create_inv_step_datetime,
     l10n.create_inv_step_duration,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final ed = widget.editData;
+    if (ed != null) {
+      _flowType = InvitationFlowType.values.firstWhere(
+        (f) => f.name == ed['flow_type'],
+        orElse: () => InvitationFlowType.invite,
+      );
+      _category = ed['category'] != null
+          ? InvitationCategory.values.firstWhere(
+              (c) => c.name == ed['category'],
+              orElse: () => InvitationCategory.food,
+            )
+          : null;
+      _titleController.text = ed['title'] as String? ?? '';
+      _descriptionController.text = ed['description'] as String? ?? '';
+      _venueController.text = ed['venue_name'] as String? ?? '';
+      final rawDate = ed['event_date'] as String?;
+      if (rawDate != null) _eventDate = DateTime.tryParse(rawDate);
+    }
+  }
 
   @override
   void dispose() {
@@ -144,46 +169,68 @@ class _CreateInvitationScreenState
 
   Future<void> _publish() async {
     setState(() => _isPublishing = true);
+    final isEdit = widget.editData != null;
     try {
       final client = Supabase.instance.client;
-      final user = client.auth.currentUser;
-      if (user == null) {
-        setState(() => _isPublishing = false);
-        return;
-      }
-      final uid = user.id;
+      final venueFormatted = _venueController.text.trim().isEmpty
+          ? null
+          : _venueController.text.trim().split(' ')
+              .where((w) => w.isNotEmpty)
+              .map((w) => w[0].toUpperCase() + w.substring(1))
+              .join(' ');
 
-      final userRow = await client
-          .from('users')
-          .select('city_id')
-          .eq('id', uid)
-          .maybeSingle();
-      final cityId = userRow?['city_id'] as String?;
+      if (isEdit) {
+        final editId = widget.editData!['id'] as String;
+        await client.from('invitations').update({
+          'flow_type': _flowType.name,
+          'category': _category?.name ?? InvitationCategory.food.name,
+          'title': _fixCase(_titleController.text),
+          'description': _descriptionController.text.trim().isEmpty
+              ? null
+              : _fixCase(_descriptionController.text),
+          'venue_name': venueFormatted,
+          'event_date': _eventDate?.toIso8601String(),
+        }).eq('id', editId);
 
-      await client.from('invitations').insert({
-        'owner_id': uid,
-        'flow_type': _flowType.name,
-        'category': _category?.name ?? InvitationCategory.food.name,
-        'title': _fixCase(_titleController.text),
-        'description': _descriptionController.text.trim().isEmpty
-            ? null
-            : _fixCase(_descriptionController.text),
-        'venue_name': _venueController.text.trim().isEmpty
-            ? null
-            : _venueController.text.trim().split(' ')
-                .where((w) => w.isNotEmpty)
-                .map((w) => w[0].toUpperCase() + w.substring(1))
-                .join(' '),
-        'event_date': _eventDate?.toIso8601String(),
-        'expires_at': DateTime.now().toUtc().add(Duration(hours: _expiryHours)).toIso8601String(),
-        'city_id': cityId,
-        'slots_total': 1,
-        'status': 'active',
-      });
+        if (mounted) {
+          ref.invalidate(invitationDetailProvider(editId));
+          ref.invalidate(invitationsProvider);
+          context.go('/invitation/$editId');
+        }
+      } else {
+        final user = client.auth.currentUser;
+        if (user == null) {
+          setState(() => _isPublishing = false);
+          return;
+        }
+        final uid = user.id;
+        final userRow = await client
+            .from('users')
+            .select('city_id')
+            .eq('id', uid)
+            .maybeSingle();
+        final cityId = userRow?['city_id'] as String?;
 
-      if (mounted) {
-        ref.invalidate(invitationsProvider);
-        context.go('/feed');
+        await client.from('invitations').insert({
+          'owner_id': uid,
+          'flow_type': _flowType.name,
+          'category': _category?.name ?? InvitationCategory.food.name,
+          'title': _fixCase(_titleController.text),
+          'description': _descriptionController.text.trim().isEmpty
+              ? null
+              : _fixCase(_descriptionController.text),
+          'venue_name': venueFormatted,
+          'event_date': _eventDate?.toIso8601String(),
+          'expires_at': DateTime.now().toUtc().add(Duration(hours: _expiryHours)).toIso8601String(),
+          'city_id': cityId,
+          'slots_total': 1,
+          'status': 'active',
+        });
+
+        if (mounted) {
+          ref.invalidate(invitationsProvider);
+          context.go('/feed');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -277,8 +324,11 @@ class _CreateInvitationScreenState
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
                 child: ScButton(
-                  label:
-                      _step < _stepCount - 1 ? l10n.create_inv_btn_next : l10n.create_inv_btn_publish,
+                  label: _step < _stepCount - 1
+                      ? l10n.create_inv_btn_next
+                      : (widget.editData != null
+                          ? l10n.create_inv_btn_update
+                          : l10n.create_inv_btn_publish),
                   onPressed: _isPublishing ? null : _next,
                   isLoading:
                       _isPublishing && _step == _stepCount - 1,

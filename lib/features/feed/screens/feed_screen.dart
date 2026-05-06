@@ -962,6 +962,8 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 itemCount: invitations.length * 1000,
                 itemBuilder: (_, i) {
                   final inv = invitations[i % invitations.length];
+                  final currentUid = Supabase.instance.client.auth.currentUser?.id ?? '';
+                  final isOwner = inv.ownerId == currentUid;
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
                   final scale = 1.0 - absOffset * 0.08;
                   final opacity = (1.0 - absOffset * 0.85).clamp(0.0, 1.0);
@@ -1001,7 +1003,11 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                             eventDate: inv.eventDate,
                             flowType: flowType,
                             cardWidth: double.infinity,
-                            onTap: () => context.push('/invitation/${inv.id}'), // inv zaten doğru item
+                            isOwner: isOwner,
+                            onTap: () => context.push('/invitation/${inv.id}'),
+                            onCtaTap: isOwner
+                                ? () => context.push('/invitation/${inv.id}/applicants')
+                                : null,
                           ),
                         ),
                       ),
@@ -1035,6 +1041,8 @@ class InvitationCard extends StatelessWidget {
   final List<String> applicantPhotoUrls;
   final DateTime? eventDate;
   final VoidCallback onTap;
+  final VoidCallback? onCtaTap;
+  final bool isOwner;
   final InvitationFlowType flowType;
   final double? cardWidth;
 
@@ -1053,6 +1061,8 @@ class InvitationCard extends StatelessWidget {
     this.applicantPhotoUrls = const [],
     this.eventDate,
     required this.onTap,
+    this.onCtaTap,
+    this.isOwner = false,
     this.flowType = InvitationFlowType.invite,
     this.cardWidth,
   });
@@ -1315,22 +1325,26 @@ class InvitationCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     // Full-width gradient CTA
                     GestureDetector(
-                      onTap: onTap,
+                      onTap: onCtaTap ?? onTap,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 13),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: isInviteFlow
-                                ? [AuroraTheme.auroraRed, AuroraTheme.auroraBlue]
-                                : [AuroraTheme.auroraBlue, AuroraTheme.auroraRed],
+                            colors: isOwner
+                                ? [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet]
+                                : isInviteFlow
+                                    ? [AuroraTheme.auroraRed, AuroraTheme.auroraBlue]
+                                    : [AuroraTheme.auroraBlue, AuroraTheme.auroraRed],
                           ),
                           borderRadius: BorderRadius.circular(100),
                           boxShadow: [BoxShadow(color: glowColor.withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 4))],
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          isInviteFlow ? l10n.feed_cta_invite : l10n.feed_cta_request,
+                          isOwner
+                              ? l10n.inv_detail_applicants_btn
+                              : (isInviteFlow ? l10n.feed_cta_invite : l10n.feed_cta_request),
                           style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
                         ),
                       ),

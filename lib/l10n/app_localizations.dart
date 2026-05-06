@@ -730,6 +730,12 @@ abstract class AppLocalizations {
   /// **'Publish'**
   String get create_inv_btn_publish;
 
+  /// No description provided for @create_inv_btn_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get create_inv_btn_update;
+
   /// No description provided for @create_inv_flow_invite_title.
   ///
   /// In en, this message translates to:

@@ -347,6 +347,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_btn_publish => 'Yayınla';
 
   @override
+  String get create_inv_btn_update => 'Güncelle';
+
+  @override
   String get create_inv_flow_invite_title => 'Ben ısmarlarım';
 
   @override

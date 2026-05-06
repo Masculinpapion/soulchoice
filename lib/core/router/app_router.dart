@@ -113,7 +113,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/invitation/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, _) => const CreateInvitationScreen(),
+        builder: (ctx, state) => CreateInvitationScreen(
+          editData: state.extra as Map<String, dynamic>?,
+        ),
       ),
       GoRoute(
         path: '/invitation/:id',

@@ -347,6 +347,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_btn_publish => 'Опубликовать';
 
   @override
+  String get create_inv_btn_update => 'Обновить';
+
+  @override
   String get create_inv_flow_invite_title => 'Я угощаю';
 
   @override

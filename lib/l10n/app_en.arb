@@ -142,6 +142,7 @@
   },
   "create_inv_btn_next": "Next",
   "create_inv_btn_publish": "Publish",
+  "create_inv_btn_update": "Update",
   "create_inv_flow_invite_title": "I'm treating",
   "create_inv_flow_invite_subtitle": "I want to take someone along, my treat",
   "create_inv_flow_request_title": "I want to go",

@@ -142,6 +142,7 @@
   },
   "create_inv_btn_next": "İleri",
   "create_inv_btn_publish": "Yayınla",
+  "create_inv_btn_update": "Güncelle",
   "create_inv_flow_invite_title": "Ben ısmarlarım",
   "create_inv_flow_invite_subtitle": "Birini götürmek istiyorum, masraf benden",
   "create_inv_flow_request_title": "Gitmek istiyorum",

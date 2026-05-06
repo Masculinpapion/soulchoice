@@ -232,6 +232,25 @@ class _InvitationDetailScreenState
                                       ),
                                       const SizedBox(width: 8),
                                       _GlassPill(
+                                        onTap: () => context.push(
+                                          '/invitation/create',
+                                          extra: {
+                                            'id': invitationId,
+                                            'flow_type': inv['flow_type'] as String?,
+                                            'category': inv['category'] as String?,
+                                            'title': inv['title'] as String? ?? '',
+                                            'description': inv['description'] as String?,
+                                            'venue_name': inv['venue_name'] as String?,
+                                            'event_date': inv['event_date'] as String?,
+                                          },
+                                        ),
+                                        child: const Icon(
+                                            Icons.edit_outlined,
+                                            size: 18,
+                                            color: Colors.white),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _GlassPill(
                                         onTap: () async {
                                           final confirm =
                                               await showDialog<bool>(

@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/supabase_constants.dart';
@@ -105,28 +104,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
   Future<void> _pickPhoto(int index) async {
     try {
-      // Android 13+ (API 33+) için galeri izni kontrolü
-      if (Platform.isAndroid) {
-        final status = await Permission.photos.status;
-        if (status.isPermanentlyDenied) {
-          await openAppSettings();
-          return;
-        }
-        if (status.isDenied) {
-          final result = await Permission.photos.request();
-          if (!result.isGranted) {
-            if (!mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.photo_upload_permission_error),
-                backgroundColor: AppColors.error,
-              ),
-            );
-            return;
-          }
-        }
-      }
-
       final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 90,

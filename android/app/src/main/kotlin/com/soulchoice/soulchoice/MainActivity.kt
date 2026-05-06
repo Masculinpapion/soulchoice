@@ -5,24 +5,13 @@ import android.graphics.BitmapFactory
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.util.concurrent.TimeUnit
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
 class MainActivity : FlutterActivity() {
-
-    private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .writeTimeout(5, TimeUnit.MINUTES)
-        .readTimeout(2, TimeUnit.MINUTES)
-        .protocols(listOf(Protocol.HTTP_1_1))
-        .build()
 
     private fun compressToJpeg(bytes: ByteArray): ByteArray {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -39,13 +28,14 @@ class MainActivity : FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.soulchoice/uploader")
             .setMethodCallHandler { call, result ->
                 if (call.method == "uploadBytes") {
-                    val url         = call.argument<String>("url")!!
+                    val urlStr      = call.argument<String>("url")!!
                     val accessToken = call.argument<String>("accessToken")!!
                     val apiKey      = call.argument<String>("apiKey")!!
                     val bytes       = call.argument<ByteArray>("bytes")!!
                     val contentType = call.argument<String>("contentType")!!
 
                     thread {
+                        var conn: HttpsURLConnection? = null
                         try {
                             val (uploadBytes, uploadContentType) = if (contentType == "image/png") {
                                 Pair(compressToJpeg(bytes), "image/jpeg")
@@ -53,19 +43,31 @@ class MainActivity : FlutterActivity() {
                                 Pair(bytes, contentType)
                             }
 
-                            val body = uploadBytes.toRequestBody(uploadContentType.toMediaType())
-                            val request = Request.Builder()
-                                .url(url)
-                                .put(body)
-                                .addHeader("Authorization", "Bearer $accessToken")
-                                .addHeader("apikey", apiKey)
-                                .addHeader("x-upsert", "true")
-                                .build()
+                            conn = URL(urlStr).openConnection() as HttpsURLConnection
+                            conn.requestMethod = "PUT"
+                            conn.doOutput = true
+                            conn.connectTimeout = 30_000
+                            conn.readTimeout = 120_000
+                            // Streams body immediately without buffering the whole thing in RAM first.
+                            // Without this, HttpURLConnection buffers the entire body → nginx sees 0 bytes.
+                            conn.setFixedLengthStreamingMode(uploadBytes.size.toLong())
+                            conn.setRequestProperty("Authorization", "Bearer $accessToken")
+                            conn.setRequestProperty("apikey", apiKey)
+                            conn.setRequestProperty("x-upsert", "true")
+                            conn.setRequestProperty("Content-Type", uploadContentType)
 
-                            val response = httpClient.newCall(request).execute()
-                            val code = response.code
-                            response.close()
+                            conn.outputStream.use { out ->
+                                val chunkSize = 65536
+                                var offset = 0
+                                while (offset < uploadBytes.size) {
+                                    val end = minOf(offset + chunkSize, uploadBytes.size)
+                                    out.write(uploadBytes, offset, end - offset)
+                                    offset = end
+                                }
+                                out.flush()
+                            }
 
+                            val code = conn.responseCode
                             runOnUiThread {
                                 if (code in 200..299) {
                                     result.success(code)
@@ -77,6 +79,8 @@ class MainActivity : FlutterActivity() {
                             runOnUiThread {
                                 result.error("UPLOAD_ERROR", "${e.javaClass.simpleName}: ${e.message}", null)
                             }
+                        } finally {
+                            conn?.disconnect()
                         }
                     }
                 } else {

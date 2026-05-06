@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -123,35 +121,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Future<void> _downloadData(BuildContext context) async {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    final client = Supabase.instance.client;
-    try {
-      final results = await Future.wait<dynamic>([
-        client.from('users').select('name, age, gender, bio, job, education, interests').eq('id', uid).maybeSingle(),
-        client.from('invitations').select('id, title, category, status, created_at').eq('owner_id', uid),
-        client.from('applications').select('id, invitation_id, status, created_at').eq('applicant_id', uid),
-      ]);
-      final data = {
-        'profile': results[0],
-        'invitations': results[1],
-        'applications': results[2],
-        'exported_at': DateTime.now().toIso8601String(),
-      };
-      final json = const JsonEncoder.withIndent('  ').convert(data);
-      await SharePlus.instance.share(ShareParams(
-        text: json,
-        subject: AppLocalizations.of(context)!.settings_share_subject,
-      ));
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.settings_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
-        );
-      }
-    }
-  }
 
   Future<void> _showQuietHoursPicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -666,32 +635,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    // Hesap
-                    _Section(
-                      title: l10n.settings_account,
-                      items: [
-                        _SettingsTile(
-                          icon: Icons.devices_outlined,
-                          label: l10n.settings_active_devices,
-                          onTap: () => _showComingSoon(context, l10n.settings_active_devices),
-                        ),
-                        _SettingsTile(
-                          icon: Icons.download_outlined,
-                          label: l10n.settings_download_data,
-                          onTap: () => _downloadData(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
                     // Gizlilik
                     _Section(
                       title: l10n.settings_privacy_section,
                       items: [
-                        _SettingsTile(
-                          icon: Icons.block_outlined,
-                          label: l10n.settings_blocked_users,
-                          onTap: () => context.push('/settings/blocked-users'),
-                        ),
                         _SettingsTile(
                           icon: Icons.location_on_outlined,
                           label: l10n.settings_location_permission,

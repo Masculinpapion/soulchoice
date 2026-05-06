@@ -109,11 +109,13 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       );
       if (picked == null || !mounted) return;
 
+      final rawBytes = await picked.readAsBytes();
+
       // Flutter tabanlı crop ekranı — UCropActivity yok, request code çakışması yok
       final croppedBytes = await Navigator.of(context).push<Uint8List>(
         MaterialPageRoute(
           fullscreenDialog: true,
-          builder: (_) => _CropScreen(imageFile: File(picked.path)),
+          builder: (_) => _CropScreen(imageBytes: rawBytes),
         ),
       );
       if (croppedBytes == null || !mounted) return;
@@ -496,8 +498,8 @@ class _PhotoSlot extends StatelessWidget {
 
 // Flutter tabanlı crop ekranı — Activity açılmıyor, request code çakışması yok
 class _CropScreen extends StatefulWidget {
-  final File imageFile;
-  const _CropScreen({required this.imageFile});
+  final Uint8List imageBytes;
+  const _CropScreen({required this.imageBytes});
 
   @override
   State<_CropScreen> createState() => _CropScreenState();
@@ -506,15 +508,10 @@ class _CropScreen extends StatefulWidget {
 class _CropScreenState extends State<_CropScreen> {
   final _controller = CropController();
   bool _isCropping = false;
-  late Uint8List _imageBytes;
-  bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    widget.imageFile.readAsBytes().then((bytes) {
-      if (mounted) setState(() { _imageBytes = bytes; _loaded = true; });
-    });
   }
 
   @override
@@ -553,10 +550,9 @@ class _CropScreenState extends State<_CropScreen> {
           ),
         ],
       ),
-      body: _loaded
-          ? Crop(
+      body: Crop(
               controller: _controller,
-              image: _imageBytes,
+              image: widget.imageBytes,
               aspectRatio: 3 / 4,
               onCropped: (result) {
                 if (result is CropSuccess) {
@@ -573,8 +569,7 @@ class _CropScreenState extends State<_CropScreen> {
                   }
                 }
               },
-            )
-          : const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFFF2D55))),
+            ),
     );
   }
 }

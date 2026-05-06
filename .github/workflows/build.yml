@@ -17,33 +17,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
-
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Restore debug keystore
-        run: |
-          mkdir -p ~/.android
-          echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 --decode > ~/.android/debug.keystore
-
-      - run: flutter pub get
-
-      - run: flutter build apk --debug --no-pub
-
-      - uses: softprops/action-gh-release@v2
-        with:
-          tag_name: latest-debug
-          name: "Debug APK (latest)"
-          prerelease: true
-          files: build/app/outputs/flutter-apk/app-debug.apk
-
-      - run: |
-          echo "Build complete"
-          du -sh build/app/outputs/flutter-apk/app-debug.apk
+      - run: echo "checkout ok"

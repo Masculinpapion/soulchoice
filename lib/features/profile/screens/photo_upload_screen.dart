@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -120,12 +121,21 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       );
       if (croppedBytes == null || !mounted) return;
 
-      // Kırpılmış bytes'ı geçici dosyaya yaz
+      // Kırpılmış bytes'ı sıkıştır (max 1080px, quality 72) → upload hızını artırır
+      final compressed = await FlutterImageCompress.compressWithList(
+        croppedBytes,
+        minWidth: 1080,
+        minHeight: 1440,
+        quality: 72,
+        format: CompressFormat.jpeg,
+      );
+
+      // Sıkıştırılmış bytes'ı geçici dosyaya yaz
       final tmpDir = await getTemporaryDirectory();
       final tmpFile = File(
         '${tmpDir.path}/crop_${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
-      await tmpFile.writeAsBytes(croppedBytes);
+      await tmpFile.writeAsBytes(compressed);
 
       // Slot'ta zaten bir local temp dosya varsa üzerine yazılmadan önce sil
       _photos[index].file?.delete().catchError((_) {});

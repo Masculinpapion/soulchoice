@@ -2,16 +2,24 @@ package com.soulchoice.soulchoice
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.URL
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import javax.net.ssl.HttpsURLConnection
 import kotlin.concurrent.thread
 
 class MainActivity : FlutterActivity() {
+
+    companion object {
+        private const val TAG = "SCUploader"
+    }
 
     private fun compressToJpeg(bytes: ByteArray): ByteArray {
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -34,53 +42,77 @@ class MainActivity : FlutterActivity() {
                     val bytes       = call.argument<ByteArray>("bytes")!!
                     val contentType = call.argument<String>("contentType")!!
 
-                    thread {
+                    val executor = Executors.newSingleThreadExecutor()
+                    val future = executor.submit<Pair<Int, String?>> uploadTask@{
                         var conn: HttpsURLConnection? = null
                         try {
-                            val (uploadBytes, uploadContentType) = if (contentType == "image/png") {
+                            Log.d(TAG, "step=compress size=${bytes.size} ct=$contentType")
+                            val (uploadBytes, uploadCT) = if (contentType == "image/png") {
                                 Pair(compressToJpeg(bytes), "image/jpeg")
                             } else {
                                 Pair(bytes, contentType)
                             }
+                            Log.d(TAG, "step=compressed newSize=${uploadBytes.size}")
 
                             conn = URL(urlStr).openConnection() as HttpsURLConnection
                             conn.requestMethod = "PUT"
                             conn.doOutput = true
                             conn.connectTimeout = 30_000
                             conn.readTimeout = 120_000
-                            // Streams body immediately without buffering the whole thing in RAM first.
-                            // Without this, HttpURLConnection buffers the entire body → nginx sees 0 bytes.
                             conn.setFixedLengthStreamingMode(uploadBytes.size.toLong())
                             conn.setRequestProperty("Authorization", "Bearer $accessToken")
                             conn.setRequestProperty("apikey", apiKey)
                             conn.setRequestProperty("x-upsert", "true")
-                            conn.setRequestProperty("Content-Type", uploadContentType)
+                            conn.setRequestProperty("Content-Type", uploadCT)
+
+                            Log.d(TAG, "step=connecting url=$urlStr")
+                            conn.connect()
+                            Log.d(TAG, "step=connected writing=${uploadBytes.size}bytes")
 
                             conn.outputStream.use { out ->
-                                val chunkSize = 65536
+                                val chunk = 32768
                                 var offset = 0
                                 while (offset < uploadBytes.size) {
-                                    val end = minOf(offset + chunkSize, uploadBytes.size)
+                                    val end = minOf(offset + chunk, uploadBytes.size)
                                     out.write(uploadBytes, offset, end - offset)
                                     offset = end
+                                    Log.d(TAG, "step=written offset=$offset total=${uploadBytes.size}")
                                 }
                                 out.flush()
                             }
+                            Log.d(TAG, "step=body_done reading_response")
 
                             val code = conn.responseCode
+                            Log.d(TAG, "step=response code=$code")
+                            Pair(code, null)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "step=error ${e.javaClass.simpleName}: ${e.message}", e)
+                            Pair(-1, "${e.javaClass.simpleName}: ${e.message}")
+                        } finally {
+                            conn?.disconnect()
+                        }
+                    }
+
+                    thread {
+                        try {
+                            val (code, error) = future.get(5, TimeUnit.MINUTES)
                             runOnUiThread {
-                                if (code in 200..299) {
+                                if (error != null) {
+                                    result.error("UPLOAD_ERROR", error, null)
+                                } else if (code in 200..299) {
                                     result.success(code)
                                 } else {
                                     result.error("HTTP_$code", "Upload failed with status $code", null)
                                 }
                             }
-                        } catch (e: Exception) {
+                        } catch (e: TimeoutException) {
+                            future.cancel(true)
+                            Log.e(TAG, "step=TIMEOUT 5min exceeded")
                             runOnUiThread {
-                                result.error("UPLOAD_ERROR", "${e.javaClass.simpleName}: ${e.message}", null)
+                                result.error("UPLOAD_ERROR", "TimeoutException: upload exceeded 5 minutes", null)
                             }
                         } finally {
-                            conn?.disconnect()
+                            executor.shutdown()
                         }
                     }
                 } else {

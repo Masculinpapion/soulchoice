@@ -1357,7 +1357,10 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     setState(() => _loading = true);
     try {
       final appId = widget.existingApp!['id'] as String;
-      await Supabase.instance.client.from('applications').delete().eq('id', appId);
+      await Supabase.instance.client
+          .from('applications')
+          .update({'status': 'withdrawn'})
+          .eq('id', appId);
       widget.onApplied();
     } catch (e) {
       if (mounted) {

@@ -20,6 +20,7 @@ final myApplicationProvider =
       .select('id, status')
       .eq('invitation_id', invitationId)
       .eq('applicant_id', uid)
+      .neq('status', 'withdrawn')
       .maybeSingle();
 });
 

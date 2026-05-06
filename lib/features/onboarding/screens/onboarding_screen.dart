@@ -44,6 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _OnboardingPageData(
         pillColor: AppColors.gold,
         pillGlow: AppColors.gold,
+        isGold: true,
         title: l10n.onboarding_3_title,
         subtitle: l10n.onboarding_3_desc,
       ),
@@ -126,12 +127,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 class _OnboardingPageData {
   final Color pillColor;
   final Color pillGlow;
+  final bool isGold;
   final String title;
   final String subtitle;
 
   const _OnboardingPageData({
     required this.pillColor,
     required this.pillGlow,
+    this.isGold = false,
     required this.title,
     required this.subtitle,
   });
@@ -151,7 +154,11 @@ class _OnboardingPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Pill(isBlue: data.pillColor == AppColors.blue, delay: Duration.zero),
+          _Pill(
+            isBlue: data.pillColor == AppColors.blue,
+            isGold: data.isGold,
+            delay: Duration.zero,
+          ),
           const SizedBox(height: 48),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -193,8 +200,9 @@ class _OnboardingPage extends StatelessWidget {
 
 class _Pill extends StatefulWidget {
   final bool isBlue;
+  final bool isGold;
   final Duration delay;
-  const _Pill({this.isBlue = false, this.delay = Duration.zero});
+  const _Pill({this.isBlue = false, this.isGold = false, this.delay = Duration.zero});
   @override
   State<_Pill> createState() => _PillState();
 }
@@ -207,7 +215,7 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
     super.initState();
     _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 1600),
     );
     Future.delayed(widget.delay, () {
       if (mounted) _ctrl.repeat();
@@ -229,10 +237,12 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
         final floatY = widget.isBlue
             ? -math.sin(t * 2 * math.pi) * 10.0
             : math.sin(t * 2 * math.pi) * 10.0;
-        final glowOpacity = 0.18 + t * 0.14;
-        final glowColor = widget.isBlue
-            ? const Color(0xFF2D7FFF)
-            : const Color(0xFFFF2D55);
+        final glowOpacity = 0.20 + math.sin(t * math.pi) * 0.12;
+        final glowColor = widget.isGold
+            ? const Color(0xFFFFB800)
+            : widget.isBlue
+                ? const Color(0xFF2D7FFF)
+                : const Color(0xFFFF2D55);
 
         return Transform.translate(
           offset: Offset(0, floatY),
@@ -264,21 +274,29 @@ class _PillState extends State<_Pill> with SingleTickerProviderStateMixin {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: widget.isBlue
+                        colors: widget.isGold
                             ? const [
-                                Color(0xFF5588DD),
-                                Color(0xFF1133BB),
-                                Color(0xFF001088),
-                                Color(0xFF0A2299),
-                                Color(0xFF1133BB),
+                                Color(0xFFFFDD66),
+                                Color(0xFFFFAA00),
+                                Color(0xFFCC7700),
+                                Color(0xFFBB6600),
+                                Color(0xFFFFAA00),
                               ]
-                            : const [
-                                Color(0xFFDD4444),
-                                Color(0xFFBB1111),
-                                Color(0xFF880006),
-                                Color(0xFF991100),
-                                Color(0xFFBB1111),
-                              ],
+                            : widget.isBlue
+                                ? const [
+                                    Color(0xFF5588DD),
+                                    Color(0xFF1133BB),
+                                    Color(0xFF001088),
+                                    Color(0xFF0A2299),
+                                    Color(0xFF1133BB),
+                                  ]
+                                : const [
+                                    Color(0xFFDD4444),
+                                    Color(0xFFBB1111),
+                                    Color(0xFF880006),
+                                    Color(0xFF991100),
+                                    Color(0xFFBB1111),
+                                  ],
                         stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
                       ),
                     ),

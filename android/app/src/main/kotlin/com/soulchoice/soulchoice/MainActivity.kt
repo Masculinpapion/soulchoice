@@ -3,11 +3,20 @@ package com.soulchoice.soulchoice
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class MainActivity : FlutterActivity() {
+
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(5, TimeUnit.MINUTES)
+        .readTimeout(2, TimeUnit.MINUTES)
+        .build()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -23,21 +32,18 @@ class MainActivity : FlutterActivity() {
 
                     thread {
                         try {
-                            val conn = URL(url).openConnection() as HttpURLConnection
-                            conn.requestMethod = "PUT"
-                            conn.doOutput = true
-                            conn.connectTimeout = 30_000
-                            conn.readTimeout    = 300_000
-                            conn.setFixedLengthStreamingMode(bytes.size.toLong())
-                            conn.setRequestProperty("Authorization", "Bearer $accessToken")
-                            conn.setRequestProperty("apikey", apiKey)
-                            conn.setRequestProperty("Content-Type", contentType)
-                            conn.setRequestProperty("x-upsert", "true")
+                            val body = bytes.toRequestBody(contentType.toMediaType())
+                            val request = Request.Builder()
+                                .url(url)
+                                .put(body)
+                                .addHeader("Authorization", "Bearer $accessToken")
+                                .addHeader("apikey", apiKey)
+                                .addHeader("x-upsert", "true")
+                                .build()
 
-                            conn.outputStream.use { it.write(bytes) }
-
-                            val code = conn.responseCode
-                            conn.disconnect()
+                            val response = httpClient.newCall(request).execute()
+                            val code = response.code
+                            response.close()
 
                             runOnUiThread {
                                 if (code in 200..299) {

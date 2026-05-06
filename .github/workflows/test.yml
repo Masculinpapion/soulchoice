@@ -1,0 +1,14 @@
+name: CI Test
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "GitHub Actions is working"

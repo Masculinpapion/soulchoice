@@ -90,7 +90,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile/setup',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, _) => const ProfileSetupScreen(),
+        builder: (ctx, state) => ProfileSetupScreen(isEditing: state.extra == 'edit'),
       ),
       GoRoute(
         path: '/profile/photos',

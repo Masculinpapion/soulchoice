@@ -12,7 +12,8 @@ import 'package:soulchoice/l10n/app_localizations.dart';
 
 // 7-step profile setup wizard
 class ProfileSetupScreen extends ConsumerStatefulWidget {
-  const ProfileSetupScreen({super.key});
+  final bool isEditing;
+  const ProfileSetupScreen({super.key, this.isEditing = false});
 
   @override
   ConsumerState<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -201,7 +202,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         );
       }
 
-      if (mounted) context.go('/profile/photos');
+      if (mounted) {
+        if (widget.isEditing) {
+          context.pop();
+        } else {
+          context.go('/profile/photos');
+        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

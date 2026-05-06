@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crop_your_image/crop_your_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +14,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
+import '../../../core/services/native_uploader.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Her slot ya boş, ya yeni local bytes, ya da mevcut uzak fotoğraf
@@ -192,27 +192,18 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
         final isPrimary = orderIdx == 0;
 
         if (entry.isLocal) {
-          // Yeni fotoğraf: dio ile storage'a yükle + DB'ye ekle
-          // dart:io HttpClient Android 15'te büyük body'leri asla göndermiyor (408);
-          // dio OkHttp kullandığı için bu sorunu yaşamıyor.
+          // Yeni fotoğraf: native HttpURLConnection ile yükle + DB'ye ekle
+          // dart:io HttpClient Android 15'te büyük body gönderemiyor (408 timeout);
+          // Kotlin HttpURLConnection bu sorunu yaşamıyor.
           final path = '$uid/${_uniqueId()}.png';
           final accessToken = client.auth.currentSession!.accessToken;
 
-          final dio = Dio();
-          await dio.put(
-            '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.profilePhotosBucket}/$path',
-            data: Stream.fromIterable([entry.bytes!]),
-            options: Options(
-              headers: {
-                'Authorization': 'Bearer $accessToken',
-                'apikey': SupabaseConstants.supabaseAnonKey,
-                'Content-Type': 'image/png',
-                'Content-Length': entry.bytes!.length,
-                'x-upsert': 'true',
-              },
-              sendTimeout: const Duration(minutes: 5),
-              receiveTimeout: const Duration(minutes: 1),
-            ),
+          await NativeUploader.uploadBytes(
+            url: '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.profilePhotosBucket}/$path',
+            accessToken: accessToken,
+            apiKey: SupabaseConstants.supabaseAnonKey,
+            bytes: entry.bytes!,
+            contentType: 'image/png',
           );
           uploadedPaths.add(path); // rollback: upload başarılı, izle
 

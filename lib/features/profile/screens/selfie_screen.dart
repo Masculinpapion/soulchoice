@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
+import '../../../core/services/native_uploader.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -47,21 +47,12 @@ class _SelfieScreenState extends State<SelfieScreen> {
 
       final bytes = await selfie.readAsBytes();
       final accessToken = client.auth.currentSession!.accessToken;
-      final dio = Dio();
-      await dio.put(
-        '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.selfiesBucket}/$path',
-        data: Stream.fromIterable([bytes]),
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'apikey': SupabaseConstants.supabaseAnonKey,
-            'Content-Type': 'image/jpeg',
-            'Content-Length': bytes.length,
-            'x-upsert': 'true',
-          },
-          sendTimeout: const Duration(minutes: 5),
-          receiveTimeout: const Duration(minutes: 1),
-        ),
+      await NativeUploader.uploadBytes(
+        url: '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.selfiesBucket}/$path',
+        accessToken: accessToken,
+        apiKey: SupabaseConstants.supabaseAnonKey,
+        bytes: bytes,
+        contentType: 'image/jpeg',
       );
 
       final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);

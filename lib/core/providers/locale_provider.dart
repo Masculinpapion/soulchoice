@@ -32,14 +32,14 @@ class LocaleNotifier extends StateNotifier<Locale?> {
   }
 
   Future<void> setLocale(String languageCode) async {
+    state = Locale(languageCode);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, languageCode);
-    state = Locale(languageCode);
   }
 
   Future<void> useSystemLocale() async {
+    state = _fromSystem();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, 'system');
-    state = _fromSystem();
   }
 }

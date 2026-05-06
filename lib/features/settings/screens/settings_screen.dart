@@ -337,6 +337,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     switch (locale.languageCode) {
       case 'ru': return 'Русский';
       case 'en': return 'English';
+      case 'tr': return 'Türkçe';
       default:
         return AppLocalizations.of(context)!.settings_language_system;
     }

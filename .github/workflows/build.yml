@@ -28,7 +28,7 @@ jobs:
           channel: stable
           cache: true
 
-      - run: echo "hello"
+      - run: flutter pub get
 
       - uses: softprops/action-gh-release@v2
         with:

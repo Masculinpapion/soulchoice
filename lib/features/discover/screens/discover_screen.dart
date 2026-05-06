@@ -73,6 +73,9 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                     ...InvitationCategory.values.map((cat) => _FilterChip(
                           label: cat.labelFor(AppLocalizations.of(context)!),
                           emoji: cat.emoji,
+                          iconWidget: cat == InvitationCategory.bar
+                              ? Image.asset('assets/icons/bar.png', width: 16, height: 16)
+                              : null,
                           selected: _selectedCategory == cat,
                           onTap: () => setState(() =>
                               _selectedCategory =
@@ -475,12 +478,14 @@ class _ErrorState extends StatelessWidget {
 class _FilterChip extends StatelessWidget {
   final String label;
   final String emoji;
+  final Widget? iconWidget;
   final bool selected;
   final VoidCallback onTap;
 
   const _FilterChip({
     required this.label,
     required this.emoji,
+    this.iconWidget,
     required this.selected,
     required this.onTap,
   });
@@ -518,7 +523,7 @@ class _FilterChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                iconWidget ?? Text(
                   emoji,
                   style: TextStyle(
                     fontSize: emoji == '♫' ? 15 : 11,

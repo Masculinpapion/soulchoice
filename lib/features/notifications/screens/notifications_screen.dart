@@ -232,15 +232,24 @@ class _NotifTile extends StatelessWidget {
     this.onDismiss,
   });
 
-  // Bildirim tipine göre gradient renk
   List<Color> _iconGradient() {
     switch (item.type) {
-      case 'application':
+      case 'new_application':
         return [AuroraTheme.auroraRed, const Color(0xFFFF6B7A)];
-      case 'message':
-        return [AuroraTheme.auroraBlue, const Color(0xFF74B3F5)];
-      case 'match':
+      case 'selected':
         return [AuroraTheme.auroraGold, const Color(0xFFFFD700)];
+      case 'not_selected':
+        return [AuroraTheme.auroraViolet, AuroraTheme.auroraBlue];
+      case 'new_message':
+        return [AuroraTheme.auroraBlue, const Color(0xFF74B3F5)];
+      case 'selfie_approved':
+        return [AuroraTheme.auroraGold, const Color(0xFFFFEA70)];
+      case 'selfie_rejected':
+        return [AuroraTheme.auroraRed, AuroraTheme.auroraViolet];
+      case 'meeting_reminder':
+        return [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet];
+      case 'feedback_request':
+        return [AuroraTheme.auroraViolet, const Color(0xFFA78BFA)];
       default:
         return [AuroraTheme.auroraViolet, AuroraTheme.auroraBlue];
     }
@@ -249,55 +258,50 @@ class _NotifTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _iconGradient();
+    final accentColor = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.5);
     final tile = Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GestureDetector(
         onTap: onTap,
         child: ClipRRect(
-          borderRadius:
-              BorderRadius.circular(AuroraTheme.radiusInfoCard),
+          borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
               decoration: BoxDecoration(
                 color: item.isRead
                     ? AuroraTheme.glassBg
-                    : AuroraTheme.auroraRed.withOpacity(0.07),
-                borderRadius:
-                    BorderRadius.circular(AuroraTheme.radiusInfoCard),
-                border: Border.all(
-                  color: item.isRead
-                      ? AuroraTheme.glassBorder
-                      : AuroraTheme.auroraRed.withOpacity(0.35),
-                ),
+                    : colors[0].withOpacity(0.06),
+                borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
+                border: Border.all(color: accentColor),
               ),
               child: Row(
                 children: [
-                  // Icon container — gradient bg
+                  // Aurora glow icon — daire bg + ShaderMask gradient icon
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 46,
+                    height: 46,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: colors,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
+                      shape: BoxShape.circle,
+                      color: colors[0].withOpacity(0.12),
+                      border: Border.all(color: colors[0].withOpacity(0.28)),
                       boxShadow: [
                         BoxShadow(
-                          color: colors[0].withOpacity(0.4),
-                          blurRadius: 10,
+                          color: colors[0].withOpacity(0.30),
+                          blurRadius: 14,
+                          spreadRadius: 0,
                         ),
                       ],
                     ),
                     child: Center(
-                      child: Icon(
-                        item.iconData,
-                        color: Colors.white,
-                        size: 22,
+                      child: ShaderMask(
+                        shaderCallback: (b) => LinearGradient(
+                          colors: colors,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(b),
+                        child: Icon(item.iconData, color: Colors.white, size: 22),
                       ),
                     ),
                   ),

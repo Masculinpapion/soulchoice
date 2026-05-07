@@ -450,11 +450,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_datetime_placeholder => 'Выбрать дату и время';
 
   @override
-  String get decision_selected_title => 'Тебя выбрали!';
+  String get decision_selected_title => 'Подтверждение выбора';
 
   @override
   String decision_selected_body(String name, String title) {
-    return '$name выбрал(а) тебя для приглашения \"$title\".\nХочешь принять?';
+    return 'Вы выбрали $name для вашего приглашения \"$title\".\nХотите подтвердить это совпадение?';
   }
 
   @override
@@ -464,10 +464,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decision_time_expired => 'Время истекло';
 
   @override
-  String get decision_accept => 'Да, принимаю';
+  String get decision_accept => 'Да, подтверждаю';
 
   @override
-  String get decision_reject => 'Нет, отказаться';
+  String get decision_reject => 'Нет, отменить';
 
   @override
   String get decision_fallback_name => 'Пользователь';

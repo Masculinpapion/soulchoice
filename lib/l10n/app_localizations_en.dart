@@ -447,11 +447,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_datetime_placeholder => 'Select date & time';
 
   @override
-  String get decision_selected_title => 'You\'ve been selected!';
+  String get decision_selected_title => 'Match Confirmation';
 
   @override
   String decision_selected_body(String name, String title) {
-    return '$name has selected you for the \"$title\" invitation.\nDo you want to accept?';
+    return 'You selected $name for your \"$title\" invitation.\nWould you like to confirm this match?';
   }
 
   @override
@@ -461,10 +461,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decision_time_expired => 'Time expired';
 
   @override
-  String get decision_accept => 'Yes, I accept';
+  String get decision_accept => 'Yes, confirm';
 
   @override
-  String get decision_reject => 'No, decline';
+  String get decision_reject => 'No, cancel';
 
   @override
   String get decision_fallback_name => 'Person';

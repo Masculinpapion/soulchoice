@@ -448,11 +448,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_datetime_placeholder => 'Tarih ve saat seç';
 
   @override
-  String get decision_selected_title => 'Seçildiniz!';
+  String get decision_selected_title => 'Eşleşme Onayı';
 
   @override
   String decision_selected_body(String name, String title) {
-    return '$name sizi \"$title\" davetiyesi için seçti.\nKabul etmek ister misiniz?';
+    return '$name adlı kişiyi \"$title\" davetiyeniz için seçtiniz.\nBu eşleşmeyi onaylamak ister misiniz?';
   }
 
   @override
@@ -462,10 +462,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decision_time_expired => 'Süre doldu';
 
   @override
-  String get decision_accept => 'Evet, kabul ediyorum';
+  String get decision_accept => 'Evet, onaylıyorum';
 
   @override
-  String get decision_reject => 'Hayır, reddediyorum';
+  String get decision_reject => 'Hayır, vazgeçiyorum';
 
   @override
   String get decision_fallback_name => 'Kişi';

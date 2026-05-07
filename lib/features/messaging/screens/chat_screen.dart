@@ -331,6 +331,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  Future<void> _block() async {
+    final otherUid = _matchInfo?['otherUserId'] as String?;
+    if (otherUid == null || _currentUid == null) return;
+    final client = Supabase.instance.client;
+    await Future.wait([
+      client.from('blocks').upsert({
+        'blocker_id': _currentUid,
+        'blocked_id': otherUid,
+      }, onConflict: 'blocker_id,blocked_id'),
+      client.from('matches').update({
+        'archived_at': DateTime.now().toUtc().toIso8601String(),
+      }).eq('id', widget.matchId),
+    ]);
+    if (mounted) context.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
@@ -357,6 +373,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               photoUrl: _matchInfo?['photoUrl'] as String?,
               otherUserId: _matchInfo?['otherUserId'] as String?,
               onBack: () => context.pop(),
+              onBlock: _block,
             ),
             // Event badge — davet bilgisi özeti
             if (invTitle.isNotEmpty)
@@ -564,12 +581,14 @@ class _ChatAppBar extends StatelessWidget {
   final String? photoUrl;
   final String? otherUserId;
   final VoidCallback onBack;
+  final VoidCallback? onBlock;
   const _ChatAppBar({
     required this.otherName,
     required this.otherAge,
     this.photoUrl,
     this.otherUserId,
     required this.onBack,
+    this.onBlock,
   });
 
   @override
@@ -586,7 +605,8 @@ class _ChatAppBar extends StatelessWidget {
                 onPressed: onBack,
               ),
               // Avatar + isim — tıklanınca profile git
-              GestureDetector(
+              Expanded(
+               child: GestureDetector(
                 onTap: otherUserId != null
                     ? () => context.push('/profile/$otherUserId')
                     : null,
@@ -648,7 +668,38 @@ class _ChatAppBar extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
+              )),
+              if (onBlock != null)
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Colors.white),
+                  color: const Color(0xFF1A1A2E),
+                  onSelected: (val) {
+                    if (val == 'block') {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          backgroundColor: const Color(0xFF1A1A2E),
+                          title: const Text('Engelle ve Kapat', style: TextStyle(color: Colors.white)),
+                          content: const Text('Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.', style: TextStyle(color: Colors.white70)),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('İptal', style: TextStyle(color: Colors.white54))),
+                            TextButton(
+                              onPressed: () { Navigator.pop(context); onBlock!(); },
+                              child: const Text('Engelle', style: TextStyle(color: Color(0xFFFF2D55))),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(value: 'block', child: Row(children: [
+                      Icon(Icons.block, color: Color(0xFFFF2D55), size: 18),
+                      SizedBox(width: 8),
+                      Text('Engelle ve Kapat', style: TextStyle(color: Colors.white)),
+                    ])),
+                  ],
+                ),
             ],
           ),
         ),

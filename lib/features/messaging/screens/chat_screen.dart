@@ -1013,7 +1013,7 @@ class _BlockSheet extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AuroraTheme.glassBg,
-            border: const Border(
+            border: Border(
               top: BorderSide(color: AuroraTheme.glassBorder, width: 0.5),
             ),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -1100,7 +1100,7 @@ class _BlockConfirmSheet extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AuroraTheme.glassBg,
-            border: const Border(
+            border: Border(
               top: BorderSide(color: AuroraTheme.glassBorder, width: 0.5),
             ),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),

@@ -77,7 +77,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           .select('id, url, order_index')
           .eq('user_id', uid)
           .eq('is_selfie', false)
-          .order('order_index');
+          .order('is_primary', ascending: false);
       if (!mounted) return;
       setState(() {
         // Tüm slot'ları sıfırla, sonra DB'den gelen verileri doldur

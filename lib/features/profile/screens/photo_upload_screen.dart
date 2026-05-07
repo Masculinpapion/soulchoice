@@ -267,6 +267,13 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
             .not('id', 'in', '(${keptIds.join(',')})');
       }
 
+      final check = await Supabase.instance.client
+          .from('user_photos')
+          .select('id,order_index,is_primary')
+          .eq('user_id', uid)
+          .order('order_index');
+      debugPrint('DB CHECK: $check');
+
       if (!mounted) return;
       if (widget.isEditing) {
         ref.invalidate(userPhotosProvider(uid));

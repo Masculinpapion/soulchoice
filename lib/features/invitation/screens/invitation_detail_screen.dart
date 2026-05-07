@@ -1248,11 +1248,11 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     setState(() => _loading = true);
     try {
       final uid = Supabase.instance.client.auth.currentUser!.id;
-      await Supabase.instance.client.from('applications').insert({
+      await Supabase.instance.client.from('applications').upsert({
         'invitation_id': widget.invitationId,
         'applicant_id': uid,
         'status': 'pending',
-      });
+      }, onConflict: 'invitation_id,applicant_id');
       widget.onApplied();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

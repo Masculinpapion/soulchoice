@@ -679,58 +679,13 @@ class _ChatAppBar extends StatelessWidget {
                 ),
               )),
               if (onBlock != null)
-                PopupMenuButton<String>(
+                IconButton(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
-                  color: AuroraTheme.bgDeep,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  onSelected: (val) {
-                    if (val == 'block') {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          backgroundColor: AuroraTheme.bgDeep,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          title: const Text(
-                            'Engelle ve Kapat',
-                            style: TextStyle(
-                              fontFamily: 'Fraunces',
-                              fontStyle: FontStyle.italic,
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                          content: const Text(
-                            'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('İptal', style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
-                            ),
-                            TextButton(
-                              onPressed: () { Navigator.pop(context); onBlock!(); },
-                              child: const Text('Engelle', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed, fontWeight: FontWeight.w700)),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                  itemBuilder: (_) => [
-                    PopupMenuItem(
-                      value: 'block',
-                      child: Row(children: [
-                        const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
-                        const SizedBox(width: 10),
-                        Text('Engelle ve Kapat', style: TextStyle(fontFamily: 'Manrope', color: Colors.white.withOpacity(0.9), fontSize: 14)),
-                      ]),
-                    ),
-                  ],
+                  onPressed: () => showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => _BlockSheet(onBlock: onBlock!),
+                  ),
                 ),
             ],
           ),
@@ -1010,9 +965,7 @@ class _InputBar extends StatelessWidget {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(
-                          color: AuroraTheme.auroraRed.withOpacity(0.6),
-                          width: 1),
+                      borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 18, vertical: 12),
@@ -1044,5 +997,189 @@ class _InputBar extends StatelessWidget {
             ],
           ),
         );
+  }
+}
+
+class _BlockSheet extends StatelessWidget {
+  final VoidCallback onBlock;
+  const _BlockSheet({required this.onBlock});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            border: const Border(
+              top: BorderSide(color: AuroraTheme.glassBorder, width: 0.5),
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36, height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Seçenek: Engelle
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => _BlockConfirmSheet(onBlock: onBlock),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: AuroraTheme.auroraRed.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AuroraTheme.auroraRed.withOpacity(0.25)),
+                  ),
+                  child: Row(children: [
+                    const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 20),
+                    const SizedBox(width: 14),
+                    const Text(
+                      'Engelle ve Kapat',
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AuroraTheme.auroraRed,
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // İptal
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'İptal',
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BlockConfirmSheet extends StatelessWidget {
+  final VoidCallback onBlock;
+  const _BlockConfirmSheet({required this.onBlock});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            border: const Border(
+              top: BorderSide(color: AuroraTheme.glassBorder, width: 0.5),
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36, height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                'Engelle ve Kapat',
+                style: TextStyle(
+                  fontFamily: 'Fraunces',
+                  fontStyle: FontStyle.italic,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Bu kişiyi engellemek istediğine emin misin?\nChat kapanacak.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: Colors.white.withOpacity(0.6),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AuroraTheme.auroraRed.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AuroraTheme.auroraRed.withOpacity(0.4)),
+                  ),
+                  child: TextButton(
+                    onPressed: () { Navigator.pop(context); onBlock(); },
+                    child: const Text(
+                      'Evet, engelle',
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AuroraTheme.auroraRed,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'İptal',
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.4),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

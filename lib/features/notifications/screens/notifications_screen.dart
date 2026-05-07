@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/providers/locale_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -352,7 +353,7 @@ class _NotifTile extends StatelessWidget {
                   const SizedBox(width: 8),
                   // Zaman
                   Text(
-                    timeago.format(item.createdAt, locale: 'ru'),
+                    timeago.format(item.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 9,

@@ -12,6 +12,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart' show ScButton;
 import '../providers/discover_provider.dart';
 import '../../../core/providers/city_provider.dart';
+import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Deterministik aspect ratio — hash bazlı, iki seçenek
@@ -241,8 +242,8 @@ class _DiscoverCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           inv.cityName?.isNotEmpty == true
-                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: 'ru')}'
-                              : timeago.format(inv.createdAt, locale: 'ru'),
+                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr')}'
+                              : timeago.format(inv.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,

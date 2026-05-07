@@ -9,6 +9,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/matches_provider.dart';
+import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class MessagesListScreen extends ConsumerStatefulWidget {
@@ -210,7 +211,7 @@ class _MatchTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timeStr = match.lastMessageTime != null
-        ? timeago.format(match.lastMessageTime!, locale: 'ru')
+        ? timeago.format(match.lastMessageTime!, locale: ref.watch(localeProvider)?.languageCode ?? 'tr')
         : '';
     final preview = match.lastMessage != null
         ? (match.lastMessage!.length > 35

@@ -174,8 +174,8 @@
   "create_inv_datetime_subtitle": "Select the event date and time",
   "create_inv_datetime_placeholder": "Select date & time",
 
-  "decision_selected_title": "You've been selected!",
-  "decision_selected_body": "{name} has selected you for the \"{title}\" invitation.\nDo you want to accept?",
+  "decision_selected_title": "Match Confirmation",
+  "decision_selected_body": "You selected {name} for your \"{title}\" invitation.\nWould you like to confirm this match?",
   "@decision_selected_body": {
     "placeholders": {
       "name": { "type": "String" },
@@ -184,8 +184,8 @@
   },
   "decision_time_remaining": "time remaining",
   "decision_time_expired": "Time expired",
-  "decision_accept": "Yes, I accept",
-  "decision_reject": "No, decline",
+  "decision_accept": "Yes, confirm",
+  "decision_reject": "No, cancel",
   "decision_fallback_name": "Person",
   "decision_error": "Error: {error}",
   "@decision_error": {

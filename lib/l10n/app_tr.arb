@@ -174,8 +174,8 @@
   "create_inv_datetime_subtitle": "Etkinlik tarih ve saatini seç",
   "create_inv_datetime_placeholder": "Tarih ve saat seç",
 
-  "decision_selected_title": "Seçildiniz!",
-  "decision_selected_body": "{name} sizi \"{title}\" davetiyesi için seçti.\nKabul etmek ister misiniz?",
+  "decision_selected_title": "Eşleşme Onayı",
+  "decision_selected_body": "{name} adlı kişiyi \"{title}\" davetiyeniz için seçtiniz.\nBu eşleşmeyi onaylamak ister misiniz?",
   "@decision_selected_body": {
     "placeholders": {
       "name": { "type": "String" },
@@ -184,8 +184,8 @@
   },
   "decision_time_remaining": "kalan süre",
   "decision_time_expired": "Süre doldu",
-  "decision_accept": "Evet, kabul ediyorum",
-  "decision_reject": "Hayır, reddediyorum",
+  "decision_accept": "Evet, onaylıyorum",
+  "decision_reject": "Hayır, vazgeçiyorum",
   "decision_fallback_name": "Kişi",
   "decision_error": "Hata: {error}",
   "@decision_error": {

@@ -174,8 +174,8 @@
   "create_inv_datetime_subtitle": "Выбери дату и время мероприятия",
   "create_inv_datetime_placeholder": "Выбрать дату и время",
 
-  "decision_selected_title": "Тебя выбрали!",
-  "decision_selected_body": "{name} выбрал(а) тебя для приглашения \"{title}\".\nХочешь принять?",
+  "decision_selected_title": "Подтверждение выбора",
+  "decision_selected_body": "Вы выбрали {name} для вашего приглашения \"{title}\".\nХотите подтвердить это совпадение?",
   "@decision_selected_body": {
     "placeholders": {
       "name": { "type": "String" },
@@ -184,8 +184,8 @@
   },
   "decision_time_remaining": "осталось времени",
   "decision_time_expired": "Время истекло",
-  "decision_accept": "Да, принимаю",
-  "decision_reject": "Нет, отказаться",
+  "decision_accept": "Да, подтверждаю",
+  "decision_reject": "Нет, отменить",
   "decision_fallback_name": "Пользователь",
   "decision_error": "Ошибка: {error}",
   "@decision_error": {

@@ -469,6 +469,7 @@ class _HeroSection extends StatefulWidget {
   final String? education;
 
   const _HeroSection({
+    super.key,
     required this.photos,
     required this.initialIndex,
     required this.onPageChanged,

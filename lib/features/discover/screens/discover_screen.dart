@@ -11,6 +11,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart' show ScButton;
 import '../providers/discover_provider.dart';
+import '../../../core/providers/city_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Deterministik aspect ratio — hash bazlı, iki seçenek
@@ -29,7 +30,8 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final async = ref.watch(discoverProvider);
+    final cityId = ref.watch(selectedCityIdProvider);
+    final async = ref.watch(discoverProvider(cityId));
 
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
@@ -91,7 +93,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 child: async.when(
                   loading: () => const _LoadingGrid(),
                   error: (e, _) =>
-                      _ErrorState(message: AppLocalizations.of(context)!.discover_error, retryLabel: AppLocalizations.of(context)!.btn_try_again, onRetry: () => ref.invalidate(discoverProvider)),
+                      _ErrorState(message: AppLocalizations.of(context)!.discover_error, retryLabel: AppLocalizations.of(context)!.btn_try_again, onRetry: () => ref.invalidate(discoverProvider(cityId))),
                   data: (allInvitations) {
                     final invitations = _selectedCategory == null
                         ? allInvitations
@@ -111,7 +113,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       color: AuroraTheme.auroraRed,
                       backgroundColor: AuroraTheme.glassStrong,
                       onRefresh: () async =>
-                          ref.invalidate(discoverProvider),
+                          ref.invalidate(discoverProvider(cityId)),
                       child: MasonryGridView.count(
                         crossAxisCount: 2,
                         mainAxisSpacing: 14,

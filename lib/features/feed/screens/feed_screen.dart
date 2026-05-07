@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/providers/city_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -44,7 +45,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
         .eq('name_en', 'Moscow')
         .maybeSingle();
     if (!mounted || data == null) return;
-    setState(() => _selectedCityId = data['id'] as String);
+    final id = data['id'] as String;
+    setState(() => _selectedCityId = id);
+    ref.read(selectedCityIdProvider.notifier).state = id;
   }
 
   @override
@@ -68,6 +71,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
             _selectedCityId = id;
             _selectedCityName = name ?? AppLocalizations.of(context)!.feed_all_cities;
           });
+          ref.read(selectedCityIdProvider.notifier).state = id;
         },
       ),
     );

@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -86,7 +85,14 @@ class ApplicantsScreen extends ConsumerWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: GlassCard(
-                      onTap: () => context.push('/profile/$applicantId'),
+                      onTap: () => context.push(
+                        '/profile/$applicantId',
+                        extra: {
+                          'applicationId': applicationId,
+                          'invitationId': invitationId,
+                          'applicantName': name,
+                        },
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -137,14 +143,7 @@ class ApplicantsScreen extends ConsumerWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          _SelectButton(
-                            invitationId: invitationId,
-                            applicationId: applicationId,
-                            applicantId: applicantId,
-                            applicantName: name,
-                            onSelected: () => ref.invalidate(applicantsProvider(invitationId)),
-                          ),
+                          const Icon(Icons.chevron_right, color: AppColors.textTertiary),
                         ],
                       ),
                     ),
@@ -162,87 +161,3 @@ class ApplicantsScreen extends ConsumerWidget {
   }
 }
 
-class _SelectButton extends StatefulWidget {
-  final String invitationId;
-  final String applicationId;
-  final String applicantId;
-  final String applicantName;
-  final VoidCallback onSelected;
-
-  const _SelectButton({
-    required this.invitationId,
-    required this.applicationId,
-    required this.applicantId,
-    required this.applicantName,
-    required this.onSelected,
-  });
-
-  @override
-  State<_SelectButton> createState() => _SelectButtonState();
-}
-
-class _SelectButtonState extends State<_SelectButton> {
-  bool _loading = false;
-
-  Future<void> _select() async {
-    setState(() => _loading = true);
-    try {
-      await Supabase.instance.client.rpc('match_and_select', params: {
-        'p_application_id': widget.applicationId,
-        'p_invitation_id': widget.invitationId,
-      });
-
-      widget.onSelected();
-
-      if (mounted) {
-        context.push(
-          '/invitation/${widget.invitationId}/decision',
-          extra: {
-            'applicationId': widget.applicationId,
-            'applicantId': widget.applicantId,
-            'applicantName': widget.applicantName,
-          },
-        );
-      }
-    } on PostgrestException catch (e) {
-      if (mounted) {
-        final l = AppLocalizations.of(context)!;
-        final msg = e.message.contains('invitation_not_active')
-            ? l.applicants_error_already_matched
-            : e.message.contains('not_authorized')
-                ? l.applicants_error_not_authorized
-                : l.applicants_error_generic(e.message);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg), backgroundColor: AppColors.error),
-        );
-        setState(() => _loading = false);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.applicants_error_generic(e.toString())), backgroundColor: AppColors.error),
-        );
-        setState(() => _loading = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 72,
-      height: 38,
-      child: ElevatedButton(
-        onPressed: _loading ? null : _select,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.red,
-          padding: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        child: _loading
-            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-            : Text(AppLocalizations.of(context)!.applicants_select_btn, style: AppTextStyles.labelMedium.copyWith(color: AppColors.textPrimary)),
-      ),
-    );
-  }
-}

@@ -225,17 +225,32 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 
                             // CTA
                             Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 8, bottom: 32),
-                              child: _EditorialCTA(
-                                label: isOwnProfile
-                                    ? l10n.profile_view_cta_edit
-                                    : l10n.profile_view_cta_come,
-                                onTap: isOwnProfile
-                                    ? () =>
-                                        context.push('/profile/setup', extra: 'edit')
-                                    : () => context.pop(),
-                              ),
+                              padding: const EdgeInsets.only(top: 8, bottom: 32),
+                              child: Builder(builder: (ctx) {
+                                final extra = GoRouterState.of(ctx).extra;
+                                final appCtx = extra is Map<String, dynamic> ? extra : null;
+                                final applicationId = appCtx?['applicationId'] as String?;
+                                final invitationId = appCtx?['invitationId'] as String?;
+                                final applicantName = appCtx?['applicantName'] as String?;
+
+                                if (applicationId != null && invitationId != null) {
+                                  return _ApplicantActions(
+                                    applicationId: applicationId,
+                                    invitationId: invitationId,
+                                    applicantId: userId,
+                                    applicantName: applicantName ?? '',
+                                  );
+                                }
+
+                                return _EditorialCTA(
+                                  label: isOwnProfile
+                                      ? l10n.profile_view_cta_edit
+                                      : l10n.profile_view_cta_come,
+                                  onTap: isOwnProfile
+                                      ? () => context.push('/profile/setup', extra: 'edit')
+                                      : () => context.pop(),
+                                );
+                              }),
                             ),
                           ],
                         ),
@@ -1454,4 +1469,103 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
           ),
         ),
       );
+}
+
+// ── Başvuranlar için Seç / Reddet butonları ──────────────────────────────────
+class _ApplicantActions extends StatefulWidget {
+  final String applicationId;
+  final String invitationId;
+  final String applicantId;
+  final String applicantName;
+
+  const _ApplicantActions({
+    required this.applicationId,
+    required this.invitationId,
+    required this.applicantId,
+    required this.applicantName,
+  });
+
+  @override
+  State<_ApplicantActions> createState() => _ApplicantActionsState();
+}
+
+class _ApplicantActionsState extends State<_ApplicantActions> {
+  bool _loading = false;
+
+  Future<void> _select() async {
+    setState(() => _loading = true);
+    try {
+      await Supabase.instance.client.rpc('match_and_select', params: {
+        'p_application_id': widget.applicationId,
+        'p_invitation_id': widget.invitationId,
+      });
+      if (mounted) {
+        context.push(
+          '/invitation/${widget.invitationId}/decision',
+          extra: {
+            'applicationId': widget.applicationId,
+            'applicantId': widget.applicantId,
+            'applicantName': widget.applicantName,
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _reject() async {
+    setState(() => _loading = true);
+    try {
+      await Supabase.instance.client.from('applications').update({
+        'status': 'rejected',
+        'responded_at': DateTime.now().toIso8601String(),
+      }).eq('id', widget.applicationId);
+    } catch (_) {}
+    if (mounted) context.pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _loading ? null : _reject,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white70,
+              side: const BorderSide(color: Colors.white24),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+            child: const Text('Reddet'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ElevatedButton(
+              onPressed: _loading ? null : _select,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: _loading
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Text('Seç', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

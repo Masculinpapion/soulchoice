@@ -679,13 +679,72 @@ class _ChatAppBar extends StatelessWidget {
                 ),
               )),
               if (onBlock != null)
-                IconButton(
+                PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
-                  onPressed: () => showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (_) => _BlockSheet(onBlock: onBlock!),
-                  ),
+                  color: const Color(0xFF14121E),
+                  surfaceTintColor: Colors.transparent,
+                  shadowColor: Colors.black54,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  onSelected: (val) {
+                    if (val == 'block') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF14121E),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          title: const Text(
+                            'Engelle ve Kapat',
+                            style: TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          content: Text(
+                            'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              color: Colors.white.withOpacity(0.65),
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('İptal',
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+                            ),
+                            TextButton(
+                              onPressed: () { Navigator.pop(ctx); onBlock!(); },
+                              child: const Text('Engelle',
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    color: AuroraTheme.auroraRed,
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (_) => [
+                    PopupMenuItem(
+                      value: 'block',
+                      child: Row(children: [
+                        const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
+                        const SizedBox(width: 10),
+                        Text('Engelle ve Kapat',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            )),
+                      ]),
+                    ),
+                  ],
                 ),
             ],
           ),

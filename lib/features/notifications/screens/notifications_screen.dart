@@ -21,6 +21,7 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 class _NotificationsScreenState
     extends ConsumerState<NotificationsScreen> {
   RealtimeChannel? _channel;
+  List<NotificationItem>? _localItems; // dismiss için lokal kopya
 
   @override
   void initState() {
@@ -83,6 +84,7 @@ class _NotificationsScreenState
         .update({'read_at': DateTime.now().toIso8601String()})
         .eq('id', id)
         .isFilter('read_at', null);
+    setState(() => _localItems = null); // provider'dan taze al
     ref.invalidate(notificationsProvider);
   }
 
@@ -91,7 +93,9 @@ class _NotificationsScreenState
         .from('notifications')
         .delete()
         .eq('id', id);
+    // lokal kopya zaten setState ile güncellendi, provider'ı da yenile
     ref.invalidate(notificationsProvider);
+    setState(() => _localItems = null);
   }
 
   @override
@@ -172,14 +176,16 @@ class _NotificationsScreenState
                     ),
                   ),
                   data: (notifications) {
-                    if (notifications.isEmpty) {
-                      return const _EmptyState();
-                    }
+                    // Provider'dan gelen veriyi lokal kopyaya aktar
+                    // (zaten varsa dokunma — dismiss sırasında lokal kopya kullanılıyor)
+                    _localItems ??= List.of(notifications);
+                    final items = _localItems!;
+                    if (items.isEmpty) return const _EmptyState();
                     return ListView.builder(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
-                      itemCount: notifications.length,
+                      itemCount: items.length,
                       itemBuilder: (ctx, i) {
-                        final n = notifications[i];
+                        final n = items[i];
                         return _NotifTile(
                           item: n,
                           locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
@@ -187,8 +193,10 @@ class _NotificationsScreenState
                             await _markRead(n.id);
                             if (ctx.mounted) ctx.push(n.routePath);
                           },
-                          onDismiss:
-                              n.isRead ? () => _delete(n.id) : null,
+                          onDismiss: n.isRead ? () {
+                            setState(() => _localItems!.removeWhere((x) => x.id == n.id));
+                            _delete(n.id);
+                          } : null,
                         );
                       },
                     );

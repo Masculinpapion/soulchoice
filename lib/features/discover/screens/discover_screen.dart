@@ -313,11 +313,15 @@ class _DiscoverCard extends StatelessWidget {
                                         height: 14,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: AuroraTheme.auroraBlue,
+                                          gradient: const LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: AuroraTheme.auroraBlue.withOpacity(0.5),
-                                              blurRadius: 8,
+                                              color: Color(0xFFFF2D55),
+                                              blurRadius: 6,
                                             ),
                                           ],
                                         ),

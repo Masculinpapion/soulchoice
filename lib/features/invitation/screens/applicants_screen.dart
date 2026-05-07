@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,6 +76,12 @@ class ApplicantsScreen extends ConsumerWidget {
                   final bio = applicant?['bio'] as String?;
                   final applicationId = app['id'] as String;
                   final applicantId = applicant?['id'] as String? ?? '';
+                  final photos = applicant?['photos'] as List<dynamic>? ?? [];
+                  final primaryPhoto = photos.firstWhere(
+                    (p) => p['is_primary'] == true,
+                    orElse: () => photos.isNotEmpty ? photos.first : null,
+                  );
+                  final photoUrl = primaryPhoto?['url'] as String?;
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
@@ -90,7 +97,15 @@ class ApplicantsScreen extends ConsumerWidget {
                               shape: BoxShape.circle,
                               border: Border.all(color: AppColors.glassBorder),
                             ),
-                            child: const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                            child: ClipOval(
+                              child: photoUrl != null
+                                  ? CachedNetworkImage(
+                                      imageUrl: photoUrl,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) => const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                                    )
+                                  : const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -101,7 +116,20 @@ class ApplicantsScreen extends ConsumerWidget {
                                   Text('$name, $age', style: AppTextStyles.titleMedium),
                                   if (verified) ...[
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.verified, color: AppColors.gold, size: 16),
+                                    Container(
+                                      width: 18,
+                                      height: 18,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: const LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                                        ),
+                                        boxShadow: [BoxShadow(color: const Color(0xFFFF2D55).withOpacity(0.3), blurRadius: 6)],
+                                      ),
+                                      child: const Icon(Icons.check, size: 11, color: Colors.white),
+                                    ),
                                   ],
                                 ]),
                                 if (bio != null)

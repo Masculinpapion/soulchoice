@@ -94,7 +94,7 @@ create table applications (
   id uuid primary key default uuid_generate_v4(),
   invitation_id uuid references invitations(id) on delete cascade,
   applicant_id uuid references users(id) on delete cascade,
-  status text default 'pending' check (status in ('pending', 'selected', 'accepted', 'rejected', 'expired')),
+  status text default 'pending' check (status in ('pending', 'selected', 'accepted', 'rejected', 'expired', 'withdrawn')),
   selected_at timestamptz,
   responded_at timestamptz,
   created_at timestamptz default now(),

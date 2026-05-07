@@ -335,15 +335,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final otherUid = _matchInfo?['otherUserId'] as String?;
     if (otherUid == null || _currentUid == null) return;
     final client = Supabase.instance.client;
-    await Future.wait([
-      client.from('blocks').upsert({
-        'blocker_id': _currentUid,
-        'blocked_id': otherUid,
-      }, onConflict: 'blocker_id,blocked_id'),
-      client.from('matches').update({
-        'archived_at': DateTime.now().toUtc().toIso8601String(),
-      }).eq('id', widget.matchId),
-    ]);
+    try {
+      await Future.wait([
+        client.from('blocks').upsert({
+          'blocker_id': _currentUid,
+          'blocked_id': otherUid,
+        }, onConflict: 'blocker_id,blocked_id'),
+        client.from('matches').update({
+          'archived_at': DateTime.now().toUtc().toIso8601String(),
+        }).eq('id', widget.matchId),
+      ]);
+    } catch (_) {}
     if (mounted) context.pop();
   }
 

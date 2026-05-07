@@ -681,20 +681,40 @@ class _ChatAppBar extends StatelessWidget {
               if (onBlock != null)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
-                  color: const Color(0xFF1A1A2E),
+                  color: AuroraTheme.bgDeep,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   onSelected: (val) {
                     if (val == 'block') {
                       showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
-                          backgroundColor: const Color(0xFF1A1A2E),
-                          title: const Text('Engelle ve Kapat', style: TextStyle(color: Colors.white)),
-                          content: const Text('Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.', style: TextStyle(color: Colors.white70)),
+                          backgroundColor: AuroraTheme.bgDeep,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          title: const Text(
+                            'Engelle ve Kapat',
+                            style: TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                          content: const Text(
+                            'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
                           actions: [
-                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('İptal', style: TextStyle(color: Colors.white54))),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('İptal', style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+                            ),
                             TextButton(
                               onPressed: () { Navigator.pop(context); onBlock!(); },
-                              child: const Text('Engelle', style: TextStyle(color: Color(0xFFFF2D55))),
+                              child: const Text('Engelle', style: TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed, fontWeight: FontWeight.w700)),
                             ),
                           ],
                         ),
@@ -702,11 +722,14 @@ class _ChatAppBar extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(value: 'block', child: Row(children: [
-                      Icon(Icons.block, color: Color(0xFFFF2D55), size: 18),
-                      SizedBox(width: 8),
-                      Text('Engelle ve Kapat', style: TextStyle(color: Colors.white)),
-                    ])),
+                    PopupMenuItem(
+                      value: 'block',
+                      child: Row(children: [
+                        const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
+                        const SizedBox(width: 10),
+                        Text('Engelle ve Kapat', style: TextStyle(fontFamily: 'Manrope', color: Colors.white.withOpacity(0.9), fontSize: 14)),
+                      ]),
+                    ),
                   ],
                 ),
             ],

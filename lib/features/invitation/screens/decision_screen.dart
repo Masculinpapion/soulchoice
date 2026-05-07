@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -144,26 +145,24 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                 const Spacer(),
                 AnimatedBuilder(
                   animation: _pillGlow,
-                  builder: (_, __) => Container(
-                    width: 72,
-                    height: 160,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(36),
-                      gradient: AuroraTheme.redBlueGradient,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AuroraTheme.auroraRed.withOpacity(_pillGlow.value * 0.6),
-                          blurRadius: 60,
-                          spreadRadius: 20,
+                  builder: (_, __) {
+                    final t = _pillGlow.value;
+                    final floatY = math.sin(t * math.pi * 2) * 10.0;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Transform.translate(
+                          offset: Offset(0, floatY),
+                          child: _GlossyPill(isBlue: false, glowIntensity: t),
                         ),
-                        BoxShadow(
-                          color: AuroraTheme.auroraBlue.withOpacity(_pillGlow.value * 0.3),
-                          blurRadius: 40,
-                          spreadRadius: 10,
+                        const SizedBox(width: 16),
+                        Transform.translate(
+                          offset: Offset(0, -floatY),
+                          child: _GlossyPill(isBlue: true, glowIntensity: t),
                         ),
                       ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 40),
                 Text(AppLocalizations.of(context)!.decision_selected_title, style: AppTextStyles.displayLarge),
@@ -200,6 +199,127 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GlossyPill extends StatelessWidget {
+  final bool isBlue;
+  final double glowIntensity;
+  const _GlossyPill({required this.isBlue, required this.glowIntensity});
+
+  @override
+  Widget build(BuildContext context) {
+    final glowColor = isBlue ? const Color(0xFF2D7FFF) : const Color(0xFFFF2D55);
+    return Container(
+      width: 54,
+      height: 130,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(27),
+        boxShadow: [
+          BoxShadow(
+            color: glowColor.withOpacity(0.18 + glowIntensity * 0.42),
+            blurRadius: 40,
+            spreadRadius: 8,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 12,
+            offset: const Offset(3, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(27),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isBlue
+                      ? const [Color(0xFF5588DD), Color(0xFF1133BB), Color(0xFF001088), Color(0xFF0A2299), Color(0xFF1133BB)]
+                      : const [Color(0xFFDD4444), Color(0xFFBB1111), Color(0xFF880006), Color(0xFF991100), Color(0xFFBB1111)],
+                  stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.black.withOpacity(0.35),
+                    Colors.transparent,
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.45),
+                  ],
+                  stops: const [0.0, 0.2, 0.8, 1.0],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8, left: 7,
+              child: Transform.rotate(
+                angle: -0.2,
+                child: Container(
+                  width: 14,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.white.withOpacity(0.55), Colors.white.withOpacity(0.08)],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 14, left: 24,
+              child: Transform.rotate(
+                angle: -0.2,
+                child: Container(
+                  width: 5, height: 24,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    color: Colors.white.withOpacity(0.15),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 63, left: 0, right: 0,
+              child: Container(height: 2, color: Colors.black.withOpacity(0.4)),
+            ),
+            Positioned(
+              top: 65, left: 0, right: 0, bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.black.withOpacity(0.1), Colors.black.withOpacity(0.28)],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 10, right: 8,
+              child: Container(
+                width: 8, height: 18,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.white.withOpacity(0.08),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

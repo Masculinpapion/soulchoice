@@ -4,7 +4,7 @@ class SupabaseConstants {
   // Set these in .env or dart-define
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://mybinancebot.duckdns.org',
+    defaultValue: 'https://soulchoice.app',
   );
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',

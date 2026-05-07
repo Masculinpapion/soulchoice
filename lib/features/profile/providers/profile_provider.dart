@@ -18,8 +18,7 @@ final userPhotosProvider =
       .eq('user_id', userId)
       .eq('is_selfie', false)
       .eq('moderation_status', 'approved')
-      .order('is_primary', ascending: false)
-      .order('order_index');
+      .order('is_primary', ascending: false);
   return List<Map<String, dynamic>>.from(data as List);
 });
 

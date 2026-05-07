@@ -56,7 +56,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final matchRow = await client.from('matches').select(
           'user1_id, user2_id, meeting_date, archived_at, '
           'meeting_confirmed_user1, meeting_confirmed_user2, '
-          'invitation:invitations(title, venue_name, event_date)',
+          'invitation:invitations(id, title, venue_name, event_date)',
         ).eq('id', widget.matchId).maybeSingle();
     if (matchRow == null || !mounted) return;
 
@@ -334,6 +334,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _block() async {
     final otherUid = _matchInfo?['otherUserId'] as String?;
     if (otherUid == null || _currentUid == null) return;
+    final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
+    final invitationId = inv?['id'] as String?;
     final client = Supabase.instance.client;
     try {
       await Future.wait([
@@ -346,7 +348,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         }).eq('id', widget.matchId),
       ]);
     } catch (_) {}
-    if (mounted) context.pop();
+    if (!mounted) return;
+    if (invitationId != null) {
+      context.go('/invitation/$invitationId/applicants');
+    } else {
+      context.pop();
+    }
   }
 
   @override

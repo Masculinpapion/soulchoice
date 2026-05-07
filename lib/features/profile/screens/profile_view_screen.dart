@@ -1499,7 +1499,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
         'p_application_id': widget.applicationId,
         'p_invitation_id': widget.invitationId,
       }) as String;
-      if (mounted) context.go('/chat/$matchId');
+      if (mounted) context.push('/chat/$matchId');
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }

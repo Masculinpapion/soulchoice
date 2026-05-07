@@ -94,8 +94,14 @@ class _InvitationDetailScreenState
           final expiresAt = inv['expires_at'] != null
               ? DateTime.parse(inv['expires_at'] as String)
               : DateTime.now();
-          final remaining = expiresAt.difference(DateTime.now());
+          final selectionDeadline = inv['selection_deadline'] != null
+              ? DateTime.parse(inv['selection_deadline'] as String)
+              : null;
           final invStatus = inv['status'] as String? ?? 'active';
+          // selecting durumunda kalan süreyi seçim deadline'ına göre hesapla
+          final remaining = invStatus == 'selecting' && selectionDeadline != null
+              ? selectionDeadline.difference(DateTime.now())
+              : expiresAt.difference(DateTime.now());
           final appStatus =
               myAppAsync.asData?.value?['status'] as String?;
           final venueName = inv['venue_name'] as String?;
@@ -614,6 +620,7 @@ class _CountdownStrip extends StatelessWidget {
   String _label(AppLocalizations l10n) {
     if (invStatus == 'closed' || invStatus == 'cancelled') return l10n.inv_detail_status_closed;
     if (appStatus == 'accepted') return l10n.inv_detail_status_meeting;
+    if (invStatus == 'selecting' && isOwner) return 'Seçim penceresi';
     if (isOwner) return l10n.inv_detail_status_decision;
     if (appStatus != null) return l10n.inv_detail_status_awaiting;
     return l10n.inv_detail_status_remaining;

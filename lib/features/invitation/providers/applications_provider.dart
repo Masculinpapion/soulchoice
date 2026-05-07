@@ -3,11 +3,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 final applicantsProvider =
     FutureProvider.autoDispose.family<List<Map<String, dynamic>>, String>((ref, invitationId) async {
-  final data = await Supabase.instance.client
+  final client = Supabase.instance.client;
+
+  // pending + accepted başvurular
+  final apps = await client
       .from('applications')
-      .select('id, status, created_at, applicant:users(id, name, age, gender, verified, bio, interests, photos:user_photos(url, is_primary))')
+      .select('id, status, created_at, applicant:users(id, name, age, gender, verified, bio, photos:user_photos(url, is_primary))')
       .eq('invitation_id', invitationId)
-      .eq('status', 'pending')
+      .inFilter('status', ['pending', 'accepted'])
       .order('created_at');
-  return List<Map<String, dynamic>>.from(data as List);
+
+  // Bu davete ait match'ler (accepted olanlar için chat ID)
+  final matches = await client
+      .from('matches')
+      .select('id, user1_id, user2_id')
+      .eq('invitation_id', invitationId);
+
+  final matchList = List<Map<String, dynamic>>.from(matches as List);
+
+  return List<Map<String, dynamic>>.from(apps as List).map((app) {
+    final applicantId = (app['applicant'] as Map?)?['id'] as String?;
+    final matchRow = matchList.firstWhere(
+      (m) => m['user1_id'] == applicantId || m['user2_id'] == applicantId,
+      orElse: () => {},
+    );
+    return {...app, 'match_id': matchRow['id'] as String?};
+  }).toList();
 });

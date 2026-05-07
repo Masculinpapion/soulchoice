@@ -75,43 +75,75 @@ class ApplicantsScreen extends ConsumerWidget {
                   final bio = applicant?['bio'] as String?;
                   final applicationId = app['id'] as String;
                   final applicantId = applicant?['id'] as String? ?? '';
+                  final status = app['status'] as String? ?? 'pending';
+                  final matchId = app['match_id'] as String?;
                   final photos = applicant?['photos'] as List<dynamic>? ?? [];
                   final primaryPhoto = photos.firstWhere(
                     (p) => p['is_primary'] == true,
                     orElse: () => photos.isNotEmpty ? photos.first : null,
                   );
                   final photoUrl = primaryPhoto?['url'] as String?;
+                  final isAccepted = status == 'accepted';
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: GlassCard(
-                      onTap: () => context.push(
-                        '/profile/$applicantId',
-                        extra: {
-                          'applicationId': applicationId,
-                          'invitationId': invitationId,
-                          'applicantName': name,
-                        },
-                      ),
+                      onTap: () {
+                        if (isAccepted && matchId != null) {
+                          context.push('/chat/$matchId');
+                        } else {
+                          context.push(
+                            '/profile/$applicantId',
+                            extra: {
+                              'applicationId': applicationId,
+                              'invitationId': invitationId,
+                              'applicantName': name,
+                            },
+                          );
+                        }
+                      },
                       child: Row(
                         children: [
-                          Container(
-                            width: 52,
-                            height: 52,
-                            decoration: BoxDecoration(
-                              color: AppColors.glassBg,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.glassBorder),
-                            ),
-                            child: ClipOval(
-                              child: photoUrl != null
-                                  ? CachedNetworkImage(
-                                      imageUrl: photoUrl,
-                                      fit: BoxFit.cover,
-                                      errorWidget: (_, __, ___) => const Icon(Icons.person_outline, color: AppColors.textSecondary),
-                                    )
-                                  : const Icon(Icons.person_outline, color: AppColors.textSecondary),
-                            ),
+                          Stack(
+                            children: [
+                              Container(
+                                width: 52,
+                                height: 52,
+                                decoration: BoxDecoration(
+                                  color: AppColors.glassBg,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isAccepted
+                                        ? const Color(0xFF2D7FFF).withOpacity(0.6)
+                                        : AppColors.glassBorder,
+                                    width: isAccepted ? 2 : 1,
+                                  ),
+                                ),
+                                child: ClipOval(
+                                  child: photoUrl != null
+                                      ? CachedNetworkImage(
+                                          imageUrl: photoUrl,
+                                          fit: BoxFit.cover,
+                                          errorWidget: (_, __, ___) => const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                                        )
+                                      : const Icon(Icons.person_outline, color: AppColors.textSecondary),
+                                ),
+                              ),
+                              if (isAccepted)
+                                Positioned(
+                                  right: 0, bottom: 0,
+                                  child: Container(
+                                    width: 18, height: 18,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                                      ),
+                                    ),
+                                    child: const Icon(Icons.chat_bubble, size: 10, color: Colors.white),
+                                  ),
+                                ),
+                            ],
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -123,8 +155,7 @@ class ApplicantsScreen extends ConsumerWidget {
                                   if (verified) ...[
                                     const SizedBox(width: 4),
                                     Container(
-                                      width: 18,
-                                      height: 18,
+                                      width: 18, height: 18,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         gradient: const LinearGradient(
@@ -140,10 +171,15 @@ class ApplicantsScreen extends ConsumerWidget {
                                 ]),
                                 if (bio != null)
                                   Text(bio, style: AppTextStyles.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                if (isAccepted)
+                                  Text('Chat açık', style: AppTextStyles.monoSmall.copyWith(color: const Color(0xFF2D7FFF))),
                               ],
                             ),
                           ),
-                          const Icon(Icons.chevron_right, color: AppColors.textTertiary),
+                          Icon(
+                            isAccepted ? Icons.chat_bubble_outline : Icons.chevron_right,
+                            color: isAccepted ? const Color(0xFF2D7FFF) : AppColors.textTertiary,
+                          ),
                         ],
                       ),
                     ),

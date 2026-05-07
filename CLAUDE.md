@@ -131,3 +131,9 @@ Feed tasarımı:
 - "GÜNÜN DAVETLERİ · KAYDIR →" başlığı
 - Story avatarlar gradient halka
 - Davetler / İstekler pill sekmeler
+
+## Sunucu Bilgileri
+- **Aktif Sunucu:** Timeweb (Moskova) — 89.169.1.127
+- **SSH:** ssh -i ~/.ssh/hetzner_bot root@89.169.1.127
+- **Domain:** https://soulchoice.app
+- **Eski Sunucu:** Hetzner 178.104.199.93 (kullanılmıyor, yedek)

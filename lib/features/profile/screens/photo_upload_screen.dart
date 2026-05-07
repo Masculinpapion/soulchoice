@@ -189,7 +189,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
       for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
         final entry = filled[orderIdx].value;
-        final isPrimary = orderIdx == 0;
+        final isPrimary = filled[orderIdx].key == 0;
 
         if (entry.isLocal) {
           // Yeni fotoğraf: native HttpURLConnection ile yükle + DB'ye ekle
@@ -270,7 +270,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       ref.invalidate(userPhotosProvider(uid));
       ref.invalidate(userProfileProvider(uid));
       if (widget.isEditing) {
-        context.go('/my-profile');
+        context.pop();
       } else {
         context.go('/profile/selfie');
       }

@@ -182,6 +182,7 @@ class _NotificationsScreenState
                         final n = notifications[i];
                         return _NotifTile(
                           item: n,
+                          locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
                           onTap: () async {
                             await _markRead(n.id);
                             if (ctx.mounted) ctx.push(n.routePath);
@@ -237,10 +238,12 @@ class _NotifTile extends StatelessWidget {
   final NotificationItem item;
   final VoidCallback onTap;
   final VoidCallback? onDismiss;
+  final String locale;
 
   const _NotifTile({
     required this.item,
     required this.onTap,
+    required this.locale,
     this.onDismiss,
   });
 
@@ -353,7 +356,7 @@ class _NotifTile extends StatelessWidget {
                   const SizedBox(width: 8),
                   // Zaman
                   Text(
-                    timeago.format(item.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
+                    timeago.format(item.createdAt, locale: locale),
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 9,

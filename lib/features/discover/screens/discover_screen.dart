@@ -126,6 +126,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                           return _DiscoverCard(
                             invitation: inv,
                             aspect: _cardAspect(inv.id),
+                            locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
                             onTap: () =>
                                 context.push('/invitation/${inv.id}'),
                           );
@@ -148,11 +149,13 @@ class _DiscoverCard extends StatelessWidget {
   final InvitationModel invitation;
   final double aspect;
   final VoidCallback onTap;
+  final String locale;
 
   const _DiscoverCard({
     required this.invitation,
     required this.aspect,
     required this.onTap,
+    required this.locale,
   });
 
   @override
@@ -242,8 +245,8 @@ class _DiscoverCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           inv.cityName?.isNotEmpty == true
-                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr')}'
-                              : timeago.format(inv.createdAt, locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
+                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: locale)}'
+                              : timeago.format(inv.createdAt, locale: locale),
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,

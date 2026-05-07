@@ -191,7 +191,7 @@ class _MatchesTab extends ConsumerWidget {
             itemCount: matches.length,
             itemBuilder: (ctx, i) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: _MatchTile(match: matches[i]),
+              child: _MatchTile(match: matches[i], locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
             ),
           ),
         );
@@ -206,12 +206,13 @@ class _MatchesTab extends ConsumerWidget {
 
 class _MatchTile extends StatelessWidget {
   final MatchPreview match;
-  const _MatchTile({required this.match});
+  final String locale;
+  const _MatchTile({required this.match, required this.locale});
 
   @override
   Widget build(BuildContext context) {
     final timeStr = match.lastMessageTime != null
-        ? timeago.format(match.lastMessageTime!, locale: ref.watch(localeProvider)?.languageCode ?? 'tr')
+        ? timeago.format(match.lastMessageTime!, locale: locale)
         : '';
     final preview = match.lastMessage != null
         ? (match.lastMessage!.length > 35

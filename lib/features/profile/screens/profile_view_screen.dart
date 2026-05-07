@@ -1495,20 +1495,11 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
   Future<void> _select() async {
     setState(() => _loading = true);
     try {
-      await Supabase.instance.client.rpc('match_and_select', params: {
+      final matchId = await Supabase.instance.client.rpc('match_and_select', params: {
         'p_application_id': widget.applicationId,
         'p_invitation_id': widget.invitationId,
-      });
-      if (mounted) {
-        context.push(
-          '/invitation/${widget.invitationId}/decision',
-          extra: {
-            'applicationId': widget.applicationId,
-            'applicantId': widget.applicantId,
-            'applicantName': widget.applicantName,
-          },
-        );
-      }
+      }) as String;
+      if (mounted) context.go('/chat/$matchId');
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }

@@ -499,6 +499,17 @@ class _HeroSectionState extends State<_HeroSection> {
   }
 
   @override
+  void didUpdateWidget(_HeroSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.photos.isNotEmpty &&
+        (oldWidget.photos.isEmpty ||
+            oldWidget.photos[0]['id'] != widget.photos[0]['id'])) {
+      _current = 0;
+      _ctrl.jumpToPage(0);
+    }
+  }
+
+  @override
   void dispose() {
     _ctrl.dispose();
     super.dispose();

@@ -190,6 +190,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
         final entry = filled[orderIdx].value;
         final isPrimary = filled[orderIdx].key == 0;
+        debugPrint('SAVE[$orderIdx]: id=${entry.remoteId} isPrimary=$isPrimary');
 
         if (entry.isLocal) {
           // Yeni fotoğraf: native HttpURLConnection ile yükle + DB'ye ekle
@@ -267,11 +268,14 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       }
 
       if (!mounted) return;
-      ref.invalidate(userPhotosProvider(uid));
-      ref.invalidate(userProfileProvider(uid));
       if (widget.isEditing) {
-        context.pop();
+        ref.invalidate(userPhotosProvider(uid));
+        ref.invalidate(userProfileProvider(uid));
+        await ref.read(userPhotosProvider(uid).future);
+        if (mounted) context.pop();
       } else {
+        ref.invalidate(userPhotosProvider(uid));
+        ref.invalidate(userProfileProvider(uid));
         context.go('/profile/selfie');
       }
     } catch (e) {

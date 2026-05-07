@@ -10,18 +10,20 @@ final discoverProvider =
   final currentUserId = ref.read(currentUserIdProvider);
   final client = Supabase.instance.client;
 
-  // Fetch current user gender + show_gender + blocked IDs
+  // Fetch current user gender + show_gender + city_id + blocked IDs
   List<String> blockedIds = [];
   String? myGender;
   String? targetGender;
+  String? myCityId;
   if (currentUserId != null) {
     final results = await Future.wait<dynamic>([
       client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
-      client.from('users').select('gender, show_gender').eq('id', currentUserId).maybeSingle(),
+      client.from('users').select('gender, show_gender, city_id').eq('id', currentUserId).maybeSingle(),
     ]);
     blockedIds = ((results[0] as List).map((b) => b['blocked_id'] as String).toList());
     final userRow = results[1] as Map<String, dynamic>?;
     myGender = userRow?['gender'] as String?;
+    myCityId = userRow?['city_id'] as String?;
     final showGender = userRow?['show_gender'] as String? ?? 'opposite';
     if (showGender == 'opposite') {
       targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
@@ -47,6 +49,9 @@ final discoverProvider =
 
   if (currentUserId != null) {
     query = query.neq('owner_id', currentUserId);
+  }
+  if (myCityId != null) {
+    query = query.eq('city_id', myCityId);
   }
   if (blockedIds.isNotEmpty) {
     query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');

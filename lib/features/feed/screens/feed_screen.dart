@@ -90,6 +90,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 flowType: _tabController.index == 0
                     ? InvitationFlowType.invite
                     : InvitationFlowType.request,
+                cityId: _selectedCityId,
               ),
               _TabBar(controller: _tabController),
               _CategoryChips(
@@ -255,11 +256,12 @@ class _GlassPill extends StatelessWidget {
 
 class _StoryBar extends ConsumerWidget {
   final InvitationFlowType flowType;
-  const _StoryBar({required this.flowType});
+  final String? cityId;
+  const _StoryBar({required this.flowType, this.cityId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filter = InvitationFilter(flowType: flowType);
+    final filter = InvitationFilter(flowType: flowType, cityId: cityId);
     final async = ref.watch(invitationsProvider(filter));
 
     final seen = <String>{};

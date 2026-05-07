@@ -272,7 +272,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
         ref.invalidate(userPhotosProvider(uid));
         ref.invalidate(userProfileProvider(uid));
         await ref.read(userPhotosProvider(uid).future);
-        if (mounted) context.pop();
+        if (mounted) context.go('/my-profile');
       } else {
         ref.invalidate(userPhotosProvider(uid));
         ref.invalidate(userProfileProvider(uid));

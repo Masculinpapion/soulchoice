@@ -482,19 +482,8 @@ class _InvitationDetailScreenState
                                     children: [
                                       if (venueName != null)
                                         _DetailRow(
-                                          icon:
-                                              Icons.location_on_outlined,
+                                          icon: Icons.location_on_outlined,
                                           label: venueName,
-                                          trailing: Text(
-                                            AppLocalizations.of(context)!.inv_detail_directions,
-                                            style: TextStyle(
-                                              fontFamily: 'JetBrainsMono',
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w600,
-                                              color:
-                                                  AuroraTheme.auroraBlue,
-                                            ),
-                                          ),
                                         ),
                                       if (venueName != null &&
                                           eventDate != null)

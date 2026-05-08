@@ -31,7 +31,7 @@
   "settings_logout": "Log out",
   "settings_delete_account": "Delete account",
   "settings_title": "Settings",
-  "settings_profile_section": "Profile",
+  "settings_profile_section": "PROFILE",
   "settings_edit_profile": "Edit profile",
   "settings_edit_photos": "Edit photos",
   "settings_notification_prefs": "Notification preferences",
@@ -261,13 +261,13 @@
       "min": { "type": "int" }
     }
   },
-  "inv_detail_weekday_mon_full": "Monday",
-  "inv_detail_weekday_tue_full": "Tuesday",
-  "inv_detail_weekday_wed_full": "Wednesday",
-  "inv_detail_weekday_thu_full": "Thursday",
-  "inv_detail_weekday_fri_full": "Friday",
-  "inv_detail_weekday_sat_full": "Saturday",
-  "inv_detail_weekday_sun_full": "Sunday",
+  "inv_detail_weekday_mon_full": "MONDAY",
+  "inv_detail_weekday_tue_full": "TUESDAY",
+  "inv_detail_weekday_wed_full": "WEDNESDAY",
+  "inv_detail_weekday_thu_full": "THURSDAY",
+  "inv_detail_weekday_fri_full": "FRIDAY",
+  "inv_detail_weekday_sat_full": "SATURDAY",
+  "inv_detail_weekday_sun_full": "SUNDAY",
 
   "chat_archived": "This chat is archived",
   "chat_meeting_question": "Did your meeting happen?",
@@ -416,10 +416,10 @@
       "max": { "type": "int" }
     }
   },
-  "profile_setup_prompt_favorite_restaurant": "My favourite restaurant...",
-  "profile_setup_prompt_last_book": "The last book I read...",
-  "profile_setup_prompt_perfect_evening": "A perfect evening...",
-  "profile_setup_prompt_travel_dream": "My dream trip...",
+  "profile_setup_prompt_favorite_restaurant": "MY FAVOURITE RESTAURANT...",
+  "profile_setup_prompt_last_book": "THE LAST BOOK I READ...",
+  "profile_setup_prompt_perfect_evening": "A PERFECT EVENING...",
+  "profile_setup_prompt_travel_dream": "MY DREAM TRIP...",
   "profile_setup_interest_art": "Art",
   "profile_setup_interest_music": "Music",
   "profile_setup_interest_sports": "Sports",
@@ -596,13 +596,13 @@
   "admin_btn_ban": "Ban",
   "admin_btn_dismiss": "Dismiss",
 
-  "category_food": "Dining",
-  "category_concert": "Concert",
-  "category_travel": "Travel",
-  "category_culture": "Culture",
-  "category_cinema": "Cinema",
-  "category_theater": "Theatre",
-  "category_coffee": "Coffee",
-  "category_bar": "Bar",
-  "category_gift": "Gift"
+  "category_food": "DINING",
+  "category_concert": "CONCERT",
+  "category_travel": "TRAVEL",
+  "category_culture": "CULTURE",
+  "category_cinema": "CINEMA",
+  "category_theater": "THEATRE",
+  "category_coffee": "COFFEE",
+  "category_bar": "BAR",
+  "category_gift": "GIFT"
 }

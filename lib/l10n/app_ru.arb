@@ -31,7 +31,7 @@
   "settings_logout": "Выйти",
   "settings_delete_account": "Удалить аккаунт",
   "settings_title": "Настройки",
-  "settings_profile_section": "Профиль",
+  "settings_profile_section": "ПРОФИЛЬ",
   "settings_edit_profile": "Редактировать профиль",
   "settings_edit_photos": "Редактировать фото",
   "settings_notification_prefs": "Настройки уведомлений",
@@ -261,13 +261,13 @@
       "min": { "type": "int" }
     }
   },
-  "inv_detail_weekday_mon_full": "Понедельник",
-  "inv_detail_weekday_tue_full": "Вторник",
-  "inv_detail_weekday_wed_full": "Среда",
-  "inv_detail_weekday_thu_full": "Четверг",
-  "inv_detail_weekday_fri_full": "Пятница",
-  "inv_detail_weekday_sat_full": "Суббота",
-  "inv_detail_weekday_sun_full": "Воскресенье",
+  "inv_detail_weekday_mon_full": "ПОНЕДЕЛЬНИК",
+  "inv_detail_weekday_tue_full": "ВТОРНИК",
+  "inv_detail_weekday_wed_full": "СРЕДА",
+  "inv_detail_weekday_thu_full": "ЧЕТВЕРГ",
+  "inv_detail_weekday_fri_full": "ПЯТНИЦА",
+  "inv_detail_weekday_sat_full": "СУББОТА",
+  "inv_detail_weekday_sun_full": "ВОСКРЕСЕНЬЕ",
 
   "chat_archived": "Этот чат в архиве",
   "chat_meeting_question": "Встреча состоялась?",
@@ -416,10 +416,10 @@
       "max": { "type": "int" }
     }
   },
-  "profile_setup_prompt_favorite_restaurant": "Мой любимый ресторан...",
-  "profile_setup_prompt_last_book": "Последняя книга, которую я читал(а)...",
-  "profile_setup_prompt_perfect_evening": "Идеальный вечер...",
-  "profile_setup_prompt_travel_dream": "Моя мечта о путешествии...",
+  "profile_setup_prompt_favorite_restaurant": "МОЙ ЛЮБИМЫЙ РЕСТОРАН...",
+  "profile_setup_prompt_last_book": "ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛ(А)...",
+  "profile_setup_prompt_perfect_evening": "ИДЕАЛЬНЫЙ ВЕЧЕР...",
+  "profile_setup_prompt_travel_dream": "МОЯ МЕЧТА О ПУТЕШЕСТВИИ...",
   "profile_setup_interest_art": "Искусство",
   "profile_setup_interest_music": "Музыка",
   "profile_setup_interest_sports": "Спорт",
@@ -596,13 +596,13 @@
   "admin_btn_ban": "Заблокировать",
   "admin_btn_dismiss": "Отклонить",
 
-  "category_food": "Ресторан",
-  "category_concert": "Концерт",
-  "category_travel": "Путешествие",
-  "category_culture": "Культура",
-  "category_cinema": "Кино",
-  "category_theater": "Театр",
-  "category_coffee": "Кофе",
-  "category_bar": "Бар",
-  "category_gift": "Подарок"
+  "category_food": "РЕСТОРАН",
+  "category_concert": "КОНЦЕРТ",
+  "category_travel": "ПУТЕШЕСТВИЕ",
+  "category_culture": "КУЛЬТУРА",
+  "category_cinema": "КИНО",
+  "category_theater": "ТЕАТР",
+  "category_coffee": "КОФЕ",
+  "category_bar": "БАР",
+  "category_gift": "ПОДАРОК"
 }

@@ -1029,7 +1029,7 @@ class _EditPromptCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    question.toUpperCase(),
+                    question,
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 10,

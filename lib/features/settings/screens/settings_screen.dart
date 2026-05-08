@@ -804,7 +804,7 @@ class _Section extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
-            title.toUpperCase(),
+            title,
             style: AuroraTheme.monoLabel,
           ),
         ),

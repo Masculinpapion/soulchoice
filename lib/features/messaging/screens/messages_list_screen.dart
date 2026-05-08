@@ -20,15 +20,12 @@ class MessagesListScreen extends ConsumerStatefulWidget {
       _MessagesListScreenState();
 }
 
-class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
   RealtimeChannel? _channel;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     _subscribeRealtime();
   }
 
@@ -48,7 +45,6 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
 
   @override
   void dispose() {
-    _tabController.dispose();
     if (_channel != null) {
       _channel!.unsubscribe();
       Supabase.instance.client.removeChannel(_channel!);
@@ -84,59 +80,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
                   ),
                 ),
               ),
-              // Tab bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AuroraTheme.glassBg,
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: AuroraTheme.glassBorder),
-                      ),
-                      child: TabBar(
-                        controller: _tabController,
-                        indicator: BoxDecoration(
-                          gradient: AuroraTheme.redBlueGradient,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        labelStyle: const TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                        ),
-                        unselectedLabelStyle: const TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                        ),
-                        labelColor: Colors.white,
-                        unselectedLabelColor:
-                            Colors.white.withOpacity(0.35),
-                        tabs: [
-                          Tab(text: AppLocalizations.of(context)!.messages_tab_active),
-                          Tab(text: AppLocalizations.of(context)!.messages_tab_past),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: const [
-                    _MatchesTab(isArchived: false),
-                    _MatchesTab(isArchived: true),
-                  ],
-                ),
-              ),
+              const Expanded(child: _MatchesTab()),
             ],
           ),
         ),
@@ -150,14 +94,11 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _MatchesTab extends ConsumerWidget {
-  final bool isArchived;
-  const _MatchesTab({required this.isArchived});
+  const _MatchesTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listAsync = isArchived
-        ? ref.watch(archivedMatchesProvider)
-        : ref.watch(activeMatchesProvider);
+    final listAsync = ref.watch(activeMatchesProvider);
 
     return listAsync.when(
       loading: () => _SkeletonList(),
@@ -178,7 +119,7 @@ class _MatchesTab extends ConsumerWidget {
         ),
       ),
       data: (matches) {
-        if (matches.isEmpty) return _EmptyState(isArchived: isArchived);
+        if (matches.isEmpty) return const _EmptyState();
         return RefreshIndicator(
           color: AuroraTheme.auroraRed,
           backgroundColor: AuroraTheme.glassStrong,
@@ -393,8 +334,7 @@ class _InitialsAvatar extends StatelessWidget {
 
 // ── Empty State ───────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
-  final bool isArchived;
-  const _EmptyState({required this.isArchived});
+  const _EmptyState();
 
   @override
   Widget build(BuildContext context) => Center(
@@ -403,12 +343,10 @@ class _EmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _EmptyStateIcon(isArchived: isArchived),
+              const _ActiveIconLayers(),
               const SizedBox(height: 24),
               Text(
-                isArchived
-                    ? AppLocalizations.of(context)!.messages_empty_past
-                    : AppLocalizations.of(context)!.messages_empty_active,
+                AppLocalizations.of(context)!.messages_empty_active,
                 style: const TextStyle(
                   fontFamily: 'Fraunces',
                   fontStyle: FontStyle.italic,
@@ -417,23 +355,21 @@ class _EmptyState extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              if (!isArchived) ...[
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.messages_empty_hint,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 14,
-                    color: AuroraTheme.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
+              const SizedBox(height: 8),
+              Text(
+                AppLocalizations.of(context)!.messages_empty_hint,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: AuroraTheme.textSecondary,
                 ),
-                const SizedBox(height: 24),
-                ScButton(
-                  label: AppLocalizations.of(context)!.messages_btn_create,
-                  onPressed: () => context.push('/invitation/create'),
-                ),
-              ],
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ScButton(
+                label: AppLocalizations.of(context)!.messages_btn_create,
+                onPressed: () => context.push('/invitation/create'),
+              ),
             ],
           ),
         ),
@@ -441,120 +377,6 @@ class _EmptyState extends StatelessWidget {
 }
 
 // ── Empty State Icon ──────────────────────────────────────────────────────────
-class _EmptyStateIcon extends StatelessWidget {
-  final bool isArchived;
-  const _EmptyStateIcon({required this.isArchived});
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 104,
-        height: 104,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Outer glow halo
-            Container(
-              width: 104,
-              height: 104,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    (isArchived
-                            ? AuroraTheme.auroraViolet
-                            : AuroraTheme.auroraRed)
-                        .withOpacity(0.22),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-            // Glass ring
-            ClipOval(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-                child: Container(
-                  width: 78,
-                  height: 78,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.05),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.11),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Icon
-            if (isArchived)
-              _ArchiveIconLayers()
-            else
-              _ActiveIconLayers(),
-          ],
-        ),
-      );
-}
-
-class _ArchiveIconLayers extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => SizedBox(
-        width: 54,
-        height: 54,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Back bubble — upper-right, violet, muted
-            Positioned(
-              right: 0,
-              top: 2,
-              child: Icon(
-                Icons.chat_bubble_rounded,
-                size: 34,
-                color: AuroraTheme.auroraViolet.withOpacity(0.36),
-              ),
-            ),
-            // Front bubble — lower-left, aurora gradient
-            Positioned(
-              left: 0,
-              bottom: 0,
-              child: ShaderMask(
-                shaderCallback: (b) =>
-                    AuroraTheme.redBlueGradient.createShader(b),
-                child: const Icon(
-                  Icons.chat_bubble_rounded,
-                  size: 40,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            // Tiny clock badge — bottom-right
-            Positioned(
-              right: 1,
-              bottom: 1,
-              child: Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AuroraTheme.bgDeep,
-                  border: Border.all(
-                    color: AuroraTheme.auroraViolet.withOpacity(0.50),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.schedule_rounded,
-                  size: 11,
-                  color: AuroraTheme.auroraViolet.withOpacity(0.80),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-}
-
 class _ActiveIconLayers extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Stack(

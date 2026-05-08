@@ -335,7 +335,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     try {
       await Supabase.instance.client
           .from('matches')
-          .update({'archived_at': DateTime.now().toUtc().toIso8601String()})
+          .delete()
           .eq('id', widget.matchId);
     } catch (_) {}
     if (mounted) context.pop();
@@ -353,9 +353,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           'blocker_id': _currentUid,
           'blocked_id': otherUid,
         }, onConflict: 'blocker_id,blocked_id'),
-        client.from('matches').update({
-          'archived_at': DateTime.now().toUtc().toIso8601String(),
-        }).eq('id', widget.matchId),
+        client.from('matches').delete().eq('id', widget.matchId),
       ]);
     } catch (_) {}
     if (!mounted) return;

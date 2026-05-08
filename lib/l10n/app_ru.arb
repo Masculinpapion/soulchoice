@@ -538,10 +538,13 @@
   "profile_view_action_block_cancel": "Отмена",
   "profile_view_action_report": "Пожаловаться",
   "profile_view_action_cancel": "Отмена",
-  "profile_view_blocked_snack": "{name} заблокирован(а)",
+  "profile_view_blocked_snack": "{gender, select, female{{name} заблокирована} other{{name} заблокирован}}",
   "@profile_view_blocked_snack": {
     "placeholders": {
       "name": {
+        "type": "String"
+      },
+      "gender": {
         "type": "String"
       }
     }

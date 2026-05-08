@@ -343,7 +343,7 @@ class _EmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const _ActiveIconLayers(),
+              _ActiveIconLayers(),
               const SizedBox(height: 24),
               Text(
                 AppLocalizations.of(context)!.messages_empty_active,

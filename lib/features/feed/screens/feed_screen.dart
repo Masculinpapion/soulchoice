@@ -896,11 +896,11 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
         ref.invalidate(invitationsProvider(filter));
         await ref.read(invitationsProvider(filter).future);
       },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: constraints.maxHeight,
             child: async.when(
               loading: () => Center(
                 child: SizedBox(
@@ -1039,7 +1039,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       },
     ),
           ),
-        ],
+        ),
       ),
     );
   }

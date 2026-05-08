@@ -131,7 +131,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         initialIndex: 0,
                         onPageChanged: (i) =>
                             setState(() => _photoIndex = i),
-                        onBack: () => context.pop(),
+                        onBack: isOwnProfile ? null : () => context.pop(),
                         trailing: trailing,
                         name: name,
                         age: age,
@@ -481,7 +481,7 @@ class _HeroSection extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
   final int initialIndex;
   final ValueChanged<int> onPageChanged;
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
   final Widget trailing;
   final String name;
   final int age;
@@ -495,7 +495,7 @@ class _HeroSection extends StatefulWidget {
     required this.photos,
     required this.initialIndex,
     required this.onPageChanged,
-    required this.onBack,
+    this.onBack,
     required this.trailing,
     required this.name,
     required this.age,
@@ -673,10 +673,13 @@ class _HeroSectionState extends State<_HeroSection> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _GlassIconButton(
-                      icon: Icons.arrow_back_ios_new,
-                      onTap: widget.onBack,
-                    ),
+                    if (widget.onBack != null)
+                      _GlassIconButton(
+                        icon: Icons.arrow_back_ios_new,
+                        onTap: widget.onBack!,
+                      )
+                    else
+                      const SizedBox(width: 40),
                     if (widget.photos.length > 1)
                       _DotIndicator(
                         count: widget.photos.length,

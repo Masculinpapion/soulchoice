@@ -10,7 +10,12 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: navigationShell.currentIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) navigationShell.goBranch(0);
+      },
+      child: Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBody: true,
       body: navigationShell,
@@ -22,7 +27,7 @@ class MainShell extends StatelessWidget {
         ),
         onFabTap: () => context.push('/invitation/create'),
       ),
-    );
+    ));
   }
 }
 

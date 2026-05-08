@@ -889,22 +889,34 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
         flowType: flowType, category: widget.category, cityId: widget.cityId);
     final async = ref.watch(invitationsProvider(filter));
 
-    return async.when(
-      loading: () => Center(
-        child: SizedBox(
-          width: 32,
-          height: 32,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
-          ),
-        ),
-      ),
-      error: (e, _) => Center(
-        child: Text(AppLocalizations.of(context)!.feed_error(e.toString()),
-            style: TextStyle(
-                color: AuroraTheme.textSecondary,
-                fontFamily: 'Manrope')),
+    return RefreshIndicator(
+      color: AuroraTheme.auroraRed,
+      backgroundColor: AuroraTheme.glassBg,
+      onRefresh: () async {
+        ref.invalidate(invitationsProvider(filter));
+        await ref.read(invitationsProvider(filter).future);
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: async.when(
+              loading: () => Center(
+                child: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
+                  ),
+                ),
+              ),
+              error: (e, _) => Center(
+                child: Text(AppLocalizations.of(context)!.feed_error(e.toString()),
+                    style: TextStyle(
+                        color: AuroraTheme.textSecondary,
+                        fontFamily: 'Manrope')),
       ),
       data: (invitations) {
         final l10n = AppLocalizations.of(context)!;
@@ -1025,6 +1037,10 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
           ],
         );
       },
+    ),
+          ),
+        ],
+      ),
     );
   }
 }

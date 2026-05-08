@@ -211,7 +211,10 @@ class _InvitationDetailScreenState
                                           category == InvitationCategory.bar
                                               ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                                               : Text(category.emoji,
-                                                  style: const TextStyle(fontSize: 13)),
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                                                  )),
                                           const SizedBox(width: 4),
                                           Text(
                                             category.labelFor(AppLocalizations.of(context)!),

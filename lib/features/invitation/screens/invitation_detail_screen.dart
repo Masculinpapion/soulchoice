@@ -9,6 +9,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
+import '../../profile/providers/profile_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
@@ -282,7 +283,7 @@ class _InvitationDetailScreenState
                                                       color: Colors.white,
                                                       fontSize: 20)),
                                               content: Text(
-                                                  l.inv_detail_delete_body,
+                                                  l.inv_detail_delete_body(_currentUserGender()),
                                                   style: TextStyle(
                                                       fontFamily: 'Manrope',
                                                       color: AuroraTheme
@@ -1353,6 +1354,13 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     }
   }
 
+  String _currentUserGender() {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return 'other';
+    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
+    return profile?['gender'] as String? ?? 'other';
+  }
+
   Future<void> _withdraw() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -1363,7 +1371,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(l.inv_detail_withdraw_title,
             style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
-        content: Text(l.inv_detail_withdraw_body,
+        content: Text(l.inv_detail_withdraw_body(_currentUserGender()),
             style: TextStyle(fontFamily: 'Manrope', color: AuroraTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(
@@ -1429,3 +1437,4 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     );
   }
 }
+

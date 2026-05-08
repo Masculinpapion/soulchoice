@@ -494,7 +494,7 @@
     }
   },
   "profile_setup_prompt_favorite_restaurant": "МОЙ ЛЮБИМЫЙ РЕСТОРАН...",
-  "profile_setup_prompt_last_book": "ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛ(А)...",
+  "profile_setup_prompt_last_book": "{gender, select, female{ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛА...} other{ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛ...}}",
   "profile_setup_prompt_perfect_evening": "ИДЕАЛЬНЫЙ ВЕЧЕР...",
   "profile_setup_prompt_travel_dream": "МОЯ МЕЧТА О ПУТЕШЕСТВИИ...",
   "profile_setup_interest_art": "Искусство",
@@ -703,6 +703,13 @@
     }
   },
   "@inv_detail_withdraw_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
+  "@profile_setup_prompt_last_book": {
     "placeholders": {
       "gender": {
         "type": "String"

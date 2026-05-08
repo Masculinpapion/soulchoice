@@ -331,6 +331,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  Future<void> _deleteChat() async {
+    try {
+      await Supabase.instance.client
+          .from('matches')
+          .update({'archived_at': DateTime.now().toUtc().toIso8601String()})
+          .eq('id', widget.matchId);
+    } catch (_) {}
+    if (mounted) context.pop();
+  }
+
   Future<void> _block() async {
     final otherUid = _matchInfo?['otherUserId'] as String?;
     if (otherUid == null || _currentUid == null) return;
@@ -383,6 +393,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               otherUserId: _matchInfo?['otherUserId'] as String?,
               onBack: () => context.pop(),
               onBlock: _block,
+              onDelete: _deleteChat,
             ),
             // Event badge — davet bilgisi özeti
             if (invTitle.isNotEmpty)
@@ -591,6 +602,7 @@ class _ChatAppBar extends StatelessWidget {
   final String? otherUserId;
   final VoidCallback onBack;
   final VoidCallback? onBlock;
+  final VoidCallback? onDelete;
   const _ChatAppBar({
     required this.otherName,
     required this.otherAge,
@@ -598,6 +610,7 @@ class _ChatAppBar extends StatelessWidget {
     this.otherUserId,
     required this.onBack,
     this.onBlock,
+    this.onDelete,
   });
 
   @override
@@ -686,7 +699,49 @@ class _ChatAppBar extends StatelessWidget {
                   shadowColor: Colors.black54,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   onSelected: (val) {
-                    if (val == 'block') {
+                    if (val == 'delete') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF14121E),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          title: const Text(
+                            'Sohbeti Sil',
+                            style: TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          content: Text(
+                            'Bu sohbeti silmek istiyor musun? Geçmiş\'e taşınacak.',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              color: Colors.white.withOpacity(0.65),
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: const Text('İptal',
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+                            ),
+                            TextButton(
+                              onPressed: () { Navigator.pop(ctx); onDelete!(); },
+                              child: Text('Sil',
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (val == 'block') {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -731,19 +786,34 @@ class _ChatAppBar extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    PopupMenuItem(
-                      value: 'block',
-                      child: Row(children: [
-                        const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
-                        const SizedBox(width: 10),
-                        Text('Engelle ve Kapat',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                            )),
-                      ]),
-                    ),
+                    if (onDelete != null)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          Icon(Icons.delete_outline, color: Colors.white.withOpacity(0.6), size: 18),
+                          const SizedBox(width: 10),
+                          Text('Sohbeti Sil',
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              )),
+                        ]),
+                      ),
+                    if (onBlock != null)
+                      PopupMenuItem(
+                        value: 'block',
+                        child: Row(children: [
+                          const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
+                          const SizedBox(width: 10),
+                          Text('Engelle ve Kapat',
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              )),
+                        ]),
+                      ),
                   ],
                 ),
             ],

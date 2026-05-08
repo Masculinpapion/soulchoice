@@ -38,25 +38,24 @@
   "settings_do_not_disturb": "Gece sessizliği",
   "settings_active_devices": "Aktif cihazlar",
   "settings_download_data": "Verilerimi indir",
-
   "phone_title": "Telefon numaranı\ngir",
   "phone_subtitle": "Sana bir doğrulama kodu göndereceğiz",
   "phone_error_empty": "Telefon numarası gir",
   "phone_error_connection": "Bağlantı hatası, tekrar dene",
   "phone_terms": "Devam ederek Kullanım Koşullarını kabul etmiş olursun",
-
   "otp_title": "Kodu gir",
   "otp_sent_to": "Gönderildi: ",
   "otp_resend_countdown": "Tekrar gönder ({seconds}s)",
   "@otp_resend_countdown": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "otp_resend": "Tekrar gönder",
   "otp_verify": "Doğrula",
   "otp_error_failed": "Doğrulama başarısız",
-
   "perm_notification_title": "Bildirimlere izin ver",
   "perm_notification_desc": "Seçildiğinde yeni mesajları bildirebilmek için gerekli",
   "perm_location_title": "Konumunu paylaş",
@@ -69,7 +68,6 @@
   "perm_go_to_settings": "Ayarlara git",
   "perm_camera_title": "Kameraya erişime izin ver",
   "perm_camera_desc": "Kimlik doğrulama için selfie çekmek gerekli",
-
   "feed_all_cities": "Tüm Şehirler",
   "feed_active_invitations": "AKTİF DAVETİYELER",
   "feed_active_requests": "AKTİF İSTEKLER",
@@ -77,7 +75,9 @@
   "feed_error": "Hata: {error}",
   "@feed_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "feed_no_invitations": "Henüz davetiye yok",
@@ -92,13 +92,14 @@
   "feed_city_not_found": "\"{query}\" için şehir bulunamadı",
   "@feed_city_not_found": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "feed_tab_invitations": "Davetiyeler",
   "feed_tab_requests": "İstekler",
   "feed_city_name_moscow": "Moskova",
-
   "discover_title": "Keşfet",
   "discover_all_invitations_label": "TÜM AKTİF DAVETİYELER",
   "discover_filter_all": "Tümü",
@@ -106,12 +107,13 @@
   "discover_empty_subtitle": "İlk davetiyeyi sen aç",
   "discover_btn_create": "+ Davetiye Oluştur",
   "discover_error": "Bağlantı hatası",
-
   "applicants_title": "Başvuranlar",
   "applicants_count": "{count} kişi",
   "@applicants_count": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "applicants_empty": "Henüz başvuru yok",
@@ -121,10 +123,11 @@
   "applicants_error_generic": "Hata: {message}",
   "@applicants_error_generic": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
-
   "create_inv_step_flow_type": "Davetiye türü",
   "create_inv_step_category": "Kategori",
   "create_inv_step_title": "Başlık",
@@ -139,7 +142,9 @@
   "create_inv_error_publish": "Hata: {error}",
   "@create_inv_error_publish": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "create_inv_btn_next": "İleri",
@@ -172,7 +177,7 @@
   "create_inv_duration_48h_desc": "Uzun vadeli — 2 gün",
   "create_inv_datetime_question": "Ne zaman?",
   "create_inv_datetime_subtitle": "Etkinlik tarih ve saatini seç",
-    "create_inv_venue_ph_food": "Restoran adı",
+  "create_inv_venue_ph_food": "Restoran adı",
   "create_inv_venue_ph_bar": "Bar adı",
   "create_inv_venue_ph_coffee": "Kafe adı",
   "create_inv_venue_ph_cinema": "Sinema adı",
@@ -199,14 +204,17 @@
   "create_inv_desc_request_culture": "Nereye gitmek istiyorsun?",
   "create_inv_desc_request_travel": "Nereye gitmek istiyorsun?",
   "create_inv_desc_request_gift": "Ne hediye edilmesini istiyorsun?",
-"create_inv_datetime_placeholder": "Tarih ve saat seç",
-
+  "create_inv_datetime_placeholder": "Tarih ve saat seç",
   "decision_selected_title": "Eşleşme Onayı",
   "decision_selected_body": "{name} adlı kişiyi \"{title}\" davetiyeniz için seçtiniz.\nBu eşleşmeyi onaylamak ister misiniz?",
   "@decision_selected_body": {
     "placeholders": {
-      "name": { "type": "String" },
-      "title": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
     }
   },
   "decision_time_remaining": "kalan süre",
@@ -217,10 +225,11 @@
   "decision_error": "Hata: {error}",
   "@decision_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "inv_detail_not_found": "Davetiye bulunamadı",
   "inv_detail_delete_title": "Davetiyeyi sil",
   "inv_detail_delete_body": "Bu davetiyeyi silmek istediğinden emin misin? Bu işlem geri alınamaz.",
@@ -265,27 +274,39 @@
   "inv_detail_error": "Hata: {error}",
   "@inv_detail_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "inv_detail_duration_days_hours": "{days}g {hours}s",
   "@inv_detail_duration_days_hours": {
     "placeholders": {
-      "days": { "type": "int" },
-      "hours": { "type": "int" }
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_duration_hours_min": "{hours}s {min}d",
   "@inv_detail_duration_hours_min": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "min": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_duration_min": "{min}d",
   "@inv_detail_duration_min": {
     "placeholders": {
-      "min": { "type": "int" }
+      "min": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_weekday_mon_full": "Pazartesi",
@@ -295,7 +316,6 @@
   "inv_detail_weekday_fri_full": "Cuma",
   "inv_detail_weekday_sat_full": "Cumartesi",
   "inv_detail_weekday_sun_full": "Pazar",
-
   "chat_archived": "Bu sohbet arşivlendi",
   "chat_meeting_question": "Buluşmanız gerçekleşti mi?",
   "chat_yes_we_met": "Evet, buluştuk",
@@ -303,7 +323,9 @@
   "chat_send_error": "Gönderilemedi: {error}",
   "@chat_send_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "chat_meeting_saved": "Teşekkürler! Buluşma kaydedildi.",
@@ -311,12 +333,13 @@
   "chat_other_age": "{age} yaşında",
   "@chat_other_age": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "chat_empty_hint": "İlk mesajı gönder!",
   "chat_input_hint": "Mesaj yaz...",
-
   "messages_title": "Mesajlar",
   "messages_tab_active": "Aktif",
   "messages_tab_past": "Geçmiş",
@@ -326,26 +349,34 @@
   "messages_empty_active": "Henüz aktif sohbet yok",
   "messages_empty_hint": "Davetiye aç veya mevcut birine başvur",
   "messages_btn_create": "Davetiye Oluştur",
-
   "notifications_title": "Bildirimler",
   "notifications_mark_all_read": "Tümünü okundu işaretle",
   "notifications_error": "Hata: {error}",
   "@notifications_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "notifications_empty": "Henüz bildirim yok",
-
   "photo_upload_title_edit": "Fotoğraflarını düzenle",
   "photo_upload_title_add": "Fotoğraflarını ekle",
   "photo_upload_subtitle": "Min {min} maks {max} fotoğraf • {filled} / {total}",
   "@photo_upload_subtitle": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" },
-      "filled": { "type": "int" },
-      "total": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "photo_upload_primary_label": "Ana fotoğraf",
@@ -354,13 +385,17 @@
   "photo_upload_pick_error": "Fotoğraf seçilemedi: {error}",
   "@photo_upload_pick_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "photo_upload_error": "Yükleme hatası: {error}",
   "@photo_upload_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "photo_upload_btn_save": "Kaydet",
@@ -370,10 +405,11 @@
   "photo_crop_error": "Kırpma hatası: {error}",
   "@photo_crop_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "profile_setup_step_name_age": "İsim ve yaş",
   "profile_setup_step_gender": "Cinsiyet",
   "profile_setup_step_city": "Şehir",
@@ -389,14 +425,20 @@
   "profile_setup_validation_age": "Yaş {min} ile {max} arasında olmalı",
   "@profile_setup_validation_age": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_error": "Hata: {error}",
   "@profile_setup_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "profile_setup_btn_next": "İleri",
@@ -406,8 +448,12 @@
   "profile_setup_age_label": "Yaş ({min}-{max})",
   "@profile_setup_age_label": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_gender_title": "Cinsiyet",
@@ -439,8 +485,12 @@
   "profile_setup_age_range_value": "{min} — {max} yaş",
   "@profile_setup_age_range_value": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_prompt_favorite_restaurant": "EN SEVDİĞİM RESTORAN...",
@@ -463,7 +513,6 @@
   "profile_setup_interest_nature": "Doğa",
   "profile_setup_interest_history": "Tarih",
   "profile_setup_interest_fashion": "Moda",
-
   "profile_view_not_found": "Profil bulunamadı",
   "profile_view_hint_name_age": "İsim ve yaş eksik",
   "profile_view_hint_photo": "Fotoğraf ekle",
@@ -475,7 +524,9 @@
   "profile_view_completion": "%{score} tamamlandı",
   "@profile_view_completion": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "profile_view_section_interests": "İLGİ ALANLARI",
@@ -490,12 +541,13 @@
   "profile_view_blocked_snack": "{name} engellendi",
   "@profile_view_blocked_snack": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "profile_view_block_confirm_body": "Bu kullanıcıyı engellemek istediğine emin misin?",
   "profile_view_anonymous_user": "Kullanıcı",
-
   "report_title": "Kullanıcıyı şikayet et",
   "report_why": "Neden şikayet ediyorsun?",
   "report_reason_inappropriate": "Uygunsuz içerik / fotoğraf",
@@ -512,10 +564,11 @@
   "report_error": "Hata: {error}",
   "@report_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "selfie_title": "Selfie doğrulaması",
   "selfie_subtitle": "Güvenli bir topluluk için profilini manuel olarak doğruluyoruz",
   "selfie_take_btn": "Selfie çek",
@@ -523,11 +576,9 @@
   "selfie_tip_face": "Yüzün açıkça görünmeli",
   "selfie_tip_approval": "Yönetici 24 saat içinde onaylar",
   "selfie_submit_btn": "Gönder",
-
   "blocked_users_title": "Engellenen Kullanıcılar",
   "blocked_users_empty": "Engellenen kullanıcı yok",
   "blocked_users_unblock_btn": "Engeli kaldır",
-
   "delete_account_title": "Hesabı Sil",
   "delete_account_heading": "Bu işlem geri alınamaz",
   "delete_account_body": "Hesabını silersen tüm veriler, mesajlar, eşleşmeler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz.",
@@ -540,7 +591,6 @@
   "delete_account_btn_cancel": "İptal",
   "delete_account_success": "Hesabın silinmek üzere işaretlendi. Kısa süre içinde kalıcı olarak kaldırılacak.",
   "delete_account_error": "Bir hata oluştu. Lütfen tekrar dene.",
-
   "settings_coming_soon": "Bu özellik yakında geliyor.",
   "settings_ok": "Tamam",
   "settings_about_subtitle": "Premium sosyal davetiye uygulaması.",
@@ -548,7 +598,9 @@
   "settings_error": "Hata: {error}",
   "@settings_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "settings_quiet_hours_title": "Gece sessizliği",
@@ -559,8 +611,12 @@
   "settings_age_range_value": "{min} — {max} yaş",
   "@settings_age_range_value": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "settings_display_pref_title": "Gösterim tercihi",
@@ -582,7 +638,6 @@
   "settings_show_gender_all": "Herkes",
   "settings_show_gender_female": "Kadınlar",
   "settings_show_gender_male": "Erkekler",
-
   "admin_title": "Moderasyon",
   "admin_tab_selfies": "Selfie İncelemeleri",
   "admin_tab_reports": "Şikayetler",
@@ -604,25 +659,30 @@
   "admin_report_about": "{name} hakkında şikayet",
   "@admin_report_about": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "admin_reporter_label": "Şikayet eden: {name}",
   "@admin_reporter_label": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "admin_reason_label": "Neden: {reason}",
   "@admin_reason_label": {
     "placeholders": {
-      "reason": { "type": "String" }
+      "reason": {
+        "type": "String"
+      }
     }
   },
   "admin_user_banned": "Kullanıcı yasaklandı",
   "admin_btn_ban": "Yasakla",
   "admin_btn_dismiss": "Kapat",
-
   "category_food": "Restoran",
   "category_concert": "Konser",
   "category_travel": "Seyahat",
@@ -631,5 +691,19 @@
   "category_theater": "Tiyatro",
   "category_coffee": "Kahve",
   "category_bar": "Bar",
-  "category_gift": "Hediye"
+  "category_gift": "Hediye",
+  "@inv_detail_delete_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
+  "@inv_detail_withdraw_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -88,7 +88,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           if (!mounted) return;
           setState(() {
             _selectedCityId = id;
-            _selectedCityName = name ?? AppLocalizations.of(context)!.feed_all_cities;
+            _selectedCityName = name;
           });
           ref.read(selectedCityIdProvider.notifier).state = id;
         },
@@ -105,7 +105,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
           child: Column(
             children: [
               _Header(
-                cityName: _selectedCityName ?? AppLocalizations.of(context)!.feed_city_name_moscow,
+                cityName: _selectedCityId == null ? AppLocalizations.of(context)!.feed_all_cities : (_selectedCityName ?? AppLocalizations.of(context)!.feed_city_name_moscow),
                 onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
               ),

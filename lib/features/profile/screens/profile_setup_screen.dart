@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../providers/profile_provider.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
@@ -220,6 +221,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid != null) {
+      ref.invalidate(userProfileProvider(uid));
+      ref.invalidate(userPromptsProvider(uid));
     }
     if (mounted) {
       if (widget.isEditing) {

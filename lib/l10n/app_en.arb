@@ -708,5 +708,12 @@
         "type": "String"
       }
     }
+  },
+  "@profile_setup_prompt_last_book": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
   }
 }

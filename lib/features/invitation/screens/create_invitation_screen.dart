@@ -307,8 +307,11 @@ class _CreateInvitationScreenState
                     _StepTitle(controller: _titleController),
                     _StepDescription(
                         controller: _descriptionController,
-                        flowType: _flowType),
-                    _StepVenue(controller: _venueController),
+                        flowType: _flowType,
+                        category: _category),
+                    _StepVenue(
+                        controller: _venueController,
+                        category: _category),
                     _StepDateTime(
                         date: _eventDate,
                         onSelected: (d) =>
@@ -651,14 +654,29 @@ class _StepTitle extends StatelessWidget {
 class _StepDescription extends StatelessWidget {
   final TextEditingController controller;
   final InvitationFlowType flowType;
-  const _StepDescription({required this.controller, required this.flowType});
+  final InvitationCategory? category;
+  const _StepDescription({required this.controller, required this.flowType, this.category});
+
+  String _hint(AppLocalizations l10n) {
+    final isInvite = flowType == InvitationFlowType.invite;
+    switch (category) {
+      case InvitationCategory.food:    return isInvite ? l10n.create_inv_desc_invite_food    : l10n.create_inv_desc_request_food;
+      case InvitationCategory.bar:     return isInvite ? l10n.create_inv_desc_invite_bar     : l10n.create_inv_desc_request_bar;
+      case InvitationCategory.coffee:  return isInvite ? l10n.create_inv_desc_invite_coffee  : l10n.create_inv_desc_request_coffee;
+      case InvitationCategory.cinema:  return isInvite ? l10n.create_inv_desc_invite_cinema  : l10n.create_inv_desc_request_cinema;
+      case InvitationCategory.theater: return isInvite ? l10n.create_inv_desc_invite_theater : l10n.create_inv_desc_request_theater;
+      case InvitationCategory.concert: return isInvite ? l10n.create_inv_desc_invite_concert : l10n.create_inv_desc_request_concert;
+      case InvitationCategory.culture: return isInvite ? l10n.create_inv_desc_invite_culture : l10n.create_inv_desc_request_culture;
+      case InvitationCategory.travel:  return isInvite ? l10n.create_inv_desc_invite_travel  : l10n.create_inv_desc_request_travel;
+      case InvitationCategory.gift:    return isInvite ? l10n.create_inv_desc_invite_gift    : l10n.create_inv_desc_request_gift;
+      default: return isInvite ? l10n.create_inv_desc_invite_hint : l10n.create_inv_desc_request_hint;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final subtitle = flowType == InvitationFlowType.invite
-        ? l10n.create_inv_desc_invite_hint
-        : l10n.create_inv_desc_request_hint;
+    final subtitle = _hint(l10n);
     return SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -692,26 +710,43 @@ class _StepDescription extends StatelessWidget {
 
 class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
-  const _StepVenue({required this.controller});
+  final InvitationCategory? category;
+  const _StepVenue({required this.controller, this.category});
+
+  String _placeholder(AppLocalizations l10n) {
+    switch (category) {
+      case InvitationCategory.food:    return l10n.create_inv_venue_ph_food;
+      case InvitationCategory.bar:     return l10n.create_inv_venue_ph_bar;
+      case InvitationCategory.coffee:  return l10n.create_inv_venue_ph_coffee;
+      case InvitationCategory.cinema:  return l10n.create_inv_venue_ph_cinema;
+      case InvitationCategory.theater: return l10n.create_inv_venue_ph_theater;
+      case InvitationCategory.concert: return l10n.create_inv_venue_ph_concert;
+      case InvitationCategory.culture: return l10n.create_inv_venue_ph_culture;
+      case InvitationCategory.travel:  return l10n.create_inv_venue_ph_travel;
+      case InvitationCategory.gift:    return l10n.create_inv_venue_ph_gift;
+      default: return l10n.create_inv_venue_placeholder;
+    }
+  }
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.create_inv_venue_question, style: AppTextStyles.displayMedium),
+            Text(l10n.create_inv_venue_question, style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.create_inv_venue_subtitle,
-                style: AppTextStyles.bodyMedium),
+            Text(l10n.create_inv_venue_subtitle, style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
               style: AppTextStyles.bodyLarge,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.create_inv_venue_label,
-                hintText: AppLocalizations.of(context)!.create_inv_venue_placeholder,
+                labelText: l10n.create_inv_venue_label,
+                hintText: _placeholder(l10n),
                 prefixIcon: Icon(Icons.location_on_outlined,
                     color: AppColors.textTertiary),
               ),
@@ -719,6 +754,7 @@ class _StepVenue extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

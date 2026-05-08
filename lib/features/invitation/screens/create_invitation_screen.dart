@@ -507,10 +507,13 @@ class _FlowTypeCard extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(title, style: AppTextStyles.titleMedium),
-                    const SizedBox(height: 4),
-                    Text(subtitle, style: AppTextStyles.bodyMedium),
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(subtitle, style: AppTextStyles.bodyMedium),
+                    ],
                   ],
                 ),
               ),

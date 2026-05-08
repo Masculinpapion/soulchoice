@@ -3,11 +3,22 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/locale_provider.dart';
+
+String? _cityName(Map<String, dynamic>? city, String? lang) {
+  if (city == null) return null;
+  switch (lang) {
+    case 'ru': return city['name_ru'] as String? ?? city['name'] as String?;
+    case 'tr': return city['name_tr'] as String? ?? city['name'] as String?;
+    default:   return city['name_en'] as String? ?? city['name'] as String?;
+  }
+}
 
 final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationModel>, _InvitationFilter>(
   (ref, filter) async {
     final client = Supabase.instance.client;
     final currentUserId = ref.read(currentUserIdProvider);
+    final lang = ref.watch(localeProvider)?.languageCode;
 
     // Fetch blocked IDs + current user preferences
     List<String> blockedIds = [];
@@ -45,7 +56,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .from('invitations')
         .select(
           '*, '
-          'city:cities(name), '
+          'city:cities(name, name_ru, name_tr, name_en), '
           'owner:users(id, name, age, gender, show_gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
@@ -125,14 +136,13 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       }).take(4).toList();
 
       final cityRow = row['city'] as Map<String, dynamic>?;
-      final cityName = cityRow?['name'] as String?;
 
       return InvitationModel.fromJson({...row, 'owner': null, 'city': null}).copyWith(
         owner: owner,
         ownerPhotoUrl: ownerPhotoUrl,
         applicationCount: pendingApps.length,
         applicantPhotoUrls: applicantPhotoUrls,
-        cityName: cityName,
+        cityName: _cityName(cityRow, lang),
       );
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)

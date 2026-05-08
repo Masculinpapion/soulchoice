@@ -9,6 +9,7 @@ import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
+import '../../../core/providers/locale_provider.dart';
 
 class ProfileViewScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -82,7 +83,13 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             final job = user['job'] as String?;
             final education = user['education'] as String?;
             final city = user['city'] as Map<String, dynamic>?;
-            final cityName = city?['name'] as String? ?? '';
+            final lang = ref.watch(localeProvider)?.languageCode;
+            final cityName = (lang == 'ru'
+                ? city?['name_ru']
+                : lang == 'tr'
+                    ? city?['name_tr']
+                    : city?['name_en']) as String?
+                ?? city?['name'] as String? ?? '';
             final interests = ((user['interests'] as List?)?.cast<String>() ?? [])
                 .toSet().toList();
             final photos = photosAsync.asData?.value ?? [];

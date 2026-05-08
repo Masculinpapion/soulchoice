@@ -5,7 +5,7 @@ final userProfileProvider =
     FutureProvider.family<Map<String, dynamic>?, String>((ref, userId) async {
   return Supabase.instance.client
       .from('users')
-      .select('*, city:cities(name, country)')
+      .select('*, city:cities(name, name_ru, name_tr, name_en, country)')
       .eq('id', userId)
       .maybeSingle();
 });

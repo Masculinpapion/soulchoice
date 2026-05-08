@@ -543,6 +543,9 @@
     "placeholders": {
       "name": {
         "type": "String"
+      },
+      "gender": {
+        "type": "String"
       }
     }
   },

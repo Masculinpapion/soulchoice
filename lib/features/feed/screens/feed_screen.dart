@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/city_provider.dart';
+import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -98,6 +99,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(localeProvider, (prev, next) {
+      if (prev?.languageCode != next?.languageCode) {
+        setState(() => _selectedCityName = null);
+      }
+    });
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(

@@ -23,6 +23,13 @@ class InvitationDetailScreen extends ConsumerStatefulWidget {
 
 class _InvitationDetailScreenState
     extends ConsumerState<InvitationDetailScreen> {
+  String _currentUserGender() {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return 'other';
+    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
+    return profile?['gender'] as String? ?? 'other';
+  }
+
   @override
   void dispose() {
     super.dispose();

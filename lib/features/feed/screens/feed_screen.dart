@@ -1083,18 +1083,18 @@ class InvitationCard extends StatelessWidget {
 
   String _metaLabel(AppLocalizations l10n, DateTime dt) {
     final days = [
-      l10n.inv_detail_weekday_mon_full,
-      l10n.inv_detail_weekday_tue_full,
-      l10n.inv_detail_weekday_wed_full,
-      l10n.inv_detail_weekday_thu_full,
-      l10n.inv_detail_weekday_fri_full,
-      l10n.inv_detail_weekday_sat_full,
-      l10n.inv_detail_weekday_sun_full,
+      l10n.inv_detail_weekday_mon_full.toUpperCase(),
+      l10n.inv_detail_weekday_tue_full.toUpperCase(),
+      l10n.inv_detail_weekday_wed_full.toUpperCase(),
+      l10n.inv_detail_weekday_thu_full.toUpperCase(),
+      l10n.inv_detail_weekday_fri_full.toUpperCase(),
+      l10n.inv_detail_weekday_sat_full.toUpperCase(),
+      l10n.inv_detail_weekday_sun_full.toUpperCase(),
     ];
     final day = days[dt.weekday - 1];
     final h = dt.hour.toString().padLeft(2, '0');
     final m = dt.minute.toString().padLeft(2, '0');
-    final venue = venueName.isNotEmpty ? venueName.toUpperCase() : category.labelFor(l10n);
+    final venue = venueName.isNotEmpty ? venueName.toUpperCase() : category.labelFor(l10n).toUpperCase();
     return '$day · $h:$m · $venue';
   }
 

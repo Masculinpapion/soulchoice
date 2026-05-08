@@ -261,13 +261,13 @@
       "min": { "type": "int" }
     }
   },
-  "inv_detail_weekday_mon_full": "MONDAY",
-  "inv_detail_weekday_tue_full": "TUESDAY",
-  "inv_detail_weekday_wed_full": "WEDNESDAY",
-  "inv_detail_weekday_thu_full": "THURSDAY",
-  "inv_detail_weekday_fri_full": "FRIDAY",
-  "inv_detail_weekday_sat_full": "SATURDAY",
-  "inv_detail_weekday_sun_full": "SUNDAY",
+  "inv_detail_weekday_mon_full": "Monday",
+  "inv_detail_weekday_tue_full": "Tuesday",
+  "inv_detail_weekday_wed_full": "Wednesday",
+  "inv_detail_weekday_thu_full": "Thursday",
+  "inv_detail_weekday_fri_full": "Friday",
+  "inv_detail_weekday_sat_full": "Saturday",
+  "inv_detail_weekday_sun_full": "Sunday",
 
   "chat_archived": "This chat is archived",
   "chat_meeting_question": "Did your meeting happen?",
@@ -596,13 +596,13 @@
   "admin_btn_ban": "Ban",
   "admin_btn_dismiss": "Dismiss",
 
-  "category_food": "DINING",
-  "category_concert": "CONCERT",
-  "category_travel": "TRAVEL",
-  "category_culture": "CULTURE",
-  "category_cinema": "CINEMA",
-  "category_theater": "THEATRE",
-  "category_coffee": "COFFEE",
-  "category_bar": "BAR",
-  "category_gift": "GIFT"
+  "category_food": "Dining",
+  "category_concert": "Concert",
+  "category_travel": "Travel",
+  "category_culture": "Culture",
+  "category_cinema": "Cinema",
+  "category_theater": "Theatre",
+  "category_coffee": "Coffee",
+  "category_bar": "Bar",
+  "category_gift": "Gift"
 }

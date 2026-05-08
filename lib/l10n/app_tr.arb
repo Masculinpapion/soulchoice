@@ -261,13 +261,13 @@
       "min": { "type": "int" }
     }
   },
-  "inv_detail_weekday_mon_full": "PAZARTESİ",
-  "inv_detail_weekday_tue_full": "SALI",
-  "inv_detail_weekday_wed_full": "ÇARŞAMBA",
-  "inv_detail_weekday_thu_full": "PERŞEMBE",
-  "inv_detail_weekday_fri_full": "CUMA",
-  "inv_detail_weekday_sat_full": "CUMARTESİ",
-  "inv_detail_weekday_sun_full": "PAZAR",
+  "inv_detail_weekday_mon_full": "Pazartesi",
+  "inv_detail_weekday_tue_full": "Salı",
+  "inv_detail_weekday_wed_full": "Çarşamba",
+  "inv_detail_weekday_thu_full": "Perşembe",
+  "inv_detail_weekday_fri_full": "Cuma",
+  "inv_detail_weekday_sat_full": "Cumartesi",
+  "inv_detail_weekday_sun_full": "Pazar",
 
   "chat_archived": "Bu sohbet arşivlendi",
   "chat_meeting_question": "Buluşmanız gerçekleşti mi?",
@@ -596,13 +596,13 @@
   "admin_btn_ban": "Yasakla",
   "admin_btn_dismiss": "Kapat",
 
-  "category_food": "RESTORAN",
-  "category_concert": "KONSER",
-  "category_travel": "SEYAHAT",
-  "category_culture": "KÜLTÜR",
-  "category_cinema": "SİNEMA",
-  "category_theater": "TİYATRO",
-  "category_coffee": "KAHVE",
-  "category_bar": "BAR",
-  "category_gift": "HEDİYE"
+  "category_food": "Restoran",
+  "category_concert": "Konser",
+  "category_travel": "Seyahat",
+  "category_culture": "Kültür",
+  "category_cinema": "Sinema",
+  "category_theater": "Tiyatro",
+  "category_coffee": "Kahve",
+  "category_bar": "Bar",
+  "category_gift": "Hediye"
 }

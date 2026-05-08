@@ -84,12 +84,11 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             final education = user['education'] as String?;
             final city = user['city'] as Map<String, dynamic>?;
             final lang = ref.watch(localeProvider)?.languageCode;
-            final cityName = (lang == 'ru'
-                ? city?['name_ru']
-                : lang == 'tr'
-                    ? city?['name_tr']
-                    : city?['name_en']) as String?
-                ?? city?['name'] as String? ?? '';
+            String? _localizedCity;
+            if (lang == 'ru') _localizedCity = city?['name_ru'] as String?;
+            else if (lang == 'tr') _localizedCity = city?['name_tr'] as String?;
+            else _localizedCity = city?['name_en'] as String?;
+            final cityName = _localizedCity ?? city?['name'] as String? ?? '';
             final interests = ((user['interests'] as List?)?.cast<String>() ?? [])
                 .toSet().toList();
             final photos = photosAsync.asData?.value ?? [];

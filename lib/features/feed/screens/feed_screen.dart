@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +23,24 @@ class FeedScreen extends ConsumerStatefulWidget {
 }
 
 class _FeedScreenState extends ConsumerState<FeedScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
   InvitationCategory? _selectedCategory;
   String? _selectedCityId;
   String? _selectedCityName;
+  Timer? _refreshTimer;
 
   void _onTabChanged() => setState(() {});
+
+  void _invalidateAll() {
+    if (!mounted) return;
+    ref.invalidate(invitationsProvider);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _invalidateAll();
+  }
 
   @override
   void initState() {
@@ -36,6 +48,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
     _loadMoskovaCityId();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _invalidateAll(),
+    );
   }
 
   Future<void> _loadMoskovaCityId() async {
@@ -52,6 +69,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();

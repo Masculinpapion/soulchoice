@@ -101,10 +101,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (!mounted) return;
 
       setState(() {
+        _interests.clear();
         _age = row['age'] as int?;
         _gender = row['gender'] as String?;
-        final cityData = row['cities'] as Map<String, dynamic>?;
-        _cityId = cityData?['name'] as String?;
+        _cityId = row['city_id'] as String?;
         final interests = row['interests'];
         if (interests is List) _interests.addAll(interests.cast<String>());
         for (final p in prompts) {
@@ -186,17 +186,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
       final uid = user.id;
 
-      final cityRow = _cityId != null
-          ? await client.from('cities').select('id').eq('name', _cityId!).maybeSingle()
-          : null;
-
       await client.from('users').upsert({
         'id': uid,
         'phone': user.phone,
         'name': _nameController.text.trim(),
         'age': _age,
         'gender': _gender,
-        'city_id': cityRow?['id'],
+        'city_id': _cityId,
         'bio': _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
         'job': _jobController.text.trim().isEmpty ? null : _jobController.text.trim(),
         'education': _educationController.text.trim().isEmpty ? null : _educationController.text.trim(),
@@ -216,13 +212,6 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         );
       }
 
-      if (mounted) {
-        if (widget.isEditing) {
-          context.pop();
-        } else {
-          context.go('/profile/photos');
-        }
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -231,6 +220,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+    if (mounted) {
+      if (widget.isEditing) {
+        context.pop();
+      } else {
+        context.go('/profile/photos');
+      }
     }
   }
 
@@ -545,12 +541,13 @@ class _StepCityState extends State<_StepCity> {
             else
               ..._filtered.map((c) {
                 final name = c['name'] as String;
-                final isSelected = widget.selectedCityId == name;
+                final id = c['id'] as String;
+                final isSelected = widget.selectedCityId == id;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GlassCard(
                     borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
-                    onTap: () => widget.onSelected(name),
+                    onTap: () => widget.onSelected(id),
                     child: Row(
                       children: [
                         Text(name, style: AppTextStyles.bodyLarge),

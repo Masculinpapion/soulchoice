@@ -1330,13 +1330,19 @@ class _ActionSheet extends StatelessWidget {
     if (confirmed != true || !ctx.mounted) return;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
+    final targetData = await Supabase.instance.client
+        .from('users')
+        .select('gender')
+        .eq('id', targetUserId)
+        .maybeSingle();
+    final targetGender = targetData?['gender'] as String? ?? 'other';
     await Supabase.instance.client.from('blocks').upsert({
       'blocker_id': uid,
       'blocked_id': targetUserId,
     });
     if (ctx.mounted) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text(l10n.profile_view_blocked_snack(targetName ?? l10n.profile_view_anonymous_user)),
+        content: Text(l10n.profile_view_blocked_snack(targetName ?? l10n.profile_view_anonymous_user, targetGender)),
         backgroundColor: const Color(0xFF10B981),
       ));
       ctx.pop();

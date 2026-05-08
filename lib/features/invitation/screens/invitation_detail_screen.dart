@@ -10,6 +10,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../../profile/providers/profile_provider.dart';
+import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
@@ -840,19 +841,24 @@ class _DetailRow extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // YENİ: Host Card
 // ─────────────────────────────────────────────────────────────────────────────
-class _HostCard extends StatelessWidget {
+class _HostCard extends ConsumerWidget {
   final Map<String, dynamic> owner;
   final String? ownerPhotoUrl;
 
   const _HostCard({required this.owner, this.ownerPhotoUrl});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final verified = owner['verified'] == true ||
         (owner['selfie_status'] as String? ?? '') == 'approved';
     final job = owner['job'] as String?;
-    final cityName =
-        (owner['city'] as Map<String, dynamic>?)?['name'] as String?;
+    final city = owner['city'] as Map<String, dynamic>?;
+    final lang = ref.watch(localeProvider)?.languageCode;
+    String? cityName;
+    if (lang == 'ru') cityName = city?['name_ru'] as String?;
+    else if (lang == 'tr') cityName = city?['name_tr'] as String?;
+    else cityName = city?['name_en'] as String?;
+    cityName ??= city?['name'] as String?;
     final metaParts = [
       if (job != null && job.isNotEmpty) job,
       if (cityName != null && cityName.isNotEmpty) cityName,

@@ -38,25 +38,24 @@
   "settings_do_not_disturb": "Не беспокоить",
   "settings_active_devices": "Активные устройства",
   "settings_download_data": "Загрузить мои данные",
-
   "phone_title": "Введи свой\nномер телефона",
   "phone_subtitle": "Мы отправим тебе код подтверждения",
   "phone_error_empty": "Введи номер телефона",
   "phone_error_connection": "Ошибка подключения, попробуй ещё раз",
   "phone_terms": "Продолжая, ты принимаешь Условия использования",
-
   "otp_title": "Введи код",
   "otp_sent_to": "Отправлено: ",
   "otp_resend_countdown": "Отправить снова ({seconds}с)",
   "@otp_resend_countdown": {
     "placeholders": {
-      "seconds": { "type": "int" }
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "otp_resend": "Отправить снова",
   "otp_verify": "Подтвердить",
   "otp_error_failed": "Подтверждение не удалось",
-
   "perm_notification_title": "Разрешить уведомления",
   "perm_notification_desc": "Нужно, чтобы уведомлять тебя о новых сообщениях при выборе",
   "perm_location_title": "Поделиться геолокацией",
@@ -69,7 +68,6 @@
   "perm_go_to_settings": "Перейти в настройки",
   "perm_camera_title": "Разрешить доступ к камере",
   "perm_camera_desc": "Нужно для фотографирования селфи при верификации",
-
   "feed_all_cities": "Все города",
   "feed_active_invitations": "АКТИВНЫЕ ПРИГЛАШЕНИЯ",
   "feed_active_requests": "АКТИВНЫЕ ЗАПРОСЫ",
@@ -77,7 +75,9 @@
   "feed_error": "Ошибка: {error}",
   "@feed_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "feed_no_invitations": "Пока нет приглашений",
@@ -92,13 +92,14 @@
   "feed_city_not_found": "Город \"{query}\" не найден",
   "@feed_city_not_found": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "feed_tab_invitations": "Приглашения",
   "feed_tab_requests": "Запросы",
   "feed_city_name_moscow": "Москва",
-
   "discover_title": "Обзор",
   "discover_all_invitations_label": "ВСЕ АКТИВНЫЕ ПРИГЛАШЕНИЯ",
   "discover_filter_all": "Все",
@@ -106,12 +107,13 @@
   "discover_empty_subtitle": "Будь первым, кто откроет приглашение здесь",
   "discover_btn_create": "+ Создать приглашение",
   "discover_error": "Ошибка подключения",
-
   "applicants_title": "Заявки",
   "applicants_count": "{count} человек",
   "@applicants_count": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "applicants_empty": "Пока нет заявок",
@@ -121,10 +123,11 @@
   "applicants_error_generic": "Ошибка: {message}",
   "@applicants_error_generic": {
     "placeholders": {
-      "message": { "type": "String" }
+      "message": {
+        "type": "String"
+      }
     }
   },
-
   "create_inv_step_flow_type": "Тип приглашения",
   "create_inv_step_category": "Категория",
   "create_inv_step_title": "Заголовок",
@@ -139,7 +142,9 @@
   "create_inv_error_publish": "Ошибка: {error}",
   "@create_inv_error_publish": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "create_inv_btn_next": "Далее",
@@ -172,7 +177,7 @@
   "create_inv_duration_48h_desc": "Долгосрочное — 2 дня",
   "create_inv_datetime_question": "Когда?",
   "create_inv_datetime_subtitle": "Выбери дату и время мероприятия",
-    "create_inv_venue_ph_food": "Название ресторана",
+  "create_inv_venue_ph_food": "Название ресторана",
   "create_inv_venue_ph_bar": "Название бара",
   "create_inv_venue_ph_coffee": "Название кафе",
   "create_inv_venue_ph_cinema": "Название кинотеатра",
@@ -199,14 +204,17 @@
   "create_inv_desc_request_culture": "Куда хочешь пойти?",
   "create_inv_desc_request_travel": "Куда хочешь поехать?",
   "create_inv_desc_request_gift": "Что хочешь получить в подарок?",
-"create_inv_datetime_placeholder": "Выбрать дату и время",
-
+  "create_inv_datetime_placeholder": "Выбрать дату и время",
   "decision_selected_title": "Подтверждение выбора",
   "decision_selected_body": "Вы выбрали {name} для вашего приглашения \"{title}\".\nХотите подтвердить это совпадение?",
   "@decision_selected_body": {
     "placeholders": {
-      "name": { "type": "String" },
-      "title": { "type": "String" }
+      "name": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
     }
   },
   "decision_time_remaining": "осталось времени",
@@ -217,13 +225,14 @@
   "decision_error": "Ошибка: {error}",
   "@decision_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "inv_detail_not_found": "Приглашение не найдено",
   "inv_detail_delete_title": "Удалить приглашение",
-  "inv_detail_delete_body": "Ты уверен(а), что хочешь удалить это приглашение? Это действие необратимо.",
+  "inv_detail_delete_body": "{gender, select, female{Ты уверена, что хочешь удалить это приглашение? Это действие необратимо.} other{Ты уверен, что хочешь удалить это приглашение? Это действие необратимо.}}",
   "inv_detail_delete_cancel": "Отмена",
   "inv_detail_delete_confirm": "Удалить",
   "inv_detail_status_closed": "Это приглашение закрыто",
@@ -253,7 +262,7 @@
   "inv_detail_apply_request": "Хочу присоединиться",
   "inv_detail_apply_sending": "Отправка...",
   "inv_detail_withdraw_title": "Отозвать заявку",
-  "inv_detail_withdraw_body": "Ты уверен(а), что хочешь отозвать заявку на это приглашение?",
+  "inv_detail_withdraw_body": "{gender, select, female{Ты уверена, что хочешь отозвать заявку на это приглашение?} other{Ты уверен, что хочешь отозвать заявку на это приглашение?}}",
   "inv_detail_withdraw_cancel": "Отмена",
   "inv_detail_withdraw_confirm": "Отозвать",
   "inv_detail_withdraw_btn": "Отозвать заявку",
@@ -265,27 +274,39 @@
   "inv_detail_error": "Ошибка: {error}",
   "@inv_detail_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "inv_detail_duration_days_hours": "{days}д {hours}ч",
   "@inv_detail_duration_days_hours": {
     "placeholders": {
-      "days": { "type": "int" },
-      "hours": { "type": "int" }
+      "days": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_duration_hours_min": "{hours}ч {min}мин",
   "@inv_detail_duration_hours_min": {
     "placeholders": {
-      "hours": { "type": "int" },
-      "min": { "type": "int" }
+      "hours": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_duration_min": "{min}мин",
   "@inv_detail_duration_min": {
     "placeholders": {
-      "min": { "type": "int" }
+      "min": {
+        "type": "int"
+      }
     }
   },
   "inv_detail_weekday_mon_full": "Понедельник",
@@ -295,7 +316,6 @@
   "inv_detail_weekday_fri_full": "Пятница",
   "inv_detail_weekday_sat_full": "Суббота",
   "inv_detail_weekday_sun_full": "Воскресенье",
-
   "chat_archived": "Этот чат в архиве",
   "chat_meeting_question": "Встреча состоялась?",
   "chat_yes_we_met": "Да, встретились",
@@ -303,7 +323,9 @@
   "chat_send_error": "Не удалось отправить: {error}",
   "@chat_send_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "chat_meeting_saved": "Спасибо! Встреча записана.",
@@ -311,12 +333,13 @@
   "chat_other_age": "{age} лет",
   "@chat_other_age": {
     "placeholders": {
-      "age": { "type": "int" }
+      "age": {
+        "type": "int"
+      }
     }
   },
   "chat_empty_hint": "Отправь первое сообщение!",
   "chat_input_hint": "Написать сообщение...",
-
   "messages_title": "Сообщения",
   "messages_tab_active": "Активные",
   "messages_tab_past": "Прошлые",
@@ -326,26 +349,34 @@
   "messages_empty_active": "Пока нет активных чатов",
   "messages_empty_hint": "Открой приглашение или откликнись на существующее",
   "messages_btn_create": "Создать приглашение",
-
   "notifications_title": "Уведомления",
   "notifications_mark_all_read": "Отметить все прочитанными",
   "notifications_error": "Ошибка: {error}",
   "@notifications_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "notifications_empty": "Пока нет уведомлений",
-
   "photo_upload_title_edit": "Редактировать фото",
   "photo_upload_title_add": "Добавить фото",
   "photo_upload_subtitle": "Мин {min} макс {max} фото • {filled} / {total}",
   "@photo_upload_subtitle": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" },
-      "filled": { "type": "int" },
-      "total": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "filled": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "photo_upload_primary_label": "Главное фото",
@@ -354,13 +385,17 @@
   "photo_upload_pick_error": "Не удалось выбрать фото: {error}",
   "@photo_upload_pick_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "photo_upload_error": "Ошибка загрузки: {error}",
   "@photo_upload_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "photo_upload_btn_save": "Сохранить",
@@ -370,10 +405,11 @@
   "photo_crop_error": "Ошибка обрезки: {error}",
   "@photo_crop_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "profile_setup_step_name_age": "Имя и возраст",
   "profile_setup_step_gender": "Пол",
   "profile_setup_step_city": "Город",
@@ -389,14 +425,20 @@
   "profile_setup_validation_age": "Возраст должен быть от {min} до {max}",
   "@profile_setup_validation_age": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_error": "Ошибка: {error}",
   "@profile_setup_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "profile_setup_btn_next": "Далее",
@@ -406,8 +448,12 @@
   "profile_setup_age_label": "Возраст ({min}-{max})",
   "@profile_setup_age_label": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_gender_title": "Пол",
@@ -439,8 +485,12 @@
   "profile_setup_age_range_value": "{min} — {max} лет",
   "@profile_setup_age_range_value": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "profile_setup_prompt_favorite_restaurant": "МОЙ ЛЮБИМЫЙ РЕСТОРАН...",
@@ -463,7 +513,6 @@
   "profile_setup_interest_nature": "Природа",
   "profile_setup_interest_history": "История",
   "profile_setup_interest_fashion": "Мода",
-
   "profile_view_not_found": "Профиль не найден",
   "profile_view_hint_name_age": "Имя и возраст не указаны",
   "profile_view_hint_photo": "Добавь фото",
@@ -475,7 +524,9 @@
   "profile_view_completion": "{score}% заполнено",
   "@profile_view_completion": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "profile_view_section_interests": "ИНТЕРЕСЫ",
@@ -490,12 +541,13 @@
   "profile_view_blocked_snack": "{name} заблокирован(а)",
   "@profile_view_blocked_snack": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "profile_view_block_confirm_body": "Вы уверены, что хотите заблокировать этого пользователя?",
   "profile_view_anonymous_user": "Пользователь",
-
   "report_title": "Пожаловаться на пользователя",
   "report_why": "Почему ты жалуешься?",
   "report_reason_inappropriate": "Неприемлемый контент / фото",
@@ -512,10 +564,11 @@
   "report_error": "Ошибка: {error}",
   "@report_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
-
   "selfie_title": "Верификация через селфи",
   "selfie_subtitle": "Мы вручную проверяем твой профиль для безопасного сообщества",
   "selfie_take_btn": "Сделать селфи",
@@ -523,11 +576,9 @@
   "selfie_tip_face": "Твоё лицо должно быть чётко видно",
   "selfie_tip_approval": "Администратор проверяет в течение 24 часов",
   "selfie_submit_btn": "Отправить",
-
   "blocked_users_title": "Заблокированные пользователи",
   "blocked_users_empty": "Нет заблокированных пользователей",
   "blocked_users_unblock_btn": "Разблокировать",
-
   "delete_account_title": "Удалить аккаунт",
   "delete_account_heading": "Это действие необратимо",
   "delete_account_body": "Если ты удалишь аккаунт, все твои данные, сообщения, совпадения и фото будут безвозвратно удалены. Это нельзя отменить.",
@@ -540,7 +591,6 @@
   "delete_account_btn_cancel": "Отмена",
   "delete_account_success": "Твой аккаунт помечен для удаления. Вскоре он будет удалён окончательно.",
   "delete_account_error": "Произошла ошибка. Пожалуйста, попробуй ещё раз.",
-
   "settings_coming_soon": "Эта функция скоро появится.",
   "settings_ok": "ОК",
   "settings_about_subtitle": "Премиум-приложение для социальных приглашений.",
@@ -548,7 +598,9 @@
   "settings_error": "Ошибка: {error}",
   "@settings_error": {
     "placeholders": {
-      "error": { "type": "String" }
+      "error": {
+        "type": "String"
+      }
     }
   },
   "settings_quiet_hours_title": "Ночная тишина",
@@ -559,8 +611,12 @@
   "settings_age_range_value": "{min} — {max} лет",
   "@settings_age_range_value": {
     "placeholders": {
-      "min": { "type": "int" },
-      "max": { "type": "int" }
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "settings_display_pref_title": "Настройки показа",
@@ -582,7 +638,6 @@
   "settings_show_gender_all": "Все",
   "settings_show_gender_female": "Женщины",
   "settings_show_gender_male": "Мужчины",
-
   "admin_title": "Модерация",
   "admin_tab_selfies": "Проверка селфи",
   "admin_tab_reports": "Жалобы",
@@ -604,25 +659,30 @@
   "admin_report_about": "жалоба на {name}",
   "@admin_report_about": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "admin_reporter_label": "Жалующийся: {name}",
   "@admin_reporter_label": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "admin_reason_label": "Причина: {reason}",
   "@admin_reason_label": {
     "placeholders": {
-      "reason": { "type": "String" }
+      "reason": {
+        "type": "String"
+      }
     }
   },
   "admin_user_banned": "Пользователь заблокирован",
   "admin_btn_ban": "Заблокировать",
   "admin_btn_dismiss": "Отклонить",
-
   "category_food": "Ресторан",
   "category_concert": "Концерт",
   "category_travel": "Путешествие",
@@ -631,5 +691,19 @@
   "category_theater": "Театр",
   "category_coffee": "Кофе",
   "category_bar": "Бар",
-  "category_gift": "Подарок"
+  "category_gift": "Подарок",
+  "@inv_detail_delete_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
+  "@inv_detail_withdraw_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -210,7 +210,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                           child: _EditPromptCard(
                                             question: _questionLabel(
                                                 e.value['question_key']
-                                                    as String, l10n),
+                                                    as String, l10n,
+                                                user['gender'] as String? ?? 'other'),
                                             answer: e.value['answer']
                                                 as String,
                                             index: e.key,
@@ -341,10 +342,10 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     );
   }
 
-  String _questionLabel(String key, AppLocalizations l10n) {
+  String _questionLabel(String key, AppLocalizations l10n, String gender) {
     switch (key) {
       case 'favorite_restaurant': return l10n.profile_setup_prompt_favorite_restaurant;
-      case 'last_book': return l10n.profile_setup_prompt_last_book;
+      case 'last_book': return l10n.profile_setup_prompt_last_book(gender);
       case 'perfect_evening': return l10n.profile_setup_prompt_perfect_evening;
       case 'travel_dream': return l10n.profile_setup_prompt_travel_dream;
       default: return key;

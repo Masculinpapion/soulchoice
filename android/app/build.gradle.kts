@@ -29,6 +29,13 @@ android {
     }
 
     signingConfigs {
+        getByName("debug") {
+            keyAlias = keyProperties.getProperty("keyAlias", "androiddebugkey")
+            keyPassword = keyProperties.getProperty("keyPassword", "android")
+            storeFile = keyProperties.getProperty("storeFile")?.let { file(it) }
+                ?: file("${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = keyProperties.getProperty("storePassword", "android")
+        }
         create("release") {
             keyAlias = keyProperties.getProperty("keyAlias", "")
             keyPassword = keyProperties.getProperty("keyPassword", "")
@@ -46,6 +53,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             signingConfig = signingConfigs.getByName("release")
         }

@@ -451,8 +451,8 @@
       "score": { "type": "int" }
     }
   },
-  "profile_view_section_interests": "Интересы",
-  "profile_view_section_prompts": "Выражения",
+  "profile_view_section_interests": "ИНТЕРЕСЫ",
+  "profile_view_section_prompts": "ВЫРАЖЕНИЯ",
   "profile_view_cta_edit": "Редактировать профиль",
   "profile_view_cta_come": "Хочу прийти",
   "profile_view_action_block": "Заблокировать пользователя",

@@ -451,8 +451,8 @@
       "score": { "type": "int" }
     }
   },
-  "profile_view_section_interests": "İlgi Alanları",
-  "profile_view_section_prompts": "İfadeler",
+  "profile_view_section_interests": "İLGİ ALANLARI",
+  "profile_view_section_prompts": "İFADELER",
   "profile_view_cta_edit": "Profili Düzenle",
   "profile_view_cta_come": "Gelmek isterim",
   "profile_view_action_block": "Kullanıcıyı engelle",

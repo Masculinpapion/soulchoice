@@ -849,7 +849,7 @@ class _EditSectionHeader extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            label.toUpperCase(),
+            label,
             style: TextStyle(
               fontFamily: 'JetBrainsMono',
               fontSize: 11,

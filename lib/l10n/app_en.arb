@@ -451,8 +451,8 @@
       "score": { "type": "int" }
     }
   },
-  "profile_view_section_interests": "Interests",
-  "profile_view_section_prompts": "Expressions",
+  "profile_view_section_interests": "INTERESTS",
+  "profile_view_section_prompts": "EXPRESSIONS",
   "profile_view_cta_edit": "Edit Profile",
   "profile_view_cta_come": "I want to come",
   "profile_view_action_block": "Block user",

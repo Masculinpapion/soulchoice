@@ -61,7 +61,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   Map<String, String> _getPromptQuestions(AppLocalizations l10n) => {
     'favorite_restaurant': l10n.profile_setup_prompt_favorite_restaurant,
-    'last_book': l10n.profile_setup_prompt_last_book,
+    'last_book': l10n.profile_setup_prompt_last_book(_gender ?? 'other'),
     'perfect_evening': l10n.profile_setup_prompt_perfect_evening,
     'travel_dream': l10n.profile_setup_prompt_travel_dream,
   };

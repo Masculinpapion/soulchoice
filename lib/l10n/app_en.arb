@@ -715,5 +715,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "notif_type_new_application_title": "New Application",
+  "notif_type_new_application_body": "{name} applied to your invitation",
+  "@notif_type_new_application_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selected_title": "You were selected! 🎉",
+  "notif_type_selected_body": "You're going to the meetup",
+  "notif_type_not_selected_title": "Not this time",
+  "notif_type_not_selected_body": "Don't worry, keep going",
+  "notif_type_new_message_title": "New Message",
+  "notif_type_new_message_body": "Message from {name}",
+  "@notif_type_new_message_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selfie_approved_title": "Profile verified ✓",
+  "notif_type_selfie_approved_body": "You can now join invitations",
+  "notif_type_selfie_rejected_title": "Photo rejected",
+  "notif_type_selfie_rejected_body": "Please upload a new selfie",
+  "notif_type_meeting_reminder_title": "Meeting reminder",
+  "notif_type_meeting_reminder_body": "Your meetup is starting soon",
+  "notif_type_feedback_request_title": "How was the meetup?",
+  "notif_type_feedback_request_body": "Share your experience"
 }

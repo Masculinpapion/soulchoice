@@ -137,17 +137,19 @@ class _NotificationsScreenState
                     ),
                     const Spacer(),
                     // Tümünü oku
-                    TextButton(
-                      onPressed: _markAllRead,
+                    GestureDetector(
+                      onTap: _markAllRead,
                       child: Text(
                         AppLocalizations.of(context)!.notifications_mark_all_read,
                         style: TextStyle(
                           fontFamily: 'JetBrainsMono',
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: AuroraTheme.auroraRed,
-                          letterSpacing: 0.5,
+                          letterSpacing: 0.3,
                         ),
+                        maxLines: 2,
+                        textAlign: TextAlign.right,
                       ),
                     ),
                   ],
@@ -242,6 +244,36 @@ class _GlassPill extends StatelessWidget {
 // Notification Tile — Aurora glass card
 // ─────────────────────────────────────────────────────────────────────────────
 
+String _notifTitle(NotificationItem item, AppLocalizations l) {
+  final name = (item.payload['name'] ?? item.payload['applicant_name'] ?? item.payload['sender_name'] ?? '') as String;
+  switch (item.type) {
+    case 'new_application': return l.notif_type_new_application_title;
+    case 'selected':        return l.notif_type_selected_title;
+    case 'not_selected':    return l.notif_type_not_selected_title;
+    case 'new_message':     return l.notif_type_new_message_title;
+    case 'selfie_approved': return l.notif_type_selfie_approved_title;
+    case 'selfie_rejected': return l.notif_type_selfie_rejected_title;
+    case 'meeting_reminder':return l.notif_type_meeting_reminder_title;
+    case 'feedback_request':return l.notif_type_feedback_request_title;
+    default:                return name.isNotEmpty ? name : item.type;
+  }
+}
+
+String _notifBody(NotificationItem item, AppLocalizations l) {
+  final name = (item.payload['name'] ?? item.payload['applicant_name'] ?? item.payload['sender_name'] ?? '') as String;
+  switch (item.type) {
+    case 'new_application': return l.notif_type_new_application_body(name);
+    case 'selected':        return l.notif_type_selected_body;
+    case 'not_selected':    return l.notif_type_not_selected_body;
+    case 'new_message':     return l.notif_type_new_message_body(name);
+    case 'selfie_approved': return l.notif_type_selfie_approved_body;
+    case 'selfie_rejected': return l.notif_type_selfie_rejected_body;
+    case 'meeting_reminder':return l.notif_type_meeting_reminder_body;
+    case 'feedback_request':return l.notif_type_feedback_request_body;
+    default:                return item.body;
+  }
+}
+
 class _NotifTile extends StatelessWidget {
   final NotificationItem item;
   final VoidCallback onTap;
@@ -335,7 +367,7 @@ class _NotifTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.title,
+                          _notifTitle(item, AppLocalizations.of(context)!),
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontWeight: FontWeight.w700,
@@ -349,7 +381,7 @@ class _NotifTile extends StatelessWidget {
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          item.body,
+                          _notifBody(item, AppLocalizations.of(context)!),
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 12,

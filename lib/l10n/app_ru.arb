@@ -715,5 +715,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "notif_type_new_application_title": "Новая заявка",
+  "notif_type_new_application_body": "Поступила заявка от {name}",
+  "@notif_type_new_application_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selected_title": "Тебя выбрали! 🎉",
+  "notif_type_selected_body": "Ты отправляешься на встречу",
+  "notif_type_not_selected_title": "В этот раз не вышло",
+  "notif_type_not_selected_body": "Не расстраивайся, продолжай",
+  "notif_type_new_message_title": "Новое сообщение",
+  "notif_type_new_message_body": "Сообщение от {name}",
+  "@notif_type_new_message_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selfie_approved_title": "Профиль подтверждён ✓",
+  "notif_type_selfie_approved_body": "Теперь ты можешь участвовать в приглашениях",
+  "notif_type_selfie_rejected_title": "Фото отклонено",
+  "notif_type_selfie_rejected_body": "Пожалуйста, загрузи новое селфи",
+  "notif_type_meeting_reminder_title": "Напоминание о встрече",
+  "notif_type_meeting_reminder_body": "Скоро начнётся твоя встреча",
+  "notif_type_feedback_request_title": "Как прошла встреча?",
+  "notif_type_feedback_request_body": "Расскажи о своём опыте"
 }

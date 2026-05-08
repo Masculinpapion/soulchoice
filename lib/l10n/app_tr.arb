@@ -715,5 +715,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "notif_type_new_application_title": "Yeni Başvuru",
+  "notif_type_new_application_body": "{name} davetinize başvurdu",
+  "@notif_type_new_application_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selected_title": "Seçildin! 🎉",
+  "notif_type_selected_body": "Buluşmaya gidiyorsun",
+  "notif_type_not_selected_title": "Bu sefer olmadı",
+  "notif_type_not_selected_body": "Üzülme, devam et",
+  "notif_type_new_message_title": "Yeni Mesaj",
+  "notif_type_new_message_body": "{name} mesaj gönderdi",
+  "@notif_type_new_message_body": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_selfie_approved_title": "Profil onaylandı ✓",
+  "notif_type_selfie_approved_body": "Artık davetlere katılabilirsin",
+  "notif_type_selfie_rejected_title": "Fotoğraf reddedildi",
+  "notif_type_selfie_rejected_body": "Lütfen yeni bir selfie yükle",
+  "notif_type_meeting_reminder_title": "Buluşma hatırlatması",
+  "notif_type_meeting_reminder_body": "Buluşman yakında başlıyor",
+  "notif_type_feedback_request_title": "Buluşma nasıldı?",
+  "notif_type_feedback_request_body": "Deneyimini paylaş"
 }

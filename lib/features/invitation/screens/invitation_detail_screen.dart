@@ -515,8 +515,14 @@ class _InvitationDetailScreenState
                           // d. Davet Sahibi
                           if (owner != null) ...[
                             const SizedBox(height: 28),
-                            _SectionHeader(label: AppLocalizations.of(context)!.inv_detail_section_host),
-                            const SizedBox(height: 12),
+                            if (!isOwner) ...[
+                              _SectionHeader(
+                                label: inv['flow_type'] == 'invite'
+                                    ? AppLocalizations.of(context)!.inv_detail_section_with_whom
+                                    : AppLocalizations.of(context)!.inv_detail_section_who,
+                              ),
+                              const SizedBox(height: 12),
+                            ],
                             _HostCard(
                               owner: owner,
                               ownerPhotoUrl: ownerPhotoUrl,

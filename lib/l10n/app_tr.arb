@@ -217,6 +217,8 @@
   "inv_detail_section_details": "DETAYLAR",
   "inv_detail_section_host": "DAVETÇI",
   "inv_detail_host_label": "Davetiye sahibi",
+  "inv_detail_section_with_whom": "KİMİNLE",
+  "inv_detail_section_who": "KİM",
   "inv_detail_applicants_btn": "Başvuranları Gör",
   "inv_detail_loading": "Yükleniyor...",
   "inv_detail_error_label": "Hata",

@@ -217,6 +217,8 @@
   "inv_detail_section_details": "DETAILS",
   "inv_detail_section_host": "HOST",
   "inv_detail_host_label": "Invitation host",
+  "inv_detail_section_with_whom": "WITH",
+  "inv_detail_section_who": "WHO",
   "inv_detail_applicants_btn": "View Applicants",
   "inv_detail_loading": "Loading...",
   "inv_detail_error_label": "Error",

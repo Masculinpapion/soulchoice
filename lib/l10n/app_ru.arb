@@ -217,6 +217,8 @@
   "inv_detail_section_details": "ДЕТАЛИ",
   "inv_detail_section_host": "ОРГАНИЗАТОР",
   "inv_detail_host_label": "Организатор приглашения",
+  "inv_detail_section_with_whom": "С КЕМ",
+  "inv_detail_section_who": "КТО",
   "inv_detail_applicants_btn": "Посмотреть заявки",
   "inv_detail_loading": "Загрузка...",
   "inv_detail_error_label": "Ошибка",

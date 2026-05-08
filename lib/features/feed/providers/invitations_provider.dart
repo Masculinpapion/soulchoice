@@ -46,7 +46,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .select(
           '*, '
           'city:cities(name), '
-          'owner:users(id, name, age, gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          'owner:users(id, name, age, gender, show_gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
         .eq('status', 'active')
@@ -70,6 +70,20 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
+
+      // Owner filter: davet sahibi kime görünmek istiyor
+      if (myGender != null) {
+        final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
+        final ownerGender = ownerRow?['gender'] as String? ?? '';
+        if (ownerShowGender == 'opposite') {
+          final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
+          if (myGender != wantsToBeSeenBy) return null;
+        } else if (ownerShowGender == 'male' && myGender != 'male') {
+          return null;
+        } else if (ownerShowGender == 'female' && myGender != 'female') {
+          return null;
+        }
+      }
       final owner = ownerRow != null
           ? UserModel(
               id: ownerRow['id'] as String,
@@ -122,7 +136,10 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       );
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)
+        // Viewer filter: sen kimi görmek istiyorsun
         .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
+        // Owner filter: davet sahibi kime görünmek istiyor (ownerShowGender InvitationModel'e eklenmeden inline)
+
         .where((inv) {
           final age = inv.owner?.age ?? 0;
           return age >= minAge && age <= maxAge;

@@ -785,7 +785,7 @@ class _CategoryChips extends StatelessWidget {
                     else
                       Text(c.emoji,
                           style: TextStyle(
-                            fontSize: 13,
+                            fontSize: c == InvitationCategory.concert ? 16 : 13,
                             height: 1.2,
                             color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                           )),
@@ -1299,7 +1299,7 @@ class InvitationCard extends StatelessWidget {
                             : Text(
                                 category.emoji,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: category == InvitationCategory.concert ? 17 : 14,
                                   color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                                 ),
                               ),

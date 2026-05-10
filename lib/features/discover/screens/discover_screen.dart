@@ -363,13 +363,7 @@ class _DiscoverCard extends StatelessWidget {
                         child: inv.category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : inv.category == InvitationCategory.concert
-                            ? SizedBox(
-                                width: 15, height: 15,
-                                child: FittedBox(
-                                  fit: BoxFit.contain,
-                                  child: Text('♫', style: const TextStyle(color: AuroraTheme.auroraRed)),
-                                ),
-                              )
+                            ? const Icon(Icons.music_note, size: 15, color: AuroraTheme.auroraRed)
                             : Text(inv.category.emoji, style: const TextStyle(fontSize: 13)),
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -363,7 +364,10 @@ class _DiscoverCard extends StatelessWidget {
                         child: inv.category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : inv.category == InvitationCategory.concert
-                            ? const Icon(Icons.music_note, size: 15, color: AuroraTheme.auroraRed)
+                            ? Text('♫', style: TextStyle(
+                                fontSize: Platform.isIOS ? 20 : 24,
+                                color: AuroraTheme.auroraRed,
+                              ))
                             : Text(inv.category.emoji, style: const TextStyle(fontSize: 13)),
                       ),
                     ),

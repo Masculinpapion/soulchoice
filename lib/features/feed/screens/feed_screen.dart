@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -783,8 +784,11 @@ class _CategoryChips extends StatelessWidget {
                     if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else if (c == InvitationCategory.concert)
-                      Icon(Icons.music_note, size: 16,
-                          color: isSelected ? Colors.white : AuroraTheme.auroraRed)
+                      Text('♫', style: TextStyle(
+                        fontSize: Platform.isIOS ? 20 : 24,
+                        height: 1.2,
+                        color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                      ))
                     else
                       Text(c.emoji,
                           style: const TextStyle(fontSize: 13, height: 1.2)),
@@ -1296,7 +1300,10 @@ class InvitationCard extends StatelessWidget {
                         child: category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : category == InvitationCategory.concert
-                            ? const Icon(Icons.music_note, size: 16, color: AuroraTheme.auroraRed)
+                            ? Text('♫', style: TextStyle(
+                                fontSize: Platform.isIOS ? 21 : 25,
+                                color: AuroraTheme.auroraRed,
+                              ))
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),

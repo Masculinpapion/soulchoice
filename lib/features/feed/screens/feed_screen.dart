@@ -1772,7 +1772,7 @@ class _CardFallbackGradient extends StatelessWidget {
               : Text(
                   category.emoji,
                   style: TextStyle(
-                    fontSize: 80,
+                    fontSize: category == InvitationCategory.concert ? (Platform.isIOS ? 80 : 120) : 80,
                     color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                   ),
                 ),

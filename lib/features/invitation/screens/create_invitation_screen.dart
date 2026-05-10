@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -589,7 +590,7 @@ class _StepCategory extends StatelessWidget {
                           : Text(
                               c.emoji,
                               style: TextStyle(
-                                fontSize: c == InvitationCategory.concert ? 34 : 28,
+                                fontSize: c == InvitationCategory.concert ? (Platform.isIOS ? 34 : 44) : 28,
                                 color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                               ),
                             ),

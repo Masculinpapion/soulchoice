@@ -365,7 +365,7 @@ class _DiscoverCard extends StatelessWidget {
                             : Text(
                                 inv.category.emoji,
                                 style: TextStyle(
-                                  fontSize: inv.category == InvitationCategory.concert ? 17 : 13,
+                                  fontSize: 13,
                                   color: inv.category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                                 ),
                               ),

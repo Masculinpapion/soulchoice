@@ -780,20 +780,15 @@ class _CategoryChips extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (c == InvitationCategory.concert)
-                      Text(
-                        '♫',
-                        style: TextStyle(
-                          fontSize: 24,
-                          height: 1.2,
-                          color: isSelected ? Colors.white : AuroraTheme.auroraRed,
-                        ),
-                      )
-                    else if (c == InvitationCategory.bar)
+                    if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else
                       Text(c.emoji,
-                          style: const TextStyle(fontSize: 13, height: 1.2)),
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.2,
+                            color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                          )),
                     const SizedBox(width: 5),
                     Text(
                       c.labelFor(AppLocalizations.of(context)!),
@@ -1304,7 +1299,7 @@ class InvitationCard extends StatelessWidget {
                             : Text(
                                 category.emoji,
                                 style: TextStyle(
-                                  fontSize: category == InvitationCategory.concert ? 18 : 14,
+                                  fontSize: 14,
                                   color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
                                 ),
                               ),

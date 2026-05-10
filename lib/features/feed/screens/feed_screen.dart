@@ -782,13 +782,19 @@ class _CategoryChips extends StatelessWidget {
                   children: [
                     if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
+                    else if (c == InvitationCategory.concert)
+                      SizedBox(
+                        width: 16, height: 16,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Text('♫', style: TextStyle(
+                            color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                          )),
+                        ),
+                      )
                     else
                       Text(c.emoji,
-                          style: TextStyle(
-                            fontSize: c == InvitationCategory.concert ? 20 : 13,
-                            height: 1.2,
-                            color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                          )),
+                          style: const TextStyle(fontSize: 13, height: 1.2)),
                     const SizedBox(width: 5),
                     Text(
                       c.labelFor(AppLocalizations.of(context)!),
@@ -1296,13 +1302,15 @@ class InvitationCard extends StatelessWidget {
                       child: Center(
                         child: category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
-                            : Text(
-                                category.emoji,
-                                style: TextStyle(
-                                  fontSize: category == InvitationCategory.concert ? 21 : 14,
-                                  color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
+                            : category == InvitationCategory.concert
+                            ? SizedBox(
+                                width: 16, height: 16,
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Text('♫', style: const TextStyle(color: AuroraTheme.auroraRed)),
                                 ),
-                              ),
+                              )
+                            : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),
                   ),

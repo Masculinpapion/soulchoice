@@ -536,7 +536,7 @@ class _FilterChip extends StatelessWidget {
                 iconWidget ?? Text(
                   emoji,
                   style: TextStyle(
-                    fontSize: emoji == '♫' ? 15 : 11,
+                    fontSize: emoji == '♫' ? (Platform.isIOS ? 15 : 20) : 11,
                     color: emoji == '♫' ? (selected ? Colors.white : AuroraTheme.auroraRed) : null,
                   ),
                 ),

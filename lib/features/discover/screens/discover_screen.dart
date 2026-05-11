@@ -365,11 +365,11 @@ class _DiscoverCard extends StatelessWidget {
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : inv.category == InvitationCategory.concert
                             ? SizedBox(
-                                width: 14, height: 14,
+                                width: 16, height: 16,
                                 child: Center(
                                   child: Text('♫',
                                     style: TextStyle(
-                                      fontSize: 13,
+                                      fontSize: 16,
                                       height: 1.0,
                                       leadingDistribution: TextLeadingDistribution.even,
                                       color: AuroraTheme.auroraRed,
@@ -546,11 +546,11 @@ class _FilterChip extends StatelessWidget {
                   iconWidget!
                 else if (emoji == '♫')
                   SizedBox(
-                    width: 14, height: 14,
+                    width: 16, height: 16,
                     child: Center(
                       child: Text('♫',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           height: 1.0,
                           leadingDistribution: TextLeadingDistribution.even,
                           color: selected ? Colors.white : AuroraTheme.auroraRed,

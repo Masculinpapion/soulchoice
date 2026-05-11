@@ -289,7 +289,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_profile_section.
   ///
   /// In en, this message translates to:
-  /// **'Profile'**
+  /// **'PROFILE'**
   String get settings_profile_section;
 
   /// No description provided for @settings_edit_profile.
@@ -751,25 +751,25 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_flow_invite_title.
   ///
   /// In en, this message translates to:
-  /// **'I\'m treating'**
+  /// **'I\'m Hosting'**
   String get create_inv_flow_invite_title;
 
   /// No description provided for @create_inv_flow_invite_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'I want to take someone along, my treat'**
+  /// **''**
   String get create_inv_flow_invite_subtitle;
 
   /// No description provided for @create_inv_flow_request_title.
   ///
   /// In en, this message translates to:
-  /// **'I want to go'**
+  /// **'Seeking Invite'**
   String get create_inv_flow_request_title;
 
   /// No description provided for @create_inv_flow_request_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'I have a place in mind, looking for someone to join'**
+  /// **''**
   String get create_inv_flow_request_subtitle;
 
   /// No description provided for @create_inv_flow_question.
@@ -799,13 +799,13 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_desc_invite_hint.
   ///
   /// In en, this message translates to:
-  /// **'Where are you going, what kind of person are you looking for?'**
+  /// **'Where are you going?'**
   String get create_inv_desc_invite_hint;
 
   /// No description provided for @create_inv_desc_request_hint.
   ///
   /// In en, this message translates to:
-  /// **'Where do you want to go, what kind of person are you looking for?'**
+  /// **'Where do you want to go?'**
   String get create_inv_desc_request_hint;
 
   /// No description provided for @create_inv_desc_input_hint.
@@ -835,13 +835,13 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_venue_placeholder.
   ///
   /// In en, this message translates to:
-  /// **'E.g. White Rabbit, Gorki Park...'**
+  /// **'E.g. Cafe Pushkin, Strelka Bar...'**
   String get create_inv_venue_placeholder;
 
   /// No description provided for @create_inv_duration_question.
   ///
   /// In en, this message translates to:
-  /// **'How long should the invitation last?'**
+  /// **'Validity period'**
   String get create_inv_duration_question;
 
   /// No description provided for @create_inv_duration_subtitle.
@@ -910,6 +910,168 @@ abstract class AppLocalizations {
   /// **'Select the event date and time'**
   String get create_inv_datetime_subtitle;
 
+  /// No description provided for @create_inv_venue_ph_food.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant name'**
+  String get create_inv_venue_ph_food;
+
+  /// No description provided for @create_inv_venue_ph_bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Bar name'**
+  String get create_inv_venue_ph_bar;
+
+  /// No description provided for @create_inv_venue_ph_coffee.
+  ///
+  /// In en, this message translates to:
+  /// **'Café name'**
+  String get create_inv_venue_ph_coffee;
+
+  /// No description provided for @create_inv_venue_ph_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'Cinema name'**
+  String get create_inv_venue_ph_cinema;
+
+  /// No description provided for @create_inv_venue_ph_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'Theatre name'**
+  String get create_inv_venue_ph_theater;
+
+  /// No description provided for @create_inv_venue_ph_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue name'**
+  String get create_inv_venue_ph_concert;
+
+  /// No description provided for @create_inv_venue_ph_culture.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue name'**
+  String get create_inv_venue_ph_culture;
+
+  /// No description provided for @create_inv_venue_ph_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'City or country'**
+  String get create_inv_venue_ph_travel;
+
+  /// No description provided for @create_inv_venue_ph_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Where shall we meet?'**
+  String get create_inv_venue_ph_gift;
+
+  /// No description provided for @create_inv_desc_invite_food.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get create_inv_desc_invite_food;
+
+  /// No description provided for @create_inv_desc_invite_bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get create_inv_desc_invite_bar;
+
+  /// No description provided for @create_inv_desc_invite_coffee.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get create_inv_desc_invite_coffee;
+
+  /// No description provided for @create_inv_desc_invite_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'Film title?'**
+  String get create_inv_desc_invite_cinema;
+
+  /// No description provided for @create_inv_desc_invite_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'Play title?'**
+  String get create_inv_desc_invite_theater;
+
+  /// No description provided for @create_inv_desc_invite_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'Event name?'**
+  String get create_inv_desc_invite_concert;
+
+  /// No description provided for @create_inv_desc_invite_culture.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get create_inv_desc_invite_culture;
+
+  /// No description provided for @create_inv_desc_invite_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get create_inv_desc_invite_travel;
+
+  /// No description provided for @create_inv_desc_invite_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to give?'**
+  String get create_inv_desc_invite_gift;
+
+  /// No description provided for @create_inv_desc_request_food.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get create_inv_desc_request_food;
+
+  /// No description provided for @create_inv_desc_request_bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get create_inv_desc_request_bar;
+
+  /// No description provided for @create_inv_desc_request_coffee.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get create_inv_desc_request_coffee;
+
+  /// No description provided for @create_inv_desc_request_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'Which film do you want to see?'**
+  String get create_inv_desc_request_cinema;
+
+  /// No description provided for @create_inv_desc_request_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'Which play do you want to see?'**
+  String get create_inv_desc_request_theater;
+
+  /// No description provided for @create_inv_desc_request_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'Which event do you want to attend?'**
+  String get create_inv_desc_request_concert;
+
+  /// No description provided for @create_inv_desc_request_culture.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get create_inv_desc_request_culture;
+
+  /// No description provided for @create_inv_desc_request_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get create_inv_desc_request_travel;
+
+  /// No description provided for @create_inv_desc_request_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to receive?'**
+  String get create_inv_desc_request_gift;
+
   /// No description provided for @create_inv_datetime_placeholder.
   ///
   /// In en, this message translates to:
@@ -919,13 +1081,13 @@ abstract class AppLocalizations {
   /// No description provided for @decision_selected_title.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve been selected!'**
+  /// **'Match Confirmation'**
   String get decision_selected_title;
 
   /// No description provided for @decision_selected_body.
   ///
   /// In en, this message translates to:
-  /// **'{name} has selected you for the \"{title}\" invitation.\nDo you want to accept?'**
+  /// **'You selected {name} for your \"{title}\" invitation.\nWould you like to confirm this match?'**
   String decision_selected_body(String name, String title);
 
   /// No description provided for @decision_time_remaining.
@@ -943,13 +1105,13 @@ abstract class AppLocalizations {
   /// No description provided for @decision_accept.
   ///
   /// In en, this message translates to:
-  /// **'Yes, I accept'**
+  /// **'Yes, confirm'**
   String get decision_accept;
 
   /// No description provided for @decision_reject.
   ///
   /// In en, this message translates to:
-  /// **'No, decline'**
+  /// **'No, cancel'**
   String get decision_reject;
 
   /// No description provided for @decision_fallback_name.
@@ -980,7 +1142,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this invitation? This cannot be undone.'**
-  String get inv_detail_delete_body;
+  String inv_detail_delete_body(String gender);
 
   /// No description provided for @inv_detail_delete_cancel.
   ///
@@ -1102,6 +1264,18 @@ abstract class AppLocalizations {
   /// **'Invitation host'**
   String get inv_detail_host_label;
 
+  /// No description provided for @inv_detail_section_with_whom.
+  ///
+  /// In en, this message translates to:
+  /// **'WITH'**
+  String get inv_detail_section_with_whom;
+
+  /// No description provided for @inv_detail_section_who.
+  ///
+  /// In en, this message translates to:
+  /// **'WHO'**
+  String get inv_detail_section_who;
+
   /// No description provided for @inv_detail_applicants_btn.
   ///
   /// In en, this message translates to:
@@ -1148,7 +1322,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to withdraw your application for this invitation?'**
-  String get inv_detail_withdraw_body;
+  String inv_detail_withdraw_body(String gender);
 
   /// No description provided for @inv_detail_withdraw_cancel.
   ///
@@ -1759,25 +1933,25 @@ abstract class AppLocalizations {
   /// No description provided for @profile_setup_prompt_favorite_restaurant.
   ///
   /// In en, this message translates to:
-  /// **'My favourite restaurant...'**
+  /// **'MY FAVOURITE RESTAURANT...'**
   String get profile_setup_prompt_favorite_restaurant;
 
   /// No description provided for @profile_setup_prompt_last_book.
   ///
   /// In en, this message translates to:
-  /// **'The last book I read...'**
-  String get profile_setup_prompt_last_book;
+  /// **'THE LAST BOOK I READ...'**
+  String profile_setup_prompt_last_book(String gender);
 
   /// No description provided for @profile_setup_prompt_perfect_evening.
   ///
   /// In en, this message translates to:
-  /// **'A perfect evening...'**
+  /// **'A PERFECT EVENING...'**
   String get profile_setup_prompt_perfect_evening;
 
   /// No description provided for @profile_setup_prompt_travel_dream.
   ///
   /// In en, this message translates to:
-  /// **'My dream trip...'**
+  /// **'MY DREAM TRIP...'**
   String get profile_setup_prompt_travel_dream;
 
   /// No description provided for @profile_setup_interest_art.
@@ -1933,13 +2107,13 @@ abstract class AppLocalizations {
   /// No description provided for @profile_view_section_interests.
   ///
   /// In en, this message translates to:
-  /// **'Interests'**
+  /// **'INTERESTS'**
   String get profile_view_section_interests;
 
   /// No description provided for @profile_view_section_prompts.
   ///
   /// In en, this message translates to:
-  /// **'Expressions'**
+  /// **'EXPRESSIONS'**
   String get profile_view_section_prompts;
 
   /// No description provided for @profile_view_cta_edit.
@@ -1988,7 +2162,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{name} blocked'**
-  String profile_view_blocked_snack(String name);
+  String profile_view_blocked_snack(String name, String gender);
 
   /// No description provided for @profile_view_block_confirm_body.
   ///
@@ -2595,6 +2769,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gift'**
   String get category_gift;
+
+  /// No description provided for @notif_type_new_application_title.
+  ///
+  /// In en, this message translates to:
+  /// **'New Application'**
+  String get notif_type_new_application_title;
+
+  /// No description provided for @notif_type_new_application_body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} applied to your invitation'**
+  String notif_type_new_application_body(String name);
+
+  /// No description provided for @notif_type_selected_title.
+  ///
+  /// In en, this message translates to:
+  /// **'You were selected! 🎉'**
+  String get notif_type_selected_title;
+
+  /// No description provided for @notif_type_selected_body.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re going to the meetup'**
+  String get notif_type_selected_body;
+
+  /// No description provided for @notif_type_not_selected_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Not this time'**
+  String get notif_type_not_selected_title;
+
+  /// No description provided for @notif_type_not_selected_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t worry, keep going'**
+  String get notif_type_not_selected_body;
+
+  /// No description provided for @notif_type_new_message_title.
+  ///
+  /// In en, this message translates to:
+  /// **'New Message'**
+  String get notif_type_new_message_title;
+
+  /// No description provided for @notif_type_new_message_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Message from {name}'**
+  String notif_type_new_message_body(String name);
+
+  /// No description provided for @notif_type_selfie_approved_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile verified ✓'**
+  String get notif_type_selfie_approved_title;
+
+  /// No description provided for @notif_type_selfie_approved_body.
+  ///
+  /// In en, this message translates to:
+  /// **'You can now join invitations'**
+  String get notif_type_selfie_approved_body;
+
+  /// No description provided for @notif_type_selfie_rejected_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo rejected'**
+  String get notif_type_selfie_rejected_title;
+
+  /// No description provided for @notif_type_selfie_rejected_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload a new selfie'**
+  String get notif_type_selfie_rejected_body;
+
+  /// No description provided for @notif_type_meeting_reminder_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting reminder'**
+  String get notif_type_meeting_reminder_title;
+
+  /// No description provided for @notif_type_meeting_reminder_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your meetup is starting soon'**
+  String get notif_type_meeting_reminder_body;
+
+  /// No description provided for @notif_type_feedback_request_title.
+  ///
+  /// In en, this message translates to:
+  /// **'How was the meetup?'**
+  String get notif_type_feedback_request_title;
+
+  /// No description provided for @notif_type_feedback_request_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience'**
+  String get notif_type_feedback_request_body;
 }
 
 class _AppLocalizationsDelegate

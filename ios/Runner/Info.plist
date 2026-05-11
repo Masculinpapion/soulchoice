@@ -47,6 +47,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SoulChoice определяет ваш город для показа актуальных приглашений рядом с вами.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>SoulChoice определяет ваш город для показа актуальных приглашений рядом с вами.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>SoulChoice фотографияларыңызға қатынасуды сұрайды / SoulChoice fotoğraflarınıza erişim istiyor</string>
 	<key>NSCameraUsageDescription</key>

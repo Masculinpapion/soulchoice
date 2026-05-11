@@ -107,7 +107,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_title => 'Settings';
 
   @override
-  String get settings_profile_section => 'Profile';
+  String get settings_profile_section => 'PROFILE';
 
   @override
   String get settings_edit_profile => 'Edit profile';
@@ -355,18 +355,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_btn_update => 'Update';
 
   @override
-  String get create_inv_flow_invite_title => 'I\'m treating';
+  String get create_inv_flow_invite_title => 'I\'m Hosting';
 
   @override
-  String get create_inv_flow_invite_subtitle =>
-      'I want to take someone along, my treat';
+  String get create_inv_flow_invite_subtitle => '';
 
   @override
-  String get create_inv_flow_request_title => 'I want to go';
+  String get create_inv_flow_request_title => 'Seeking Invite';
 
   @override
-  String get create_inv_flow_request_subtitle =>
-      'I have a place in mind, looking for someone to join';
+  String get create_inv_flow_request_subtitle => '';
 
   @override
   String get create_inv_flow_question => 'What do you want to open?';
@@ -382,12 +380,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_title_label => 'Title';
 
   @override
-  String get create_inv_desc_invite_hint =>
-      'Where are you going, what kind of person are you looking for?';
+  String get create_inv_desc_invite_hint => 'Where are you going?';
 
   @override
-  String get create_inv_desc_request_hint =>
-      'Where do you want to go, what kind of person are you looking for?';
+  String get create_inv_desc_request_hint => 'Where do you want to go?';
 
   @override
   String get create_inv_desc_input_hint => 'Write the details...';
@@ -403,11 +399,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_venue_label => 'Venue name';
 
   @override
-  String get create_inv_venue_placeholder => 'E.g. White Rabbit, Gorki Park...';
+  String get create_inv_venue_placeholder =>
+      'E.g. Cafe Pushkin, Strelka Bar...';
 
   @override
-  String get create_inv_duration_question =>
-      'How long should the invitation last?';
+  String get create_inv_duration_question => 'Validity period';
 
   @override
   String get create_inv_duration_subtitle =>
@@ -442,6 +438,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_inv_datetime_subtitle => 'Select the event date and time';
+
+  @override
+  String get create_inv_venue_ph_food => 'Restaurant name';
+
+  @override
+  String get create_inv_venue_ph_bar => 'Bar name';
+
+  @override
+  String get create_inv_venue_ph_coffee => 'Café name';
+
+  @override
+  String get create_inv_venue_ph_cinema => 'Cinema name';
+
+  @override
+  String get create_inv_venue_ph_theater => 'Theatre name';
+
+  @override
+  String get create_inv_venue_ph_concert => 'Venue name';
+
+  @override
+  String get create_inv_venue_ph_culture => 'Venue name';
+
+  @override
+  String get create_inv_venue_ph_travel => 'City or country';
+
+  @override
+  String get create_inv_venue_ph_gift => 'Where shall we meet?';
+
+  @override
+  String get create_inv_desc_invite_food => 'Where are you going?';
+
+  @override
+  String get create_inv_desc_invite_bar => 'Where are you going?';
+
+  @override
+  String get create_inv_desc_invite_coffee => 'Where are you going?';
+
+  @override
+  String get create_inv_desc_invite_cinema => 'Film title?';
+
+  @override
+  String get create_inv_desc_invite_theater => 'Play title?';
+
+  @override
+  String get create_inv_desc_invite_concert => 'Event name?';
+
+  @override
+  String get create_inv_desc_invite_culture => 'Where are you going?';
+
+  @override
+  String get create_inv_desc_invite_travel => 'Where are you going?';
+
+  @override
+  String get create_inv_desc_invite_gift => 'What would you like to give?';
+
+  @override
+  String get create_inv_desc_request_food => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_request_bar => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_request_coffee => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_request_cinema => 'Which film do you want to see?';
+
+  @override
+  String get create_inv_desc_request_theater =>
+      'Which play do you want to see?';
+
+  @override
+  String get create_inv_desc_request_concert =>
+      'Which event do you want to attend?';
+
+  @override
+  String get create_inv_desc_request_culture => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_request_travel => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_request_gift => 'What would you like to receive?';
 
   @override
   String get create_inv_datetime_placeholder => 'Select date & time';
@@ -481,8 +560,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_delete_title => 'Delete invitation';
 
   @override
-  String get inv_detail_delete_body =>
-      'Are you sure you want to delete this invitation? This cannot be undone.';
+  String inv_detail_delete_body(String gender) {
+    return 'Are you sure you want to delete this invitation? This cannot be undone.';
+  }
 
   @override
   String get inv_detail_delete_cancel => 'Cancel';
@@ -545,6 +625,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_host_label => 'Invitation host';
 
   @override
+  String get inv_detail_section_with_whom => 'WITH';
+
+  @override
+  String get inv_detail_section_who => 'WHO';
+
+  @override
   String get inv_detail_applicants_btn => 'View Applicants';
 
   @override
@@ -566,8 +652,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_withdraw_title => 'Withdraw application';
 
   @override
-  String get inv_detail_withdraw_body =>
-      'Are you sure you want to withdraw your application for this invitation?';
+  String inv_detail_withdraw_body(String gender) {
+    return 'Are you sure you want to withdraw your application for this invitation?';
+  }
 
   @override
   String get inv_detail_withdraw_cancel => 'Cancel';
@@ -912,16 +999,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_setup_prompt_favorite_restaurant =>
-      'My favourite restaurant...';
+      'MY FAVOURITE RESTAURANT...';
 
   @override
-  String get profile_setup_prompt_last_book => 'The last book I read...';
+  String profile_setup_prompt_last_book(String gender) {
+    return 'THE LAST BOOK I READ...';
+  }
 
   @override
-  String get profile_setup_prompt_perfect_evening => 'A perfect evening...';
+  String get profile_setup_prompt_perfect_evening => 'A PERFECT EVENING...';
 
   @override
-  String get profile_setup_prompt_travel_dream => 'My dream trip...';
+  String get profile_setup_prompt_travel_dream => 'MY DREAM TRIP...';
 
   @override
   String get profile_setup_interest_art => 'Art';
@@ -1001,10 +1090,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get profile_view_section_interests => 'Interests';
+  String get profile_view_section_interests => 'INTERESTS';
 
   @override
-  String get profile_view_section_prompts => 'Expressions';
+  String get profile_view_section_prompts => 'EXPRESSIONS';
 
   @override
   String get profile_view_cta_edit => 'Edit Profile';
@@ -1028,7 +1117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_view_action_cancel => 'Cancel';
 
   @override
-  String profile_view_blocked_snack(String name) {
+  String profile_view_blocked_snack(String name, String gender) {
     return '$name blocked';
   }
 
@@ -1357,4 +1446,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get category_gift => 'Gift';
+
+  @override
+  String get notif_type_new_application_title => 'New Application';
+
+  @override
+  String notif_type_new_application_body(String name) {
+    return '$name applied to your invitation';
+  }
+
+  @override
+  String get notif_type_selected_title => 'You were selected! 🎉';
+
+  @override
+  String get notif_type_selected_body => 'You\'re going to the meetup';
+
+  @override
+  String get notif_type_not_selected_title => 'Not this time';
+
+  @override
+  String get notif_type_not_selected_body => 'Don\'t worry, keep going';
+
+  @override
+  String get notif_type_new_message_title => 'New Message';
+
+  @override
+  String notif_type_new_message_body(String name) {
+    return 'Message from $name';
+  }
+
+  @override
+  String get notif_type_selfie_approved_title => 'Profile verified ✓';
+
+  @override
+  String get notif_type_selfie_approved_body => 'You can now join invitations';
+
+  @override
+  String get notif_type_selfie_rejected_title => 'Photo rejected';
+
+  @override
+  String get notif_type_selfie_rejected_body => 'Please upload a new selfie';
+
+  @override
+  String get notif_type_meeting_reminder_title => 'Meeting reminder';
+
+  @override
+  String get notif_type_meeting_reminder_body => 'Your meetup is starting soon';
+
+  @override
+  String get notif_type_feedback_request_title => 'How was the meetup?';
+
+  @override
+  String get notif_type_feedback_request_body => 'Share your experience';
 }

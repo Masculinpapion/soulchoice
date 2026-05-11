@@ -108,7 +108,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_title => 'Ayarlar';
 
   @override
-  String get settings_profile_section => 'Profil';
+  String get settings_profile_section => 'PROFİL';
 
   @override
   String get settings_edit_profile => 'Profili düzenle';
@@ -356,18 +356,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_btn_update => 'Güncelle';
 
   @override
-  String get create_inv_flow_invite_title => 'Ben ısmarlarım';
+  String get create_inv_flow_invite_title => 'Davet ediyorum';
 
   @override
-  String get create_inv_flow_invite_subtitle =>
-      'Birini götürmek istiyorum, masraf benden';
+  String get create_inv_flow_invite_subtitle => '';
 
   @override
-  String get create_inv_flow_request_title => 'Gitmek istiyorum';
+  String get create_inv_flow_request_title => 'Davet bekliyorum';
 
   @override
-  String get create_inv_flow_request_subtitle =>
-      'Aklımda bir yer var, benimle gelecek birini arıyorum';
+  String get create_inv_flow_request_subtitle => '';
 
   @override
   String get create_inv_flow_question => 'Ne açmak istiyorsun?';
@@ -383,12 +381,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_title_label => 'Başlık';
 
   @override
-  String get create_inv_desc_invite_hint =>
-      'Nereye gidiyorsun, ne tür birini arıyorsun?';
+  String get create_inv_desc_invite_hint => 'Nereye gidiyorsun?';
 
   @override
-  String get create_inv_desc_request_hint =>
-      'Nereye gitmek istiyorsun, ne tür birini arıyorsun?';
+  String get create_inv_desc_request_hint => 'Nereye gitmek istiyorsun?';
 
   @override
   String get create_inv_desc_input_hint => 'Detayları yaz...';
@@ -404,11 +400,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_venue_label => 'Mekan adı';
 
   @override
-  String get create_inv_venue_placeholder => 'Örn. Nusr-Et, Emirgan Korusu...';
+  String get create_inv_venue_placeholder =>
+      'Örn. Kafe Pushkin, Strelka Bar...';
 
   @override
-  String get create_inv_duration_question =>
-      'Davetiye ne kadar süre geçerli olsun?';
+  String get create_inv_duration_question => 'Geçerlilik süresi';
 
   @override
   String get create_inv_duration_subtitle =>
@@ -443,6 +439,90 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_datetime_subtitle => 'Etkinlik tarih ve saatini seç';
+
+  @override
+  String get create_inv_venue_ph_food => 'Restoran adı';
+
+  @override
+  String get create_inv_venue_ph_bar => 'Bar adı';
+
+  @override
+  String get create_inv_venue_ph_coffee => 'Kafe adı';
+
+  @override
+  String get create_inv_venue_ph_cinema => 'Sinema adı';
+
+  @override
+  String get create_inv_venue_ph_theater => 'Tiyatro adı';
+
+  @override
+  String get create_inv_venue_ph_concert => 'Mekan adı';
+
+  @override
+  String get create_inv_venue_ph_culture => 'Mekan adı';
+
+  @override
+  String get create_inv_venue_ph_travel => 'Şehir veya ülke';
+
+  @override
+  String get create_inv_venue_ph_gift => 'Nerede buluşalım?';
+
+  @override
+  String get create_inv_desc_invite_food => 'Nereye gidiyorsun?';
+
+  @override
+  String get create_inv_desc_invite_bar => 'Nereye gidiyorsun?';
+
+  @override
+  String get create_inv_desc_invite_coffee => 'Nereye gidiyorsun?';
+
+  @override
+  String get create_inv_desc_invite_cinema => 'Film adı?';
+
+  @override
+  String get create_inv_desc_invite_theater => 'Oyun adı?';
+
+  @override
+  String get create_inv_desc_invite_concert => 'Etkinlik adı?';
+
+  @override
+  String get create_inv_desc_invite_culture => 'Nereye gidiyorsun?';
+
+  @override
+  String get create_inv_desc_invite_travel => 'Nereye gidiyorsunuz?';
+
+  @override
+  String get create_inv_desc_invite_gift => 'Ne hediye etmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_food => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_bar => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_coffee => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_cinema =>
+      'Hangi filmi izlemek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_theater =>
+      'Hangi oyunu görmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_concert =>
+      'Hangi etkinliğe gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_culture => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_travel => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_request_gift => 'Ne hediye edilmesini istiyorsun?';
 
   @override
   String get create_inv_datetime_placeholder => 'Tarih ve saat seç';
@@ -482,8 +562,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_delete_title => 'Davetiyeyi sil';
 
   @override
-  String get inv_detail_delete_body =>
-      'Bu davetiyeyi silmek istediğinden emin misin? Bu işlem geri alınamaz.';
+  String inv_detail_delete_body(String gender) {
+    return 'Bu davetiyeyi silmek istediğinden emin misin? Bu işlem geri alınamaz.';
+  }
 
   @override
   String get inv_detail_delete_cancel => 'İptal';
@@ -546,6 +627,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_host_label => 'Davetiye sahibi';
 
   @override
+  String get inv_detail_section_with_whom => 'KİMİNLE';
+
+  @override
+  String get inv_detail_section_who => 'KİM';
+
+  @override
   String get inv_detail_applicants_btn => 'Başvuranları Gör';
 
   @override
@@ -567,8 +654,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_withdraw_title => 'Başvuruyu geri çek';
 
   @override
-  String get inv_detail_withdraw_body =>
-      'Bu davetiye için başvurunu geri çekmek istediğinden emin misin?';
+  String inv_detail_withdraw_body(String gender) {
+    return 'Bu davetiye için başvurunu geri çekmek istediğinden emin misin?';
+  }
 
   @override
   String get inv_detail_withdraw_cancel => 'İptal';
@@ -911,16 +999,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_setup_prompt_favorite_restaurant =>
-      'En sevdiğim restoran...';
+      'EN SEVDİĞİM RESTORAN...';
 
   @override
-  String get profile_setup_prompt_last_book => 'Son okuduğum kitap...';
+  String profile_setup_prompt_last_book(String gender) {
+    return 'SON OKUDUĞUM KİTAP...';
+  }
 
   @override
-  String get profile_setup_prompt_perfect_evening => 'Mükemmel bir akşam...';
+  String get profile_setup_prompt_perfect_evening => 'MÜKEMMEL BİR AKŞAM...';
 
   @override
-  String get profile_setup_prompt_travel_dream => 'Hayalindeki seyahat...';
+  String get profile_setup_prompt_travel_dream => 'HAYALİNDEKİ SEYAHAT...';
 
   @override
   String get profile_setup_interest_art => 'Sanat';
@@ -1000,10 +1090,10 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get profile_view_section_interests => 'İlgi Alanları';
+  String get profile_view_section_interests => 'İLGİ ALANLARI';
 
   @override
-  String get profile_view_section_prompts => 'İfadeler';
+  String get profile_view_section_prompts => 'İFADELER';
 
   @override
   String get profile_view_cta_edit => 'Profili Düzenle';
@@ -1027,7 +1117,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_view_action_cancel => 'İptal';
 
   @override
-  String profile_view_blocked_snack(String name) {
+  String profile_view_blocked_snack(String name, String gender) {
     return '$name engellendi';
   }
 
@@ -1354,4 +1444,57 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get category_gift => 'Hediye';
+
+  @override
+  String get notif_type_new_application_title => 'Yeni Başvuru';
+
+  @override
+  String notif_type_new_application_body(String name) {
+    return '$name davetinize başvurdu';
+  }
+
+  @override
+  String get notif_type_selected_title => 'Seçildin! 🎉';
+
+  @override
+  String get notif_type_selected_body => 'Buluşmaya gidiyorsun';
+
+  @override
+  String get notif_type_not_selected_title => 'Bu sefer olmadı';
+
+  @override
+  String get notif_type_not_selected_body => 'Üzülme, devam et';
+
+  @override
+  String get notif_type_new_message_title => 'Yeni Mesaj';
+
+  @override
+  String notif_type_new_message_body(String name) {
+    return '$name mesaj gönderdi';
+  }
+
+  @override
+  String get notif_type_selfie_approved_title => 'Profil onaylandı ✓';
+
+  @override
+  String get notif_type_selfie_approved_body =>
+      'Artık davetlere katılabilirsin';
+
+  @override
+  String get notif_type_selfie_rejected_title => 'Fotoğraf reddedildi';
+
+  @override
+  String get notif_type_selfie_rejected_body => 'Lütfen yeni bir selfie yükle';
+
+  @override
+  String get notif_type_meeting_reminder_title => 'Buluşma hatırlatması';
+
+  @override
+  String get notif_type_meeting_reminder_body => 'Buluşman yakında başlıyor';
+
+  @override
+  String get notif_type_feedback_request_title => 'Buluşma nasıldı?';
+
+  @override
+  String get notif_type_feedback_request_body => 'Deneyimini paylaş';
 }

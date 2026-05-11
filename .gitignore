@@ -1,7 +1,5 @@
 # Secrets — never commit
 .env
-google-services.json
-GoogleService-Info.plist
 *.keystore
 *.jks
 android/key.properties

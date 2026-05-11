@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "197714834618",
+    "project_id": "soulchoice-3ea29",
+    "storage_bucket": "soulchoice-3ea29.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197714834618:android:aad02f8093a0c5aa227e83",
+        "android_client_info": {
+          "package_name": "com.soulchoice.soulchoice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhCqyU36I7NvwaIJG5EU-quJ9AhW8HDsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -108,7 +108,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_title => 'Настройки';
 
   @override
-  String get settings_profile_section => 'Профиль';
+  String get settings_profile_section => 'ПРОФИЛЬ';
 
   @override
   String get settings_edit_profile => 'Редактировать профиль';
@@ -357,18 +357,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_btn_update => 'Обновить';
 
   @override
-  String get create_inv_flow_invite_title => 'Я угощаю';
+  String get create_inv_flow_invite_title => 'Приглашаю';
 
   @override
-  String get create_inv_flow_invite_subtitle =>
-      'Хочу взять кого-нибудь с собой за мой счёт';
+  String get create_inv_flow_invite_subtitle => '';
 
   @override
-  String get create_inv_flow_request_title => 'Хочу пойти';
+  String get create_inv_flow_request_title => 'Жду приглашения';
 
   @override
-  String get create_inv_flow_request_subtitle =>
-      'Есть место, ищу кого-то, кто составит компанию';
+  String get create_inv_flow_request_subtitle => '';
 
   @override
   String get create_inv_flow_question => 'Что ты хочешь открыть?';
@@ -384,12 +382,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_title_label => 'Заголовок';
 
   @override
-  String get create_inv_desc_invite_hint =>
-      'Куда идёшь, какого человека ищешь?';
+  String get create_inv_desc_invite_hint => 'Куда идёшь?';
 
   @override
-  String get create_inv_desc_request_hint =>
-      'Куда хочешь пойти, какого человека ищешь?';
+  String get create_inv_desc_request_hint => 'Куда хочешь пойти?';
 
   @override
   String get create_inv_desc_input_hint => 'Напиши подробности...';
@@ -405,12 +401,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_venue_label => 'Название места';
 
   @override
-  String get create_inv_venue_placeholder =>
-      'Например: White Rabbit, Парк Горького...';
+  String get create_inv_venue_placeholder => 'Напр. Кафе Пушкинъ, Стрелка...';
 
   @override
-  String get create_inv_duration_question =>
-      'Как долго должно действовать приглашение?';
+  String get create_inv_duration_question => 'Срок действия';
 
   @override
   String get create_inv_duration_subtitle =>
@@ -445,6 +439,89 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_datetime_subtitle => 'Выбери дату и время мероприятия';
+
+  @override
+  String get create_inv_venue_ph_food => 'Название ресторана';
+
+  @override
+  String get create_inv_venue_ph_bar => 'Название бара';
+
+  @override
+  String get create_inv_venue_ph_coffee => 'Название кафе';
+
+  @override
+  String get create_inv_venue_ph_cinema => 'Название кинотеатра';
+
+  @override
+  String get create_inv_venue_ph_theater => 'Название театра';
+
+  @override
+  String get create_inv_venue_ph_concert => 'Название площадки';
+
+  @override
+  String get create_inv_venue_ph_culture => 'Название места';
+
+  @override
+  String get create_inv_venue_ph_travel => 'Город или страна';
+
+  @override
+  String get create_inv_venue_ph_gift => 'Где встретимся?';
+
+  @override
+  String get create_inv_desc_invite_food => 'Куда идёшь?';
+
+  @override
+  String get create_inv_desc_invite_bar => 'Куда идёшь?';
+
+  @override
+  String get create_inv_desc_invite_coffee => 'Куда идёшь?';
+
+  @override
+  String get create_inv_desc_invite_cinema => 'Название фильма?';
+
+  @override
+  String get create_inv_desc_invite_theater => 'Название спектакля?';
+
+  @override
+  String get create_inv_desc_invite_concert => 'Название мероприятия?';
+
+  @override
+  String get create_inv_desc_invite_culture => 'Куда идёшь?';
+
+  @override
+  String get create_inv_desc_invite_travel => 'Куда едете?';
+
+  @override
+  String get create_inv_desc_invite_gift => 'Что хочешь подарить?';
+
+  @override
+  String get create_inv_desc_request_food => 'Куда хочешь пойти?';
+
+  @override
+  String get create_inv_desc_request_bar => 'Куда хочешь пойти?';
+
+  @override
+  String get create_inv_desc_request_coffee => 'Куда хочешь пойти?';
+
+  @override
+  String get create_inv_desc_request_cinema => 'Какой фильм хочешь посмотреть?';
+
+  @override
+  String get create_inv_desc_request_theater =>
+      'Какой спектакль хочешь увидеть?';
+
+  @override
+  String get create_inv_desc_request_concert =>
+      'На какое мероприятие хочешь попасть?';
+
+  @override
+  String get create_inv_desc_request_culture => 'Куда хочешь пойти?';
+
+  @override
+  String get create_inv_desc_request_travel => 'Куда хочешь поехать?';
+
+  @override
+  String get create_inv_desc_request_gift => 'Что хочешь получить в подарок?';
 
   @override
   String get create_inv_datetime_placeholder => 'Выбрать дату и время';
@@ -484,8 +561,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_delete_title => 'Удалить приглашение';
 
   @override
-  String get inv_detail_delete_body =>
-      'Ты уверен(а), что хочешь удалить это приглашение? Это действие необратимо.';
+  String inv_detail_delete_body(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female':
+          'Ты уверена, что хочешь удалить это приглашение? Это действие необратимо.',
+      'other':
+          'Ты уверен, что хочешь удалить это приглашение? Это действие необратимо.',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get inv_detail_delete_cancel => 'Отмена';
@@ -548,6 +632,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_host_label => 'Организатор приглашения';
 
   @override
+  String get inv_detail_section_with_whom => 'С КЕМ';
+
+  @override
+  String get inv_detail_section_who => 'КТО';
+
+  @override
   String get inv_detail_applicants_btn => 'Посмотреть заявки';
 
   @override
@@ -569,8 +659,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_withdraw_title => 'Отозвать заявку';
 
   @override
-  String get inv_detail_withdraw_body =>
-      'Ты уверен(а), что хочешь отозвать заявку на это приглашение?';
+  String inv_detail_withdraw_body(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'Ты уверена, что хочешь отозвать заявку на это приглашение?',
+      'other': 'Ты уверен, что хочешь отозвать заявку на это приглашение?',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get inv_detail_withdraw_cancel => 'Отмена';
@@ -916,17 +1011,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_prompt_favorite_restaurant =>
-      'Мой любимый ресторан...';
+      'МОЙ ЛЮБИМЫЙ РЕСТОРАН...';
 
   @override
-  String get profile_setup_prompt_last_book =>
-      'Последняя книга, которую я читал(а)...';
+  String profile_setup_prompt_last_book(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛА...',
+      'other': 'ПОСЛЕДНЯЯ КНИГА, КОТОРУЮ Я ЧИТАЛ...',
+    });
+    return '$_temp0';
+  }
 
   @override
-  String get profile_setup_prompt_perfect_evening => 'Идеальный вечер...';
+  String get profile_setup_prompt_perfect_evening => 'ИДЕАЛЬНЫЙ ВЕЧЕР...';
 
   @override
-  String get profile_setup_prompt_travel_dream => 'Моя мечта о путешествии...';
+  String get profile_setup_prompt_travel_dream => 'МОЯ МЕЧТА О ПУТЕШЕСТВИИ...';
 
   @override
   String get profile_setup_interest_art => 'Искусство';
@@ -1006,10 +1106,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get profile_view_section_interests => 'Интересы';
+  String get profile_view_section_interests => 'ИНТЕРЕСЫ';
 
   @override
-  String get profile_view_section_prompts => 'Выражения';
+  String get profile_view_section_prompts => 'ВЫРАЖЕНИЯ';
 
   @override
   String get profile_view_cta_edit => 'Редактировать профиль';
@@ -1033,8 +1133,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_view_action_cancel => 'Отмена';
 
   @override
-  String profile_view_blocked_snack(String name) {
-    return '$name заблокирован(а)';
+  String profile_view_blocked_snack(String name, String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': '$name заблокирована',
+      'other': '$name заблокирован',
+    });
+    return '$_temp0';
   }
 
   @override
@@ -1365,4 +1469,58 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get category_gift => 'Подарок';
+
+  @override
+  String get notif_type_new_application_title => 'Новая заявка';
+
+  @override
+  String notif_type_new_application_body(String name) {
+    return 'Поступила заявка от $name';
+  }
+
+  @override
+  String get notif_type_selected_title => 'Тебя выбрали! 🎉';
+
+  @override
+  String get notif_type_selected_body => 'Ты отправляешься на встречу';
+
+  @override
+  String get notif_type_not_selected_title => 'В этот раз не вышло';
+
+  @override
+  String get notif_type_not_selected_body => 'Не расстраивайся, продолжай';
+
+  @override
+  String get notif_type_new_message_title => 'Новое сообщение';
+
+  @override
+  String notif_type_new_message_body(String name) {
+    return 'Сообщение от $name';
+  }
+
+  @override
+  String get notif_type_selfie_approved_title => 'Профиль подтверждён ✓';
+
+  @override
+  String get notif_type_selfie_approved_body =>
+      'Теперь ты можешь участвовать в приглашениях';
+
+  @override
+  String get notif_type_selfie_rejected_title => 'Фото отклонено';
+
+  @override
+  String get notif_type_selfie_rejected_body =>
+      'Пожалуйста, загрузи новое селфи';
+
+  @override
+  String get notif_type_meeting_reminder_title => 'Напоминание о встрече';
+
+  @override
+  String get notif_type_meeting_reminder_body => 'Скоро начнётся твоя встреча';
+
+  @override
+  String get notif_type_feedback_request_title => 'Как прошла встреча?';
+
+  @override
+  String get notif_type_feedback_request_body => 'Расскажи о своём опыте';
 }

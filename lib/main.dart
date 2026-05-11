@@ -1,3 +1,4 @@
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FirebaseMessaging.instance.requestPermission();
+  AppMetrica.activate(const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'));
 
   // timeago locale kayıtları
   timeago.setLocaleMessages('tr', timeago.TrMessages());

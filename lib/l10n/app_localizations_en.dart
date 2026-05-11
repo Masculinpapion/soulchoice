@@ -140,7 +140,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phone_error_connection => 'Connection error, please try again';
 
   @override
-  String get phone_terms => 'By continuing you accept the Terms of Use';
+  String get phone_terms => 'By continuing you accept our';
+
+  @override
+  String get phone_terms_link_privacy => 'Privacy Policy';
+
+  @override
+  String get phone_terms_link_terms => 'Terms of Use';
 
   @override
   String get otp_title => 'Enter the code';

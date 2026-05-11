@@ -141,7 +141,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phone_error_connection => 'Ошибка подключения, попробуй ещё раз';
 
   @override
-  String get phone_terms => 'Продолжая, ты принимаешь Условия использования';
+  String get phone_terms => 'Продолжая, ты принимаешь';
+
+  @override
+  String get phone_terms_link_privacy => 'Политику конфиденциальности';
+
+  @override
+  String get phone_terms_link_terms => 'Условия использования';
 
   @override
   String get otp_title => 'Введи код';

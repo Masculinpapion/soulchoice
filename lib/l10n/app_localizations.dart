@@ -355,8 +355,20 @@ abstract class AppLocalizations {
   /// No description provided for @phone_terms.
   ///
   /// In en, this message translates to:
-  /// **'By continuing you accept the Terms of Use'**
+  /// **'By continuing you accept our'**
   String get phone_terms;
+
+  /// No description provided for @phone_terms_link_privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get phone_terms_link_privacy;
+
+  /// No description provided for @phone_terms_link_terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get phone_terms_link_terms;
 
   /// No description provided for @otp_title.
   ///

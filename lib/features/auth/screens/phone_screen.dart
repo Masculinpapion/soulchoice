@@ -1,8 +1,10 @@
 import 'dart:ui';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -155,10 +157,27 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 ),
                 const SizedBox(height: 18),
                 Center(
-                  child: Text(
-                    AppLocalizations.of(context)!.phone_terms,
-                    style: AppTextStyles.bodyMedium.copyWith(fontSize: 12),
+                  child: RichText(
                     textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: AppTextStyles.bodyMedium.copyWith(fontSize: 12),
+                      children: [
+                        TextSpan(text: AppLocalizations.of(context)!.phone_terms + ' '),
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.phone_terms_link_privacy,
+                          style: const TextStyle(color: Color(0xFFE63946), decoration: TextDecoration.underline),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => launchUrl(Uri.parse('https://soulchoice.app/privacy')),
+                        ),
+                        const TextSpan(text: ' & '),
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.phone_terms_link_terms,
+                          style: const TextStyle(color: Color(0xFFE63946), decoration: TextDecoration.underline),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => launchUrl(Uri.parse('https://soulchoice.app/terms')),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

@@ -141,8 +141,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get phone_error_connection => 'Bağlantı hatası, tekrar dene';
 
   @override
-  String get phone_terms =>
-      'Devam ederek Kullanım Koşullarını kabul etmiş olursun';
+  String get phone_terms => 'Devam ederek kabul etmiş olursun:';
+
+  @override
+  String get phone_terms_link_privacy => 'Gizlilik Politikası';
+
+  @override
+  String get phone_terms_link_terms => 'Kullanım Koşulları';
 
   @override
   String get otp_title => 'Kodu gir';

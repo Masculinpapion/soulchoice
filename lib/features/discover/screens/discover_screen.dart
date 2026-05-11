@@ -547,16 +547,14 @@ class _FilterChip extends StatelessWidget {
                 if (iconWidget != null)
                   iconWidget!
                 else if (emoji == '♫')
-                  SizedBox(
-                    width: 13,
-                    height: 13,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        '♫',
-                        style: TextStyle(
-                          color: selected ? Colors.white : AuroraTheme.auroraRed,
-                        ),
+                  Transform.scale(
+                    scale: 1.5,
+                    child: Text(
+                      '♫',
+                      style: TextStyle(
+                        fontSize: 11,
+                        height: 1.0,
+                        color: selected ? Colors.white : AuroraTheme.auroraRed,
                       ),
                     ),
                   )

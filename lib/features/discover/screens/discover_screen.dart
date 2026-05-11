@@ -1,3 +1,4 @@
+---
 import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -364,10 +365,19 @@ class _DiscoverCard extends StatelessWidget {
                         child: inv.category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : inv.category == InvitationCategory.concert
-                            ? Text('♫', style: TextStyle(
-                                fontSize: Platform.isIOS ? 20 : 24,
-                                color: AuroraTheme.auroraRed,
-                              ))
+                            ? SizedBox(
+                                width: 14, height: 14,
+                                child: Center(
+                                  child: Text('♫',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      height: 1.0,
+                                      leadingDistribution: TextLeadingDistribution.even,
+                                      color: AuroraTheme.auroraRed,
+                                    ),
+                                  ),
+                                ),
+                              )
                             : Text(inv.category.emoji, style: const TextStyle(fontSize: 13)),
                       ),
                     ),
@@ -541,8 +551,9 @@ class _FilterChip extends StatelessWidget {
                     child: Center(
                       child: Text('♫',
                         style: TextStyle(
-                          fontSize: Platform.isIOS ? 15 : 20,
+                          fontSize: 13,
                           height: 1.0,
+                          leadingDistribution: TextLeadingDistribution.even,
                           color: selected ? Colors.white : AuroraTheme.auroraRed,
                         ),
                       ),
@@ -567,3 +578,4 @@ class _FilterChip extends StatelessWidget {
         ),
       );
 }
+

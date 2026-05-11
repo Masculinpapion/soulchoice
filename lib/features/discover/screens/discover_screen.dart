@@ -366,12 +366,14 @@ class _DiscoverCard extends StatelessWidget {
                             : inv.category == InvitationCategory.concert
                             ? SizedBox(
                                 width: 16, height: 16,
-                                child: Center(
+                                child: OverflowBox(
+                                  alignment: Alignment.center,
+                                  maxWidth: 24,
+                                  maxHeight: 24,
                                   child: Text('♫',
                                     style: TextStyle(
                                       fontSize: 22,
                                       height: 1.0,
-                                      leadingDistribution: TextLeadingDistribution.even,
                                       color: AuroraTheme.auroraRed,
                                     ),
                                   ),
@@ -547,12 +549,14 @@ class _FilterChip extends StatelessWidget {
                 else if (emoji == '♫')
                   SizedBox(
                     width: 16, height: 16,
-                    child: Center(
+                    child: OverflowBox(
+                      alignment: Alignment.center,
+                      maxWidth: 24,
+                      maxHeight: 24,
                       child: Text('♫',
                         style: TextStyle(
                           fontSize: 22,
                           height: 1.0,
-                          leadingDistribution: TextLeadingDistribution.even,
                           color: selected ? Colors.white : AuroraTheme.auroraRed,
                         ),
                       ),

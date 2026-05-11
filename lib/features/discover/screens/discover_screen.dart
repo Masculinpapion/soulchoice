@@ -369,7 +369,7 @@ class _DiscoverCard extends StatelessWidget {
                                 child: Center(
                                   child: Text('♫',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 22,
                                       height: 1.0,
                                       leadingDistribution: TextLeadingDistribution.even,
                                       color: AuroraTheme.auroraRed,
@@ -550,7 +550,7 @@ class _FilterChip extends StatelessWidget {
                     child: Center(
                       child: Text('♫',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 22,
                           height: 1.0,
                           leadingDistribution: TextLeadingDistribution.even,
                           color: selected ? Colors.white : AuroraTheme.auroraRed,

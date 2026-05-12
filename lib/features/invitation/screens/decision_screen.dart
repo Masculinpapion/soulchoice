@@ -136,13 +136,22 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
 
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
+      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Spacer(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    48,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                const SizedBox(height: 40),
                 AnimatedBuilder(
                   animation: _pillGlow,
                   builder: (_, __) {
@@ -197,6 +206,8 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                 ),
                 const SizedBox(height: 8),
               ],
+                ),
+              ),
             ),
           ),
         ),

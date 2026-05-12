@@ -258,7 +258,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(

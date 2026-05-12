@@ -146,8 +146,8 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       );
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)
-        // Viewer filter: sen kimi görmek istiyorsun
-        .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
+        // Viewer filter: sen kimi görmek istiyorsun (kendi kartların her zaman görünür)
+        .where((inv) => inv.owner?.id == currentUserId || targetGender == null || inv.owner?.gender == targetGender)
         // Owner filter: davet sahibi kime görünmek istiyor (ownerShowGender InvitationModel'e eklenmeden inline)
 
         .where((inv) {

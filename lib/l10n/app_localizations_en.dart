@@ -589,6 +589,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_status_decision => 'DECISION TIME';
 
   @override
+  String get inv_detail_status_selecting => 'SELECTION WINDOW';
+
+  @override
   String get inv_detail_status_awaiting => 'AWAITING SELECTION';
 
   @override

@@ -19,6 +19,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
+Future<void> _saveFcmToken() async {
+  try {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    final token = await FirebaseMessaging.instance.getToken();
+    if (token == null) return;
+    await Supabase.instance.client
+        .from('users')
+        .update({'fcm_token': token})
+        .eq('id', uid);
+  } catch (_) {}
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -41,6 +54,13 @@ Future<void> main() async {
     url: SupabaseConstants.supabaseUrl,
     anonKey: SupabaseConstants.supabaseAnonKey,
   );
+
+  // FCM token kaydet — giriş yapıldığında ve token yenilendiğinde
+  _saveFcmToken();
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    if (data.event == AuthChangeEvent.signedIn) _saveFcmToken();
+  });
+  FirebaseMessaging.instance.onTokenRefresh.listen((_) => _saveFcmToken());
 
   runApp(const ProviderScope(child: SoulChoiceApp()));
 }

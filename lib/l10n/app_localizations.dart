@@ -1192,6 +1192,8 @@ abstract class AppLocalizations {
   /// **'DECISION TIME'**
   String get inv_detail_status_decision;
 
+  String get inv_detail_status_selecting;
+
   /// No description provided for @inv_detail_status_awaiting.
   ///
   /// In en, this message translates to:

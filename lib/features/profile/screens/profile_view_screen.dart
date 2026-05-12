@@ -1545,7 +1545,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: const Text('Reddet'),
+            child: Text(AppLocalizations.of(context)!.btn_reject),
           ),
         ),
         const SizedBox(width: 12),
@@ -1568,7 +1568,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
               ),
               child: _loading
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Seç', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
+                  : Text(AppLocalizations.of(context)!.applicants_select_btn, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
             ),
           ),
         ),

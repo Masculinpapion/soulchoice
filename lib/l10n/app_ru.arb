@@ -241,6 +241,7 @@
   "inv_detail_status_closed": "Это приглашение закрыто",
   "inv_detail_status_meeting": "Встреча",
   "inv_detail_status_decision": "ВРЕМЯ РЕШЕНИЯ",
+  "inv_detail_status_selecting": "ОКНО ВЫБОРА",
   "inv_detail_status_awaiting": "ОЖИДАНИЕ ВЫБОРА",
   "inv_detail_status_remaining": "ОСТАЛОСЬ ВРЕМЕНИ",
   "inv_detail_status_expired": "Истекло",

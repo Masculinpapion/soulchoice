@@ -596,6 +596,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_status_decision => 'ВРЕМЯ РЕШЕНИЯ';
 
   @override
+  String get inv_detail_status_selecting => 'ОКНО ВЫБОРА';
+
+  @override
   String get inv_detail_status_awaiting => 'ОЖИДАНИЕ ВЫБОРА';
 
   @override

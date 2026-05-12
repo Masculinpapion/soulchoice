@@ -241,6 +241,7 @@
   "inv_detail_status_closed": "This invitation is closed",
   "inv_detail_status_meeting": "Meeting",
   "inv_detail_status_decision": "DECISION TIME",
+  "inv_detail_status_selecting": "SELECTION WINDOW",
   "inv_detail_status_awaiting": "AWAITING SELECTION",
   "inv_detail_status_remaining": "TIME REMAINING",
   "inv_detail_status_expired": "Expired",

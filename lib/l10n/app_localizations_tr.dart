@@ -590,6 +590,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_status_decision => 'KARAR VAKTİ';
 
   @override
+  String get inv_detail_status_selecting => 'SEÇİM PENCERESİ';
+
+  @override
   String get inv_detail_status_awaiting => 'SEÇİM BEKLENİYOR';
 
   @override

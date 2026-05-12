@@ -628,7 +628,7 @@ class _CountdownStrip extends StatelessWidget {
   String _label(AppLocalizations l10n) {
     if (invStatus == 'closed' || invStatus == 'cancelled') return l10n.inv_detail_status_closed;
     if (appStatus == 'accepted') return l10n.inv_detail_status_meeting;
-    if (invStatus == 'selecting' && isOwner) return 'Seçim penceresi';
+    if (invStatus == 'selecting' && isOwner) return l10n.inv_detail_status_selecting;
     if (isOwner) return l10n.inv_detail_status_decision;
     if (appStatus != null) return l10n.inv_detail_status_awaiting;
     return l10n.inv_detail_status_remaining;

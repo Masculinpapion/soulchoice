@@ -46,7 +46,8 @@
   "phone_terms_link_privacy": "Privacy Policy",
   "phone_terms_link_terms": "Terms of Use",
   "otp_title": "Enter the code",
-  "otp_sent_to": "Sent to: ",
+  "otp_sent_to": "Incoming call to ",
+  "otp_call_hint": "Enter the last 4 digits of the incoming number",
   "otp_resend_countdown": "Resend ({seconds}s)",
   "@otp_resend_countdown": {
     "placeholders": {

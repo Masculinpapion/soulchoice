@@ -152,7 +152,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otp_title => 'Enter the code';
 
   @override
-  String get otp_sent_to => 'Sent to: ';
+  String get otp_sent_to => 'Incoming call to ';
+
+  @override
+  String get otp_call_hint => 'Enter the last 4 digits of the incoming number';
 
   @override
   String otp_resend_countdown(int seconds) {

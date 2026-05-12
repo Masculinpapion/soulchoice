@@ -379,8 +379,14 @@ abstract class AppLocalizations {
   /// No description provided for @otp_sent_to.
   ///
   /// In en, this message translates to:
-  /// **'Sent to: '**
+  /// **'Incoming call to '**
   String get otp_sent_to;
+
+  /// No description provided for @otp_call_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the last 4 digits of the incoming number'**
+  String get otp_call_hint;
 
   /// No description provided for @otp_resend_countdown.
   ///

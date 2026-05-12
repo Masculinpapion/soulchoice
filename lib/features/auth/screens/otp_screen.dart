@@ -19,9 +19,10 @@ class OtpScreen extends ConsumerStatefulWidget {
 }
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
+  static const _codeLength = 4;
   final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+      List.generate(_codeLength, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(_codeLength, (_) => FocusNode());
   bool _isLoading = false;
   String? _error;
   int _resendSeconds = 60;
@@ -47,20 +48,28 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   String get _otp => _controllers.map((c) => c.text).join();
 
   Future<void> _verify() async {
-    if (_otp.length < 6) return;
+    if (_otp.length < _codeLength) return;
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
-      final response = await Supabase.instance.client.auth.verifyOTP(
-        phone: widget.phone,
-        token: _otp,
-        type: OtpType.sms,
+      final response = await Supabase.instance.client.functions.invoke(
+        'verify-call-otp',
+        body: {'phone': widget.phone, 'code': _otp},
       );
+
+      final data = response.data as Map<String, dynamic>?;
+      if (data == null || data['access_token'] == null) {
+        if (mounted) setState(() => _error = data?['error']?.toString() ?? AppLocalizations.of(context)!.otp_error_failed);
+        return;
+      }
+
+      final refreshToken = data['refresh_token'] as String;
+      final authResponse = await Supabase.instance.client.auth.setSession(refreshToken);
       if (!mounted) return;
 
-      final user = response.user;
+      final user = authResponse.user;
       if (user != null) {
         final existing = await Supabase.instance.client
             .from('users')
@@ -68,7 +77,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             .eq('id', user.id)
             .maybeSingle();
         if (!mounted) return;
-
         if (existing != null) {
           context.go('/feed');
         } else {
@@ -77,8 +85,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       } else {
         setState(() => _error = AppLocalizations.of(context)!.otp_error_failed);
       }
-    } on AuthException catch (e) {
-      setState(() => _error = e.message);
     } catch (e) {
       if (mounted) setState(() => _error = e.toString());
     } finally {
@@ -86,14 +92,21 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
   }
 
+  Future<void> _resend() async {
+    try {
+      await Supabase.instance.client.functions.invoke(
+        'send-call-otp',
+        body: {'phone': widget.phone},
+      );
+      if (mounted) setState(() => _resendSeconds = 60);
+      _startResendTimer();
+    } catch (_) {}
+  }
+
   @override
   void dispose() {
-    for (final c in _controllers) {
-      c.dispose();
-    }
-    for (final f in _focusNodes) {
-      f.dispose();
-    }
+    for (final c in _controllers) c.dispose();
+    for (final f in _focusNodes) f.dispose();
     super.dispose();
   }
 
@@ -106,8 +119,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
           onPressed: () => context.go('/auth/phone'),
         ),
       ),
@@ -120,10 +132,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               children: [
                 const SizedBox(height: 8),
                 ShaderMask(
-                  shaderCallback: (b) =>
-                      AppColors.primaryGradient.createShader(b),
-                  child: const Icon(Icons.lock_open_outlined,
-                      color: Colors.white, size: 36),
+                  shaderCallback: (b) => AppColors.primaryGradient.createShader(b),
+                  child: const Icon(Icons.phone_in_talk_outlined, color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 20),
                 Text(AppLocalizations.of(context)!.otp_title, style: AppTextStyles.displayMedium),
@@ -143,22 +153,26 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)!.otp_call_hint,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
                 const SizedBox(height: 44),
-                // OTP boxes
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
-                    6,
+                    _codeLength,
                     (i) => _OtpBox(
                       controller: _controllers[i],
                       focusNode: _focusNodes[i],
                       onChanged: (val) {
-                        if (val.length == 1 && i < 5) {
+                        if (val.length == 1 && i < _codeLength - 1) {
                           _focusNodes[i + 1].requestFocus();
                         } else if (val.isEmpty && i > 0) {
                           _focusNodes[i - 1].requestFocus();
                         }
-                        if (_otp.length == 6) _verify();
+                        if (_otp.length == _codeLength) _verify();
                       },
                       onBackspace: i > 0
                           ? () {
@@ -169,26 +183,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     ),
                   ),
                 ),
-                // Error
                 if (_error != null) ...[
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      const Icon(Icons.error_outline,
-                          size: 14, color: AppColors.error),
+                      const Icon(Icons.error_outline, size: 14, color: AppColors.error),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.error),
+                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
                         ),
                       ),
                     ],
                   ),
                 ],
                 const SizedBox(height: 28),
-                // Resend timer
                 Center(
                   child: _resendSeconds > 0
                       ? Text(
@@ -196,19 +206,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           style: AppTextStyles.bodyMedium,
                         )
                       : GestureDetector(
-                          onTap: () async {
-                            await Supabase.instance.client.auth
-                                .signInWithOtp(phone: widget.phone);
-                            setState(() => _resendSeconds = 60);
-                            _startResendTimer();
-                          },
+                          onTap: _resend,
                           child: ShaderMask(
-                            shaderCallback: (b) =>
-                                AppColors.primaryGradient.createShader(b),
+                            shaderCallback: (b) => AppColors.primaryGradient.createShader(b),
                             child: Text(
                               AppLocalizations.of(context)!.otp_resend,
-                              style: AppTextStyles.labelMedium
-                                  .copyWith(color: Colors.white),
+                              style: AppTextStyles.labelMedium.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -216,7 +219,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 const Spacer(),
                 ScButton(
                   label: AppLocalizations.of(context)!.otp_verify,
-                  onPressed: _otp.length == 6 ? _verify : null,
+                  onPressed: _otp.length == _codeLength ? _verify : null,
                   isLoading: _isLoading,
                 ),
                 const SizedBox(height: 8),
@@ -269,8 +272,8 @@ class _OtpBoxState extends State<_OtpBox> {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
-      width: 48,
-      height: 60,
+      width: 64,
+      height: 72,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: BackdropFilter(
@@ -278,12 +281,10 @@ class _OtpBoxState extends State<_OtpBox> {
           child: Container(
             decoration: BoxDecoration(
               gradient: isFocused
-                  ? LinearGradient(
-                      colors: [
-                        AppColors.gradientStart.withOpacity(0.12),
-                        AppColors.gradientEnd.withOpacity(0.08),
-                      ],
-                    )
+                  ? LinearGradient(colors: [
+                      AppColors.gradientStart.withOpacity(0.12),
+                      AppColors.gradientEnd.withOpacity(0.08),
+                    ])
                   : null,
               color: isFocused ? null : AppColors.glassBgMedium,
               borderRadius: BorderRadius.circular(14),
@@ -302,7 +303,7 @@ class _OtpBoxState extends State<_OtpBox> {
               maxLength: 1,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: AppTextStyles.titleLarge.copyWith(fontSize: 22),
+              style: AppTextStyles.titleLarge.copyWith(fontSize: 24),
               onChanged: widget.onChanged,
               decoration: const InputDecoration(
                 counterText: '',

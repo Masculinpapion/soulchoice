@@ -46,7 +46,8 @@
   "phone_terms_link_privacy": "Политику конфиденциальности",
   "phone_terms_link_terms": "Условия использования",
   "otp_title": "Введи код",
-  "otp_sent_to": "Отправлено: ",
+  "otp_sent_to": "Звонок поступит на номер ",
+  "otp_call_hint": "Введи последние 4 цифры входящего номера",
   "otp_resend_countdown": "Отправить снова ({seconds}с)",
   "@otp_resend_countdown": {
     "placeholders": {

@@ -153,7 +153,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get otp_title => 'Kodu gir';
 
   @override
-  String get otp_sent_to => 'Gönderildi: ';
+  String get otp_sent_to => 'Gelen arama: ';
+
+  @override
+  String get otp_call_hint => 'Gelen numaranın son 4 hanesini gir';
 
   @override
   String otp_resend_countdown(int seconds) {

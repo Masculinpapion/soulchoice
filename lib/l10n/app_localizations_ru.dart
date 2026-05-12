@@ -153,7 +153,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otp_title => 'Введи код';
 
   @override
-  String get otp_sent_to => 'Отправлено: ';
+  String get otp_sent_to => 'Звонок поступит на номер ';
+
+  @override
+  String get otp_call_hint => 'Введи последние 4 цифры входящего номера';
 
   @override
   String otp_resend_countdown(int seconds) {

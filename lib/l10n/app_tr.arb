@@ -46,7 +46,8 @@
   "phone_terms_link_privacy": "Gizlilik Politikası",
   "phone_terms_link_terms": "Kullanım Koşulları",
   "otp_title": "Kodu gir",
-  "otp_sent_to": "Gönderildi: ",
+  "otp_sent_to": "Gelen arama: ",
+  "otp_call_hint": "Gelen numaranın son 4 hanesini gir",
   "otp_resend_countdown": "Tekrar gönder ({seconds}s)",
   "@otp_resend_countdown": {
     "placeholders": {

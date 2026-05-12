@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -38,11 +38,17 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     final phone = '$_countryCode$rawPhone';
     setState(() => _isLoading = true);
     try {
-      await Supabase.instance.client.auth.signInWithOtp(phone: phone);
-      if (mounted) context.go('/auth/otp', extra: phone);
-    } on AuthException catch (e) {
-      if (mounted) setState(() => _error = e.message);
-    } catch (_) {
+      final response = await Supabase.instance.client.functions.invoke(
+        'send-call-otp',
+        body: {'phone': phone},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data?['success'] == true) {
+        if (mounted) context.go('/auth/otp', extra: phone);
+      } else {
+        if (mounted) setState(() => _error = data?['error']?.toString() ?? AppLocalizations.of(context)!.phone_error_connection);
+      }
+    } catch (e) {
       if (mounted) setState(() => _error = AppLocalizations.of(context)!.phone_error_connection);
     } finally {
       if (mounted) setState(() => _isLoading = false);

@@ -94,9 +94,10 @@ class _SelfieScreenState extends State<SelfieScreen> {
           onPressed: () => context.pop(),
         ),
       ),
+      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +114,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     onTap: _takeSelfie,
                     child: Container(
                       width: 220,
-                      height: 280,
+                      height: 260,
                       decoration: BoxDecoration(
                         color: AppColors.glassBg,
                         borderRadius: BorderRadius.circular(24),
@@ -149,7 +150,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     ],
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 32),
                 ScButton(
                   label: AppLocalizations.of(context)!.selfie_submit_btn,
                   onPressed: _selfie != null ? _submit : null,

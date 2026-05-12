@@ -65,6 +65,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
+      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
           child: Padding(

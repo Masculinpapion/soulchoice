@@ -24,6 +24,19 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   int _currentStep = 0;
   final List<bool?> _results = [null, null, null, null];
 
+  @override
+  void initState() {
+    super.initState();
+    _checkAlreadyRequested();
+  }
+
+  Future<void> _checkAlreadyRequested() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_kPermissionsRequestedKey) == true) {
+      if (mounted) context.go('/feed');
+    }
+  }
+
   static List<_PermissionStep> _getSteps(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return [

@@ -115,6 +115,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     return Scaffold(
       backgroundColor: AppColors.bgBlack,
       extendBodyBehindAppBar: true,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

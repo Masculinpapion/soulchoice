@@ -231,7 +231,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (widget.isEditing) {
         context.pop();
       } else {
-        context.go('/profile/photos');
+        context.go('/permissions');
       }
     }
   }

@@ -33,7 +33,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _checkAlreadyRequested() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(_kPermissionsRequestedKey) == true) {
-      if (mounted) context.go('/feed');
+      if (mounted) context.go('/profile/photos');
     }
   }
 
@@ -118,7 +118,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _finish() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPermissionsRequestedKey, true);
-    if (mounted) context.go('/feed');
+    if (mounted) context.go('/profile/photos');
   }
 
   @override

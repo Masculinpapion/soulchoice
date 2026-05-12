@@ -66,7 +66,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
         'moderation_status': 'pending',
       });
 
-      if (mounted) context.go('/permissions');
+      if (mounted) context.go('/feed');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

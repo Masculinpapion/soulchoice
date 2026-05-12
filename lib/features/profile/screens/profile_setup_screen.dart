@@ -82,7 +82,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     try {
       final row = await client
           .from('users')
-          .select('name, age, gender, city_id, bio, job, education, interests, show_gender, min_age, max_age, cities(name)')
+          .select('name, age, gender, city_id, bio, job, education, interests, show_gender, min_age, max_age, cities(name, name_ru, name_tr, name_en)')
           .eq('id', user.id)
           .maybeSingle();
       if (!mounted) return;
@@ -491,10 +491,17 @@ class _StepCityState extends State<_StepCity> {
     super.dispose();
   }
 
+  String _localizedName(Map<String, dynamic> c) {
+    final lang = Localizations.localeOf(context).languageCode;
+    if (lang == 'ru') return c['name_ru'] as String? ?? c['name'] as String? ?? '';
+    if (lang == 'tr') return c['name_tr'] as String? ?? c['name'] as String? ?? '';
+    return c['name_en'] as String? ?? c['name'] as String? ?? '';
+  }
+
   Future<void> _loadCities() async {
     final data = await Supabase.instance.client
         .from('cities')
-        .select('id, name')
+        .select('id, name, name_ru, name_tr, name_en')
         .eq('is_active', true)
         .order('name');
     if (!mounted) return;
@@ -510,7 +517,7 @@ class _StepCityState extends State<_StepCity> {
     setState(() {
       _filtered = q.isEmpty
           ? _cities
-          : _cities.where((c) => (c['name'] as String).toLowerCase().contains(q)).toList();
+          : _cities.where((c) => _localizedName(c).toLowerCase().contains(q)).toList();
     });
   }
 
@@ -546,7 +553,7 @@ class _StepCityState extends State<_StepCity> {
               Center(child: Text(AppLocalizations.of(context)!.profile_setup_city_not_found, style: AppTextStyles.bodyMedium))
             else
               ..._filtered.map((c) {
-                final name = c['name'] as String;
+                final name = _localizedName(c);
                 final id = c['id'] as String;
                 final isSelected = widget.selectedCityId == id;
                 return Padding(

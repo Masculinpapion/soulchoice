@@ -254,6 +254,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         'sender_id': _currentUid,
         'content': text,
       });
+
+      // Karşı tarafa push bildirim gönder
+      final otherUserId = _matchInfo?['otherUserId'] as String?;
+      final myName = (await Supabase.instance.client
+          .from('users').select('name').eq('id', _currentUid!).maybeSingle())?['name'] as String? ?? '';
+      if (otherUserId != null) {
+        Supabase.instance.client.functions.invoke('send-notification', body: {
+          'user_id': otherUserId,
+          'title': '💬 $myName',
+          'body': text.length > 60 ? '${text.substring(0, 60)}...' : text,
+          'data': {'type': 'new_message', 'match_id': widget.matchId},
+        });
+      }
     } catch (e) {
       if (mounted) {
         setState(() =>

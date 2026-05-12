@@ -1511,14 +1511,30 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
   Future<void> _select() async {
     setState(() => _loading = true);
     try {
-      final matchId = await Supabase.instance.client.rpc('match_and_select', params: {
+      final client = Supabase.instance.client;
+      final matchId = await client.rpc('match_and_select', params: {
         'p_application_id': widget.applicationId,
         'p_invitation_id': widget.invitationId,
       }) as String;
+
+      // Başvuru sahibine "seçildin" bildirimi gönder
+      _sendSelectedNotification(widget.applicantId, widget.applicantName);
+
       if (mounted) context.push('/chat/$matchId');
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _sendSelectedNotification(String applicantId, String applicantName) async {
+    try {
+      await Supabase.instance.client.functions.invoke('send-notification', body: {
+        'user_id': applicantId,
+        'title': '🎉 Тебя выбрали!',
+        'body': 'Твоя заявка принята. Открой чат!',
+        'data': {'type': 'selected', 'invitation_id': widget.invitationId},
+      });
+    } catch (_) {}
   }
 
   Future<void> _reject() async {

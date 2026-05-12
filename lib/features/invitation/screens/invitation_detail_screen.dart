@@ -1264,15 +1264,45 @@ class _ApplyButton extends ConsumerStatefulWidget {
 class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   bool _loading = false;
 
+  Future<void> _sendNewApplicationNotification(String applicantId) async {
+    try {
+      final client = Supabase.instance.client;
+      final inv = await client
+          .from('invitations')
+          .select('owner_id, users!owner_id(name)')
+          .eq('id', widget.invitationId)
+          .maybeSingle();
+      final ownerId = inv?['owner_id'] as String?;
+      if (ownerId == null || ownerId == applicantId) return;
+      final applicant = await client
+          .from('users')
+          .select('name')
+          .eq('id', applicantId)
+          .maybeSingle();
+      final applicantName = applicant?['name'] as String? ?? '';
+      await client.functions.invoke('send-notification', body: {
+        'user_id': ownerId,
+        'title': '🔔 Новая заявка',
+        'body': '$applicantName хочет присоединиться',
+        'data': {'type': 'new_application', 'invitation_id': widget.invitationId},
+      });
+    } catch (_) {}
+  }
+
   Future<void> _apply() async {
     setState(() => _loading = true);
     try {
-      final uid = Supabase.instance.client.auth.currentUser!.id;
-      await Supabase.instance.client.from('applications').upsert({
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser!.id;
+      await client.from('applications').upsert({
         'invitation_id': widget.invitationId,
         'applicant_id': uid,
         'status': 'pending',
       }, onConflict: 'invitation_id,applicant_id');
+
+      // Davetiye sahibine push bildirim gönder
+      _sendNewApplicationNotification(uid);
+
       widget.onApplied();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

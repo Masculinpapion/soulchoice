@@ -41,19 +41,6 @@ class _InvitationDetailScreenState
     super.dispose();
   }
 
-  List<Map<String, dynamic>> _ownerPhotos = [];
-
-  Future<void> _fetchOwnerPhotos(String userId) async {
-    if (userId.isEmpty) return;
-    final data = await Supabase.instance.client
-        .from('user_photos')
-        .select('url, is_primary, is_selfie, order_index')
-        .eq('user_id', userId)
-        .eq('is_selfie', false)
-        .order('order_index');
-    if (mounted) setState(() => _ownerPhotos = List<Map<String, dynamic>>.from(data as List));
-  }
-
   @override
   Widget build(BuildContext context) {
     final invitationId = widget.invitationId;
@@ -104,11 +91,9 @@ class _InvitationDetailScreenState
           }
 
           final owner = inv['owner'] as Map<String, dynamic>?;
-          final ownerId = inv['owner_id'] as String? ?? '';
-          if (_ownerPhotos.isEmpty && ownerId.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) => _fetchOwnerPhotos(ownerId));
-          }
-          final sortedOwnerPhotos = _ownerPhotos;
+          final sortedOwnerPhotos = (inv['owner_photos'] as List<dynamic>? ?? [])
+              .cast<Map<String, dynamic>>()
+              .toList();
           final ownerPhotoUrl =
               sortedOwnerPhotos.firstOrNull?['url'] as String?;
           final isOwner = uid == inv['owner_id'];

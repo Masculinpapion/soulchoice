@@ -8,6 +8,17 @@ final invitationDetailProvider =
       .select('*, owner:users(id, name, age, gender, verified, city_id, city:cities(name, name_ru, name_tr, name_en))')
       .eq('id', id)
       .maybeSingle();
+  if (data == null) return null;
+  final ownerId = data['owner_id'] as String?;
+  if (ownerId != null) {
+    final photos = await Supabase.instance.client
+        .from('user_photos')
+        .select('url, is_primary, is_selfie, order_index')
+        .eq('user_id', ownerId)
+        .neq('is_selfie', true)
+        .order('order_index');
+    data['owner_photos'] = photos;
+  }
   return data;
 });
 

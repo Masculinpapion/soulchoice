@@ -23,9 +23,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
     setState(() => _isDeleting = true);
     try {
       final client = Supabase.instance.client;
-      final uid = client.auth.currentUser?.id;
-      if (uid != null) {
-        await client.from('users').update({'is_deleted': true}).eq('id', uid);
+      final response = await client.functions.invoke('delete-account');
+      if (response.status != 200) {
+        throw Exception((response.data as Map<String, dynamic>?)?['error'] ?? 'delete failed');
       }
       await client.auth.signOut();
       if (mounted) {
@@ -154,3 +154,4 @@ class _WarnItem extends StatelessWidget {
         ],
       );
 }
+

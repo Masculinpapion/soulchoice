@@ -743,13 +743,10 @@ class _CategoryChips extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
+      child: Row(
         children: [
-          // Tümü chip
           Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(left: 16, right: 8),
             child: GestureDetector(
               onTap: onClearFilter,
               child: AnimatedContainer(
@@ -786,6 +783,11 @@ class _CategoryChips extends StatelessWidget {
               ),
             ),
           ),
+          Expanded(
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(right: 16),
+              children: [
           ...InvitationCategory.values.map((c) {
           final isSelected = selected == c;
           return Padding(
@@ -857,6 +859,9 @@ class _CategoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1916,4 +1921,5 @@ class _PulsingDotState extends State<_PulsingDot>
         ),
       );
 }
+
 

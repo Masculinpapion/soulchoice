@@ -64,27 +64,36 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               // Filtre chip'leri
               SizedBox(
                 height: 36,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
                   children: [
-                    _FilterChip(
-                      label: AppLocalizations.of(context)!.discover_filter_all,
-                      emoji: '✦',
-                      selected: _selectedCategory == null,
-                      onTap: () => setState(() => _selectedCategory = null),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 8),
+                      child: _FilterChip(
+                        label: AppLocalizations.of(context)!.discover_filter_all,
+                        emoji: '✦',
+                        selected: _selectedCategory == null,
+                        onTap: () => setState(() => _selectedCategory = null),
+                      ),
                     ),
-                    ...InvitationCategory.values.map((cat) => _FilterChip(
-                          label: cat.labelFor(AppLocalizations.of(context)!),
-                          emoji: cat.emoji,
-                          iconWidget: cat == InvitationCategory.bar
-                              ? Image.asset('assets/icons/bar.png', width: 12, height: 12)
-                              : null,
-                          selected: _selectedCategory == cat,
-                          onTap: () => setState(() =>
-                              _selectedCategory =
-                                  _selectedCategory == cat ? null : cat),
-                        )),
+                    Expanded(
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.only(right: 16),
+                        children: [
+                          ...InvitationCategory.values.map((cat) => _FilterChip(
+                                label: cat.labelFor(AppLocalizations.of(context)!),
+                                emoji: cat.emoji,
+                                iconWidget: cat == InvitationCategory.bar
+                                    ? Image.asset('assets/icons/bar.png', width: 12, height: 12)
+                                    : null,
+                                selected: _selectedCategory == cat,
+                                onTap: () => setState(() =>
+                                    _selectedCategory =
+                                        _selectedCategory == cat ? null : cat),
+                              )),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -577,4 +586,5 @@ class _FilterChip extends StatelessWidget {
         ),
       );
 }
+
 

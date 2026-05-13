@@ -884,6 +884,7 @@ class _StepDateTime extends StatelessWidget {
                   context: context,
                   initialTime:
                       TimeOfDay(hour: (now.hour + 2) % 24, minute: 0),
+                  initialEntryMode: TimePickerEntryMode.input,
                 );
                 if (pickedTime == null) return;
                 onSelected(DateTime(

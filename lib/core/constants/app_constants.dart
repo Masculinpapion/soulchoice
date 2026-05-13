@@ -6,7 +6,7 @@ class AppConstants {
 
   // Age limits
   static const int minAge = 21;
-  static const int maxAge = 99;
+  static const int maxAge = 60;
 
   // Invitation
   static const Duration invitationDuration = Duration(hours: 24);

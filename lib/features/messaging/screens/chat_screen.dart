@@ -344,8 +344,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           .from('matches')
           .delete()
           .eq('id', widget.matchId);
-    } catch (_) {}
-    if (mounted) context.pop();
+      if (mounted) context.go('/messages');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.chat_send_error(e.toString())),
+          backgroundColor: AppColors.error,
+        ));
+      }
+    }
   }
 
   Future<void> _block() async {

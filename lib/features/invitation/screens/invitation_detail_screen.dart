@@ -94,7 +94,7 @@ class _InvitationDetailScreenState
           final ownerPhotos = (owner?['photos'] as List<dynamic>?) ?? [];
           final sortedOwnerPhotos = ownerPhotos
               .cast<Map<String, dynamic>>()
-              .where((p) => p['is_selfie'] == false)
+              .where((p) => p['is_selfie'] != true)
               .toList()
             ..sort((a, b) => (a['order_index'] as int? ?? 99)
                 .compareTo(b['order_index'] as int? ?? 99));

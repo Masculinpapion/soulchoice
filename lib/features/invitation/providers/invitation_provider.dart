@@ -11,17 +11,6 @@ final invitationDetailProvider =
   return data;
 });
 
-final userPhotosProvider =
-    FutureProvider.autoDispose.family<List<Map<String, dynamic>>, String>((ref, userId) async {
-  if (userId.isEmpty) return [];
-  final data = await Supabase.instance.client
-      .from('user_photos')
-      .select('url, is_primary, is_selfie, order_index')
-      .eq('user_id', userId)
-      .order('order_index');
-  return List<Map<String, dynamic>>.from(data as List);
-});
-
 final myApplicationProvider =
     FutureProvider.autoDispose.family<Map<String, dynamic>?, String>((ref, invitationId) async {
   final uid = Supabase.instance.client.auth.currentUser?.id;

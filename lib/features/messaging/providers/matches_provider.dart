@@ -98,16 +98,17 @@ final matchesProvider =
     }
   }
 
-  final result = <MatchPreview>[];
+  final seen = <String, MatchPreview>{};
   for (int i = 0; i < matches.length; i++) {
     final m = matches[i];
     final matchId = m['id'] as String;
     final otherUserId = otherUserIds[i];
     final userRow = userMap[otherUserId];
     if (userRow == null) continue;
+    if (seen.containsKey(otherUserId)) continue;
 
     final lastMsg = lastMsgMap[matchId];
-    result.add(MatchPreview(
+    seen[otherUserId] = MatchPreview(
       matchId: matchId,
       otherUserId: otherUserId,
       otherName: userRow['name'] as String,
@@ -124,8 +125,9 @@ final matchesProvider =
       archivedAt: m['archived_at'] != null
           ? DateTime.parse(m['archived_at'] as String)
           : null,
-    ));
+    );
   }
+  final result = seen.values.toList();
 
   result.sort((a, b) {
     final at = a.lastMessageTime;

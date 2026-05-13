@@ -65,18 +65,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final otherUserId =
         _isUser1 ? matchRow['user2_id'] as String : user1Id;
 
-    final otherUser = await client
-        .from('users')
-        .select('name, age')
-        .eq('id', otherUserId)
-        .maybeSingle();
-
-    final photoRow = await client
-        .from('user_photos')
-        .select('url')
-        .eq('user_id', otherUserId)
-        .eq('is_primary', true)
-        .maybeSingle();
+    final results = await Future.wait([
+      client.from('users').select('name, age').eq('id', otherUserId).maybeSingle(),
+      client.from('user_photos').select('url').eq('user_id', otherUserId).eq('is_primary', true).maybeSingle(),
+    ]);
+    final otherUser = results[0] as Map<String, dynamic>?;
+    final photoRow  = results[1] as Map<String, dynamic>?;
 
     if (!mounted) return;
 
@@ -402,6 +396,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               otherAge: otherAge,
               photoUrl: _matchInfo?['photoUrl'] as String?,
               otherUserId: _matchInfo?['otherUserId'] as String?,
+              isLoading: _matchInfo == null,
               onBack: () => context.pop(),
               onBlock: _block,
               onDelete: _deleteChat,
@@ -611,6 +606,7 @@ class _ChatAppBar extends StatelessWidget {
   final int otherAge;
   final String? photoUrl;
   final String? otherUserId;
+  final bool isLoading;
   final VoidCallback onBack;
   final VoidCallback? onBlock;
   final VoidCallback? onDelete;
@@ -619,6 +615,7 @@ class _ChatAppBar extends StatelessWidget {
     required this.otherAge,
     this.photoUrl,
     this.otherUserId,
+    this.isLoading = false,
     required this.onBack,
     this.onBlock,
     this.onDelete,
@@ -662,15 +659,24 @@ class _ChatAppBar extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: AuroraTheme.bgDeep, width: 1.5),
                         ),
-                        child: ClipOval(
-                          child: photoUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: photoUrl!,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (_, __, ___) => _DefaultAvatar(name: otherName),
-                                )
-                              : _DefaultAvatar(name: otherName),
-                        ),
+                        child: isLoading
+                            ? Container(
+                                width: 36,
+                                height: 36,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white24,
+                                  shape: BoxShape.circle,
+                                ),
+                              )
+                            : ClipOval(
+                                child: photoUrl != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: photoUrl!,
+                                        fit: BoxFit.cover,
+                                        errorWidget: (_, __, ___) => _DefaultAvatar(name: otherName),
+                                      )
+                                    : _DefaultAvatar(name: otherName),
+                              ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -678,25 +684,36 @@ class _ChatAppBar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          otherName,
-                          style: const TextStyle(
-                            fontFamily: 'Fraunces',
-                            fontStyle: FontStyle.italic,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        if (otherAge > 0)
+                        if (isLoading)
+                          Container(
+                            width: 80,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          )
+                        else ...[
                           Text(
-                            AppLocalizations.of(context)!.chat_other_age(otherAge),
-                            style: TextStyle(
-                              fontFamily: 'JetBrainsMono',
-                              fontSize: 11,
-                              color: Colors.white.withOpacity(0.50),
+                            otherName,
+                            style: const TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
+                          if (otherAge > 0)
+                            Text(
+                              AppLocalizations.of(context)!.chat_other_age(otherAge),
+                              style: TextStyle(
+                                fontFamily: 'JetBrainsMono',
+                                fontSize: 11,
+                                color: Colors.white.withOpacity(0.50),
+                              ),
+                            ),
+                        ],
                       ],
                     ),
                   ],

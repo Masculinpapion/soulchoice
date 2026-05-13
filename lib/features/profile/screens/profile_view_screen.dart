@@ -581,15 +581,17 @@ class _HeroSectionState extends State<_HeroSection> {
             left: 0,
             right: 0,
             height: 120,
-            child: const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0x55050709),
-                    Colors.transparent,
-                  ],
+            child: IgnorePointer(
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0x55050709),
+                      Colors.transparent,
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -601,19 +603,21 @@ class _HeroSectionState extends State<_HeroSection> {
             left: 0,
             right: 0,
             height: 240,
-            child: const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: [0.0, 0.30, 0.60, 0.85, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Color(0x1A050709),
-                    Color(0x66050709),
-                    Color(0xCC050709),
-                    Color(0xFF050709),
-                  ],
+            child: IgnorePointer(
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0.0, 0.30, 0.60, 0.85, 1.0],
+                    colors: [
+                      Colors.transparent,
+                      Color(0x1A050709),
+                      Color(0x66050709),
+                      Color(0xCC050709),
+                      Color(0xFF050709),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -625,16 +629,18 @@ class _HeroSectionState extends State<_HeroSection> {
             left: 0,
             right: 0,
             height: 200,
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment.center,
-                  stops: [0.0, 0.4, 0.7],
-                  colors: [
-                    Color(0x26FF2D55),
-                    Color(0x142D7FFF),
-                    Colors.transparent,
-                  ],
+            child: IgnorePointer(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    stops: [0.0, 0.4, 0.7],
+                    colors: [
+                      Color(0x26FF2D55),
+                      Color(0x142D7FFF),
+                      Colors.transparent,
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -678,9 +684,10 @@ class _HeroSectionState extends State<_HeroSection> {
             left: 24,
             right: 24,
             bottom: 32,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            child: IgnorePointer(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
               children: [
                 // İsim + verified badge
                 Row(
@@ -770,6 +777,7 @@ class _HeroSectionState extends State<_HeroSection> {
                   ),
                 ],
               ],
+            ),
             ),
           ),
         ],
@@ -1571,4 +1579,5 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
     );
   }
 }
+
 

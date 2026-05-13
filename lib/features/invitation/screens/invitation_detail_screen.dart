@@ -163,22 +163,24 @@ class _InvitationDetailScreenState
                               top: 12,
                               left: 0,
                               right: 0,
-                              child: SafeArea(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(sortedOwnerPhotos.length, (i) {
-                                    final active = i == _photoIndex;
-                                    return AnimatedContainer(
-                                      duration: const Duration(milliseconds: 200),
-                                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                                      width: active ? 20 : 5,
-                                      height: 5,
-                                      decoration: BoxDecoration(
-                                        color: active ? Colors.white : Colors.white.withOpacity(0.4),
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    );
-                                  }),
+                              child: IgnorePointer(
+                                child: SafeArea(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: List.generate(sortedOwnerPhotos.length, (i) {
+                                      final active = i == _photoIndex;
+                                      return AnimatedContainer(
+                                        duration: const Duration(milliseconds: 200),
+                                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                                        width: active ? 20 : 5,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                          color: active ? Colors.white : Colors.white.withOpacity(0.4),
+                                          borderRadius: BorderRadius.circular(3),
+                                        ),
+                                      );
+                                    }),
+                                  ),
                                 ),
                               ),
                             ),
@@ -189,15 +191,17 @@ class _InvitationDetailScreenState
                             left: 0,
                             right: 0,
                             height: 140,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.black.withOpacity(0.55),
-                                    Colors.transparent,
-                                  ],
+                            child: IgnorePointer(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.55),
+                                      Colors.transparent,
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -209,18 +213,20 @@ class _InvitationDetailScreenState
                             left: 0,
                             right: 0,
                             height: heroH * 0.55,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [
-                                    AuroraTheme.bgDeep,
-                                    AuroraTheme.bgDeep.withOpacity(0.80),
-                                    AuroraTheme.bgDeep.withOpacity(0.30),
-                                    Colors.transparent,
-                                  ],
-                                  stops: const [0.0, 0.35, 0.65, 1.0],
+                            child: IgnorePointer(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      AuroraTheme.bgDeep,
+                                      AuroraTheme.bgDeep.withOpacity(0.80),
+                                      AuroraTheme.bgDeep.withOpacity(0.30),
+                                      Colors.transparent,
+                                    ],
+                                    stops: const [0.0, 0.35, 0.65, 1.0],
+                                  ),
                                 ),
                               ),
                             ),
@@ -390,9 +396,10 @@ class _InvitationDetailScreenState
                             left: 24,
                             right: 24,
                             bottom: 28,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
+                            child: IgnorePointer(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   inv['title'] as String,
@@ -440,6 +447,7 @@ class _InvitationDetailScreenState
                                   ),
                                 ],
                               ],
+                            ),
                             ),
                           ),
                         ],
@@ -1513,6 +1521,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     );
   }
 }
+
 
 
 

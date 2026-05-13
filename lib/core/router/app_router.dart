@@ -55,7 +55,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
     refreshListenable: notifier,
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final loc = state.matchedLocation;
 
       // These routes always handle their own navigation.
@@ -71,6 +71,17 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (isAuthenticated && loc == '/auth/phone') return '/feed';
       if (!isAuthenticated) return '/splash';
+
+      if (loc == '/admin') {
+        final uid = Supabase.instance.client.auth.currentUser?.id;
+        if (uid == null) return '/feed';
+        final data = await Supabase.instance.client
+            .from('users')
+            .select('is_admin')
+            .eq('id', uid)
+            .maybeSingle();
+        if (data?['is_admin'] != true) return '/feed';
+      }
 
       return null;
     },
@@ -247,3 +258,4 @@ final routerProvider = Provider<GoRouter>((ref) {
     ),
   );
 });
+

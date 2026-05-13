@@ -135,26 +135,27 @@ class _InvitationDetailScreenState
                       child: Stack(
                         children: [
                           // a. Ana fotoğraf — PageView
-                          Positioned.fill(
-                            child: sortedOwnerPhotos.isNotEmpty
-                                ? PageView.builder(
-                                    controller: _photoCtrl,
-                                    itemCount: sortedOwnerPhotos.length,
-                                    onPageChanged: (i) => setState(() => _photoIndex = i),
-                                    itemBuilder: (_, i) {
-                                      final url = sortedOwnerPhotos[i]['url'] as String?;
-                                      return url != null
-                                          ? CachedNetworkImage(
-                                              imageUrl: url,
-                                              fit: BoxFit.cover,
-                                              alignment: Alignment.topCenter,
-                                              errorWidget: (_, __, ___) => _FallbackBg(),
-                                            )
-                                          : _FallbackBg();
-                                    },
-                                  )
-                                : _FallbackBg(),
-                          ),
+                          if (sortedOwnerPhotos.isNotEmpty)
+                            PageView.builder(
+                              controller: _photoCtrl,
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: sortedOwnerPhotos.length,
+                              onPageChanged: (i) => setState(() => _photoIndex = i),
+                              itemBuilder: (_, i) {
+                                final url = sortedOwnerPhotos[i]['url'] as String?;
+                                return url != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: url,
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.topCenter,
+                                        errorWidget: (_, __, ___) => _FallbackBg(),
+                                      )
+                                    : _FallbackBg();
+                              },
+                            )
+                          else
+                            _FallbackBg(),
 
                           // a2. Foto dots
                           if (sortedOwnerPhotos.length > 1)
@@ -1512,5 +1513,6 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     );
   }
 }
+
 
 

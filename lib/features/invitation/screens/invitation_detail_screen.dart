@@ -25,6 +25,9 @@ class InvitationDetailScreen extends ConsumerStatefulWidget {
 
 class _InvitationDetailScreenState
     extends ConsumerState<InvitationDetailScreen> {
+  final PageController _photoCtrl = PageController();
+  int _photoIndex = 0;
+
   String _currentUserGender() {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return 'other';
@@ -34,6 +37,7 @@ class _InvitationDetailScreenState
 
   @override
   void dispose() {
+    _photoCtrl.dispose();
     super.dispose();
   }
 
@@ -134,22 +138,53 @@ class _InvitationDetailScreenState
                       height: heroH,
                       child: Stack(
                         children: [
-                          // a. Ana fotoğraf
+                          // a. Ana fotoğraf — PageView
                           Positioned.fill(
-                            child: () {
-                              final url = sortedOwnerPhotos.isNotEmpty
-                                  ? sortedOwnerPhotos[0]['url'] as String?
-                                  : null;
-                              return url != null
-                                  ? CachedNetworkImage(
-                                      imageUrl: url,
-                                      fit: BoxFit.cover,
-                                      alignment: Alignment.topCenter,
-                                      errorWidget: (_, __, ___) => _FallbackBg(),
-                                    )
-                                  : _FallbackBg();
-                            }(),
+                            child: sortedOwnerPhotos.isNotEmpty
+                                ? PageView.builder(
+                                    controller: _photoCtrl,
+                                    itemCount: sortedOwnerPhotos.length,
+                                    onPageChanged: (i) => setState(() => _photoIndex = i),
+                                    itemBuilder: (_, i) {
+                                      final url = sortedOwnerPhotos[i]['url'] as String?;
+                                      return url != null
+                                          ? CachedNetworkImage(
+                                              imageUrl: url,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.topCenter,
+                                              errorWidget: (_, __, ___) => _FallbackBg(),
+                                            )
+                                          : _FallbackBg();
+                                    },
+                                  )
+                                : _FallbackBg(),
                           ),
+
+                          // a2. Foto dots
+                          if (sortedOwnerPhotos.length > 1)
+                            Positioned(
+                              top: 12,
+                              left: 0,
+                              right: 0,
+                              child: SafeArea(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(sortedOwnerPhotos.length, (i) {
+                                    final active = i == _photoIndex;
+                                    return AnimatedContainer(
+                                      duration: const Duration(milliseconds: 200),
+                                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                                      width: active ? 20 : 5,
+                                      height: 5,
+                                      decoration: BoxDecoration(
+                                        color: active ? Colors.white : Colors.white.withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ),
+                            ),
 
                           // b. Üst scrim
                           Positioned(

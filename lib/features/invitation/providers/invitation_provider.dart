@@ -16,16 +16,16 @@ final invitationDetailProvider =
         .select()
         .eq('user_id', ownerId);
     final allPhotos = List<Map<String, dynamic>>.from(rawPhotos as List);
-    print('[SC_PHOTOS] Total fetched: \${allPhotos.length} for owner \$ownerId');
+    print('[SC_PHOTOS] Total fetched: ${allPhotos.length} for owner $ownerId');
     for (final p in allPhotos) {
-      print('[SC_PHOTOS] is_selfie=\${p["is_selfie"]} order=\${p["order_index"]} url=\${(p["url"] as String?)?.split("/").last}');
+      print('[SC_PHOTOS] is_selfie=${p["is_selfie"]} order=${p["order_index"]} url=${(p["url"] as String?)?.split("/").last}');
     }
     final nonSelfies = allPhotos
         .where((p) => p['is_selfie'] != true)
         .toList()
       ..sort((a, b) => (a['order_index'] as int? ?? 99)
           .compareTo(b['order_index'] as int? ?? 99));
-    print('[SC_PHOTOS] Non-selfie count: \${nonSelfies.length}');
+    print('[SC_PHOTOS] Non-selfie count: ${nonSelfies.length}');
     final newData = Map<String, dynamic>.from(data);
     newData['owner_photos'] = nonSelfies;
     return newData;
@@ -55,3 +55,4 @@ final applicationCountProvider =
       .eq('status', 'pending');
   return (data as List).length;
 });
+

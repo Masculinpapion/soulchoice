@@ -128,6 +128,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 onSelected: (c) => setState(() {
                   _selectedCategory = _selectedCategory == c ? null : c;
                 }),
+                onClearFilter: () => setState(() => _selectedCategory = null),
               ),
               Expanded(
                 child: TabBarView(
@@ -730,8 +731,13 @@ class _AuroraPillTab extends StatelessWidget {
 class _CategoryChips extends StatelessWidget {
   final InvitationCategory? selected;
   final ValueChanged<InvitationCategory> onSelected;
+  final VoidCallback onClearFilter;
 
-  const _CategoryChips({required this.selected, required this.onSelected});
+  const _CategoryChips({
+    required this.selected,
+    required this.onSelected,
+    required this.onClearFilter,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -740,7 +746,47 @@ class _CategoryChips extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
-        children: InvitationCategory.values.map((c) {
+        children: [
+          // Tümü chip
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: onClearFilter,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: selected == null
+                      ? const LinearGradient(
+                          colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        )
+                      : null,
+                  color: selected == null ? null : AuroraTheme.glassBg,
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: selected == null ? Colors.transparent : AuroraTheme.glassBorder,
+                  ),
+                  boxShadow: selected == null
+                      ? [BoxShadow(color: AuroraTheme.auroraRed.withOpacity(0.3), blurRadius: 12)]
+                      : null,
+                ),
+                child: Text(
+                  'Tümü',
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    height: 1.2,
+                    color: selected == null ? Colors.white : AuroraTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          ...InvitationCategory.values.map((c) {
           final isSelected = selected == c;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -811,6 +857,7 @@ class _CategoryChips extends StatelessWidget {
             ),
           );
         }).toList(),
+        ],
       ),
     );
   }
@@ -1869,3 +1916,4 @@ class _PulsingDotState extends State<_PulsingDot>
         ),
       );
 }
+

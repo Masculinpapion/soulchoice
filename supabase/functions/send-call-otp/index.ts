@@ -1,0 +1,52 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',
+}
+
+const SMS_RU_API_KEY = Deno.env.get('SMS_RU_API_KEY') ?? ''
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+const TEST_PHONE = '+79295774238'
+const TEST_CODE = '1234'
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
+
+  try {
+    const { phone } = await req.json()
+    if (!phone) return new Response(JSON.stringify({ error: 'phone required' }), { status: 400, headers: CORS })
+
+    let code: string
+
+    if (phone === TEST_PHONE) {
+      code = TEST_CODE
+    } else {
+      const url = 'https://sms.ru/code/call?phone=' + encodeURIComponent(phone) + '&api_id=' + SMS_RU_API_KEY + '&json=1'
+      const res = await fetch(url)
+      const data = await res.json()
+      if (data.status !== 'OK') {
+        return new Response(JSON.stringify({ error: 'call_failed', detail: data }), { status: 500, headers: CORS })
+      }
+      code = data.code
+    }
+
+    await fetch(SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone), {
+      method: 'DELETE',
+      headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },
+    })
+
+    await fetch(SUPABASE_URL + '/rest/v1/call_otps', {
+      method: 'POST',
+      headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code, expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString() }),
+    })
+
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...CORS, 'Content-Type': 'application/json' },
+    })
+  } catch (e) {
+    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: CORS })
+  }
+})

@@ -22,6 +22,7 @@ class _NotificationsScreenState
     extends ConsumerState<NotificationsScreen> {
   RealtimeChannel? _channel;
   List<NotificationItem>? _localItems; // dismiss için lokal kopya
+  bool _isMarkingAll = false;
 
   @override
   void initState() {
@@ -70,32 +71,58 @@ class _NotificationsScreenState
   Future<void> _markAllRead() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
-    await Supabase.instance.client
-        .from('notifications')
-        .update({'read_at': DateTime.now().toIso8601String()})
-        .eq('user_id', uid)
-        .isFilter('read_at', null);
-    ref.invalidate(notificationsProvider);
+    setState(() => _isMarkingAll = true);
+    try {
+      await Supabase.instance.client
+          .from('notifications')
+          .update({'read_at': DateTime.now().toIso8601String()})
+          .eq('user_id', uid)
+          .isFilter('read_at', null);
+      ref.invalidate(notificationsProvider);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isMarkingAll = false);
+    }
   }
 
   Future<void> _markRead(String id) async {
-    await Supabase.instance.client
-        .from('notifications')
-        .update({'read_at': DateTime.now().toIso8601String()})
-        .eq('id', id)
-        .isFilter('read_at', null);
-    setState(() => _localItems = null); // provider'dan taze al
-    ref.invalidate(notificationsProvider);
+    try {
+      await Supabase.instance.client
+          .from('notifications')
+          .update({'read_at': DateTime.now().toIso8601String()})
+          .eq('id', id)
+          .isFilter('read_at', null);
+      setState(() => _localItems = null);
+      ref.invalidate(notificationsProvider);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _delete(String id) async {
-    await Supabase.instance.client
-        .from('notifications')
-        .delete()
-        .eq('id', id);
-    // lokal kopya zaten setState ile güncellendi, provider'ı da yenile
-    ref.invalidate(notificationsProvider);
-    setState(() => _localItems = null);
+    try {
+      await Supabase.instance.client
+          .from('notifications')
+          .delete()
+          .eq('id', id);
+      ref.invalidate(notificationsProvider);
+      setState(() => _localItems = null);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -138,7 +165,7 @@ class _NotificationsScreenState
                     const Spacer(),
                     // Tümünü oku
                     GestureDetector(
-                      onTap: _markAllRead,
+                      onTap: _isMarkingAll ? null : _markAllRead,
                       child: Text(
                         AppLocalizations.of(context)!.notifications_mark_all_read,
                         style: TextStyle(
@@ -460,3 +487,4 @@ class _EmptyState extends StatelessWidget {
         ),
       );
 }
+

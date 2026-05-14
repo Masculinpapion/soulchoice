@@ -98,4 +98,4 @@ jobs:
             git clone https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Masculinpapion/soulchoice.git sc_deploy
             cp -r /tmp/sc_deploy/supabase/functions/* /root/supabase/docker/volumes/functions/
             rm -rf /tmp/sc_deploy
-            docker restart supabase-edge-runtime
+            docker restart supabase-edge-functions

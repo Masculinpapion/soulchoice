@@ -80,3 +80,20 @@ jobs:
           name: "Release AAB (latest)"
           prerelease: false
           files: build/app/outputs/bundle/release/app-release.aab
+
+  deploy-functions:
+    needs: build-debug
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Edge Functions to Timeweb
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 89.169.1.127
+          username: root
+          key: ${{ secrets.TIMEWEB_SSH_KEY }}
+          script: |
+            cp -r /root/soulchoice_deploy/supabase/functions/* \
+              /root/supabase/docker/volumes/functions/
+            docker restart supabase-edge-runtime

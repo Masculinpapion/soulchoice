@@ -773,15 +773,22 @@ class _CategoryChips extends StatelessWidget {
                       ? [BoxShadow(color: AuroraTheme.auroraRed.withOpacity(0.3), blurRadius: 12)]
                       : null,
                 ),
-                child: Text(
-                  'Tümü',
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    height: 1.2,
-                    color: selected == null ? Colors.white : AuroraTheme.textSecondary,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('✦', style: const TextStyle(fontSize: 11)),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Tümü',
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        height: 1.2,
+                        color: selected == null ? Colors.white : AuroraTheme.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

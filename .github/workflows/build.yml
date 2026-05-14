@@ -94,6 +94,8 @@ jobs:
           username: root
           key: ${{ secrets.TIMEWEB_SSH_KEY }}
           script: |
-            cp -r /root/soulchoice_deploy/supabase/functions/* \
-              /root/supabase/docker/volumes/functions/
+            cd /tmp && rm -rf sc_deploy
+            git clone https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Masculinpapion/soulchoice.git sc_deploy
+            cp -r /tmp/sc_deploy/supabase/functions/* /root/supabase/docker/volumes/functions/
+            rm -rf /tmp/sc_deploy
             docker restart supabase-edge-runtime

@@ -82,7 +82,7 @@ class _NotificationsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error_with_detail(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
         );
       }
     } finally {
@@ -102,7 +102,7 @@ class _NotificationsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error_with_detail(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
         );
       }
     }
@@ -119,7 +119,7 @@ class _NotificationsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error_with_detail(e.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
         );
       }
     }

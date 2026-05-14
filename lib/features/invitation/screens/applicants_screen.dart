@@ -268,7 +268,7 @@ class _ApplicantCardState extends State<_ApplicantCard> {
                   child: bio != null && bio.isNotEmpty
                       ? Text(bio, style: AppTextStyles.bodyMedium, maxLines: 2, overflow: TextOverflow.ellipsis)
                       : isAccepted
-                          ? Text(l10n.chat_open, style: AppTextStyles.monoSmall.copyWith(color: const Color(0xFF2D7FFF)))
+                          ? Text(AppLocalizations.of(context)!.chat_open, style: AppTextStyles.monoSmall.copyWith(color: const Color(0xFF2D7FFF)))
                           : const SizedBox.shrink(),
                 ),
                 Icon(

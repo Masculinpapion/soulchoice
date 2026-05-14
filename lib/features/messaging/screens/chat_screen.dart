@@ -740,8 +740,8 @@ class _ChatAppBar extends StatelessWidget {
                         builder: (ctx) => AlertDialog(
                           backgroundColor: const Color(0xFF14121E),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          title: const Text(
-                            l10n.chat_delete_conversation,
+                          title: Text(
+                            AppLocalizations.of(context)!.chat_delete_conversation,
                             style: TextStyle(
                               fontFamily: 'Fraunces',
                               fontStyle: FontStyle.italic,
@@ -761,12 +761,12 @@ class _ChatAppBar extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: Text(l10n.btn_cancel,
+                              child: Text(AppLocalizations.of(context)!.btn_cancel,
                                   style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
                             ),
                             TextButton(
                               onPressed: () { Navigator.pop(ctx); onDelete!(); },
-                              child: Text(l10n.btn_delete,
+                              child: Text(AppLocalizations.of(context)!.btn_delete,
                                   style: TextStyle(
                                     fontFamily: 'JetBrainsMono',
                                     color: Colors.white.withOpacity(0.8),
@@ -782,8 +782,8 @@ class _ChatAppBar extends StatelessWidget {
                         builder: (ctx) => AlertDialog(
                           backgroundColor: const Color(0xFF14121E),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          title: const Text(
-                            l10n.chat_block_and_close,
+                          title: Text(
+                            AppLocalizations.of(context)!.chat_block_and_close,
                             style: TextStyle(
                               fontFamily: 'Fraunces',
                               fontStyle: FontStyle.italic,
@@ -803,12 +803,12 @@ class _ChatAppBar extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx),
-                              child: Text(l10n.btn_cancel,
+                              child: Text(AppLocalizations.of(context)!.btn_cancel,
                                   style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
                             ),
                             TextButton(
                               onPressed: () { Navigator.pop(ctx); onBlock!(); },
-                              child: Text(l10n.chat_block,
+                              child: Text(AppLocalizations.of(context)!.chat_block,
                                   style: TextStyle(
                                     fontFamily: 'JetBrainsMono',
                                     color: AuroraTheme.auroraRed,
@@ -827,7 +827,7 @@ class _ChatAppBar extends StatelessWidget {
                         child: Row(children: [
                           Icon(Icons.delete_outline, color: Colors.white.withOpacity(0.6), size: 18),
                           const SizedBox(width: 10),
-                          Text(l10n.chat_delete_conversation,
+                          Text(AppLocalizations.of(context)!.chat_delete_conversation,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,
@@ -841,7 +841,7 @@ class _ChatAppBar extends StatelessWidget {
                         child: Row(children: [
                           const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 18),
                           const SizedBox(width: 10),
-                          Text(l10n.chat_block_and_close,
+                          Text(AppLocalizations.of(context)!.chat_block_and_close,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,
@@ -1214,8 +1214,8 @@ class _BlockSheet extends StatelessWidget {
                   child: Row(children: [
                     const Icon(Icons.block, color: AuroraTheme.auroraRed, size: 20),
                     const SizedBox(width: 14),
-                    const Text(
-                      l10n.chat_block_and_close,
+                    Text(
+                      AppLocalizations.of(context)!.chat_block_and_close,
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 15,
@@ -1234,7 +1234,7 @@ class _BlockSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   alignment: Alignment.center,
                   child: Text(
-                    l10n.btn_cancel,
+                    AppLocalizations.of(context)!.btn_cancel,
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 14,
@@ -1281,8 +1281,8 @@ class _BlockConfirmSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 28),
-              const Text(
-                l10n.chat_block_and_close,
+              Text(
+                AppLocalizations.of(context)!.chat_block_and_close,
                 style: TextStyle(
                   fontFamily: 'Fraunces',
                   fontStyle: FontStyle.italic,
@@ -1331,7 +1331,7 @@ class _BlockConfirmSheet extends StatelessWidget {
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(
-                    l10n.btn_cancel,
+                    AppLocalizations.of(context)!.btn_cancel,
                     style: TextStyle(
                       fontFamily: 'JetBrainsMono',
                       fontSize: 14,

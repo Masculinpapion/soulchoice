@@ -565,11 +565,31 @@ class _HeroSectionState extends State<_HeroSection> {
                 setState(() => _current = i);
                 widget.onPageChanged(i);
               },
-              itemBuilder: (context, i) => CachedNetworkImage(
-                imageUrl: widget.photos[i]['url'] as String,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
+              itemBuilder: (context, i) => GestureDetector(
+                onTapUp: (details) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  if (details.globalPosition.dx < screenWidth / 2) {
+                    if (_current > 0) {
+                      _ctrl.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  } else {
+                    if (_current < widget.photos.length - 1) {
+                      _ctrl.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  }
+                },
+                child: CachedNetworkImage(
+                  imageUrl: widget.photos[i]['url'] as String,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
+                ),
               ),
             )
           else
@@ -1579,5 +1599,6 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
     );
   }
 }
+
 
 

@@ -142,16 +142,36 @@ class _InvitationDetailScreenState
                               scrollDirection: Axis.horizontal,
                               itemCount: sortedOwnerPhotos.length,
                               onPageChanged: (i) => setState(() => _photoIndex = i),
-                              itemBuilder: (_, i) {
+                              itemBuilder: (context, i) {
                                 final url = sortedOwnerPhotos[i]['url'] as String?;
-                                return url != null
-                                    ? CachedNetworkImage(
-                                        imageUrl: url,
-                                        fit: BoxFit.cover,
-                                        alignment: Alignment.topCenter,
-                                        errorWidget: (_, __, ___) => _FallbackBg(),
-                                      )
-                                    : _FallbackBg();
+                                return GestureDetector(
+                                  onTapUp: (details) {
+                                    final screenWidth = MediaQuery.of(context).size.width;
+                                    if (details.globalPosition.dx < screenWidth / 2) {
+                                      if (_photoIndex > 0) {
+                                        _photoCtrl.previousPage(
+                                          duration: const Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    } else {
+                                      if (_photoIndex < sortedOwnerPhotos.length - 1) {
+                                        _photoCtrl.nextPage(
+                                          duration: const Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: url != null
+                                      ? CachedNetworkImage(
+                                          imageUrl: url,
+                                          fit: BoxFit.cover,
+                                          alignment: Alignment.topCenter,
+                                          errorWidget: (_, __, ___) => _FallbackBg(),
+                                        )
+                                      : _FallbackBg(),
+                                );
                               },
                             )
                           else
@@ -1521,6 +1541,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     );
   }
 }
+
 
 
 

@@ -749,5 +749,11 @@
   "notif_type_meeting_reminder_title": "Meeting reminder",
   "notif_type_meeting_reminder_body": "Your meetup is starting soon",
   "notif_type_feedback_request_title": "How was the meetup?",
-  "notif_type_feedback_request_body": "Share your experience"
+  "notif_type_feedback_request_body": "Share your experience",
+  "chat_delete_conversation": "Delete Chat",
+  "chat_block_and_close": "Block and Close",
+  "chat_block": "Block",
+  "chat_open": "Chat open",
+  "error_with_detail": "Error: {error}",
+  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
 }

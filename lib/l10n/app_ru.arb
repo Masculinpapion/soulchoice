@@ -749,5 +749,11 @@
   "notif_type_meeting_reminder_title": "Напоминание о встрече",
   "notif_type_meeting_reminder_body": "Скоро начнётся твоя встреча",
   "notif_type_feedback_request_title": "Как прошла встреча?",
-  "notif_type_feedback_request_body": "Расскажи о своём опыте"
+  "notif_type_feedback_request_body": "Расскажи о своём опыте",
+  "chat_delete_conversation": "Удалить чат",
+  "chat_block_and_close": "Заблокировать и закрыть",
+  "chat_block": "Заблокировать",
+  "chat_open": "Чат открыт",
+  "error_with_detail": "Ошибка: {error}",
+  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
 }

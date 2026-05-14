@@ -749,5 +749,11 @@
   "notif_type_meeting_reminder_title": "Buluşma hatırlatması",
   "notif_type_meeting_reminder_body": "Buluşman yakında başlıyor",
   "notif_type_feedback_request_title": "Buluşma nasıldı?",
-  "notif_type_feedback_request_body": "Deneyimini paylaş"
+  "notif_type_feedback_request_body": "Deneyimini paylaş",
+  "chat_delete_conversation": "Sohbeti Sil",
+  "chat_block_and_close": "Engelle ve Kapat",
+  "chat_block": "Engelle",
+  "chat_open": "Chat açık",
+  "error_with_detail": "Hata: {error}",
+  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
 }

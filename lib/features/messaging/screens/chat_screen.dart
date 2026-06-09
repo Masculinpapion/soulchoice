@@ -1177,7 +1177,8 @@ class _InputBar extends StatelessWidget {
 
 class _BlockSheet extends StatelessWidget {
   final VoidCallback onBlock;
-  const _BlockSheet({required this.onBlock});
+  final String currentUserGender;
+  const _BlockSheet({required this.onBlock, this.currentUserGender = 'other'});
 
   @override
   Widget build(BuildContext context) {

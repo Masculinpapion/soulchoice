@@ -415,6 +415,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               onBack: () => context.pop(),
               onBlock: _block,
               onDelete: _deleteChat,
+              currentUserGender: _currentUserGender(),
             ),
             // Event badge — davet bilgisi özeti
             if (invTitle.isNotEmpty)
@@ -625,6 +626,7 @@ class _ChatAppBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback? onBlock;
   final VoidCallback? onDelete;
+  final String currentUserGender;
   const _ChatAppBar({
     required this.otherName,
     required this.otherAge,
@@ -634,6 +636,7 @@ class _ChatAppBar extends StatelessWidget {
     required this.onBack,
     this.onBlock,
     this.onDelete,
+    this.currentUserGender = 'other',
   });
 
   @override
@@ -800,7 +803,7 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            AppLocalizations.of(context)!.chat_block_confirm_body(_currentUserGender()),
+                            AppLocalizations.of(context)!.chat_block_confirm_body(currentUserGender),
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),
@@ -1209,7 +1212,7 @@ class _BlockSheet extends StatelessWidget {
                   showModalBottomSheet(
                     context: context,
                     backgroundColor: Colors.transparent,
-                    builder: (_) => _BlockConfirmSheet(onBlock: onBlock),
+                    builder: (_) => _BlockConfirmSheet(onBlock: onBlock, currentUserGender: currentUserGender),
                   );
                 },
                 child: Container(
@@ -1261,7 +1264,8 @@ class _BlockSheet extends StatelessWidget {
 
 class _BlockConfirmSheet extends StatelessWidget {
   final VoidCallback onBlock;
-  const _BlockConfirmSheet({required this.onBlock});
+  final String currentUserGender;
+  const _BlockConfirmSheet({required this.onBlock, this.currentUserGender = 'other'});
 
   @override
   Widget build(BuildContext context) {
@@ -1301,7 +1305,7 @@ class _BlockConfirmSheet extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                AppLocalizations.of(context)!.chat_block_confirm_body,
+                AppLocalizations.of(context)!.chat_block_confirm_body(currentUserGender),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Manrope',

@@ -756,6 +756,7 @@
   "chat_open": "Chat open",
   "chat_delete_confirm_body": "Do you want to delete this chat? It will be moved to history.",
   "chat_block_confirm_body": "Are you sure you want to block this person? The chat will close.",
+  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
   "error_page_not_found": "Page not found",
   "error_with_detail": "Error: {error}",
   "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }

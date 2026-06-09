@@ -756,6 +756,7 @@
   "chat_open": "Chat açık",
   "chat_delete_confirm_body": "Bu sohbeti silmek istiyor musun? Geçmiş'e taşınacak.",
   "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.",
+  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
   "error_page_not_found": "Sayfa bulunamadı",
   "error_with_detail": "Hata: {error}",
   "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }

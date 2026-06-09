@@ -10,6 +10,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../features/profile/providers/profile_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -210,6 +211,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           },
         )
         .subscribe();
+  }
+
+  String _currentUserGender() {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return 'other';
+    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
+    return profile?['gender'] as String? ?? 'other';
   }
 
   @override
@@ -792,7 +800,7 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            AppLocalizations.of(context)!.chat_block_confirm_body,
+                            AppLocalizations.of(context)!.chat_block_confirm_body(_currentUserGender()),
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),

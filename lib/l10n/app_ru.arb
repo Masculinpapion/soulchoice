@@ -755,7 +755,8 @@
   "chat_block": "Заблокировать",
   "chat_open": "Чат открыт",
   "chat_delete_confirm_body": "Хочешь удалить этот чат? Он переместится в архив.",
-  "chat_block_confirm_body": "Ты уверен(а), что хочешь заблокировать этого человека? Чат закроется.",
+  "chat_block_confirm_body": "{gender, select, female{Ты уверена, что хочешь заблокировать этого человека? Чат закроется.} other{Ты уверен, что хочешь заблокировать этого человека? Чат закроется.}}",
+  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
   "error_page_not_found": "Страница не найдена",
   "error_with_detail": "Ошибка: {error}",
   "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }

@@ -754,6 +754,9 @@
   "chat_block_and_close": "Заблокировать и закрыть",
   "chat_block": "Заблокировать",
   "chat_open": "Чат открыт",
+  "chat_delete_confirm_body": "Хочешь удалить этот чат? Он переместится в архив.",
+  "chat_block_confirm_body": "Ты уверен(а), что хочешь заблокировать этого человека? Чат закроется.",
+  "error_page_not_found": "Страница не найдена",
   "error_with_detail": "Ошибка: {error}",
   "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
 }

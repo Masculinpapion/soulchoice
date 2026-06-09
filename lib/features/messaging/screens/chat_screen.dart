@@ -750,7 +750,7 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            'Bu sohbeti silmek istiyor musun? Geçmiş\'e taşınacak.',
+                            AppLocalizations.of(context)!.chat_delete_confirm_body,
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),
@@ -792,7 +792,7 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.',
+                            AppLocalizations.of(context)!.chat_block_confirm_body,
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),
@@ -1293,7 +1293,7 @@ class _BlockConfirmSheet extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Bu kişiyi engellemek istediğine emin misin?\nChat kapanacak.',
+                AppLocalizations.of(context)!.chat_block_confirm_body,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Manrope',

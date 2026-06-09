@@ -779,7 +779,7 @@ class _CategoryChips extends StatelessWidget {
                     Text('✦', style: const TextStyle(fontSize: 11)),
                     const SizedBox(width: 5),
                     Text(
-                      'Tümü',
+                      AppLocalizations.of(context)!.discover_filter_all,
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontWeight: FontWeight.w600,

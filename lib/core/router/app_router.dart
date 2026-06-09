@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -251,7 +252,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       backgroundColor: AppColors.bgBlack,
       body: Center(
         child: Text(
-          'Sayfa bulunamadı',
+          AppLocalizations.of(context)?.error_page_not_found ?? 'Page not found',
           style: const TextStyle(color: Colors.white),
         ),
       ),

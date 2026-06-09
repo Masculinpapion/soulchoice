@@ -754,7 +754,7 @@ class _CategoryChips extends StatelessWidget {
               onTap: onClearFilter,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: selected == null
@@ -802,7 +802,7 @@ class _CategoryChips extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 8),
+                    horizontal: 14, vertical: 6),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: isSelected
@@ -1040,7 +1040,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 children: [
                   Text(

@@ -837,11 +837,14 @@ class _CategoryChips extends StatelessWidget {
                     if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else if (c == InvitationCategory.concert)
-                      Text('♫', style: TextStyle(
-                        fontSize: Platform.isIOS ? 20 : 24,
-                        height: 1.2,
-                        color: isSelected ? Colors.white : AuroraTheme.auroraRed,
-                      ))
+                      Transform.scale(
+                        scale: 1.5,
+                        child: Text('♫', style: TextStyle(
+                          fontSize: 11,
+                          height: 1.0,
+                          color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                        )),
+                      )
                     else
                       Text(c.emoji,
                           style: const TextStyle(fontSize: 13, height: 1.2)),
@@ -1354,10 +1357,19 @@ class InvitationCard extends StatelessWidget {
                         child: category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : category == InvitationCategory.concert
-                            ? Text('♫', style: TextStyle(
-                                fontSize: Platform.isIOS ? 21 : 25,
-                                color: AuroraTheme.auroraRed,
-                              ))
+                            ? SizedBox(
+                                width: 16, height: 16,
+                                child: OverflowBox(
+                                  alignment: Alignment.center,
+                                  maxWidth: 24,
+                                  maxHeight: 24,
+                                  child: Text('♫', style: TextStyle(
+                                    fontSize: 22,
+                                    height: 1.0,
+                                    color: AuroraTheme.auroraRed,
+                                  )),
+                                ),
+                              )
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),

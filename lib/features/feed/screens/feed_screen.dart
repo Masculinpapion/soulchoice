@@ -837,13 +837,18 @@ class _CategoryChips extends StatelessWidget {
                     if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else if (c == InvitationCategory.concert)
-                      Transform.scale(
-                        scale: 1.5,
-                        child: Text('♫', style: TextStyle(
-                          fontSize: 11,
-                          height: 1.0,
-                          color: isSelected ? Colors.white : AuroraTheme.auroraRed,
-                        )),
+                      SizedBox(
+                        width: 16, height: 16,
+                        child: OverflowBox(
+                          alignment: Alignment.center,
+                          maxWidth: 26,
+                          maxHeight: 26,
+                          child: Text('♫', style: TextStyle(
+                            fontSize: 24,
+                            height: 1.0,
+                            color: isSelected ? Colors.white : AuroraTheme.auroraRed,
+                          )),
+                        ),
                       )
                     else
                       Text(c.emoji,

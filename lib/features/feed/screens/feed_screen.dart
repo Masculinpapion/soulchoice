@@ -742,10 +742,11 @@ class _CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: 56,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
+        clipBehavior: Clip.none,
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
         children: [
           // Tümü chip
           Padding(

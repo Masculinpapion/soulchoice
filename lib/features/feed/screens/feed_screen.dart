@@ -1369,11 +1369,14 @@ class InvitationCard extends StatelessWidget {
                                   alignment: Alignment.center,
                                   maxWidth: 24,
                                   maxHeight: 24,
-                                  child: Text('♫', style: TextStyle(
-                                    fontSize: 22,
-                                    height: 1.0,
-                                    color: AuroraTheme.auroraRed,
-                                  )),
+                                  child: Transform.translate(
+                                    offset: const Offset(0, 3),
+                                    child: Text('♫', style: TextStyle(
+                                      fontSize: 22,
+                                      height: 1.0,
+                                      color: AuroraTheme.auroraRed,
+                                    )),
+                                  ),
                                 ),
                               )
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),

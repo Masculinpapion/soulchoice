@@ -364,21 +364,11 @@ class _DiscoverCard extends StatelessWidget {
                         child: inv.category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : inv.category == InvitationCategory.concert
-                            ? SizedBox(
-                                width: 16, height: 16,
-                                child: OverflowBox(
-                                  alignment: Alignment.center,
-                                  maxWidth: 24,
-                                  maxHeight: 24,
-                                  child: Text('♫',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      height: 1.0,
-                                      color: AuroraTheme.auroraRed,
-                                    ),
-                                  ),
-                                ),
-                              )
+                            ? const Text('♫', style: TextStyle(
+                                fontSize: 20,
+                                height: 1.0,
+                                color: AuroraTheme.auroraRed,
+                              ))
                             : Text(inv.category.emoji, style: const TextStyle(fontSize: 13)),
                       ),
                     ),

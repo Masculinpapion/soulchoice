@@ -34,7 +34,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _educationController = TextEditingController();
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
-  String _showGender = 'opposite';
+  String? _showGender;
   int _minAge = 21;
   int _maxAge = 60;
   bool _isSaving = false;
@@ -111,7 +111,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         for (final p in prompts) {
           _prompts[p['question_key'] as String] = p['answer'] as String;
         }
-        _showGender = row['show_gender'] as String? ?? 'opposite';
+        _showGender = row['show_gender'] as String?;
         _minAge = row['min_age'] as int? ?? 21;
         _maxAge = row['max_age'] as int? ?? 60;
         _isLoadingProfile = false;
@@ -161,6 +161,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(l10n.profile_setup_validation_city),
+        backgroundColor: AppColors.error,
+      ));
+      return;
+    }
+    if (_step == 7 && (_showGender == null || _showGender!.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.profile_setup_validation_gender),
         backgroundColor: AppColors.error,
       ));
       return;
@@ -723,7 +730,7 @@ class _StepInterests extends StatelessWidget {
 }
 
 class _StepShowGender extends StatelessWidget {
-  final String selected;
+  final String? selected;
   final ValueChanged<String> onSelected;
 
   const _StepShowGender({required this.selected, required this.onSelected});

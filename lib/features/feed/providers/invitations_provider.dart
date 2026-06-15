@@ -82,10 +82,20 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
 
-      // Owner filter: YOK (Yol A)
-      // SoulChoice davet-bazlı: owner kart açtıysa zaten görünmek istiyor.
-      // Viewer'ın show_gender tercihi uygulanır (aşağıda), owner'ın tercihi
-      // sadece kendi feed'inde uygulanır — cross-filter yok.
+      // Owner filter: bidirectional — her iki tarafın tercihi de uygulanır
+      // Onboarding'de zorunlu seçim olduğu için her kullanıcı bilinçli ifade etti.
+      if (myGender != null) {
+        final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
+        final ownerGender = ownerRow?['gender'] as String? ?? '';
+        if (ownerShowGender == 'opposite') {
+          final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
+          if (myGender != wantsToBeSeenBy) return null;
+        } else if (ownerShowGender == 'male' && myGender != 'male') {
+          return null;
+        } else if (ownerShowGender == 'female' && myGender != 'female') {
+          return null;
+        }
+      }
       final owner = ownerRow != null
           ? UserModel(
               id: ownerRow['id'] as String,

@@ -117,7 +117,7 @@ class _ApplicantCardState extends State<_ApplicantCard> {
     final applicant = app['applicant'] as Map<String, dynamic>?;
     final name = applicant?['name'] as String? ?? '—';
     final age = applicant?['age'] as int? ?? 0;
-    final verified = applicant?['verified'] as bool? ?? false;
+    final verified = (applicant?['subscription_status'] as String? ?? '') == 'active';
     final bio = applicant?['bio'] as String?;
     final applicationId = app['id'] as String;
     final applicantId = applicant?['id'] as String? ?? '';

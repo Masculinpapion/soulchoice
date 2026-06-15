@@ -311,7 +311,7 @@ class _DiscoverCard extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    if (inv.owner?.verified == true) ...[
+                                    if (inv.owner?.isPremium == true) ...[
                                       const SizedBox(width: 4),
                                       Container(
                                         width: 14,

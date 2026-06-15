@@ -41,7 +41,7 @@ class UserModel {
     this.lastActiveAt,
   });
 
-  bool get isPremium => subscriptionStatus == 'premium';
+  bool get isPremium => subscriptionStatus == 'active';
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         id: json['id'] as String,

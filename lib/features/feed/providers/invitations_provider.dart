@@ -44,7 +44,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .select(
           '*, '
           'city:cities(name, name_ru, name_tr, name_en), '
-          'owner:users(id, name, age, gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          'owner:users(id, name, age, gender, city_id, verified, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
         .eq('status', 'active')
@@ -77,6 +77,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
               age: ownerRow['age'] as int? ?? 0,
               gender: ownerRow['gender'] as String? ?? '',
               verified: ownerRow['verified'] as bool? ?? false,
+              subscriptionStatus: ownerRow['subscription_status'] as String? ?? 'free',
               createdAt: DateTime.now(),
             )
           : null;

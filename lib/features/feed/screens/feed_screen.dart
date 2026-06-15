@@ -1100,7 +1100,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                             ownerAge: inv.owner?.age ?? 0,
                             ownerPhotoUrl: inv.ownerPhotoUrl,
                             ownerCity: inv.cityName,
-                            ownerVerified: inv.owner?.verified ?? false,
+                            ownerVerified: inv.owner?.isPremium ?? false,
                             timeRemaining: inv.timeRemaining,
                             applicationCount: inv.applicationCount ?? 0,
                             applicantPhotoUrls: inv.applicantPhotoUrls,

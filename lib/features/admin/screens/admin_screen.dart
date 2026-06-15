@@ -124,8 +124,6 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
   Future<void> _approve(String userId) async {
     await Supabase.instance.client.from('users').update({
       'selfie_status': 'approved',
-      'verified': true,
-      'verified_at': DateTime.now().toIso8601String(),
     }).eq('id', userId);
     _load();
   }

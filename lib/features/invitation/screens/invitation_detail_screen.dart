@@ -910,8 +910,7 @@ class _HostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final verified = owner['verified'] == true ||
-        (owner['selfie_status'] as String? ?? '') == 'approved';
+    final verified = (owner['subscription_status'] as String? ?? '') == 'active';
     final job = owner['job'] as String?;
     final city = owner['city'] as Map<String, dynamic>?;
     final lang = ref.watch(localeProvider)?.languageCode;
@@ -1187,17 +1186,21 @@ class _HostRow extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (owner['verified'] == true) ...[
+                  if ((owner['subscription_status'] as String? ?? '') == 'active') ...[
                     Container(
                       width: 18,
                       height: 18,
                       margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: AuroraTheme.auroraBlue,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: AuroraTheme.auroraBlue.withOpacity(0.5),
+                            color: Color(0xFFFF2D55),
                             blurRadius: 8,
                           ),
                         ],

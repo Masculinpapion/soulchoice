@@ -82,19 +82,6 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
 
-      // Owner filter: davet sahibi kime görünmek istiyor
-      if (myGender != null) {
-        final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
-        final ownerGender = ownerRow?['gender'] as String? ?? '';
-        if (ownerShowGender == 'opposite') {
-          final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
-          if (myGender != wantsToBeSeenBy) return null;
-        } else if (ownerShowGender == 'male' && myGender != 'male') {
-          return null;
-        } else if (ownerShowGender == 'female' && myGender != 'female') {
-          return null;
-        }
-      }
       final owner = ownerRow != null
           ? UserModel(
               id: ownerRow['id'] as String,
@@ -148,8 +135,6 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .where((inv) => inv.ownerPhotoUrl != null)
         // Viewer filter: sen kimi görmek istiyorsun (kendi kartların her zaman görünür)
         .where((inv) => inv.owner?.id == currentUserId || targetGender == null || inv.owner?.gender == targetGender)
-        // Owner filter: davet sahibi kime görünmek istiyor (ownerShowGender InvitationModel'e eklenmeden inline)
-
         .where((inv) {
           final age = inv.owner?.age ?? 0;
           return age >= minAge && age <= maxAge;

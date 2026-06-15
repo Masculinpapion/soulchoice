@@ -48,7 +48,7 @@ final discoverProvider =
   var query = client.from('invitations').select(
         '*, '
         'city:cities(name, name_ru, name_tr, name_en), '
-        'owner:users(id, name, age, gender, verified, is_deleted, '
+        'owner:users(id, name, age, gender, show_gender, verified, is_deleted, '
         'photos:user_photos(url, is_primary, is_selfie, order_index))',
       );
 
@@ -71,6 +71,21 @@ final discoverProvider =
   final list = (data as List).map((row) {
     final ownerRow = row['owner'] as Map<String, dynamic>?;
     if (ownerRow?['is_deleted'] == true) return null;
+
+    // Owner filter: davet sahibi kime görünmek istiyor (bidirectional)
+    if (myGender != null) {
+      final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
+      final ownerGender = ownerRow?['gender'] as String? ?? '';
+      if (ownerShowGender == 'opposite') {
+        final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
+        if (myGender != wantsToBeSeenBy) return null;
+      } else if (ownerShowGender == 'male' && myGender != 'male') {
+        return null;
+      } else if (ownerShowGender == 'female' && myGender != 'female') {
+        return null;
+      }
+    }
+
     final owner = ownerRow != null
         ? UserModel(
             id: ownerRow['id'] as String,

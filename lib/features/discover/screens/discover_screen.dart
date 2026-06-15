@@ -352,7 +352,8 @@ class _DiscoverCard extends StatelessWidget {
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
                       child: Container(
-                        padding: const EdgeInsets.all(7),
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.40),
                           borderRadius: BorderRadius.circular(16),
@@ -361,20 +362,16 @@ class _DiscoverCard extends StatelessWidget {
                             width: 0.8,
                           ),
                         ),
-                        child: SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: Center(
-                            child: inv.category == InvitationCategory.bar
-                                ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
-                                : inv.category == InvitationCategory.concert
-                                ? const Text('♫', style: TextStyle(
-                                    fontSize: 20,
-                                    height: 1.0,
-                                    color: AuroraTheme.auroraRed,
-                                  ))
-                                : Text(inv.category.emoji, style: const TextStyle(fontSize: 13)),
-                          ),
+                        child: Center(
+                          child: inv.category == InvitationCategory.bar
+                              ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
+                              : inv.category == InvitationCategory.concert
+                              ? const Text('♫', style: TextStyle(
+                                  fontSize: 24,
+                                  height: 1.0,
+                                  color: AuroraTheme.auroraRed,
+                                ))
+                              : Text(inv.category.emoji, style: const TextStyle(fontSize: 14)),
                         ),
                       ),
                     ),

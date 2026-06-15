@@ -54,46 +54,73 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _loadMatchInfo() async {
     final client = Supabase.instance.client;
-    final matchRow = await client.from('matches').select(
-          'user1_id, user2_id, meeting_date, archived_at, '
-          'meeting_confirmed_user1, meeting_confirmed_user2, '
-          'invitation:invitations(id, title, venue_name, event_date)',
-        ).eq('id', widget.matchId).maybeSingle();
-    if (matchRow == null || !mounted) return;
+    try {
+      final matchRow = await client.from('matches').select(
+            'user1_id, user2_id, meeting_date, archived_at, '
+            'meeting_confirmed_user1, meeting_confirmed_user2, '
+            'invitation:invitations(id, title, venue_name, event_date)',
+          ).eq('id', widget.matchId).maybeSingle();
+      if (matchRow == null || !mounted) {
+        if (mounted) setState(() => _matchInfo = {});
+        return;
+      }
 
-    final user1Id = matchRow['user1_id'] as String;
-    _isUser1 = user1Id == _currentUid;
-    final otherUserId =
-        _isUser1 ? matchRow['user2_id'] as String : user1Id;
+      final user1Id = matchRow['user1_id'] as String;
+      _isUser1 = user1Id == _currentUid;
+      final otherUserId =
+          _isUser1 ? matchRow['user2_id'] as String : user1Id;
 
-    final results = await Future.wait([
-      client.from('users').select('name, age').eq('id', otherUserId).maybeSingle(),
-      client.from('user_photos').select('url').eq('user_id', otherUserId).eq('is_primary', true).maybeSingle(),
-    ]);
-    final otherUser = results[0] as Map<String, dynamic>?;
-    final photoRow  = results[1] as Map<String, dynamic>?;
+      Map<String, dynamic>? otherUser;
+      String? photoUrl;
+      try {
+        otherUser = await client
+            .from('users')
+            .select('name, age')
+            .eq('id', otherUserId)
+            .maybeSingle();
+      } catch (e) {
+        debugPrint('chat _loadMatchInfo users error: $e');
+      }
+      try {
+        final photoRows = await client
+            .from('user_photos')
+            .select('url')
+            .eq('user_id', otherUserId)
+            .eq('is_primary', true)
+            .eq('is_selfie', false)
+            .limit(1);
+        if (photoRows is List && photoRows.isNotEmpty) {
+          photoUrl = (photoRows.first as Map<String, dynamic>)['url'] as String?;
+        }
+      } catch (e) {
+        debugPrint('chat _loadMatchInfo photos error: $e');
+      }
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    final meetDate = matchRow['meeting_date'];
-    final archDate = matchRow['archived_at'];
+      final meetDate = matchRow['meeting_date'];
+      final archDate = matchRow['archived_at'];
 
-    setState(() {
-      _matchInfo = {
-        'invitation': matchRow['invitation'],
-        'other': otherUser,
-        'otherUserId': otherUserId,
-        'photoUrl': photoRow?['url'],
-      };
-      _meetingDate = meetDate != null ? DateTime.parse(meetDate) : null;
-      _archivedAt = archDate != null ? DateTime.parse(archDate) : null;
-      _myConfirmation = _isUser1
-          ? matchRow['meeting_confirmed_user1'] as bool?
-          : matchRow['meeting_confirmed_user2'] as bool?;
-      _theirConfirmation = _isUser1
-          ? matchRow['meeting_confirmed_user2'] as bool?
-          : matchRow['meeting_confirmed_user1'] as bool?;
-    });
+      setState(() {
+        _matchInfo = {
+          'invitation': matchRow['invitation'],
+          'other': otherUser,
+          'otherUserId': otherUserId,
+          'photoUrl': photoUrl,
+        };
+        _meetingDate = meetDate != null ? DateTime.parse(meetDate) : null;
+        _archivedAt = archDate != null ? DateTime.parse(archDate) : null;
+        _myConfirmation = _isUser1
+            ? matchRow['meeting_confirmed_user1'] as bool?
+            : matchRow['meeting_confirmed_user2'] as bool?;
+        _theirConfirmation = _isUser1
+            ? matchRow['meeting_confirmed_user2'] as bool?
+            : matchRow['meeting_confirmed_user1'] as bool?;
+      });
+    } catch (e, st) {
+      debugPrint('chat _loadMatchInfo fatal: $e\n$st');
+      if (mounted) setState(() => _matchInfo = {});
+    }
 
     // Auto-archive if meeting was >24h ago and not yet archived
     if (_archivedAt == null &&

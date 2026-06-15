@@ -639,15 +639,24 @@ class _StepCategory extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      c == InvitationCategory.bar
-                          ? Image.asset('assets/icons/bar.png', width: 28, height: 28)
-                          : Text(
-                              c.emoji,
-                              style: TextStyle(
-                                fontSize: c == InvitationCategory.concert ? (Platform.isIOS ? 34 : 44) : 28,
-                                color: c == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                              ),
-                            ),
+                      SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: Center(
+                          child: c == InvitationCategory.bar
+                              ? Image.asset('assets/icons/bar.png', width: 28, height: 28)
+                              : c == InvitationCategory.concert
+                                  ? const Text(
+                                      '♫',
+                                      style: TextStyle(
+                                        fontSize: 32,
+                                        height: 1.0,
+                                        color: AuroraTheme.auroraRed,
+                                      ),
+                                    )
+                                  : Text(c.emoji, style: const TextStyle(fontSize: 22)),
+                        ),
+                      ),
                       const SizedBox(height: 6),
                       Text(
                         c.labelFor(AppLocalizations.of(context)!),

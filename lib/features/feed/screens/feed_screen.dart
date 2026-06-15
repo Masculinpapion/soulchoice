@@ -1364,7 +1364,7 @@ class InvitationCard extends StatelessWidget {
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : category == InvitationCategory.concert
                             ? const Text('♫', style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 24,
                                 height: 1.0,
                                 color: AppColors.primaryRed,
                               ))

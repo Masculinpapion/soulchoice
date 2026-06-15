@@ -1347,9 +1347,9 @@ class InvitationCard extends StatelessWidget {
                 ),
               ),
 
-              // 3b. Kategori badge — sağ üst, yuvarlak glass pill
+              // 3b. Kategori badge — sağ üst, sol pill (avatar 32px) ile vertical center'da hizalı
               Positioned(
-                top: 14,
+                top: 19,
                 right: 14,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),

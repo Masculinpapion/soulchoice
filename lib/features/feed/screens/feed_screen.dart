@@ -1313,13 +1313,17 @@ class InvitationCard extends StatelessWidget {
                                       Container(
                                         width: 14,
                                         height: 14,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: AuroraTheme.auroraBlue,
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: AuroraTheme.auroraBlue.withOpacity(0.5),
-                                              blurRadius: 8,
+                                              color: Color(0xFFFF2D55),
+                                              blurRadius: 6,
                                             ),
                                           ],
                                         ),

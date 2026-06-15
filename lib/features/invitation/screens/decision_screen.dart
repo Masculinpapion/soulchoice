@@ -93,11 +93,23 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
       }
       final uid = user.id;
 
-      final matchRes = await client.from('matches').insert({
-        'invitation_id': widget.invitationId,
-        'user1_id': uid,
-        'user2_id': _applicantId!,
-      }).select('id').single();
+      // Mevcut match var mı kontrol et (idempotent)
+      Map<String, dynamic>? matchRes;
+      final existing = await client
+          .from('matches')
+          .select('id')
+          .eq('invitation_id', widget.invitationId)
+          .eq('user2_id', _applicantId!)
+          .maybeSingle();
+      if (existing != null) {
+        matchRes = existing;
+      } else {
+        matchRes = await client.from('matches').insert({
+          'invitation_id': widget.invitationId,
+          'user1_id': uid,
+          'user2_id': _applicantId!,
+        }).select('id').single();
+      }
 
       await client.from('applications').update({
         'status': 'accepted',

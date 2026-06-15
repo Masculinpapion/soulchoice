@@ -45,7 +45,7 @@ final discoverProvider =
 
   query = query
       .eq('status', 'active')
-      .gt('expires_at', DateTime.now().toIso8601String());
+      .gt('expires_at', DateTime.now().toUtc().toIso8601String());
 
   if (currentUserId != null) {
     query = query.neq('owner_id', currentUserId);

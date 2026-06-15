@@ -637,6 +637,8 @@ class _InvitationDetailScreenState
                                 existingApp: myApp,
                                 isRequestFlow:
                                     inv['flow_type'] == 'request',
+                                invStatus: invStatus,
+                                expiresAt: expiresAt,
                                 onApplied: () => ref.invalidate(
                                     myApplicationProvider(invitationId)),
                               ),
@@ -1313,12 +1315,16 @@ class _ApplyButton extends ConsumerStatefulWidget {
   final Map<String, dynamic>? existingApp;
   final bool isRequestFlow;
   final VoidCallback onApplied;
+  final String invStatus;
+  final DateTime? expiresAt;
 
   const _ApplyButton(
       {required this.invitationId,
       this.existingApp,
       this.isRequestFlow = false,
-      required this.onApplied});
+      required this.onApplied,
+      this.invStatus = 'active',
+      this.expiresAt});
 
   @override
   ConsumerState<_ApplyButton> createState() => _ApplyButtonState();
@@ -1353,10 +1359,27 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   }
 
   Future<void> _apply() async {
+    if (widget.invStatus != 'active') return;
+    if (widget.expiresAt != null && DateTime.now().isAfter(widget.expiresAt!)) return;
     setState(() => _loading = true);
     try {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser!.id;
+      // Owner self-apply guard
+      final ownerRow = await client
+          .from('invitations')
+          .select('owner_id, status, expires_at')
+          .eq('id', widget.invitationId)
+          .maybeSingle();
+      if (ownerRow == null ||
+          ownerRow['owner_id'] == uid ||
+          ownerRow['status'] != 'active' ||
+          (ownerRow['expires_at'] != null &&
+              DateTime.now()
+                  .isAfter(DateTime.parse(ownerRow['expires_at'] as String)))) {
+        if (mounted) setState(() => _loading = false);
+        return;
+      }
       await client.from('applications').upsert({
         'invitation_id': widget.invitationId,
         'applicant_id': uid,

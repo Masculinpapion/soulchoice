@@ -191,6 +191,7 @@ class _DiscoverCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: photoUrl,
                         fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
                         placeholder: (_, __) => Container(
                             color: Colors.white.withOpacity(0.05)),
                         errorWidget: (_, __, ___) => Container(

@@ -130,6 +130,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
               ),
+              const SizedBox(height: 4),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -742,7 +743,7 @@ class _CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
+      height: 40,
       child: ListView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
@@ -755,7 +756,7 @@ class _CategoryChips extends StatelessWidget {
               onTap: onClearFilter,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: selected == null
@@ -803,7 +804,7 @@ class _CategoryChips extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 6),
+                    horizontal: 10, vertical: 4),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: isSelected
@@ -853,7 +854,7 @@ class _CategoryChips extends StatelessWidget {
                       )
                     else
                       Text(c.emoji,
-                          style: const TextStyle(fontSize: 13, height: 1.2)),
+                          style: const TextStyle(fontSize: 12, height: 1.2)),
                     const SizedBox(width: 5),
                     Text(
                       c.labelFor(AppLocalizations.of(context)!),

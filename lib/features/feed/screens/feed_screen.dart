@@ -1304,7 +1304,7 @@ class InvitationCard extends StatelessWidget {
                                     Flexible(
                                       child: Text(
                                         '$ownerName, $ownerAge',
-                                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                        style: const TextStyle(fontFamily: 'Manrope', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),

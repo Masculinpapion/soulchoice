@@ -742,7 +742,7 @@ class _CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 46,
+      height: 50,
       child: ListView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,

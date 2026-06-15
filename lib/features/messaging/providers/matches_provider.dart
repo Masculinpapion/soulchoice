@@ -104,15 +104,14 @@ final matchesProvider =
     final matchId = m['id'] as String;
     final otherUserId = otherUserIds[i];
     final userRow = userMap[otherUserId];
-    if (userRow == null) continue;
     if (seen.containsKey(otherUserId)) continue;
 
     final lastMsg = lastMsgMap[matchId];
     seen[otherUserId] = MatchPreview(
       matchId: matchId,
       otherUserId: otherUserId,
-      otherName: userRow['name'] as String,
-      otherAge: userRow['age'] as int,
+      otherName: userRow?['name'] as String? ?? '—',
+      otherAge: userRow?['age'] as int? ?? 0,
       otherPhotoUrl: photoMap[otherUserId],
       lastMessage: lastMsg?['content'] as String?,
       lastMessageTime: lastMsg != null

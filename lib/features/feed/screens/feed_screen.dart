@@ -1363,22 +1363,11 @@ class InvitationCard extends StatelessWidget {
                         child: category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : category == InvitationCategory.concert
-                            ? SizedBox(
-                                width: 16, height: 16,
-                                child: OverflowBox(
-                                  alignment: Alignment.center,
-                                  maxWidth: 24,
-                                  maxHeight: 24,
-                                  child: Transform.translate(
-                                    offset: const Offset(0, 3),
-                                    child: Text('♫', style: TextStyle(
-                                      fontSize: 22,
-                                      height: 1.0,
-                                      color: AuroraTheme.auroraRed,
-                                    )),
-                                  ),
-                                ),
-                              )
+                            ? const Text('♫', style: TextStyle(
+                                fontSize: 16,
+                                height: 1.0,
+                                color: AppColors.primaryRed,
+                              ))
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),

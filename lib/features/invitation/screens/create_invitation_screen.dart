@@ -611,17 +611,19 @@ class _StepCategory extends StatelessWidget {
           Text(AppLocalizations.of(context)!.create_inv_category_question,
               style: AppTextStyles.bodyMedium),
           const SizedBox(height: 32),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.0,
             children: InvitationCategory.values.map((c) {
               final isSelected = selected == c;
               return GestureDetector(
                 onTap: () => onSelected(c),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 18, vertical: 14),
                   decoration: BoxDecoration(
                     gradient: isSelected
                         ? AppColors.primaryGradient
@@ -637,29 +639,31 @@ class _StepCategory extends StatelessWidget {
                     ),
                   ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: 28,
-                        height: 28,
+                        width: 36,
+                        height: 36,
                         child: Center(
                           child: c == InvitationCategory.bar
-                              ? Image.asset('assets/icons/bar.png', width: 28, height: 28)
+                              ? Image.asset('assets/icons/bar.png', width: 32, height: 32)
                               : c == InvitationCategory.concert
                                   ? const Text(
                                       '♫',
                                       style: TextStyle(
-                                        fontSize: 32,
+                                        fontSize: 36,
                                         height: 1.0,
                                         color: AuroraTheme.auroraRed,
                                       ),
                                     )
-                                  : Text(c.emoji, style: const TextStyle(fontSize: 22)),
+                                  : Text(c.emoji, style: const TextStyle(fontSize: 28)),
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         c.labelFor(AppLocalizations.of(context)!),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.labelMedium.copyWith(
                           color: isSelected
                               ? AppColors.textPrimary

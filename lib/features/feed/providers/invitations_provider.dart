@@ -82,8 +82,9 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
 
-      // Owner filter: davet sahibi kime görünmek istiyor (bidirectional)
-      if (myGender != null) {
+      // Owner filter: bidirectional — sadece viewer spesifik tercih yaptığında uygulanır
+      // Viewer 'Herkes' (all) → owner filter atlanır, owner ne derse desin görür (override)
+      if (myGender != null && showGender != 'all') {
         final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
         final ownerGender = ownerRow?['gender'] as String? ?? '';
         if (ownerShowGender == 'opposite') {

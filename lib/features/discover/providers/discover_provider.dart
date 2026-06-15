@@ -25,6 +25,7 @@ final discoverProvider =
   List<String> blockedIds = [];
   String? myGender;
   String? targetGender;
+  String showGender = 'opposite';
   if (currentUserId != null) {
     final results = await Future.wait<dynamic>([
       client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
@@ -33,7 +34,7 @@ final discoverProvider =
     blockedIds = ((results[0] as List).map((b) => b['blocked_id'] as String).toList());
     final userRow = results[1] as Map<String, dynamic>?;
     myGender = userRow?['gender'] as String?;
-    final showGender = userRow?['show_gender'] as String? ?? 'opposite';
+    showGender = userRow?['show_gender'] as String? ?? 'opposite';
     if (showGender == 'opposite') {
       targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
     } else if (showGender == 'male') {
@@ -72,8 +73,9 @@ final discoverProvider =
     final ownerRow = row['owner'] as Map<String, dynamic>?;
     if (ownerRow?['is_deleted'] == true) return null;
 
-    // Owner filter: davet sahibi kime görünmek istiyor (bidirectional)
-    if (myGender != null) {
+    // Owner filter: bidirectional — sadece viewer spesifik tercih yaptığında uygulanır
+    // Viewer 'Herkes' (all) → owner filter atlanır, owner ne derse desin görür (override)
+    if (myGender != null && showGender != 'all') {
       final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
       final ownerGender = ownerRow?['gender'] as String? ?? '';
       if (ownerShowGender == 'opposite') {

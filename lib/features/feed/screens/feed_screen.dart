@@ -130,7 +130,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 12),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -743,7 +743,7 @@ class _CategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: 46,
       child: ListView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
@@ -756,7 +756,7 @@ class _CategoryChips extends StatelessWidget {
               onTap: onClearFilter,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: selected == null
@@ -804,7 +804,7 @@ class _CategoryChips extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
+                    horizontal: 12, vertical: 6),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   gradient: isSelected

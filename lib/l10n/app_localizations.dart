@@ -1720,11 +1720,6 @@ abstract class AppLocalizations {
   /// **'Questions'**
   String get profile_setup_step_prompts;
 
-  /// No description provided for @profile_setup_step_show_gender.
-  ///
-  /// In en, this message translates to:
-  /// **'Display preference'**
-  String get profile_setup_step_show_gender;
 
   /// No description provided for @profile_setup_step_age_range.
   ///
@@ -1900,41 +1895,11 @@ abstract class AppLocalizations {
   /// **'Your answer...'**
   String get profile_setup_prompts_answer_hint;
 
-  /// No description provided for @profile_setup_show_gender_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Whose invitations do you want to see?'**
-  String get profile_setup_show_gender_title;
 
-  /// No description provided for @profile_setup_show_gender_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Only invitations from these people will appear in your feed'**
-  String get profile_setup_show_gender_subtitle;
 
-  /// No description provided for @profile_setup_show_gender_opposite.
-  ///
-  /// In en, this message translates to:
-  /// **'Opposite gender'**
-  String get profile_setup_show_gender_opposite;
 
-  /// No description provided for @profile_setup_show_gender_all.
-  ///
-  /// In en, this message translates to:
-  /// **'Everyone'**
-  String get profile_setup_show_gender_all;
 
-  /// No description provided for @profile_setup_show_gender_female.
-  ///
-  /// In en, this message translates to:
-  /// **'Women'**
-  String get profile_setup_show_gender_female;
 
-  /// No description provided for @profile_setup_show_gender_male.
-  ///
-  /// In en, this message translates to:
-  /// **'Men'**
-  String get profile_setup_show_gender_male;
 
   /// No description provided for @profile_setup_age_range_title.
   ///
@@ -2482,11 +2447,6 @@ abstract class AppLocalizations {
   /// **'{min} — {max} years'**
   String settings_age_range_value(int min, int max);
 
-  /// No description provided for @settings_display_pref_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Display preference'**
-  String get settings_display_pref_title;
 
   /// No description provided for @settings_privacy_section.
   ///
@@ -2572,29 +2532,9 @@ abstract class AppLocalizations {
   /// **'Re-upload'**
   String get settings_reupload;
 
-  /// No description provided for @settings_show_gender_opposite.
-  ///
-  /// In en, this message translates to:
-  /// **'Opposite gender'**
-  String get settings_show_gender_opposite;
 
-  /// No description provided for @settings_show_gender_all.
-  ///
-  /// In en, this message translates to:
-  /// **'Everyone'**
-  String get settings_show_gender_all;
 
-  /// No description provided for @settings_show_gender_female.
-  ///
-  /// In en, this message translates to:
-  /// **'Women'**
-  String get settings_show_gender_female;
 
-  /// No description provided for @settings_show_gender_male.
-  ///
-  /// In en, this message translates to:
-  /// **'Men'**
-  String get settings_show_gender_male;
 
   /// No description provided for @admin_title.
   ///

@@ -421,7 +421,6 @@
   "profile_setup_step_job_edu": "Работа / Образование",
   "profile_setup_step_interests": "Интересы",
   "profile_setup_step_prompts": "Вопросы",
-  "profile_setup_step_show_gender": "Настройки показа",
   "profile_setup_step_age_range": "Возрастной диапазон",
   "profile_setup_validation_gender": "Пожалуйста, выберите пол",
   "profile_setup_validation_city": "Пожалуйста, выберите город",
@@ -478,12 +477,6 @@
   "profile_setup_prompts_title": "Несколько вопросов",
   "profile_setup_prompts_subtitle": "Необязательно — обогащает твой профиль",
   "profile_setup_prompts_answer_hint": "Твой ответ...",
-  "profile_setup_show_gender_title": "Чьи приглашения ты хочешь видеть?",
-  "profile_setup_show_gender_subtitle": "В ленте будут показываться только приглашения этих людей",
-  "profile_setup_show_gender_opposite": "Противоположный пол",
-  "profile_setup_show_gender_all": "Все",
-  "profile_setup_show_gender_female": "Женщины",
-  "profile_setup_show_gender_male": "Мужчины",
   "profile_setup_age_range_title": "Какой возрастной диапазон тебя интересует?",
   "profile_setup_age_range_subtitle": "В ленте будут показываться только приглашения в этом возрастном диапазоне",
   "profile_setup_age_range_value": "{min} — {max} лет",
@@ -626,7 +619,6 @@
       }
     }
   },
-  "settings_display_pref_title": "Настройки показа",
   "settings_privacy_section": "КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ",
   "settings_blocked_users": "Заблокированные пользователи",
   "settings_location_permission": "Разрешение геолокации",
@@ -641,10 +633,6 @@
   "settings_selfie_none": "Селфи ещё не загружено",
   "settings_verification_status": "Статус верификации",
   "settings_reupload": "Загрузить снова",
-  "settings_show_gender_opposite": "Противоположный пол",
-  "settings_show_gender_all": "Все",
-  "settings_show_gender_female": "Женщины",
-  "settings_show_gender_male": "Мужчины",
   "admin_title": "Модерация",
   "admin_tab_selfies": "Проверка селфи",
   "admin_tab_reports": "Жалобы",
@@ -756,8 +744,20 @@
   "chat_open": "Чат открыт",
   "chat_delete_confirm_body": "Хочешь удалить этот чат? Он переместится в архив.",
   "chat_block_confirm_body": "{gender, select, female{Ты уверена, что хочешь заблокировать этого человека? Чат закроется.} other{Ты уверен, что хочешь заблокировать этого человека? Чат закроется.}}",
-  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
+  "@chat_block_confirm_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
   "error_page_not_found": "Страница не найдена",
   "error_with_detail": "Ошибка: {error}",
-  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
+  "@error_with_detail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

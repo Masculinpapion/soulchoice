@@ -891,7 +891,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_step_prompts => 'Вопросы';
 
   @override
-  String get profile_setup_step_show_gender => 'Настройки показа';
 
   @override
   String get profile_setup_step_age_range => 'Возрастной диапазон';
@@ -989,24 +988,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_prompts_answer_hint => 'Твой ответ...';
 
   @override
-  String get profile_setup_show_gender_title =>
-      'Чьи приглашения ты хочешь видеть?';
 
   @override
-  String get profile_setup_show_gender_subtitle =>
-      'В ленте будут показываться только приглашения этих людей';
 
   @override
-  String get profile_setup_show_gender_opposite => 'Противоположный пол';
 
   @override
-  String get profile_setup_show_gender_all => 'Все';
 
   @override
-  String get profile_setup_show_gender_female => 'Женщины';
 
   @override
-  String get profile_setup_show_gender_male => 'Мужчины';
 
   @override
   String get profile_setup_age_range_title =>
@@ -1319,7 +1310,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get settings_display_pref_title => 'Настройки показа';
 
   @override
   String get settings_privacy_section => 'КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ';
@@ -1365,16 +1355,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_reupload => 'Загрузить снова';
 
   @override
-  String get settings_show_gender_opposite => 'Противоположный пол';
 
   @override
-  String get settings_show_gender_all => 'Все';
 
   @override
-  String get settings_show_gender_female => 'Женщины';
 
   @override
-  String get settings_show_gender_male => 'Мужчины';
 
   @override
   String get admin_title => 'Модерация';

@@ -880,7 +880,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_step_prompts => 'Sorular';
 
   @override
-  String get profile_setup_step_show_gender => 'Gösterim tercihi';
 
   @override
   String get profile_setup_step_age_range => 'Yaş aralığı';
@@ -977,24 +976,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_prompts_answer_hint => 'Cevabın...';
 
   @override
-  String get profile_setup_show_gender_title =>
-      'Kimin davetiyelerini görmek istiyorsun?';
 
   @override
-  String get profile_setup_show_gender_subtitle =>
-      'Yalnızca bu kişilerden gelen davetiyeler akışında görünür';
 
   @override
-  String get profile_setup_show_gender_opposite => 'Karşı cinsiyet';
 
   @override
-  String get profile_setup_show_gender_all => 'Herkes';
 
   @override
-  String get profile_setup_show_gender_female => 'Kadınlar';
 
   @override
-  String get profile_setup_show_gender_male => 'Erkekler';
 
   @override
   String get profile_setup_age_range_title => 'Hangi yaş aralığını arıyorsun?';
@@ -1294,7 +1285,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get settings_display_pref_title => 'Gösterim tercihi';
 
   @override
   String get settings_privacy_section => 'GİZLİLİK VE GÜVENLİK';
@@ -1339,16 +1329,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_reupload => 'Yeniden yükle';
 
   @override
-  String get settings_show_gender_opposite => 'Karşı cinsiyet';
 
   @override
-  String get settings_show_gender_all => 'Herkes';
 
   @override
-  String get settings_show_gender_female => 'Kadınlar';
 
   @override
-  String get settings_show_gender_male => 'Erkekler';
 
   @override
   String get admin_title => 'Moderasyon';

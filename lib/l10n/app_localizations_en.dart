@@ -880,7 +880,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_step_prompts => 'Questions';
 
   @override
-  String get profile_setup_step_show_gender => 'Display preference';
 
   @override
   String get profile_setup_step_age_range => 'Age range';
@@ -977,24 +976,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_prompts_answer_hint => 'Your answer...';
 
   @override
-  String get profile_setup_show_gender_title =>
-      'Whose invitations do you want to see?';
 
   @override
-  String get profile_setup_show_gender_subtitle =>
-      'Only invitations from these people will appear in your feed';
 
   @override
-  String get profile_setup_show_gender_opposite => 'Opposite gender';
 
   @override
-  String get profile_setup_show_gender_all => 'Everyone';
 
   @override
-  String get profile_setup_show_gender_female => 'Women';
 
   @override
-  String get profile_setup_show_gender_male => 'Men';
 
   @override
   String get profile_setup_age_range_title =>
@@ -1297,7 +1288,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get settings_display_pref_title => 'Display preference';
 
   @override
   String get settings_privacy_section => 'PRIVACY & SECURITY';
@@ -1342,16 +1332,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_reupload => 'Re-upload';
 
   @override
-  String get settings_show_gender_opposite => 'Opposite gender';
 
   @override
-  String get settings_show_gender_all => 'Everyone';
 
   @override
-  String get settings_show_gender_female => 'Women';
 
   @override
-  String get settings_show_gender_male => 'Men';
 
   @override
   String get admin_title => 'Moderation';

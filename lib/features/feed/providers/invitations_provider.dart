@@ -23,41 +23,28 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     // Fetch blocked IDs + current user preferences
     List<String> blockedIds = [];
     String? myGender;
-    String showGender = 'opposite';
     int minAge = 21;
     int maxAge = 60;
     if (currentUserId != null) {
       final results = await Future.wait<dynamic>([
         client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
-        client.from('users').select('gender, show_gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
+        client.from('users').select('gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
       ]);
       blockedIds = (results[0] as List).map((b) => b['blocked_id'] as String).toList();
       final userRow = results[1] as Map<String, dynamic>?;
       myGender = userRow?['gender'] as String?;
-      showGender = userRow?['show_gender'] as String? ?? 'opposite';
       minAge = userRow?['min_age'] as int? ?? 21;
       maxAge = userRow?['max_age'] as int? ?? 60;
     }
 
-    // Hedef cinsiyet belirle
-    String? targetGender;
-    switch (showGender) {
-      case 'opposite':
-        targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
-      case 'male':
-        targetGender = 'male';
-      case 'female':
-        targetGender = 'female';
-      case 'all':
-        targetGender = null;
-    }
+    final targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
 
     var query = client
         .from('invitations')
         .select(
           '*, '
           'city:cities(name, name_ru, name_tr, name_en), '
-          'owner:users(id, name, age, gender, show_gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          'owner:users(id, name, age, gender, city_id, verified, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
         .eq('status', 'active')
@@ -82,20 +69,6 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
 
-      // Owner filter: bidirectional — her iki tarafın tercihi de uygulanır
-      // Onboarding'de zorunlu seçim olduğu için her kullanıcı bilinçli ifade etti.
-      if (myGender != null) {
-        final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
-        final ownerGender = ownerRow?['gender'] as String? ?? '';
-        if (ownerShowGender == 'opposite') {
-          final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
-          if (myGender != wantsToBeSeenBy) return null;
-        } else if (ownerShowGender == 'male' && myGender != 'male') {
-          return null;
-        } else if (ownerShowGender == 'female' && myGender != 'female') {
-          return null;
-        }
-      }
       final owner = ownerRow != null
           ? UserModel(
               id: ownerRow['id'] as String,
@@ -147,7 +120,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       );
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)
-        // Viewer filter: sen kimi görmek istiyorsun (kendi kartların her zaman görünür)
+        // Sadece karşı cinsiyet (kendi kartların her zaman görünür)
         .where((inv) => inv.owner?.id == currentUserId || targetGender == null || inv.owner?.gender == targetGender)
         .where((inv) {
           final age = inv.owner?.age ?? 0;

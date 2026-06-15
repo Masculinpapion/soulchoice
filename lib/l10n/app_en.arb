@@ -421,7 +421,6 @@
   "profile_setup_step_job_edu": "Work / Education",
   "profile_setup_step_interests": "Interests",
   "profile_setup_step_prompts": "Questions",
-  "profile_setup_step_show_gender": "Display preference",
   "profile_setup_step_age_range": "Age range",
   "profile_setup_validation_gender": "Please select a gender",
   "profile_setup_validation_city": "Please select a city",
@@ -478,12 +477,6 @@
   "profile_setup_prompts_title": "A few questions",
   "profile_setup_prompts_subtitle": "Optional — enriches your profile",
   "profile_setup_prompts_answer_hint": "Your answer...",
-  "profile_setup_show_gender_title": "Whose invitations do you want to see?",
-  "profile_setup_show_gender_subtitle": "Only invitations from these people will appear in your feed",
-  "profile_setup_show_gender_opposite": "Opposite gender",
-  "profile_setup_show_gender_all": "Everyone",
-  "profile_setup_show_gender_female": "Women",
-  "profile_setup_show_gender_male": "Men",
   "profile_setup_age_range_title": "What age range are you looking for?",
   "profile_setup_age_range_subtitle": "Only invitations in this age range will appear in your feed",
   "profile_setup_age_range_value": "{min} — {max} years",
@@ -626,7 +619,6 @@
       }
     }
   },
-  "settings_display_pref_title": "Display preference",
   "settings_privacy_section": "PRIVACY & SECURITY",
   "settings_blocked_users": "Blocked users",
   "settings_location_permission": "Location permission",
@@ -641,10 +633,6 @@
   "settings_selfie_none": "No selfie uploaded yet",
   "settings_verification_status": "Verification status",
   "settings_reupload": "Re-upload",
-  "settings_show_gender_opposite": "Opposite gender",
-  "settings_show_gender_all": "Everyone",
-  "settings_show_gender_female": "Women",
-  "settings_show_gender_male": "Men",
   "admin_title": "Moderation",
   "admin_tab_selfies": "Selfie Reviews",
   "admin_tab_reports": "Reports",
@@ -756,8 +744,20 @@
   "chat_open": "Chat open",
   "chat_delete_confirm_body": "Do you want to delete this chat? It will be moved to history.",
   "chat_block_confirm_body": "Are you sure you want to block this person? The chat will close.",
-  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
+  "@chat_block_confirm_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
   "error_page_not_found": "Page not found",
   "error_with_detail": "Error: {error}",
-  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
+  "@error_with_detail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

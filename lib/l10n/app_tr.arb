@@ -421,7 +421,6 @@
   "profile_setup_step_job_edu": "Meslek / Eğitim",
   "profile_setup_step_interests": "İlgi alanları",
   "profile_setup_step_prompts": "Sorular",
-  "profile_setup_step_show_gender": "Gösterim tercihi",
   "profile_setup_step_age_range": "Yaş aralığı",
   "profile_setup_validation_gender": "Cinsiyet seçimi zorunludur",
   "profile_setup_validation_city": "Şehir seçimi zorunludur",
@@ -478,12 +477,6 @@
   "profile_setup_prompts_title": "Birkaç soru",
   "profile_setup_prompts_subtitle": "İsteğe bağlı — profilini zenginleştirir",
   "profile_setup_prompts_answer_hint": "Cevabın...",
-  "profile_setup_show_gender_title": "Kimin davetiyelerini görmek istiyorsun?",
-  "profile_setup_show_gender_subtitle": "Yalnızca bu kişilerden gelen davetiyeler akışında görünür",
-  "profile_setup_show_gender_opposite": "Karşı cinsiyet",
-  "profile_setup_show_gender_all": "Herkes",
-  "profile_setup_show_gender_female": "Kadınlar",
-  "profile_setup_show_gender_male": "Erkekler",
   "profile_setup_age_range_title": "Hangi yaş aralığını arıyorsun?",
   "profile_setup_age_range_subtitle": "Bu yaş aralığındaki davetiyeler akışında görünür",
   "profile_setup_age_range_value": "{min} — {max} yaş",
@@ -626,7 +619,6 @@
       }
     }
   },
-  "settings_display_pref_title": "Gösterim tercihi",
   "settings_privacy_section": "GİZLİLİK VE GÜVENLİK",
   "settings_blocked_users": "Engellenen kullanıcılar",
   "settings_location_permission": "Konum izni",
@@ -641,10 +633,6 @@
   "settings_selfie_none": "Henüz selfie yüklenmedi",
   "settings_verification_status": "Doğrulama durumu",
   "settings_reupload": "Yeniden yükle",
-  "settings_show_gender_opposite": "Karşı cinsiyet",
-  "settings_show_gender_all": "Herkes",
-  "settings_show_gender_female": "Kadınlar",
-  "settings_show_gender_male": "Erkekler",
   "admin_title": "Moderasyon",
   "admin_tab_selfies": "Selfie İncelemeleri",
   "admin_tab_reports": "Şikayetler",
@@ -756,8 +744,20 @@
   "chat_open": "Chat açık",
   "chat_delete_confirm_body": "Bu sohbeti silmek istiyor musun? Geçmiş'e taşınacak.",
   "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.",
-  "@chat_block_confirm_body": { "placeholders": { "gender": { "type": "String" } } },
+  "@chat_block_confirm_body": {
+    "placeholders": {
+      "gender": {
+        "type": "String"
+      }
+    }
+  },
   "error_page_not_found": "Sayfa bulunamadı",
   "error_with_detail": "Hata: {error}",
-  "@error_with_detail": { "placeholders": { "error": { "type": "String" } } }
+  "@error_with_detail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

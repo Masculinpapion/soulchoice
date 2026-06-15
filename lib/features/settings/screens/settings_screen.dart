@@ -24,7 +24,6 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _selfieStatus = 'none';
-  String _showGender = 'opposite';
   int _minAge = 21;
   int _maxAge = 60;
   bool _quietEnabled = false;
@@ -43,13 +42,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (uid == null) return;
     final row = await Supabase.instance.client
         .from('users')
-        .select('selfie_status, show_gender, min_age, max_age')
+        .select('selfie_status, min_age, max_age')
         .eq('id', uid)
         .maybeSingle();
     if (mounted) {
       setState(() {
         _selfieStatus = row?['selfie_status'] as String? ?? 'none';
-        _showGender = row?['show_gender'] as String? ?? 'opposite';
         _minAge = row?['min_age'] as int? ?? 21;
         _maxAge = row?['max_age'] as int? ?? 60;
       });
@@ -343,95 +341,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  List<(String, String)> _genderOptions(AppLocalizations l) => [
-    ('opposite', l.settings_show_gender_opposite),
-    ('all', l.settings_show_gender_all),
-    ('female', l.settings_show_gender_female),
-    ('male', l.settings_show_gender_male),
-  ];
-
-  String _showGenderLabel(BuildContext context) {
-    final opts = _genderOptions(AppLocalizations.of(context)!);
-    return opts.firstWhere((o) => o.$1 == _showGender, orElse: () => opts.first).$2;
-  }
-
-  void _showShowGenderPicker(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final opts = _genderOptions(l10n);
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) {
-        return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF0D0D12).withOpacity(0.85),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
-              ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 36,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AuroraTheme.glassBorder,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      l10n.settings_display_pref_title,
-                      style: TextStyle(
-                        fontFamily: 'Fraunces',
-                        fontStyle: FontStyle.italic,
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ...opts.map((opt) => _LangTile(
-                          flag: opt.$1 == 'opposite'
-                              ? '⇄'
-                              : opt.$1 == 'all'
-                                  ? '👥'
-                                  : opt.$1 == 'female'
-                                      ? '♀'
-                                      : '♂',
-                          name: opt.$2,
-                          isSelected: _showGender == opt.$1,
-                          onTap: () async {
-                            Navigator.of(context).pop();
-                            final uid = Supabase.instance.client.auth.currentUser?.id;
-                            if (uid == null) return;
-                            await Supabase.instance.client
-                                .from('users')
-                                .update({'show_gender': opt.$1})
-                                .eq('id', uid);
-                            if (mounted) {
-                              setState(() => _showGender = opt.$1);
-                              ref.invalidate(invitationsProvider);
-                            ref.invalidate(discoverProvider);
-                            }
-                          },
-                        )),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _showLanguagePicker(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentLocale = ref.read(localeProvider);
@@ -590,12 +499,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: l10n.settings_edit_photos,
                           onTap: () =>
                               context.push('/profile/photos', extra: 'edit'),
-                        ),
-                        _SettingsTile(
-                          icon: Icons.visibility_outlined,
-                          label: l10n.settings_display_pref_title,
-                          value: _showGenderLabel(context),
-                          onTap: () => _showShowGenderPicker(context),
                         ),
                         _SettingsTile(
                           icon: Icons.people_outline,

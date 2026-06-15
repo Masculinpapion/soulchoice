@@ -432,6 +432,7 @@ class _StoryAvatar extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: photoUrl!,
                           fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
                           errorWidget: (_, __, ___) =>
                               _AvatarFallback(name: label),
                         )
@@ -1287,7 +1288,7 @@ class InvitationCard extends StatelessWidget {
                             ),
                             child: ClipOval(
                               child: ownerPhotoUrl != null
-                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
+                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: Alignment.topCenter, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
                                   : _AvatarFallback(name: ownerName),
                             ),
                           ),

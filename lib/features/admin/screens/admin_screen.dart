@@ -359,6 +359,7 @@ class _PhotoBox extends StatelessWidget {
             imageUrl: url!,
             height: 180,
             fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
           ),
         ),
       );

@@ -405,11 +405,12 @@ class _PhotoSlot extends StatelessWidget {
           children: [
             // Fotoğraf (yerel file veya uzak URL)
             if (entry.isLocal)
-              Image.memory(entry.bytes!, fit: BoxFit.cover)
+              Image.memory(entry.bytes!, fit: BoxFit.cover, alignment: Alignment.topCenter)
             else if (entry.isRemote)
               CachedNetworkImage(
                 imageUrl: entry.url!,
                 fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
                 placeholder: (_, __) => Container(
                   color: AppColors.glassBg,
                   child: const Center(

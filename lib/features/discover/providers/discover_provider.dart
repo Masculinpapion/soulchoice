@@ -73,21 +73,10 @@ final discoverProvider =
     final ownerRow = row['owner'] as Map<String, dynamic>?;
     if (ownerRow?['is_deleted'] == true) return null;
 
-    // Owner filter: bidirectional — sadece viewer spesifik tercih yaptığında uygulanır
-    // Viewer 'Herkes' (all) → owner filter atlanır, owner ne derse desin görür (override)
-    if (myGender != null && showGender != 'all') {
-      final ownerShowGender = ownerRow?['show_gender'] as String? ?? 'all';
-      final ownerGender = ownerRow?['gender'] as String? ?? '';
-      if (ownerShowGender == 'opposite') {
-        final wantsToBeSeenBy = ownerGender == 'male' ? 'female' : 'male';
-        if (myGender != wantsToBeSeenBy) return null;
-      } else if (ownerShowGender == 'male' && myGender != 'male') {
-        return null;
-      } else if (ownerShowGender == 'female' && myGender != 'female') {
-        return null;
-      }
-    }
-
+    // Owner filter: YOK (Yol A)
+    // SoulChoice davet-bazlı: owner kart açtıysa zaten görünmek istiyor.
+    // Viewer'ın show_gender tercihi uygulanır (aşağıda), owner'ın tercihi
+    // sadece kendi feed'inde uygulanır — cross-filter yok.
     final owner = ownerRow != null
         ? UserModel(
             id: ownerRow['id'] as String,

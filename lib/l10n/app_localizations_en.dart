@@ -1496,4 +1496,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notif_type_feedback_request_body => 'Share your experience';
+
+  @override
+  String get create_inv_gate_title => 'Selfie approval required';
+
+  @override
+  String get create_inv_gate_none => 'For safety, you need to upload a selfie before creating an invitation.';
+
+  @override
+  String get create_inv_gate_pending => 'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.';
+
+  @override
+  String get create_inv_gate_rejected => 'Your selfie was rejected. Please upload a new one.';
+
+  @override
+  String get create_inv_gate_action_upload => 'Take selfie';
+
+  @override
+  String get create_inv_gate_action_ok => 'Got it';
+
 }

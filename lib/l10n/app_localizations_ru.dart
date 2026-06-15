@@ -1521,4 +1521,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notif_type_feedback_request_body => 'Расскажи о своём опыте';
+
+  @override
+  String get create_inv_gate_title => 'Сначала одобрение селфи';
+
+  @override
+  String get create_inv_gate_none => 'Для безопасности нужно загрузить селфи перед созданием приглашения.';
+
+  @override
+  String get create_inv_gate_pending => 'Твоё селфи проверяется. Админ одобрит в течение 24 часов — после одобрения сможешь создавать приглашения.';
+
+  @override
+  String get create_inv_gate_rejected => 'Твоё селфи отклонено. Пожалуйста, загрузи новое.';
+
+  @override
+  String get create_inv_gate_action_upload => 'Сделать селфи';
+
+  @override
+  String get create_inv_gate_action_ok => 'Понятно';
+
 }

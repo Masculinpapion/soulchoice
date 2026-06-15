@@ -759,5 +759,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "create_inv_gate_title": "Önce selfie onayı",
+  "create_inv_gate_none": "Güvenlik için davetiye açmadan önce selfie yüklemen gerekiyor.",
+  "create_inv_gate_pending": "Selfie'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.",
+  "create_inv_gate_rejected": "Selfie'n reddedildi. Yeni bir selfie yüklemen gerekiyor.",
+  "create_inv_gate_action_upload": "Selfie çek",
+  "create_inv_gate_action_ok": "Anladım"
 }

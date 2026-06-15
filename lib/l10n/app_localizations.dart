@@ -2829,6 +2829,43 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share your experience'**
   String get notif_type_feedback_request_body;
+
+  /// No description provided for @create_inv_gate_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie approval required'**
+  String get create_inv_gate_title;
+
+  /// No description provided for @create_inv_gate_none.
+  ///
+  /// In en, this message translates to:
+  /// **'For safety, you need to upload a selfie before creating an invitation.'**
+  String get create_inv_gate_none;
+
+  /// No description provided for @create_inv_gate_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.'**
+  String get create_inv_gate_pending;
+
+  /// No description provided for @create_inv_gate_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selfie was rejected. Please upload a new one.'**
+  String get create_inv_gate_rejected;
+
+  /// No description provided for @create_inv_gate_action_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Take selfie'**
+  String get create_inv_gate_action_upload;
+
+  /// No description provided for @create_inv_gate_action_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get create_inv_gate_action_ok;
+
 }
 
 class _AppLocalizationsDelegate

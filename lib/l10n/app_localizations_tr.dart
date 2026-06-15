@@ -1494,4 +1494,23 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notif_type_feedback_request_body => 'Deneyimini paylaş';
+
+  @override
+  String get create_inv_gate_title => 'Önce selfie onayı';
+
+  @override
+  String get create_inv_gate_none => 'Güvenlik için davetiye açmadan önce selfie yüklemen gerekiyor.';
+
+  @override
+  String get create_inv_gate_pending => 'Selfie\'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
+
+  @override
+  String get create_inv_gate_rejected => 'Selfie\'n reddedildi. Yeni bir selfie yüklemen gerekiyor.';
+
+  @override
+  String get create_inv_gate_action_upload => 'Selfie çek';
+
+  @override
+  String get create_inv_gate_action_ok => 'Anladım';
+
 }

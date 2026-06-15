@@ -70,6 +70,59 @@ class _CreateInvitationScreenState
       _venueController.text = ed['venue_name'] as String? ?? '';
       final rawDate = ed['event_date'] as String?;
       if (rawDate != null) _eventDate = DateTime.tryParse(rawDate);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkSelfieGate());
+    }
+  }
+
+  Future<void> _checkSelfieGate() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    final row = await Supabase.instance.client
+        .from('users')
+        .select('selfie_status')
+        .eq('id', uid)
+        .maybeSingle();
+    final status = row?['selfie_status'] as String? ?? 'none';
+    if (status == 'approved' || !mounted) return;
+
+    final l = AppLocalizations.of(context)!;
+    final goSelfie = status != 'pending';
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(l.create_inv_gate_title, style: AppTextStyles.titleMedium),
+        content: Text(
+          status == 'pending'
+              ? l.create_inv_gate_pending
+              : status == 'rejected'
+                  ? l.create_inv_gate_rejected
+                  : l.create_inv_gate_none,
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              goSelfie
+                  ? l.create_inv_gate_action_upload
+                  : l.create_inv_gate_action_ok,
+              style: const TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  color: AuroraTheme.auroraRed),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    if (goSelfie) {
+      context.pushReplacement('/profile/selfie');
+    } else {
+      context.pop();
     }
   }
 

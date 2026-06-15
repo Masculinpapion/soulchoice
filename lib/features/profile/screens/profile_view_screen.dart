@@ -75,6 +75,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 
             final name = user['name'] as String? ?? '—';
             final age = user['age'] as int? ?? 0;
+            final selfieStatus =
+                user['selfie_status'] as String? ?? 'none';
             final verified =
                 (user['subscription_status'] as String? ?? '') == 'active';
             final bio = user['bio'] as String?;

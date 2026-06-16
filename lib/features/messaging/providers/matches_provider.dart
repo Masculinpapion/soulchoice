@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -37,9 +38,15 @@ class MatchPreview {
 final matchesProvider =
     FutureProvider.autoDispose<List<MatchPreview>>((ref) async {
   final uid = ref.watch(currentUserIdProvider);
-  if (uid == null) return [];
+  debugPrint('[matchesProvider] uid=$uid');
+  if (uid == null) {
+    debugPrint('[matchesProvider] uid null, returning empty');
+    return [];
+  }
 
   final client = Supabase.instance.client;
+  debugPrint('[matchesProvider] client.auth.currentUser=${client.auth.currentUser?.id}');
+  debugPrint('[matchesProvider] client.auth.currentSession=${client.auth.currentSession != null}');
 
   // 1 sorgu: tüm match'ler
   final data = await client
@@ -49,6 +56,7 @@ final matchesProvider =
       .order('created_at', ascending: false);
 
   final matches = (data as List).cast<Map<String, dynamic>>();
+  debugPrint('[matchesProvider] raw matches count=${matches.length}');
   if (matches.isEmpty) return [];
 
   final matchIds = matches.map((m) => m['id'] as String).toList();

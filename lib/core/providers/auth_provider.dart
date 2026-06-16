@@ -11,5 +11,7 @@ final authStateProvider = StreamProvider<User?>((ref) {
 });
 
 final currentUserIdProvider = Provider<String?>((ref) {
-  return ref.watch(authStateProvider).asData?.value?.id;
+  // Stream'in ilk emit'ini bekleme — Supabase client hâlihazırda mevcut user'ı tutuyor
+  final streamUid = ref.watch(authStateProvider).asData?.value?.id;
+  return streamUid ?? Supabase.instance.client.auth.currentUser?.id;
 });

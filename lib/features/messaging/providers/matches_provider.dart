@@ -51,6 +51,9 @@ final matchesProvider =
         .from('matches')
         .select('id, user1_id, user2_id, meeting_date, archived_at')
         .or('user1_id.eq.$uid,user2_id.eq.$uid')
+        // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
+        // match varsa seen.containsKey eski archived olanı tutmasın)
+        .order('archived_at', ascending: true, nullsFirst: true)
         .order('created_at', ascending: false);
 
     final matches = (data as List).cast<Map<String, dynamic>>();

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -37,56 +36,48 @@ class MatchPreview {
 
 final matchesProvider =
     FutureProvider.autoDispose<List<MatchPreview>>((ref) async {
-  try {
-    final uid = ref.watch(currentUserIdProvider);
-    debugPrint('[matchesProvider] uid=$uid');
-    if (uid == null) {
-      debugPrint('[matchesProvider] uid null, returning empty');
-      return [];
-    }
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return [];
 
-    final client = Supabase.instance.client;
+  final client = Supabase.instance.client;
 
-    final data = await client
-        .from('matches')
-        .select('id, user1_id, user2_id, meeting_date, archived_at')
-        .or('user1_id.eq.$uid,user2_id.eq.$uid')
-        // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
-        // match varsa seen.containsKey eski archived olanı tutmasın)
-        .order('archived_at', ascending: true, nullsFirst: true)
-        .order('created_at', ascending: false);
+  final data = await client
+      .from('matches')
+      .select('id, user1_id, user2_id, meeting_date, archived_at')
+      .or('user1_id.eq.$uid,user2_id.eq.$uid')
+      // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
+      // match varsa seen.containsKey eski archived olanı tutmasın)
+      .order('archived_at', ascending: true, nullsFirst: true)
+      .order('created_at', ascending: false);
 
-    final matches = (data as List).cast<Map<String, dynamic>>();
-    debugPrint('[matchesProvider] raw matches count=${matches.length}');
-    if (matches.isEmpty) return [];
+  final matches = (data as List).cast<Map<String, dynamic>>();
+  if (matches.isEmpty) return [];
 
-    final matchIds = matches.map((m) => m['id'] as String).toList();
-    final otherUserIds = matches.map((m) {
-      final u1 = m['user1_id'] as String;
-      final u2 = m['user2_id'] as String;
-      return u1 == uid ? u2 : u1;
-    }).toList();
-    final uniqueOtherIds = otherUserIds.toSet().toList();
-    debugPrint('[matchesProvider] uniqueOtherIds=$uniqueOtherIds');
+  final matchIds = matches.map((m) => m['id'] as String).toList();
+  final otherUserIds = matches.map((m) {
+    final u1 = m['user1_id'] as String;
+    final u2 = m['user2_id'] as String;
+    return u1 == uid ? u2 : u1;
+  }).toList();
+  final uniqueOtherIds = otherUserIds.toSet().toList();
 
-    // 3 sorgu paralel: kullanıcı bilgisi + foto + mesajlar
-    final results = await Future.wait([
-      client
-          .from('users')
-          .select('id, name, age')
-          .inFilter('id', uniqueOtherIds),
-      client
-          .from('user_photos')
-          .select('user_id, url')
-          .inFilter('user_id', uniqueOtherIds)
-          .eq('is_primary', true),
-      client
-          .from('messages')
-          .select('id, match_id, sender_id, content, created_at, read_at')
-          .inFilter('match_id', matchIds)
-          .order('created_at', ascending: false),
-    ]);
-    debugPrint('[matchesProvider] users=${(results[0] as List).length} photos=${(results[1] as List).length} msgs=${(results[2] as List).length}');
+  // 3 sorgu paralel: kullanıcı bilgisi + foto + mesajlar
+  final results = await Future.wait([
+    client
+        .from('users')
+        .select('id, name, age')
+        .inFilter('id', uniqueOtherIds),
+    client
+        .from('user_photos')
+        .select('user_id, url')
+        .inFilter('user_id', uniqueOtherIds)
+        .eq('is_primary', true),
+    client
+        .from('messages')
+        .select('id, match_id, sender_id, content, created_at, read_at')
+        .inFilter('match_id', matchIds)
+        .order('created_at', ascending: false),
+  ]);
 
   // Dart'ta index'le
   final userMap = <String, Map<String, dynamic>>{
@@ -139,21 +130,16 @@ final matchesProvider =
   }
   final result = seen.values.toList();
 
-    result.sort((a, b) {
-      final at = a.lastMessageTime;
-      final bt = b.lastMessageTime;
-      if (at == null && bt == null) return 0;
-      if (at == null) return 1;
-      if (bt == null) return -1;
-      return bt.compareTo(at);
-    });
+  result.sort((a, b) {
+    final at = a.lastMessageTime;
+    final bt = b.lastMessageTime;
+    if (at == null && bt == null) return 0;
+    if (at == null) return 1;
+    if (bt == null) return -1;
+    return bt.compareTo(at);
+  });
 
-    debugPrint('[matchesProvider] returning ${result.length} matches');
-    return result;
-  } catch (e, st) {
-    debugPrint('[matchesProvider] FATAL: $e\n$st');
-    rethrow;
-  }
+  return result;
 });
 
 final activeMatchesProvider =

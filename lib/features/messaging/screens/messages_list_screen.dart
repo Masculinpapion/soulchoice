@@ -64,20 +64,32 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
               // Başlık
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                  child: Text(
-                    AppLocalizations.of(context)!.messages_title,
-                    style: TextStyle(
+                child: Builder(
+                  builder: (ctx) {
+                    final title = AppLocalizations.of(ctx)!.messages_title;
+                    final baseStyle = TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
-                      fontSize: MediaQuery.of(context).size.width < 360 ? 23.8 : 28,
+                      fontSize: MediaQuery.of(ctx).size.width < 360 ? 23.8 : 28,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
                       letterSpacing: -0.5,
-                    ),
-                  ),
+                    );
+                    final tp = TextPainter(
+                      text: TextSpan(text: title, style: baseStyle),
+                      textDirection: TextDirection.ltr,
+                    )..layout();
+                    return Text(
+                      title,
+                      style: baseStyle.copyWith(
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                            colors: const [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                      ),
+                    );
+                  },
                 ),
               ),
               const Expanded(child: _MatchesTab()),

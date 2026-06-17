@@ -147,20 +147,32 @@ class _NotificationsScreenState
                     ),
                     const SizedBox(width: 12),
                     // Başlık
-                    ShaderMask(
-                      blendMode: BlendMode.srcIn,
-                      shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                      child: Text(
-                        AppLocalizations.of(context)!.notifications_title,
-                        style: const TextStyle(
+                    Builder(
+                      builder: (ctx) {
+                        final title = AppLocalizations.of(ctx)!.notifications_title;
+                        final baseStyle = const TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
                           letterSpacing: -0.5,
-                        ),
-                      ),
+                        );
+                        final tp = TextPainter(
+                          text: TextSpan(text: title, style: baseStyle),
+                          textDirection: TextDirection.ltr,
+                        )..layout();
+                        return Text(
+                          title,
+                          style: baseStyle.copyWith(
+                            foreground: Paint()
+                              ..shader = LinearGradient(
+                                colors: const [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                          ),
+                        );
+                      },
                     ),
                     const Spacer(),
                     // Tümünü oku

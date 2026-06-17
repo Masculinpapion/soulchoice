@@ -45,20 +45,32 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               // Başlık
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                  child: Text(
-                    AppLocalizations.of(context)!.discover_title,
-                    style: TextStyle(
+                child: Builder(
+                  builder: (ctx) {
+                    final title = AppLocalizations.of(ctx)!.discover_title;
+                    final baseStyle = TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
-                      fontSize: MediaQuery.of(context).size.width < 360 ? 25.5 : 30,
+                      fontSize: MediaQuery.of(ctx).size.width < 360 ? 25.5 : 30,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
                       letterSpacing: -0.5,
-                    ),
-                  ),
+                    );
+                    final tp = TextPainter(
+                      text: TextSpan(text: title, style: baseStyle),
+                      textDirection: TextDirection.ltr,
+                    )..layout();
+                    return Text(
+                      title,
+                      style: baseStyle.copyWith(
+                        foreground: Paint()
+                          ..shader = LinearGradient(
+                            colors: const [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                      ),
+                    );
+                  },
                 ),
               ),
               // Filtre chip'leri

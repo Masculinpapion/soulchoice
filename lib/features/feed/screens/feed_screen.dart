@@ -1446,6 +1446,7 @@ class InvitationCard extends StatelessWidget {
                       _ApplicantAvatarStack(
                         photoUrls: applicantPhotoUrls,
                         totalCount: applicationCount,
+                        onTap: onCtaTap,
                       ),
                     ],
                     const SizedBox(height: 12),
@@ -1959,10 +1960,12 @@ class _PulsingDotState extends State<_PulsingDot>
 class _ApplicantAvatarStack extends StatelessWidget {
   final List<String> photoUrls;
   final int totalCount;
+  final VoidCallback? onTap;
 
   const _ApplicantAvatarStack({
     required this.photoUrls,
     required this.totalCount,
+    this.onTap,
   });
 
   @override
@@ -1976,7 +1979,10 @@ class _ApplicantAvatarStack extends StatelessWidget {
         ? size
         : size + (shown.length - 1) * (size - overlap);
 
-    return Row(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
@@ -2033,6 +2039,7 @@ class _ApplicantAvatarStack extends StatelessWidget {
           ),
         ],
       ],
+      ),
     );
   }
 }

@@ -148,6 +148,7 @@ class _NotificationsScreenState
                     const SizedBox(width: 12),
                     // Başlık
                     ShaderMask(
+                      blendMode: BlendMode.srcIn,
                       shaderCallback: (b) =>
                           AuroraTheme.redBlueGradient.createShader(b),
                       child: Text(
@@ -378,6 +379,7 @@ class _NotifTile extends StatelessWidget {
                     ),
                     child: Center(
                       child: ShaderMask(
+                        blendMode: BlendMode.srcIn,
                         shaderCallback: (b) => LinearGradient(
                           colors: colors,
                           begin: Alignment.topLeft,

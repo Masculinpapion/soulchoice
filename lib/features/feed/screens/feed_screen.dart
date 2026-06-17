@@ -175,6 +175,7 @@ class _Header extends ConsumerWidget {
         children: [
           // Logo — gradient shimmer
           ShaderMask(
+            blendMode: BlendMode.srcIn,
             shaderCallback: (bounds) =>
                 AuroraTheme.redBlueGradient.createShader(bounds),
             child: Text(
@@ -1013,6 +1014,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ShaderMask(
+                  blendMode: BlendMode.srcIn,
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: const Icon(Icons.explore_outlined,
@@ -1059,6 +1061,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                   ),
                   const SizedBox(width: 6),
                   ShaderMask(
+                    blendMode: BlendMode.srcIn,
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
                     child: Text(l10n.feed_swipe_hint,
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
@@ -1611,6 +1614,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(

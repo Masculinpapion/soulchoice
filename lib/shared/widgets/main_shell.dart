@@ -184,6 +184,7 @@ class _NavItem extends StatelessWidget {
               children: [
                 isActive
                     ? ShaderMask(
+                        blendMode: BlendMode.srcIn,
                         shaderCallback: (b) =>
                             AuroraTheme.redBlueGradient.createShader(b),
                         child: Icon(activeIcon,

@@ -65,6 +65,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
                   shaderCallback: (b) =>
                       AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
@@ -385,6 +386,7 @@ class _ActiveIconLayers extends StatelessWidget {
         children: [
           // Main bubble — aurora gradient
           ShaderMask(
+            blendMode: BlendMode.srcIn,
             shaderCallback: (b) =>
                 AuroraTheme.redBlueGradient.createShader(b),
             child: const Icon(

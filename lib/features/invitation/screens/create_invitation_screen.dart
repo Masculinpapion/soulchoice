@@ -578,8 +578,7 @@ class _FlowTypeCard extends StatelessWidget {
               if (isSelected)
                 ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) =>
-                      AppColors.primaryGradient.createShader(b),
+                  shaderCallback: (b) => AppColors.primaryGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                   child: const Icon(Icons.check_circle,
                       color: Colors.white, size: 22),
                 ),
@@ -967,8 +966,7 @@ class _StepDateTime extends StatelessWidget {
                 children: [
                   ShaderMask(
                     blendMode: BlendMode.srcIn,
-                    shaderCallback: (b) =>
-                        AppColors.primaryGradient.createShader(b),
+                    shaderCallback: (b) => AppColors.primaryGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                     child: const Icon(Icons.calendar_today_outlined,
                         color: Colors.white),
                   ),

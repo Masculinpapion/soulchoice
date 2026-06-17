@@ -149,8 +149,7 @@ class _NotificationsScreenState
                     // Başlık
                     ShaderMask(
                       blendMode: BlendMode.srcIn,
-                      shaderCallback: (b) =>
-                          AuroraTheme.redBlueGradient.createShader(b),
+                      shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                       child: Text(
                         AppLocalizations.of(context)!.notifications_title,
                         style: const TextStyle(

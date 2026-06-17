@@ -176,8 +176,7 @@ class _Header extends ConsumerWidget {
           // Logo — gradient shimmer
           ShaderMask(
             blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) =>
-                AuroraTheme.redBlueGradient.createShader(bounds),
+            shaderCallback: (bounds) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(bounds.left - 4, bounds.top - 2, bounds.right + 14, bounds.bottom + 4)),
             child: Text(
               'SoulChoice',
               style: TextStyle(
@@ -1015,8 +1014,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
               children: [
                 ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) =>
-                      AuroraTheme.redBlueGradient.createShader(b),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                   child: const Icon(Icons.explore_outlined,
                       color: Colors.white, size: 52),
                 ),
@@ -1062,7 +1060,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                   const SizedBox(width: 6),
                   ShaderMask(
                     blendMode: BlendMode.srcIn,
-                    shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+                    shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                     child: Text(l10n.feed_swipe_hint,
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
                   ),
@@ -1615,8 +1613,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) =>
-                      AuroraTheme.redBlueGradient.createShader(b),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                   child: Text(
                     AppLocalizations.of(context)!.feed_city_picker_title,
                     style: TextStyle(

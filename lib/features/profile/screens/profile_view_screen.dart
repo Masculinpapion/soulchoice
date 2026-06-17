@@ -1154,8 +1154,7 @@ class _NoPhotoPlaceholder extends StatelessWidget {
         child: Center(
           child: ShaderMask(
             blendMode: BlendMode.srcIn,
-            shaderCallback: (b) =>
-                AuroraTheme.redBlueGradient.createShader(b),
+            shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
             child: const Icon(Icons.person_outline,
                 size: 80, color: Colors.white),
           ),

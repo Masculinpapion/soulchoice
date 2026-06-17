@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/ambient_background.dart';
-import '../../../shared/widgets/glass_card.dart';
 import '../providers/applications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
@@ -62,15 +61,18 @@ class ApplicantsScreen extends ConsumerWidget {
                       color: AppColors.red,
                       backgroundColor: AppColors.glassBg,
                       onRefresh: () => ref.refresh(applicantsProvider(invitationId).future),
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                      child: GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 3 / 4,
+                        ),
                         itemCount: applicants.length,
-                        itemBuilder: (_, i) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _ApplicantCard(
-                            app: applicants[i],
-                            invitationId: invitationId,
-                          ),
+                        itemBuilder: (_, i) => _ApplicantTile(
+                          app: applicants[i],
+                          invitationId: invitationId,
                         ),
                       ),
                     );
@@ -85,40 +87,18 @@ class ApplicantsScreen extends ConsumerWidget {
   }
 }
 
-class _ApplicantCard extends StatefulWidget {
+class _ApplicantTile extends StatelessWidget {
   final Map<String, dynamic> app;
   final String invitationId;
 
-  const _ApplicantCard({required this.app, required this.invitationId});
-
-  @override
-  State<_ApplicantCard> createState() => _ApplicantCardState();
-}
-
-class _ApplicantCardState extends State<_ApplicantCard> {
-  late PageController _ctrl;
-  int _currentPhoto = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = PageController();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  const _ApplicantTile({required this.app, required this.invitationId});
 
   @override
   Widget build(BuildContext context) {
-    final app = widget.app;
     final applicant = app['applicant'] as Map<String, dynamic>?;
     final name = applicant?['name'] as String? ?? '—';
     final age = applicant?['age'] as int? ?? 0;
     final verified = (applicant?['subscription_status'] as String? ?? '') == 'active';
-    final bio = applicant?['bio'] as String?;
     final applicationId = app['id'] as String;
     final applicantId = applicant?['id'] as String? ?? '';
     final status = app['status'] as String? ?? 'pending';
@@ -132,153 +112,109 @@ class _ApplicantCardState extends State<_ApplicantCard> {
         final bP = b['is_primary'] as bool? ?? false;
         return aP ? -1 : (bP ? 1 : 0);
       });
+    final primaryUrl = photos.isNotEmpty ? (photos.first['url'] as String? ?? '') : '';
 
-    return GlassCard(
-      padding: EdgeInsets.zero,
-      onTap: () {
-        if (isAccepted && matchId != null) {
-          context.push('/chat/$matchId');
-        } else {
-          context.push(
-            '/profile/$applicantId',
-            extra: {
-              'applicationId': applicationId,
-              'invitationId': widget.invitationId,
-              'applicantName': name,
-            },
-          );
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 3 / 4,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (photos.isNotEmpty)
-                  PageView.builder(
-                    controller: _ctrl,
-                    itemCount: photos.length,
-                    onPageChanged: (i) => setState(() => _currentPhoto = i),
-                    itemBuilder: (_, i) => CachedNetworkImage(
-                      imageUrl: photos[i]['url'] as String? ?? '',
-                      fit: BoxFit.cover,
-                      alignment: Alignment.topCenter,
-                      errorWidget: (_, __, ___) => Container(
-                        color: AppColors.glassBg,
-                        child: const Icon(Icons.person_outline, color: AppColors.textSecondary, size: 48),
-                      ),
-                    ),
-                  )
-                else
-                  Container(
-                    color: AppColors.glassBg,
-                    child: const Center(
-                      child: Icon(Icons.person_outline, color: AppColors.textSecondary, size: 48),
-                    ),
-                  ),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          if (isAccepted && matchId != null) {
+            context.push('/chat/$matchId');
+          } else {
+            context.push(
+              '/profile/$applicantId',
+              extra: {
+                'applicationId': applicationId,
+                'invitationId': invitationId,
+                'applicantName': name,
+              },
+            );
+          }
+        },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (primaryUrl.isNotEmpty)
+              CachedNetworkImage(
+                imageUrl: primaryUrl,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                errorWidget: (_, __, ___) => Container(
+                  color: AppColors.glassBg,
+                  child: const Icon(Icons.person_outline, color: AppColors.textSecondary, size: 36),
+                ),
+              )
+            else
+              Container(
+                color: AppColors.glassBg,
+                child: const Center(
+                  child: Icon(Icons.person_outline, color: AppColors.textSecondary, size: 36),
+                ),
+              ),
 
-                Positioned(
-                  bottom: 0, left: 0, right: 0,
-                  height: 110,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
-                      ),
-                    ),
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              height: 70,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.78)],
                   ),
                 ),
-
-                if (photos.length > 1)
-                  Positioned(
-                    top: 12, left: 0, right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(photos.length, (i) {
-                        final active = i == _currentPhoto;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          width: active ? 20 : 5,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-
-                Positioned(
-                  bottom: 12, left: 14, right: 14,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '$name, $age',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Manrope',
-                            shadows: [Shadow(color: Colors.black54, blurRadius: 8)],
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (verified)
-                        Container(
-                          width: 20, height: 20,
-                          margin: const EdgeInsets.only(left: 6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)]),
-                            boxShadow: [BoxShadow(color: const Color(0xFFFF2D55).withOpacity(0.4), blurRadius: 6)],
-                          ),
-                          child: const Icon(Icons.check, size: 12, color: Colors.white),
-                        ),
-                      if (isAccepted)
-                        Container(
-                          width: 20, height: 20,
-                          margin: const EdgeInsets.only(left: 6),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)]),
-                          ),
-                          child: const Icon(Icons.chat_bubble, size: 11, color: Colors.white),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
-            child: Row(
-              children: [
-                Expanded(
-                  child: bio != null && bio.isNotEmpty
-                      ? Text(bio, style: AppTextStyles.bodyMedium, maxLines: 2, overflow: TextOverflow.ellipsis)
-                      : isAccepted
-                          ? Text(AppLocalizations.of(context)!.chat_open, style: AppTextStyles.monoSmall.copyWith(color: const Color(0xFF2D7FFF)))
-                          : const SizedBox.shrink(),
-                ),
-                Icon(
-                  isAccepted ? Icons.chat_bubble_outline : Icons.chevron_right,
-                  color: isAccepted ? const Color(0xFF2D7FFF) : AppColors.textTertiary,
-                ),
-              ],
+            Positioned(
+              bottom: 8, left: 10, right: 10,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '$name, $age',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Manrope',
+                        shadows: [Shadow(color: Colors.black54, blurRadius: 6)],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (verified)
+                    Container(
+                      width: 16, height: 16,
+                      margin: const EdgeInsets.only(left: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)]),
+                        boxShadow: [BoxShadow(color: const Color(0xFFFF2D55).withOpacity(0.4), blurRadius: 5)],
+                      ),
+                      child: const Icon(Icons.check, size: 10, color: Colors.white),
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            if (isAccepted)
+              Positioned(
+                top: 8, right: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFF2D7FFF).withOpacity(0.6), width: 1),
+                  ),
+                  child: const Icon(Icons.chat_bubble, size: 12, color: Color(0xFF2D7FFF)),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

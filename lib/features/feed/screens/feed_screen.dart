@@ -1037,7 +1037,13 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
             ),
           );
         }
-        _initRing(invitations.length);
+        // Kendi davetiyem her zaman ilk kart
+        final _feedUid = Supabase.instance.client.auth.currentUser?.id ?? '';
+        final _ordered = [
+          ...invitations.where((inv) => inv.ownerId == _feedUid),
+          ...invitations.where((inv) => inv.ownerId != _feedUid),
+        ];
+        _initRing(_ordered.length);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1064,9 +1070,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
               child: PageView.builder(
                 controller: _pageController,
                 padEnds: true,
-                itemCount: invitations.length * 1000,
+                itemCount: _ordered.length * 1000,
                 itemBuilder: (_, i) {
-                  final inv = invitations[i % invitations.length];
+                  final inv = _ordered[i % _ordered.length];
                   final currentUid = Supabase.instance.client.auth.currentUser?.id ?? '';
                   final isOwner = inv.ownerId == currentUid;
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);

@@ -386,16 +386,27 @@ class _InvitationDetailScreenState
                                           );
                                           if (confirm == true &&
                                               context.mounted) {
-                                            await Supabase.instance.client
-                                                .from('invitations')
-                                                .delete()
-                                                .eq('id', invitationId);
-                                            ref.invalidate(
-                                                invitationDetailProvider);
-                                            ref.invalidate(
-                                                invitationsProvider);
-                                            if (context.mounted) {
-                                              context.pop();
+                                            try {
+                                              await Supabase.instance.client
+                                                  .from('invitations')
+                                                  .delete()
+                                                  .eq('id', invitationId);
+                                              ref.invalidate(
+                                                  invitationDetailProvider);
+                                              ref.invalidate(
+                                                  invitationsProvider);
+                                              if (context.mounted) {
+                                                context.pop();
+                                              }
+                                            } catch (e) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text('$e'),
+                                                  backgroundColor:
+                                                      AuroraTheme.auroraRed,
+                                                ));
+                                              }
                                             }
                                           }
                                         },

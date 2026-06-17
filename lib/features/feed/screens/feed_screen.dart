@@ -1441,6 +1441,13 @@ class InvitationCard extends StatelessWidget {
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    if (isOwner && applicationCount > 0) ...[
+                      const SizedBox(height: 10),
+                      _ApplicantAvatarStack(
+                        photoUrls: applicantPhotoUrls,
+                        totalCount: applicationCount,
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     // Full-width gradient CTA
                     GestureDetector(
@@ -1943,5 +1950,90 @@ class _PulsingDotState extends State<_PulsingDot>
           ),
         ),
       );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Applicant Avatar Stack — kendi davetinde başvuran yüz yığını
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _ApplicantAvatarStack extends StatelessWidget {
+  final List<String> photoUrls;
+  final int totalCount;
+
+  const _ApplicantAvatarStack({
+    required this.photoUrls,
+    required this.totalCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const maxShown = 3;
+    const size = 30.0;
+    const overlap = 10.0;
+    final shown = photoUrls.take(maxShown).toList();
+    final remaining = totalCount - shown.length;
+    final stackWidth = shown.isEmpty
+        ? size
+        : size + (shown.length - 1) * (size - overlap);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: stackWidth,
+          height: size,
+          child: Stack(
+            children: List.generate(shown.length, (i) {
+              return Positioned(
+                left: i * (size - overlap),
+                child: Container(
+                  width: size,
+                  height: size,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black54, blurRadius: 6),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: shown[i],
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(color: Colors.white12),
+                      errorWidget: (_, __, ___) => Container(
+                        color: Colors.white12,
+                        child: const Icon(Icons.person, size: 16, color: Colors.white54),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+        if (remaining > 0) ...[
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Colors.white.withOpacity(0.12),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Text(
+              '+$remaining',
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
 }
 

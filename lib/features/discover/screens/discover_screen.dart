@@ -47,7 +47,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
                     AppLocalizations.of(context)!.discover_title,
                     style: TextStyle(

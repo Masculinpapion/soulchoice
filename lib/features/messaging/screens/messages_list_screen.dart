@@ -66,7 +66,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
                 child: ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
                   child: Text(
                     AppLocalizations.of(context)!.messages_title,
                     style: TextStyle(
@@ -386,7 +386,7 @@ class _ActiveIconLayers extends StatelessWidget {
           // Main bubble — aurora gradient
           ShaderMask(
             blendMode: BlendMode.srcIn,
-            shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+            shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
             child: const Icon(
               Icons.chat_bubble_rounded,
               size: 44,

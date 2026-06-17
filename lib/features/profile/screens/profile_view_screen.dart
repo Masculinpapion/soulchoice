@@ -9,6 +9,7 @@ import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
+import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 
 class ProfileViewScreen extends ConsumerStatefulWidget {
@@ -159,6 +160,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                 selfieStatus: selfieStatus,
                                 promptsAsync: promptsAsync,
                               ),
+                              const SizedBox(height: 28),
+                              _MyInvitationSection(),
                               const SizedBox(height: 28),
                             ],
 
@@ -1600,5 +1603,354 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// My Invitation Section — profilde davetiye yönetim kartı
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MyInvitationSection extends ConsumerWidget {
+  String _lang(BuildContext context) =>
+      Localizations.localeOf(context).languageCode;
+
+  String _sectionLabel(String lang) {
+    switch (lang) {
+      case 'ru':
+        return 'МОЯ ЗАЯВКА';
+      case 'en':
+        return 'MY INVITATION';
+      default:
+        return 'DAVETİYEM';
+    }
+  }
+
+  String _emptyTitle(String lang) {
+    switch (lang) {
+      case 'ru':
+        return 'Активной заявки нет';
+      case 'en':
+        return 'No active invitation';
+      default:
+        return 'Henüz aktif davetin yok';
+    }
+  }
+
+  String _createCta(String lang) {
+    switch (lang) {
+      case 'ru':
+        return '+ Создать заявку';
+      case 'en':
+        return '+ Create invitation';
+      default:
+        return '+ Yeni davetiye oluştur';
+    }
+  }
+
+  String _applicantsLabel(int count, String lang) {
+    switch (lang) {
+      case 'ru':
+        return '$count заявок';
+      case 'en':
+        return '$count applicants';
+      default:
+        return '$count başvuran';
+    }
+  }
+
+  String _remainingLabel(Duration d, String lang) {
+    if (d.isNegative) {
+      switch (lang) {
+        case 'ru':
+          return 'Истекло';
+        case 'en':
+          return 'Expired';
+        default:
+          return 'Süresi doldu';
+      }
+    }
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    if (h > 0) {
+      switch (lang) {
+        case 'ru':
+          return '${h}ч осталось';
+        case 'en':
+          return '${h}h left';
+        default:
+          return '${h}sa kaldı';
+      }
+    }
+    switch (lang) {
+      case 'ru':
+        return '${m}мин';
+      case 'en':
+        return '${m}m';
+      default:
+        return '${m}dk';
+    }
+  }
+
+  String _category(String? key, AppLocalizations l10n) {
+    switch (key) {
+      case 'food':
+        return l10n.category_food;
+      case 'bar':
+        return l10n.category_bar;
+      case 'concert':
+        return l10n.category_concert;
+      case 'travel':
+        return l10n.category_travel;
+      case 'culture':
+        return l10n.category_culture;
+      case 'cinema':
+        return l10n.category_cinema;
+      case 'theater':
+        return l10n.category_theater;
+      case 'coffee':
+        return l10n.category_coffee;
+      default:
+        return key ?? '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang = _lang(context);
+    final l10n = AppLocalizations.of(context)!;
+    final asyncInv = ref.watch(myActiveInvitationProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(_sectionLabel(lang), style: AuroraTheme.monoLabel),
+        const SizedBox(height: 14),
+        asyncInv.when(
+          loading: () => Container(
+            height: 96,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.04),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFFFF2D55),
+                ),
+              ),
+            ),
+          ),
+          error: (e, _) => Text('$e',
+              style: TextStyle(
+                  color: AuroraTheme.textSecondary, fontFamily: 'Manrope')),
+          data: (inv) {
+            if (inv == null) {
+              return _CreateInvitationCta(
+                label: _createCta(lang),
+                emptyTitle: _emptyTitle(lang),
+              );
+            }
+            final id = inv['id'] as String;
+            final count = inv['application_count'] as int? ?? 0;
+            final photoUrl = inv['owner_photo_url'] as String?;
+            final categoryKey = inv['category'] as String?;
+            final title = (inv['title'] as String?)?.trim() ?? '';
+            final expiresAt =
+                DateTime.parse(inv['expires_at'] as String).toLocal();
+            final remaining = expiresAt.difference(DateTime.now());
+
+            return Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(18),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => GoRouter.of(context).push('/invitation/$id'),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFFFF2D55).withOpacity(0.12),
+                        const Color(0xFF2D7FFF).withOpacity(0.12),
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.08),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SizedBox(
+                          width: 72,
+                          height: 72,
+                          child: photoUrl != null && photoUrl.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl: photoUrl,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.topCenter,
+                                  errorWidget: (_, __, ___) => Container(
+                                    color: Colors.white.withOpacity(0.05),
+                                    child: const Icon(Icons.image_outlined,
+                                        color: Colors.white54),
+                                  ),
+                                )
+                              : Container(
+                                  color: Colors.white.withOpacity(0.05),
+                                  child: const Icon(Icons.event_outlined,
+                                      color: Colors.white54),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 7,
+                                  height: 7,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(0xFF00E676),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  _category(categoryKey, l10n),
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.85),
+                                    fontSize: 11,
+                                    fontFamily: 'JetBrainsMono',
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              title.isNotEmpty
+                                  ? title
+                                  : _category(categoryKey, l10n),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Manrope',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${_applicantsLabel(count, lang)} · ${_remainingLabel(remaining, lang)}',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 11,
+                                fontFamily: 'JetBrainsMono',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right,
+                          color: Colors.white.withOpacity(0.7)),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _CreateInvitationCta extends StatelessWidget {
+  final String label;
+  final String emptyTitle;
+  const _CreateInvitationCta({required this.label, required this.emptyTitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => GoRouter.of(context).push('/invitation/create'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: Colors.white.withOpacity(0.04),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.1),
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFFF2D55).withOpacity(0.3),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      emptyTitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 11,
+                        fontFamily: 'JetBrainsMono',
+                        letterSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Manrope',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right,
+                  color: Colors.white.withOpacity(0.7)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 

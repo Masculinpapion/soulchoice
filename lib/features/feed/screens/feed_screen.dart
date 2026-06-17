@@ -14,6 +14,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitations_provider.dart';
+import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
@@ -1007,40 +1008,52 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       ),
       data: (invitations) {
         final l10n = AppLocalizations.of(context)!;
+        final currentUid = Supabase.instance.client.auth.currentUser?.id ?? '';
+        final others = invitations.where((inv) => inv.ownerId != currentUid).toList();
+        final myActiveAsync = ref.watch(myActiveInvitationProvider);
+
         if (invitations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ShaderMask(
-                  shaderCallback: (b) =>
-                      AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Icon(Icons.explore_outlined,
-                      color: Colors.white, size: 52),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.feed_no_invitations,
-                  style: TextStyle(
-                    fontFamily: 'Fraunces',
-                    fontStyle: FontStyle.italic,
-                    fontSize: 22,
-                    color: AuroraTheme.textSecondary,
+          return Column(
+            children: [
+              _MyInvitationStatusBar(asyncInv: myActiveAsync, l10n: l10n),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (b) =>
+                            AuroraTheme.redBlueGradient.createShader(b),
+                        child: const Icon(Icons.explore_outlined,
+                            color: Colors.white, size: 52),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.feed_no_invitations,
+                        style: TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontSize: 22,
+                          color: AuroraTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.feed_be_first,
+                        style: AuroraTheme.monoLabel,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.feed_be_first,
-                  style: AuroraTheme.monoLabel,
-                ),
-              ],
-            ),
+              ),
+            ],
           );
         }
-        _initRing(invitations.length);
+        _initRing(others.isNotEmpty ? others.length : 1);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _MyInvitationStatusBar(asyncInv: myActiveAsync, l10n: l10n),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
@@ -1061,12 +1074,28 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
               ),
             ),
             Expanded(
-              child: PageView.builder(
+              child: others.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Text(
+                          l10n.feed_no_invitations,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Fraunces',
+                            fontStyle: FontStyle.italic,
+                            fontSize: 18,
+                            color: AuroraTheme.textSecondary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : PageView.builder(
                 controller: _pageController,
                 padEnds: true,
-                itemCount: invitations.length * 1000,
+                itemCount: others.length * 1000,
                 itemBuilder: (_, i) {
-                  final inv = invitations[i % invitations.length];
+                  final inv = others[i % others.length];
                   final currentUid = Supabase.instance.client.auth.currentUser?.id ?? '';
                   final isOwner = inv.ownerId == currentUid;
                   final absOffset = (_currentPage - i).abs().clamp(0.0, 1.0);
@@ -1937,5 +1966,158 @@ class _PulsingDotState extends State<_PulsingDot>
           ),
         ),
       );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// My Invitation Status Bar — feed üstünde ince şerit
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MyInvitationStatusBar extends StatelessWidget {
+  final AsyncValue<Map<String, dynamic>?> asyncInv;
+  final AppLocalizations l10n;
+
+  const _MyInvitationStatusBar({required this.asyncInv, required this.l10n});
+
+  String _localeLang(BuildContext context) =>
+      Localizations.localeOf(context).languageCode;
+
+  String _activeLabel(String lang) {
+    switch (lang) {
+      case 'ru':
+        return 'Твоя заявка активна';
+      case 'en':
+        return 'Your invitation is active';
+      default:
+        return 'Davetin aktif';
+    }
+  }
+
+  String _applicantsLabel(int count, String lang) {
+    switch (lang) {
+      case 'ru':
+        return '$count заявок';
+      case 'en':
+        return '$count applicants';
+      default:
+        return '$count başvuran';
+    }
+  }
+
+  String _remainingLabel(Duration d, String lang) {
+    if (d.isNegative) {
+      switch (lang) {
+        case 'ru':
+          return 'Истекло';
+        case 'en':
+          return 'Expired';
+        default:
+          return 'Süresi doldu';
+      }
+    }
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    if (h > 0) {
+      switch (lang) {
+        case 'ru':
+          return '${h}ч осталось';
+        case 'en':
+          return '${h}h left';
+        default:
+          return '${h}sa kaldı';
+      }
+    }
+    switch (lang) {
+      case 'ru':
+        return '${m}мин осталось';
+      case 'en':
+        return '${m}m left';
+      default:
+        return '${m}dk kaldı';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inv = asyncInv.asData?.value;
+    if (inv == null) return const SizedBox.shrink();
+
+    final lang = _localeLang(context);
+    final id = inv['id'] as String;
+    final count = inv['application_count'] as int? ?? 0;
+    final expiresAt = DateTime.parse(inv['expires_at'] as String).toLocal();
+    final remaining = expiresAt.difference(DateTime.now());
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => GoRouter.of(context).push('/invitation/$id'),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFFFF2D55).withOpacity(0.18),
+                  const Color(0xFF2D7FFF).withOpacity(0.18),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.08),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFF00E676),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Color(0x6600E676),
+                          blurRadius: 6,
+                          spreadRadius: 1),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    _activeLabel(lang),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Manrope',
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  '${_applicantsLabel(count, lang)} · ${_remainingLabel(remaining, lang)}',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.78),
+                    fontSize: 11,
+                    fontFamily: 'JetBrainsMono',
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.chevron_right,
+                    color: Colors.white.withOpacity(0.7), size: 18),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 

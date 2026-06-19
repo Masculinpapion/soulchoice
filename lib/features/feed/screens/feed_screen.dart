@@ -1108,7 +1108,6 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                             ownerAge: inv.owner?.age ?? 0,
                             ownerPhotoUrl: inv.ownerPhotoUrl,
                             ownerCity: inv.cityName,
-                            ownerVerified: inv.owner?.isPremium ?? false,
                             timeRemaining: inv.timeRemaining,
                             applicationCount: inv.applicationCount ?? 0,
                             applicantPhotoUrls: inv.applicantPhotoUrls,
@@ -1151,7 +1150,6 @@ class InvitationCard extends StatelessWidget {
   final int ownerAge;
   final String? ownerPhotoUrl;
   final String? ownerCity;
-  final bool ownerVerified;
   final Duration timeRemaining;
   final int applicationCount;
   final List<String> applicantPhotoUrls;
@@ -1171,7 +1169,6 @@ class InvitationCard extends StatelessWidget {
     required this.ownerAge,
     this.ownerPhotoUrl,
     this.ownerCity,
-    this.ownerVerified = false,
     required this.timeRemaining,
     required this.applicationCount,
     this.applicantPhotoUrls = const [],
@@ -1305,40 +1302,10 @@ class InvitationCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // İsim + verified tik
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        '$ownerName, $ownerAge',
-                                        style: const TextStyle(fontFamily: 'Manrope', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    if (ownerVerified) ...[
-                                      const SizedBox(width: 4),
-                                      Container(
-                                        width: 14,
-                                        height: 14,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0xFFFF2D55),
-                                              blurRadius: 6,
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Icon(Icons.check, size: 9, color: Colors.white),
-                                      ),
-                                    ],
-                                  ],
+                                Text(
+                                  '$ownerName, $ownerAge',
+                                  style: const TextStyle(fontFamily: 'Manrope', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   ownerCity?.isNotEmpty == true ? ownerCity! : category.labelFor(l10n),

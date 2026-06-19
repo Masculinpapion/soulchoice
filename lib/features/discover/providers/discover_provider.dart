@@ -39,7 +39,7 @@ final discoverProvider =
   var query = client.from('invitations').select(
         '*, '
         'city:cities(name, name_ru, name_tr, name_en), '
-        'owner:users(id, name, age, gender, verified, subscription_status, is_deleted, '
+        'owner:users(id, name, age, gender, subscription_status, is_deleted, '
         'photos:user_photos(url, is_primary, is_selfie, order_index))',
       );
 
@@ -70,7 +70,6 @@ final discoverProvider =
             name: ownerRow['name'] as String? ?? '',
             age: ownerRow['age'] as int? ?? 0,
             gender: ownerRow['gender'] as String? ?? '',
-            verified: ownerRow['verified'] as bool? ?? false,
             subscriptionStatus: ownerRow['subscription_status'] as String? ?? 'free',
             createdAt: DateTime.now(),
           )

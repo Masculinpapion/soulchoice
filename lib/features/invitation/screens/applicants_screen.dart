@@ -98,7 +98,6 @@ class _ApplicantTile extends StatelessWidget {
     final applicant = app['applicant'] as Map<String, dynamic>?;
     final name = applicant?['name'] as String? ?? '—';
     final age = applicant?['age'] as int? ?? 0;
-    final verified = (applicant?['subscription_status'] as String? ?? '') == 'active';
     final applicationId = app['id'] as String;
     final applicantId = applicant?['id'] as String? ?? '';
     final status = app['status'] as String? ?? 'pending';
@@ -185,17 +184,6 @@ class _ApplicantTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (verified)
-                    Container(
-                      width: 16, height: 16,
-                      margin: const EdgeInsets.only(left: 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: const LinearGradient(colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)]),
-                        boxShadow: [BoxShadow(color: const Color(0xFFFF2D55).withOpacity(0.4), blurRadius: 5)],
-                      ),
-                      child: const Icon(Icons.check, size: 10, color: Colors.white),
-                    ),
                 ],
               ),
             ),

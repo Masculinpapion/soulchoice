@@ -11,8 +11,6 @@ class UserModel {
   final String? job;
   final String? education;
   final List<String> interests;
-  final bool verified;
-  final DateTime? verifiedAt;
   final String subscriptionStatus;
   final bool banned;
   final int warningCount;
@@ -32,8 +30,6 @@ class UserModel {
     this.job,
     this.education,
     this.interests = const [],
-    this.verified = false,
-    this.verifiedAt,
     this.subscriptionStatus = 'free',
     this.banned = false,
     this.warningCount = 0,
@@ -59,10 +55,6 @@ class UserModel {
                 ?.map((e) => e as String)
                 .toList() ??
             [],
-        verified: json['verified'] as bool? ?? false,
-        verifiedAt: json['verified_at'] != null
-            ? DateTime.parse(json['verified_at'] as String)
-            : null,
         subscriptionStatus:
             json['subscription_status'] as String? ?? 'free',
         banned: json['banned'] as bool? ?? false,
@@ -86,8 +78,6 @@ class UserModel {
         'job': job,
         'education': education,
         'interests': interests,
-        'verified': verified,
-        'verified_at': verifiedAt?.toIso8601String(),
         'subscription_status': subscriptionStatus,
         'banned': banned,
         'warning_count': warningCount,
@@ -108,8 +98,6 @@ class UserModel {
     String? job,
     String? education,
     List<String>? interests,
-    bool? verified,
-    DateTime? verifiedAt,
     String? subscriptionStatus,
     bool? banned,
     int? warningCount,
@@ -129,8 +117,6 @@ class UserModel {
         job: job ?? this.job,
         education: education ?? this.education,
         interests: interests ?? this.interests,
-        verified: verified ?? this.verified,
-        verifiedAt: verifiedAt ?? this.verifiedAt,
         subscriptionStatus: subscriptionStatus ?? this.subscriptionStatus,
         banned: banned ?? this.banned,
         warningCount: warningCount ?? this.warningCount,

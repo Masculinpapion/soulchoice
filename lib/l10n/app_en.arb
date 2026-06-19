@@ -771,8 +771,6 @@
   "paywall_price": "1000₽ / month",
   "paywall_cta": "Continue",
   "paywall_cancel_anytime": "You can cancel any time.",
-  "paywall_perk_unlimited": "Unlimited applications",
-  "paywall_perk_tick": "Blue tick on your profile",
   "paywall_coming_soon": "Payment system coming soon — awaiting IP registration.",
   "paywall_close": "Close"
 }

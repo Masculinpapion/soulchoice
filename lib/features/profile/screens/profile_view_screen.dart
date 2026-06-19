@@ -78,8 +78,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             final age = user['age'] as int? ?? 0;
             final selfieStatus =
                 user['selfie_status'] as String? ?? 'none';
-            final verified =
-                (user['subscription_status'] as String? ?? '') == 'active';
             final bio = user['bio'] as String?;
             final job = user['job'] as String?;
             final education = user['education'] as String?;
@@ -136,7 +134,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         trailing: trailing,
                         name: name,
                         age: age,
-                        verified: verified,
                         cityName: cityName,
                         job: job,
                         education: education,
@@ -488,7 +485,6 @@ class _HeroSection extends StatefulWidget {
   final Widget trailing;
   final String name;
   final int age;
-  final bool verified;
   final String cityName;
   final String? job;
   final String? education;
@@ -502,7 +498,6 @@ class _HeroSection extends StatefulWidget {
     required this.trailing,
     required this.name,
     required this.age,
-    required this.verified,
     required this.cityName,
     this.job,
     this.education,
@@ -712,59 +707,25 @@ class _HeroSectionState extends State<_HeroSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
               children: [
-                // İsim + verified badge
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        '${widget.name}, ${widget.age}',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 44,
-                          letterSpacing: -0.88,
-                          height: 1.05,
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Color(0x99000000),
-                              blurRadius: 24,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (widget.verified) ...[
-                      const SizedBox(width: 12),
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFFFF2D55),
-                              Color(0xFF2D7FFF),
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AuroraTheme.auroraRed.withOpacity(0.4),
-                              blurRadius: 16,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.check,
-                            size: 14, color: Colors.white),
+                Text(
+                  '${widget.name}, ${widget.age}',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Fraunces',
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 44,
+                    letterSpacing: -0.88,
+                    height: 1.05,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        color: Color(0x99000000),
+                        blurRadius: 24,
+                        offset: Offset(0, 2),
                       ),
                     ],
-                  ],
+                  ),
                 ),
 
                 // Meta row: city · job · education

@@ -923,7 +923,6 @@ class _HostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final verified = (owner['subscription_status'] as String? ?? '') == 'active';
     final job = owner['job'] as String?;
     final city = owner['city'] as Map<String, dynamic>?;
     final lang = ref.watch(localeProvider)?.languageCode;
@@ -1005,19 +1004,6 @@ class _HostCard extends ConsumerWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (verified) ...[
-                            const SizedBox(width: 5),
-                            Container(
-                              width: 13,
-                              height: 13,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AuroraTheme.auroraBlue,
-                              ),
-                              child: const Icon(Icons.check,
-                                  color: Colors.white, size: 8),
-                            ),
-                          ],
                         ],
                       ),
                       if (metaParts.isNotEmpty) ...[
@@ -1199,29 +1185,6 @@ class _HostRow extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if ((owner['subscription_status'] as String? ?? '') == 'active') ...[
-                    Container(
-                      width: 18,
-                      height: 18,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFFFF2D55),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.check,
-                          color: Colors.white, size: 11),
-                    ),
-                  ],
                   Icon(Icons.arrow_forward_ios,
                       size: 13,
                       color: Colors.white.withOpacity(0.25)),

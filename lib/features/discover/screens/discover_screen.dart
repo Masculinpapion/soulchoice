@@ -324,28 +324,6 @@ class _DiscoverCard extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    if (inv.owner?.isPremium == true) ...[
-                                      const SizedBox(width: 4),
-                                      Container(
-                                        width: 14,
-                                        height: 14,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [Color(0xFFFF2D55), Color(0xFF2D7FFF)],
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Color(0xFFFF2D55),
-                                              blurRadius: 6,
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Icon(Icons.check, size: 9, color: Colors.white),
-                                      ),
-                                    ],
                                   ],
                                 ),
                               ),

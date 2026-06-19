@@ -15,7 +15,7 @@ final applicantsProvider =
   // pending + accepted başvurular
   final apps = await client
       .from('applications')
-      .select('id, status, created_at, applicant:users(id, name, age, gender, verified, subscription_status, bio, photos:user_photos(url, is_primary))')
+      .select('id, status, created_at, applicant:users(id, name, age, gender, subscription_status, bio, photos:user_photos(url, is_primary))')
       .eq('invitation_id', invitationId)
       .inFilter('status', ['pending', 'accepted'])
       .order('created_at');

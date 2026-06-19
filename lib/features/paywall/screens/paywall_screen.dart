@@ -72,10 +72,6 @@ class PaywallScreen extends StatelessWidget {
                         color: AuroraTheme.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 26),
-                    _PerkRow(label: l10n.paywall_perk_unlimited),
-                    const SizedBox(height: 10),
-                    _PerkRow(label: l10n.paywall_perk_tick),
                     const Spacer(),
                     _PriceBox(price: l10n.paywall_price),
                     const SizedBox(height: 14),
@@ -141,42 +137,6 @@ class _GradientBadge extends StatelessWidget {
       child: const Center(
         child: Icon(Icons.workspace_premium, color: Colors.white, size: 44),
       ),
-    );
-  }
-}
-
-class _PerkRow extends StatelessWidget {
-  final String label;
-  const _PerkRow({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 22,
-          height: 22,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
-            ),
-          ),
-          child: const Icon(Icons.check, size: 13, color: Colors.white),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

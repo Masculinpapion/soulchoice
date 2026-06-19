@@ -5,7 +5,7 @@ final invitationDetailProvider =
     FutureProvider.autoDispose.family<Map<String, dynamic>?, String>((ref, id) async {
   final data = await Supabase.instance.client
       .from('invitations')
-      .select('*, owner:users(id, name, age, gender, verified, subscription_status, selfie_status, city_id, city:cities(name, name_ru, name_tr, name_en))')
+      .select('*, owner:users(id, name, age, gender, subscription_status, selfie_status, city_id, city:cities(name, name_ru, name_tr, name_en))')
       .eq('id', id)
       .maybeSingle();
   if (data == null) return null;

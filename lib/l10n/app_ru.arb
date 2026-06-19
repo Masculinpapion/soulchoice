@@ -771,8 +771,6 @@
   "paywall_price": "1000₽ / месяц",
   "paywall_cta": "Продолжить",
   "paywall_cancel_anytime": "Отменить можно в любой момент.",
-  "paywall_perk_unlimited": "Безлимитные заявки",
-  "paywall_perk_tick": "Синяя галочка в профиле",
   "paywall_coming_soon": "Платёжная система скоро — ждём регистрацию ИП.",
   "paywall_close": "Закрыть"
 }

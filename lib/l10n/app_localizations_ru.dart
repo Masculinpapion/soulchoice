@@ -891,8 +891,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_step_prompts => 'Вопросы';
 
   @override
-
-  @override
   String get profile_setup_step_age_range => 'Возрастной диапазон';
 
   @override
@@ -986,18 +984,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_prompts_answer_hint => 'Твой ответ...';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get profile_setup_age_range_title =>
@@ -1310,8 +1296,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-
-  @override
   String get settings_privacy_section => 'КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ';
 
   @override
@@ -1353,14 +1337,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_reupload => 'Загрузить снова';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get admin_title => 'Модерация';
@@ -1523,16 +1499,54 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Расскажи о своём опыте';
 
   @override
+  String get chat_delete_conversation => 'Удалить чат';
+
+  @override
+  String get chat_block_and_close => 'Заблокировать и закрыть';
+
+  @override
+  String get chat_block => 'Заблокировать';
+
+  @override
+  String get chat_open => 'Чат открыт';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'Хочешь удалить этот чат? Он переместится в архив.';
+
+  @override
+  String chat_block_confirm_body(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female':
+          'Ты уверена, что хочешь заблокировать этого человека? Чат закроется.',
+      'other':
+          'Ты уверен, что хочешь заблокировать этого человека? Чат закроется.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get error_page_not_found => 'Страница не найдена';
+
+  @override
+  String error_with_detail(String error) {
+    return 'Ошибка: $error';
+  }
+
+  @override
   String get create_inv_gate_title => 'Сначала одобрение селфи';
 
   @override
-  String get create_inv_gate_none => 'Для безопасности нужно загрузить селфи перед созданием приглашения.';
+  String get create_inv_gate_none =>
+      'Для безопасности нужно загрузить селфи перед созданием приглашения.';
 
   @override
-  String get create_inv_gate_pending => 'Твоё селфи проверяется. Админ одобрит в течение 24 часов — после одобрения сможешь создавать приглашения.';
+  String get create_inv_gate_pending =>
+      'Твоё селфи проверяется. Админ одобрит в течение 24 часов — после одобрения сможешь создавать приглашения.';
 
   @override
-  String get create_inv_gate_rejected => 'Твоё селфи отклонено. Пожалуйста, загрузи новое.';
+  String get create_inv_gate_rejected =>
+      'Твоё селфи отклонено. Пожалуйста, загрузи новое.';
 
   @override
   String get create_inv_gate_action_upload => 'Сделать селфи';
@@ -1540,4 +1554,25 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get create_inv_gate_action_ok => 'Понятно';
 
+  @override
+  String get paywall_title => 'Бесплатная заявка использована';
+
+  @override
+  String get paywall_subtitle => 'Для безлимитных заявок оформи подписку.';
+
+  @override
+  String get paywall_price => '1000₽ / месяц';
+
+  @override
+  String get paywall_cta => 'Продолжить';
+
+  @override
+  String get paywall_cancel_anytime => 'Отменить можно в любой момент.';
+
+  @override
+  String get paywall_coming_soon =>
+      'Платёжная система скоро — ждём регистрацию ИП.';
+
+  @override
+  String get paywall_close => 'Закрыть';
 }

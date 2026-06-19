@@ -880,8 +880,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_step_prompts => 'Questions';
 
   @override
-
-  @override
   String get profile_setup_step_age_range => 'Age range';
 
   @override
@@ -974,18 +972,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_setup_prompts_answer_hint => 'Your answer...';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get profile_setup_age_range_title =>
@@ -1288,8 +1274,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-
-  @override
   String get settings_privacy_section => 'PRIVACY & SECURITY';
 
   @override
@@ -1330,14 +1314,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_reupload => 'Re-upload';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get admin_title => 'Moderation';
@@ -1498,16 +1474,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Share your experience';
 
   @override
+  String get chat_delete_conversation => 'Delete Chat';
+
+  @override
+  String get chat_block_and_close => 'Block and Close';
+
+  @override
+  String get chat_block => 'Block';
+
+  @override
+  String get chat_open => 'Chat open';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'Do you want to delete this chat? It will be moved to history.';
+
+  @override
+  String chat_block_confirm_body(String gender) {
+    return 'Are you sure you want to block this person? The chat will close.';
+  }
+
+  @override
+  String get error_page_not_found => 'Page not found';
+
+  @override
+  String error_with_detail(String error) {
+    return 'Error: $error';
+  }
+
+  @override
   String get create_inv_gate_title => 'Selfie approval required';
 
   @override
-  String get create_inv_gate_none => 'For safety, you need to upload a selfie before creating an invitation.';
+  String get create_inv_gate_none =>
+      'For safety, you need to upload a selfie before creating an invitation.';
 
   @override
-  String get create_inv_gate_pending => 'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.';
+  String get create_inv_gate_pending =>
+      'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.';
 
   @override
-  String get create_inv_gate_rejected => 'Your selfie was rejected. Please upload a new one.';
+  String get create_inv_gate_rejected =>
+      'Your selfie was rejected. Please upload a new one.';
 
   @override
   String get create_inv_gate_action_upload => 'Take selfie';
@@ -1515,4 +1523,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get create_inv_gate_action_ok => 'Got it';
 
+  @override
+  String get paywall_title => 'You\'ve used your free application';
+
+  @override
+  String get paywall_subtitle => 'Subscribe for unlimited applications.';
+
+  @override
+  String get paywall_price => '1000₽ / month';
+
+  @override
+  String get paywall_cta => 'Continue';
+
+  @override
+  String get paywall_cancel_anytime => 'You can cancel any time.';
+
+  @override
+  String get paywall_coming_soon =>
+      'Payment system coming soon — awaiting IP registration.';
+
+  @override
+  String get paywall_close => 'Close';
 }

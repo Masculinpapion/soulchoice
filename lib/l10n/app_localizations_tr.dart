@@ -880,8 +880,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_step_prompts => 'Sorular';
 
   @override
-
-  @override
   String get profile_setup_step_age_range => 'Yaş aralığı';
 
   @override
@@ -974,18 +972,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_setup_prompts_answer_hint => 'Cevabın...';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get profile_setup_age_range_title => 'Hangi yaş aralığını arıyorsun?';
@@ -1285,8 +1271,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-
-  @override
   String get settings_privacy_section => 'GİZLİLİK VE GÜVENLİK';
 
   @override
@@ -1327,14 +1311,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings_reupload => 'Yeniden yükle';
-
-  @override
-
-  @override
-
-  @override
-
-  @override
 
   @override
   String get admin_title => 'Moderasyon';
@@ -1496,16 +1472,48 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Deneyimini paylaş';
 
   @override
+  String get chat_delete_conversation => 'Sohbeti Sil';
+
+  @override
+  String get chat_block_and_close => 'Engelle ve Kapat';
+
+  @override
+  String get chat_block => 'Engelle';
+
+  @override
+  String get chat_open => 'Chat açık';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'Bu sohbeti silmek istiyor musun? Geçmiş\'e taşınacak.';
+
+  @override
+  String chat_block_confirm_body(String gender) {
+    return 'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.';
+  }
+
+  @override
+  String get error_page_not_found => 'Sayfa bulunamadı';
+
+  @override
+  String error_with_detail(String error) {
+    return 'Hata: $error';
+  }
+
+  @override
   String get create_inv_gate_title => 'Önce selfie onayı';
 
   @override
-  String get create_inv_gate_none => 'Güvenlik için davetiye açmadan önce selfie yüklemen gerekiyor.';
+  String get create_inv_gate_none =>
+      'Güvenlik için davetiye açmadan önce selfie yüklemen gerekiyor.';
 
   @override
-  String get create_inv_gate_pending => 'Selfie\'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
+  String get create_inv_gate_pending =>
+      'Selfie\'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
 
   @override
-  String get create_inv_gate_rejected => 'Selfie\'n reddedildi. Yeni bir selfie yüklemen gerekiyor.';
+  String get create_inv_gate_rejected =>
+      'Selfie\'n reddedildi. Yeni bir selfie yüklemen gerekiyor.';
 
   @override
   String get create_inv_gate_action_upload => 'Selfie çek';
@@ -1513,4 +1521,25 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get create_inv_gate_action_ok => 'Anladım';
 
+  @override
+  String get paywall_title => 'Ücretsiz başvuru hakkını kullandın';
+
+  @override
+  String get paywall_subtitle => 'Sınırsız başvuru için aboneliği başlat.';
+
+  @override
+  String get paywall_price => '1000₽ / ay';
+
+  @override
+  String get paywall_cta => 'Devam et';
+
+  @override
+  String get paywall_cancel_anytime => 'İstediğin zaman iptal edebilirsin.';
+
+  @override
+  String get paywall_coming_soon =>
+      'Ödeme sistemi yakında — ИП kuruluşu bekleniyor.';
+
+  @override
+  String get paywall_close => 'Kapat';
 }

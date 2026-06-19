@@ -1720,7 +1720,6 @@ abstract class AppLocalizations {
   /// **'Questions'**
   String get profile_setup_step_prompts;
 
-
   /// No description provided for @profile_setup_step_age_range.
   ///
   /// In en, this message translates to:
@@ -1894,12 +1893,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your answer...'**
   String get profile_setup_prompts_answer_hint;
-
-
-
-
-
-
 
   /// No description provided for @profile_setup_age_range_title.
   ///
@@ -2447,7 +2440,6 @@ abstract class AppLocalizations {
   /// **'{min} — {max} years'**
   String settings_age_range_value(int min, int max);
 
-
   /// No description provided for @settings_privacy_section.
   ///
   /// In en, this message translates to:
@@ -2531,10 +2523,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Re-upload'**
   String get settings_reupload;
-
-
-
-
 
   /// No description provided for @admin_title.
   ///
@@ -2830,6 +2818,54 @@ abstract class AppLocalizations {
   /// **'Share your experience'**
   String get notif_type_feedback_request_body;
 
+  /// No description provided for @chat_delete_conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Chat'**
+  String get chat_delete_conversation;
+
+  /// No description provided for @chat_block_and_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Block and Close'**
+  String get chat_block_and_close;
+
+  /// No description provided for @chat_block.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get chat_block;
+
+  /// No description provided for @chat_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat open'**
+  String get chat_open;
+
+  /// No description provided for @chat_delete_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this chat? It will be moved to history.'**
+  String get chat_delete_confirm_body;
+
+  /// No description provided for @chat_block_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to block this person? The chat will close.'**
+  String chat_block_confirm_body(String gender);
+
+  /// No description provided for @error_page_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get error_page_not_found;
+
+  /// No description provided for @error_with_detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String error_with_detail(String error);
+
   /// No description provided for @create_inv_gate_title.
   ///
   /// In en, this message translates to:
@@ -2866,6 +2902,47 @@ abstract class AppLocalizations {
   /// **'Got it'**
   String get create_inv_gate_action_ok;
 
+  /// No description provided for @paywall_title.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used your free application'**
+  String get paywall_title;
+
+  /// No description provided for @paywall_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe for unlimited applications.'**
+  String get paywall_subtitle;
+
+  /// No description provided for @paywall_price.
+  ///
+  /// In en, this message translates to:
+  /// **'1000₽ / month'**
+  String get paywall_price;
+
+  /// No description provided for @paywall_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get paywall_cta;
+
+  /// No description provided for @paywall_cancel_anytime.
+  ///
+  /// In en, this message translates to:
+  /// **'You can cancel any time.'**
+  String get paywall_cancel_anytime;
+
+  /// No description provided for @paywall_coming_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment system coming soon — awaiting IP registration.'**
+  String get paywall_coming_soon;
+
+  /// No description provided for @paywall_close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get paywall_close;
 }
 
 class _AppLocalizationsDelegate

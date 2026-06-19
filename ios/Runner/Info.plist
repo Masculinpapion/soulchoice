@@ -48,17 +48,17 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>SoulChoice определяет ваш город для показа актуальных приглашений рядом с вами.</string>
+	<string>SoulChoice needs location to show nearby events</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>SoulChoice определяет ваш город для показа актуальных приглашений рядом с вами.</string>
+	<string>SoulChoice needs location to show nearby events</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SoulChoice фотографияларыңызға қатынасуды сұрайды / SoulChoice fotoğraflarınıza erişim istiyor</string>
+	<string>SoulChoice needs photo access to upload profile photos</string>
 	<key>NSCameraUsageDescription</key>
-	<string>SoulChoice камераға қатынасуды сұрайды / SoulChoice kameranıza erişim istiyor</string>
+	<string>SoulChoice needs camera access for selfie verification</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>SoulChoice фотографияларды сақтауды сұрайды / SoulChoice fotoğraf kaydetmek istiyor</string>
+	<string>SoulChoice needs permission to save photos to your library</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>SoulChoice микрофонға қатынасуды сұрайды / SoulChoice mikrofona erişim istiyor</string>
+	<string>SoulChoice needs microphone access for video features</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -765,5 +765,14 @@
   "create_inv_gate_pending": "Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.",
   "create_inv_gate_rejected": "Your selfie was rejected. Please upload a new one.",
   "create_inv_gate_action_upload": "Take selfie",
-  "create_inv_gate_action_ok": "Got it"
+  "create_inv_gate_action_ok": "Got it",
+  "paywall_title": "You've used your free application",
+  "paywall_subtitle": "Subscribe for unlimited applications.",
+  "paywall_price": "1000₽ / month",
+  "paywall_cta": "Continue",
+  "paywall_cancel_anytime": "You can cancel any time.",
+  "paywall_perk_unlimited": "Unlimited applications",
+  "paywall_perk_tick": "Blue tick on your profile",
+  "paywall_coming_soon": "Payment system coming soon — awaiting IP registration.",
+  "paywall_close": "Close"
 }

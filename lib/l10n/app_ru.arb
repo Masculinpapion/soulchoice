@@ -765,5 +765,14 @@
   "create_inv_gate_pending": "Твоё селфи проверяется. Админ одобрит в течение 24 часов — после одобрения сможешь создавать приглашения.",
   "create_inv_gate_rejected": "Твоё селфи отклонено. Пожалуйста, загрузи новое.",
   "create_inv_gate_action_upload": "Сделать селфи",
-  "create_inv_gate_action_ok": "Понятно"
+  "create_inv_gate_action_ok": "Понятно",
+  "paywall_title": "Бесплатная заявка использована",
+  "paywall_subtitle": "Для безлимитных заявок оформи подписку.",
+  "paywall_price": "1000₽ / месяц",
+  "paywall_cta": "Продолжить",
+  "paywall_cancel_anytime": "Отменить можно в любой момент.",
+  "paywall_perk_unlimited": "Безлимитные заявки",
+  "paywall_perk_tick": "Синяя галочка в профиле",
+  "paywall_coming_soon": "Платёжная система скоро — ждём регистрацию ИП.",
+  "paywall_close": "Закрыть"
 }

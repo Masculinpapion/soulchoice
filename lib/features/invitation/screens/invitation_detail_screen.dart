@@ -1391,6 +1391,15 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         if (mounted) setState(() => _loading = false);
         return;
       }
+      // Paywall gate: premium aktif değilse ve ücretsiz hak kullanıldıysa → /paywall
+      final canApply = await client.rpc('can_user_apply', params: {'p_user_id': uid}) as bool? ?? false;
+      if (!canApply) {
+        if (mounted) {
+          setState(() => _loading = false);
+          context.push('/paywall');
+        }
+        return;
+      }
       await client.from('applications').upsert({
         'invitation_id': widget.invitationId,
         'applicant_id': uid,

@@ -765,5 +765,14 @@
   "create_inv_gate_pending": "Selfie'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.",
   "create_inv_gate_rejected": "Selfie'n reddedildi. Yeni bir selfie yüklemen gerekiyor.",
   "create_inv_gate_action_upload": "Selfie çek",
-  "create_inv_gate_action_ok": "Anladım"
+  "create_inv_gate_action_ok": "Anladım",
+  "paywall_title": "Ücretsiz başvuru hakkını kullandın",
+  "paywall_subtitle": "Sınırsız başvuru için aboneliği başlat.",
+  "paywall_price": "1000₽ / ay",
+  "paywall_cta": "Devam et",
+  "paywall_cancel_anytime": "İstediğin zaman iptal edebilirsin.",
+  "paywall_perk_unlimited": "Sınırsız başvuru",
+  "paywall_perk_tick": "Profilinde mavi tik",
+  "paywall_coming_soon": "Ödeme sistemi yakında — ИП kuruluşu bekleniyor.",
+  "paywall_close": "Kapat"
 }

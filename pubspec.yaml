@@ -95,6 +95,7 @@ flutter:
     - assets/fonts/
     - assets/lottie/
     - assets/icons/
+    - assets/branding/
 
   fonts:
     - family: Fraunces

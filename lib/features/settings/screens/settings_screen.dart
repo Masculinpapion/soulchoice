@@ -100,7 +100,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('SoulChoice', style: TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 22)),
+        title: Image.asset('assets/branding/soulchoice_wordmark.png', height: 28, fit: BoxFit.contain),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

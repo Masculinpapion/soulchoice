@@ -91,15 +91,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     ],
                   ),
                   const SizedBox(height: 36),
-                  // Gradient brand name
-                  ShaderMask(
-                    shaderCallback: (bounds) =>
-                        AppColors.primaryGradient.createShader(bounds),
-                    child: Text(
-                      'SoulChoice',
-                      style: AppTextStyles.displayLarge
-                          .copyWith(color: Colors.white),
-                    ),
+                  Image.asset(
+                    'assets/branding/soulchoice_wordmark.png',
+                    height: 50,
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 12),
                   Text(

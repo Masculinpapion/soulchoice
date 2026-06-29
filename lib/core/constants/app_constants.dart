@@ -2,7 +2,7 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = 'SoulChoice';
-  static const String appSlogan = 'Choose Your Night';
+  static const String appSlogan = 'Choose Your Moment';
 
   // Age limits
   static const int minAge = 21;

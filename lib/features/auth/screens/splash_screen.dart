@@ -98,7 +98,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'CHOOSE YOUR NIGHT',
+                    'CHOOSE YOUR MOMENT',
                     style: AppTextStyles.monoSmall.copyWith(
                       letterSpacing: 5,
                       color: AppColors.textTertiary,

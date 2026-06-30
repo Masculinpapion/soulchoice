@@ -42,6 +42,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool? _myConfirmation;
   bool? _theirConfirmation;
 
+  // Timezone offsets — gönderenin seçtiği şehir saatine göre mesaj zamanı
+  int? _myUtcOffset;
+  int? _otherUtcOffset;
+
   @override
   void initState() {
     super.initState();
@@ -71,13 +75,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _isUser1 ? matchRow['user2_id'] as String : user1Id;
 
       Map<String, dynamic>? otherUser;
+      Map<String, dynamic>? myUser;
       String? photoUrl;
       try {
-        otherUser = await client
-            .from('users')
-            .select('name, age')
-            .eq('id', otherUserId)
-            .maybeSingle();
+        final results = await Future.wait<dynamic>([
+          client.from('users').select('name, age, city:cities(utc_offset)').eq('id', otherUserId).maybeSingle(),
+          client.from('users').select('city:cities(utc_offset)').eq('id', _currentUid as Object).maybeSingle(),
+        ]);
+        otherUser = results[0] as Map<String, dynamic>?;
+        myUser = results[1] as Map<String, dynamic>?;
       } catch (e) {
         debugPrint('chat _loadMatchInfo users error: $e');
       }
@@ -101,6 +107,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final meetDate = matchRow['meeting_date'];
       final archDate = matchRow['archived_at'];
 
+      final otherCity = otherUser?['city'] as Map<String, dynamic>?;
+      final myCity = myUser?['city'] as Map<String, dynamic>?;
+
       setState(() {
         _matchInfo = {
           'invitation': matchRow['invitation'],
@@ -116,6 +125,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _theirConfirmation = _isUser1
             ? matchRow['meeting_confirmed_user2'] as bool?
             : matchRow['meeting_confirmed_user1'] as bool?;
+        _myUtcOffset = (myCity?['utc_offset'] as num?)?.toInt();
+        _otherUtcOffset = (otherCity?['utc_offset'] as num?)?.toInt();
       });
     } catch (e, st) {
       debugPrint('chat _loadMatchInfo fatal: $e\n$st');
@@ -497,7 +508,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             }
                             final msg = _messages[_messages.length - 1 - i];
                             final isMe = msg.senderId == _currentUid;
-                            return _MessageBubble(message: msg, isMe: isMe);
+                            final senderOffset = isMe ? _myUtcOffset : _otherUtcOffset;
+                            return _MessageBubble(message: msg, isMe: isMe, senderUtcOffset: senderOffset);
                           },
                         ),
             ),
@@ -1005,12 +1017,18 @@ class _EmptyState extends StatelessWidget {
 class _MessageBubble extends StatelessWidget {
   final MessageModel message;
   final bool isMe;
-  const _MessageBubble({required this.message, required this.isMe});
+  final int? senderUtcOffset;
+  const _MessageBubble({required this.message, required this.isMe, this.senderUtcOffset});
 
   @override
   Widget build(BuildContext context) {
+    // Mesaj saati: gönderenin seçtiği şehrin TZ'sine göre.
+    // city.utc_offset bilinmiyorsa fallback olarak cihaz local saati.
+    final DateTime shown = senderUtcOffset != null
+        ? message.createdAt.toUtc().add(Duration(hours: senderUtcOffset!))
+        : message.createdAt.toLocal();
     final time =
-        '${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}';
+        '${shown.hour.toString().padLeft(2, '0')}:${shown.minute.toString().padLeft(2, '0')}';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

@@ -1234,31 +1234,44 @@ class InvitationCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
+              // 1. Arka plan fotoğrafı — two-layer kompozit
+              //    Arka: aynı foto blurlu + cover ile boşluk doldurur
+              //    Ön:   aynı foto contain + topCenter, kişi tam görünür ("az uzaktan")
               if (ownerPhotoUrl != null)
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
                   placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
                   errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
+                  imageBuilder: (context, imageProvider) => Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image(image: imageProvider, fit: BoxFit.cover, alignment: Alignment.center),
+                      BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                        child: Container(color: Colors.black.withOpacity(0.28)),
+                      ),
+                      Image(image: imageProvider, fit: BoxFit.contain, alignment: Alignment.topCenter),
+                    ],
+                  ),
                 )
               else
                 _CardFallbackGradient(ownerName: ownerName, category: category),
 
-              // 2. Gradient overlay — alt %35, yüz temiz kalır, alt köşe net görünür
+              // 2. Gradient overlay — üst %18 pill arkası bant + alt %40 metin için karartma
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      stops: const [0.0, 0.60, 0.82, 1.0],
+                      stops: const [0.0, 0.10, 0.22, 0.55, 0.78, 1.0],
                       colors: [
+                        Colors.black.withOpacity(0.55),
+                        Colors.black.withOpacity(0.30),
                         Colors.transparent,
                         Colors.transparent,
-                        Colors.black.withOpacity(0.50),
-                        Colors.black.withOpacity(0.84),
+                        Colors.black.withOpacity(0.55),
+                        Colors.black.withOpacity(0.88),
                       ],
                     ),
                   ),
@@ -1267,28 +1280,28 @@ class InvitationCard extends StatelessWidget {
 
               // 3. Üst glass pill — avatar + isim/yaş (kategori badge ayrı)
               Positioned(
-                top: 14,
-                left: 14,
-                right: 54,
+                top: 12,
+                left: 12,
+                right: 50,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
                     child: Container(
-                      padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+                      padding: const EdgeInsets.fromLTRB(4, 4, 9, 4),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.38),
+                        color: Colors.black.withOpacity(0.52),
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(color: Colors.white.withOpacity(0.18), width: 0.8),
                       ),
                       child: Row(
                         children: [
                           Container(
-                            width: 32,
-                            height: 32,
+                            width: 28,
+                            height: 28,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.30), width: 1.5),
+                              border: Border.all(color: Colors.white.withOpacity(0.30), width: 1.2),
                             ),
                             child: ClipOval(
                               child: ownerPhotoUrl != null
@@ -1296,7 +1309,7 @@ class InvitationCard extends StatelessWidget {
                                   : _AvatarFallback(name: ownerName),
                             ),
                           ),
-                          const SizedBox(width: 9),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1304,12 +1317,12 @@ class InvitationCard extends StatelessWidget {
                               children: [
                                 Text(
                                   '$ownerName, $ownerAge',
-                                  style: const TextStyle(fontFamily: 'Manrope', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                  style: const TextStyle(fontFamily: 'Manrope', fontSize: 11.5, fontWeight: FontWeight.w600, color: Colors.white),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   ownerCity?.isNotEmpty == true ? ownerCity! : category.labelFor(l10n),
-                                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white.withOpacity(0.60)),
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8.5, color: Colors.white.withOpacity(0.60)),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -1322,32 +1335,32 @@ class InvitationCard extends StatelessWidget {
                 ),
               ),
 
-              // 3b. Kategori badge — sağ üst, sol pill (avatar 32px) ile vertical center'da hizalı
+              // 3b. Kategori badge — sağ üst, sol pill (avatar 28px) ile vertical center'da hizalı
               Positioned(
-                top: 19,
-                right: 14,
+                top: 16,
+                right: 12,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
-                      width: 32,
-                      height: 32,
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.50),
-                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.black.withOpacity(0.52),
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
                       ),
                       child: Center(
                         child: category == InvitationCategory.bar
-                            ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
+                            ? Image.asset('assets/icons/bar.png', width: 13, height: 13)
                             : category == InvitationCategory.concert
                             ? const Text('♫', style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 22,
                                 height: 1.0,
                                 color: AppColors.primaryRed,
                               ))
-                            : Text(category.emoji, style: const TextStyle(fontSize: 14)),
+                            : Text(category.emoji, style: const TextStyle(fontSize: 13)),
                       ),
                     ),
                   ),
@@ -1363,7 +1376,30 @@ class InvitationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Timer pill — soft glass
+                    // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
+                    if (eventDate != null)
+                      Text(
+                        _metaLabel(l10n, eventDate!),
+                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
+                      ),
+                    const SizedBox(height: 5),
+                    // Fraunces italic başlık
+                    Text(
+                      title,
+                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (isOwner && applicationCount > 0) ...[
+                      const SizedBox(height: 10),
+                      _ApplicantAvatarStack(
+                        photoUrls: applicantPhotoUrls,
+                        totalCount: applicationCount,
+                        onTap: onCtaTap,
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    // Timer pill — CTA'nın hemen üstünde, kişinin yüzünden uzak
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: BackdropFilter(
@@ -1394,30 +1430,7 @@ class InvitationCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
-                    if (eventDate != null)
-                      Text(
-                        _metaLabel(l10n, eventDate!),
-                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
-                      ),
-                    const SizedBox(height: 5),
-                    // Fraunces italic başlık
-                    Text(
-                      title,
-                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (isOwner && applicationCount > 0) ...[
-                      const SizedBox(height: 10),
-                      _ApplicantAvatarStack(
-                        photoUrls: applicantPhotoUrls,
-                        totalCount: applicationCount,
-                        onTap: onCtaTap,
-                      ),
-                    ],
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     // Full-width gradient CTA
                     GestureDetector(
                       onTap: onCtaTap ?? onTap,

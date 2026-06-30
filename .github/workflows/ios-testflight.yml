@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build-and-upload:
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
     env:
       API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
@@ -25,6 +25,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select latest Xcode (Swift 6 needed for Firebase iOS SDK)
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2

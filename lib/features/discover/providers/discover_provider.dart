@@ -50,16 +50,26 @@ final discoverProvider =
   if (currentUserId != null) {
     query = query.neq('owner_id', currentUserId);
   }
-  if (cityId != null) {
-    query = query.eq('city_id', cityId);
-  }
   if (blockedIds.isNotEmpty) {
     query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
   }
 
-  final data = await query.order('created_at', ascending: false).limit(50);
+  final rawData = await query.order('created_at', ascending: false).limit(100);
 
-  final list = (data as List).map((row) {
+  // Hibrit: cityId varsa once o sehirdekiler (shuffle), sonra digerleri (shuffle).
+  // cityId yoksa hepsi shuffle.
+  final List<Map<String, dynamic>> rows = (rawData as List).cast<Map<String, dynamic>>().toList();
+  if (cityId != null) {
+    final cityMatched = rows.where((r) => r['city_id'] == cityId).toList()..shuffle();
+    final others = rows.where((r) => r['city_id'] != cityId).toList()..shuffle();
+    rows
+      ..clear()
+      ..addAll([...cityMatched, ...others]);
+  } else {
+    rows.shuffle();
+  }
+
+  final list = rows.map((row) {
     final ownerRow = row['owner'] as Map<String, dynamic>?;
     if (ownerRow?['is_deleted'] == true) return null;
 
@@ -96,7 +106,7 @@ final discoverProvider =
       .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
       .toList();
 
-  list.shuffle();
+  // (shuffle yukarida raw row asamasinda yapildi — sira korunmali)
 
   // Kullanıcı başına 1 kart — aynı kişinin birden fazla daveti olsa bile
   final seen = <String>{};

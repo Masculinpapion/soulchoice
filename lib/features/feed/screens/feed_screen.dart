@@ -1239,7 +1239,7 @@ class InvitationCard extends StatelessWidget {
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
+                  alignment: const Alignment(0.0, -0.3),
                   placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
                   errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
                 )

@@ -117,17 +117,18 @@ jobs:
       - name: Flutter build iOS (no codesign)
         run: flutter build ios --release --no-codesign
 
-      - name: Xcode archive (manual signing with installed cert+profile)
+      - name: Xcode archive (auto-pick cert+profile from keychain/profiles dir)
         working-directory: ios
         run: |
+          # Only pass DEVELOPMENT_TEAM globally — Xcode auto-detects cert
+          # from keychain + profile from ~/Library/MobileDevice/Provisioning Profiles/
+          # by bundle ID match. Avoids forcing PROVISIONING_PROFILE_SPECIFIER on
+          # SPM packages (Firebase, GoogleUtilities, etc.) which reject it.
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
             DEVELOPMENT_TEAM=GCGPLKY4Q4 \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="SoulChoice AppStore" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
             -destination 'generic/platform=iOS' \
             archive
 

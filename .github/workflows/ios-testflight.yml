@@ -96,6 +96,9 @@ jobs:
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_$API_KEY_ID.p8 \
             -authenticationKeyID $API_KEY_ID \
             -authenticationKeyIssuerID $API_ISSUER_ID \
+            DEVELOPMENT_TEAM=GCGPLKY4Q4 \
+            CODE_SIGN_STYLE=Automatic \
+            -destination 'generic/platform=iOS' \
             archive
 
       - name: Export IPA with cloud signing

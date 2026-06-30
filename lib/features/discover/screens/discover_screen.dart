@@ -198,10 +198,12 @@ class _DiscoverCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Fotoğraf — two-layer kompozit (blur bg + contain fg)
+                // Fotoğraf
                 photoUrl != null
                     ? CachedNetworkImage(
                         imageUrl: photoUrl,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
                         placeholder: (_, __) => Container(
                             color: Colors.white.withOpacity(0.05)),
                         errorWidget: (_, __, ___) => Container(
@@ -209,31 +211,18 @@ class _DiscoverCard extends StatelessWidget {
                           child: const Icon(Icons.image_not_supported,
                               color: Colors.white24),
                         ),
-                        imageBuilder: (context, imageProvider) => Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image(image: imageProvider, fit: BoxFit.cover, alignment: Alignment.center),
-                            BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-                              child: Container(color: Colors.black.withOpacity(0.28)),
-                            ),
-                            Image(image: imageProvider, fit: BoxFit.contain, alignment: Alignment.topCenter),
-                          ],
-                        ),
                       )
                     : Container(color: Colors.white.withOpacity(0.05)),
 
-                // Gradient — üst pill arkası bant + alt metin için karartma
+                // Alt gradient
                 Positioned.fill(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        stops: const [0.0, 0.12, 0.25, 0.45, 1.0],
+                        stops: const [0.0, 0.4, 1.0],
                         colors: [
-                          Colors.black.withOpacity(0.50),
-                          Colors.black.withOpacity(0.25),
                           Colors.transparent,
                           Colors.black.withOpacity(0.45),
                           Colors.black.withOpacity(0.88),

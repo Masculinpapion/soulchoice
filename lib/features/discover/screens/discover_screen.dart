@@ -16,9 +16,9 @@ import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
-// Deterministik aspect ratio — hash bazlı, iki seçenek
+// Deterministik aspect ratio — hash bazlı, iki seçenek (yumusak masonry)
 double _cardAspect(String id) =>
-    id.hashCode.abs() % 2 == 0 ? 0.72 : 0.88;
+    id.hashCode.abs() % 2 == 0 ? 0.72 : 0.80;
 
 class DiscoverScreen extends ConsumerStatefulWidget {
   const DiscoverScreen({super.key});

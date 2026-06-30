@@ -67,9 +67,9 @@ jobs:
           <plist version="1.0">
           <dict>
             <key>method</key>
-            <string>app-store</string>
+            <string>app-store-connect</string>
             <key>destination</key>
-            <string>export</string>
+            <string>upload</string>
             <key>signingStyle</key>
             <string>automatic</string>
             <key>teamID</key>
@@ -101,36 +101,21 @@ jobs:
             -destination 'generic/platform=iOS' \
             archive
 
-      - name: Export IPA with cloud signing
+      - name: Export + Upload to TestFlight (single xcodebuild action, Cloud Signing)
         run: |
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/Runner.xcarchive \
-            -exportPath $RUNNER_TEMP/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist \
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_$API_KEY_ID.p8 \
             -authenticationKeyID $API_KEY_ID \
             -authenticationKeyIssuerID $API_ISSUER_ID
 
-      - name: Upload to TestFlight
-        run: |
-          IPA=$(ls $RUNNER_TEMP/ipa/*.ipa | head -1)
-          if [ -z "$IPA" ]; then
-            echo "::error::IPA not found"
-            exit 1
-          fi
-          echo "Uploading: $IPA"
-          xcrun altool --upload-app \
-            --type ios \
-            --file "$IPA" \
-            --apiKey "$API_KEY_ID" \
-            --apiIssuer "$API_ISSUER_ID"
-
-      - name: Upload IPA as artifact (backup)
+      - name: Upload xcarchive as artifact (backup)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-ipa-build-${{ github.run_number }}
-          path: ${{ runner.temp }}/ipa/*.ipa
+          name: ios-xcarchive-build-${{ github.run_number }}
+          path: ${{ runner.temp }}/Runner.xcarchive
           retention-days: 14
           if-no-files-found: warn

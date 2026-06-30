@@ -1234,12 +1234,12 @@ class InvitationCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // 1. Arka plan fotoğrafı — tam kapak, yüz merkezde
+              // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
               if (ownerPhotoUrl != null)
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
                   errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
                 )
@@ -1277,7 +1277,7 @@ class InvitationCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.55),
+                        color: Colors.black.withOpacity(0.38),
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(color: Colors.white.withOpacity(0.18), width: 0.8),
                       ),
@@ -1363,30 +1363,7 @@ class InvitationCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
-                    if (eventDate != null)
-                      Text(
-                        _metaLabel(l10n, eventDate!),
-                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
-                      ),
-                    const SizedBox(height: 5),
-                    // Fraunces italic başlık
-                    Text(
-                      title,
-                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (isOwner && applicationCount > 0) ...[
-                      const SizedBox(height: 10),
-                      _ApplicantAvatarStack(
-                        photoUrls: applicantPhotoUrls,
-                        totalCount: applicationCount,
-                        onTap: onCtaTap,
-                      ),
-                    ],
-                    const SizedBox(height: 10),
-                    // Timer pill — CTA'nın hemen üstünde
+                    // Timer pill — soft glass
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: BackdropFilter(
@@ -1417,7 +1394,30 @@ class InvitationCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
+                    // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
+                    if (eventDate != null)
+                      Text(
+                        _metaLabel(l10n, eventDate!),
+                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
+                      ),
+                    const SizedBox(height: 5),
+                    // Fraunces italic başlık
+                    Text(
+                      title,
+                      style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (isOwner && applicationCount > 0) ...[
+                      const SizedBox(height: 10),
+                      _ApplicantAvatarStack(
+                        photoUrls: applicantPhotoUrls,
+                        totalCount: applicationCount,
+                        onTap: onCtaTap,
+                      ),
+                    ],
+                    const SizedBox(height: 12),
                     // Full-width gradient CTA
                     GestureDetector(
                       onTap: onCtaTap ?? onTap,

@@ -1399,7 +1399,7 @@ class InvitationCard extends StatelessWidget {
                     if (eventDate != null)
                       Text(
                         _metaLabel(l10n, eventDate!),
-                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white60, letterSpacing: 1.2),
+                        style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w500, color: Colors.white60, letterSpacing: 0.7),
                       ),
                     const SizedBox(height: 5),
                     // Fraunces italic başlık

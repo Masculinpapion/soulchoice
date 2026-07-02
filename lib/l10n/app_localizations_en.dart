@@ -487,6 +487,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The meeting point where you\'ll hand over the gift';
 
   @override
+  String get create_inv_venue_subtitle_gift_request =>
+      'The meeting point where you\'ll receive the gift';
+
+  @override
   String get create_inv_venue_question_cinema => 'Which cinema?';
 
   @override

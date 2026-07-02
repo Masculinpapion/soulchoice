@@ -487,6 +487,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Hediyeni teslim edeceğin buluşma noktası';
 
   @override
+  String get create_inv_venue_subtitle_gift_request =>
+      'Hediyeni teslim alacağın buluşma noktası';
+
+  @override
   String get create_inv_venue_question_cinema => 'Hangi sinemada?';
 
   @override

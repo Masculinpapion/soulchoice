@@ -488,6 +488,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Место встречи, где вы передадите подарок';
 
   @override
+  String get create_inv_venue_subtitle_gift_request =>
+      'Место встречи, где вы получите подарок';
+
+  @override
   String get create_inv_venue_question_cinema => 'В каком кинотеатре?';
 
   @override

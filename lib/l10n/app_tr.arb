@@ -192,6 +192,7 @@
   "create_inv_validation_description_travel": "Nereye gitmek istediğini yazmalısın",
   "create_inv_venue_question_gift": "Nerede buluşalım?",
   "create_inv_venue_subtitle_gift": "Hediyeni teslim edeceğin buluşma noktası",
+  "create_inv_venue_subtitle_gift_request": "Hediyeni teslim alacağın buluşma noktası",
   "create_inv_venue_question_cinema": "Hangi sinemada?",
   "create_inv_venue_subtitle_cinema": "Filmi izleyeceğiniz sinema salonu",
   "create_inv_venue_question_theater": "Hangi tiyatroda?",

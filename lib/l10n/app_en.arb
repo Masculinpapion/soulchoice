@@ -192,6 +192,7 @@
   "create_inv_validation_description_travel": "Please write where you want to go",
   "create_inv_venue_question_gift": "Where shall we meet?",
   "create_inv_venue_subtitle_gift": "The meeting point where you'll hand over the gift",
+  "create_inv_venue_subtitle_gift_request": "The meeting point where you'll receive the gift",
   "create_inv_venue_question_cinema": "Which cinema?",
   "create_inv_venue_subtitle_cinema": "The cinema where you'll watch the movie",
   "create_inv_venue_question_theater": "Which theatre?",

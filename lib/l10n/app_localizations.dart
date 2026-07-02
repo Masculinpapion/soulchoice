@@ -1000,6 +1000,12 @@ abstract class AppLocalizations {
   /// **'The meeting point where you\'ll hand over the gift'**
   String get create_inv_venue_subtitle_gift;
 
+  /// No description provided for @create_inv_venue_subtitle_gift_request.
+  ///
+  /// In en, this message translates to:
+  /// **'The meeting point where you\'ll receive the gift'**
+  String get create_inv_venue_subtitle_gift_request;
+
   /// No description provided for @create_inv_venue_question_cinema.
   ///
   /// In en, this message translates to:

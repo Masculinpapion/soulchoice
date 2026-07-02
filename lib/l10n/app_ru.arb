@@ -192,6 +192,7 @@
   "create_inv_validation_description_travel": "Напишите, куда хотите поехать",
   "create_inv_venue_question_gift": "Где встретимся?",
   "create_inv_venue_subtitle_gift": "Место встречи, где вы передадите подарок",
+  "create_inv_venue_subtitle_gift_request": "Место встречи, где вы получите подарок",
   "create_inv_venue_question_cinema": "В каком кинотеатре?",
   "create_inv_venue_subtitle_cinema": "Кинотеатр, где вы посмотрите фильм",
   "create_inv_venue_question_theater": "В каком театре?",

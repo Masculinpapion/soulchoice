@@ -57,7 +57,7 @@ class _CreateInvitationScreenState
     _StepCategory(selected: _category, onSelected: (v) => setState(() => _category = v)),
     _StepTitle(controller: _titleController),
     _StepDescription(controller: _descriptionController, flowType: _flowType, category: _category),
-    if (!_isTravel) _StepVenue(controller: _venueController, category: _category),
+    if (!_isTravel) _StepVenue(controller: _venueController, category: _category, flowType: _flowType),
     _StepDateTime(date: _eventDate, onSelected: (d) => setState(() => _eventDate = d)),
     _StepDuration(selected: _expiryHours, onSelected: (h) => setState(() => _expiryHours = h)),
   ];
@@ -774,7 +774,8 @@ class _StepDescription extends StatelessWidget {
 class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
-  const _StepVenue({required this.controller, this.category});
+  final InvitationFlowType flowType;
+  const _StepVenue({required this.controller, this.category, required this.flowType});
 
   String _question(AppLocalizations l10n) {
     switch (category) {
@@ -787,8 +788,10 @@ class _StepVenue extends StatelessWidget {
   }
 
   String _subtitle(AppLocalizations l10n) {
+    final isInvite = flowType == InvitationFlowType.invite;
     switch (category) {
-      case InvitationCategory.gift:    return l10n.create_inv_venue_subtitle_gift;
+      case InvitationCategory.gift:
+        return isInvite ? l10n.create_inv_venue_subtitle_gift : l10n.create_inv_venue_subtitle_gift_request;
       case InvitationCategory.cinema:  return l10n.create_inv_venue_subtitle_cinema;
       case InvitationCategory.theater: return l10n.create_inv_venue_subtitle_theater;
       case InvitationCategory.concert: return l10n.create_inv_venue_subtitle_concert;

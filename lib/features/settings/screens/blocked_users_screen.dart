@@ -111,11 +111,8 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           title,
                           style: baseStyle.copyWith(
                             foreground: Paint()
-                              ..shader = const LinearGradient(
-                                colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                              ..shader = AuroraTheme.redBlueGradient
+                                  .createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
                           ),
                         );
                       },

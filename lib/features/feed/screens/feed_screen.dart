@@ -1275,7 +1275,7 @@ class InvitationCard extends StatelessWidget {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
-                      padding: const EdgeInsets.fromLTRB(6, 5, 10, 5),
+                      padding: const EdgeInsets.fromLTRB(6, 3, 10, 3),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.38),
                         borderRadius: BorderRadius.circular(100),
@@ -1284,8 +1284,8 @@ class InvitationCard extends StatelessWidget {
                       child: Row(
                         children: [
                           Container(
-                            width: 32,
-                            height: 32,
+                            width: 28,
+                            height: 28,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white.withOpacity(0.30), width: 1.5),
@@ -1304,12 +1304,12 @@ class InvitationCard extends StatelessWidget {
                               children: [
                                 Text(
                                   '$ownerName, $ownerAge',
-                                  style: const TextStyle(fontFamily: 'Manrope', fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
+                                  style: const TextStyle(fontFamily: 'Manrope', fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   ownerCity?.isNotEmpty == true ? ownerCity! : category.labelFor(l10n),
-                                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white.withOpacity(0.60)),
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 8, color: Colors.white.withOpacity(0.60)),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
@@ -1322,9 +1322,9 @@ class InvitationCard extends StatelessWidget {
                 ),
               ),
 
-              // 3b. Kategori badge — sağ üst, sol pill (avatar 32px) ile vertical center'da hizalı
+              // 3b. Kategori badge — sağ üst, sol pill (avatar 28px) ile vertical center'da hizalı
               Positioned(
-                top: 19,
+                top: 15,
                 right: 14,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),

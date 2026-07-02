@@ -302,7 +302,7 @@ class _StoryBar extends ConsumerWidget {
     final async = ref.watch(invitationsProvider(filter));
 
     final seen = <String>{};
-    final invitations = (async.asData?.value ?? [])
+    final deduped = (async.asData?.value ?? [])
         .where((inv) {
           if (inv.ownerPhotoUrl == null) return false;
           final ownerId = inv.owner?.id ?? '';
@@ -311,6 +311,12 @@ class _StoryBar extends ConsumerWidget {
           return true;
         })
         .toList();
+    // Kendi aktif davetiyen/isteğin varsa hikaye sırasında en başta gösterilir
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    final invitations = [
+      ...deduped.where((inv) => inv.ownerId == uid),
+      ...deduped.where((inv) => inv.ownerId != uid),
+    ];
     if (invitations.isEmpty) {
       // Yükleme sırasında yüksekliği koru — layout zıplamasını engelle
       if (async.isLoading) return const SizedBox(height: 118);

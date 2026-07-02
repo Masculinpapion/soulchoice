@@ -476,6 +476,36 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Nerede buluşalım?';
 
   @override
+  String get create_inv_validation_description_travel =>
+      'Nereye gitmek istediğini yazmalısın';
+
+  @override
+  String get create_inv_venue_question_gift => 'Nerede buluşalım?';
+
+  @override
+  String get create_inv_venue_subtitle_gift =>
+      'Hediyeni teslim edeceğin buluşma noktası';
+
+  @override
+  String get create_inv_venue_question_cinema => 'Hangi sinemada?';
+
+  @override
+  String get create_inv_venue_subtitle_cinema =>
+      'Filmi izleyeceğiniz sinema salonu';
+
+  @override
+  String get create_inv_venue_question_theater => 'Hangi tiyatroda?';
+
+  @override
+  String get create_inv_venue_subtitle_theater => 'Oyunu izleyeceğiniz tiyatro';
+
+  @override
+  String get create_inv_venue_question_concert => 'Hangi mekanda?';
+
+  @override
+  String get create_inv_venue_subtitle_concert => 'Etkinliğin yapılacağı mekan';
+
+  @override
   String get create_inv_desc_invite_food => 'Nereye gidiyorsun?';
 
   @override

@@ -38,16 +38,28 @@ class _CreateInvitationScreenState
   int _expiryHours = 24;
   bool _isPublishing = false;
 
-  static const _stepCount = 7;
+  bool get _isTravel => _category == InvitationCategory.travel;
+
+  int get _stepCount => _isTravel ? 6 : 7;
 
   List<String> _getSteps(AppLocalizations l10n) => [
     l10n.create_inv_step_flow_type,
     l10n.create_inv_step_category,
     l10n.create_inv_step_title,
     l10n.create_inv_step_description,
-    l10n.create_inv_step_venue,
+    if (!_isTravel) l10n.create_inv_step_venue,
     l10n.create_inv_step_datetime,
     l10n.create_inv_step_duration,
+  ];
+
+  List<Widget> _buildPages(AppLocalizations l10n) => [
+    _StepFlowType(selected: _flowType, onSelected: (v) => setState(() => _flowType = v)),
+    _StepCategory(selected: _category, onSelected: (v) => setState(() => _category = v)),
+    _StepTitle(controller: _titleController),
+    _StepDescription(controller: _descriptionController, flowType: _flowType, category: _category),
+    if (!_isTravel) _StepVenue(controller: _venueController, category: _category),
+    _StepDateTime(date: _eventDate, onSelected: (d) => setState(() => _eventDate = d)),
+    _StepDuration(selected: _expiryHours, onSelected: (h) => setState(() => _expiryHours = h)),
   ];
 
   @override
@@ -141,10 +153,18 @@ class _CreateInvitationScreenState
         if (_category == null) return l10n.create_inv_validation_category;
       case 2:
         if (_titleController.text.trim().isEmpty) return l10n.create_inv_validation_title;
+      case 3:
+        if (_isTravel && _descriptionController.text.trim().isEmpty) {
+          return l10n.create_inv_validation_description_travel;
+        }
       case 4:
-        if (_venueController.text.trim().isEmpty) return l10n.create_inv_validation_venue;
+        if (_isTravel) {
+          if (_eventDate == null) return l10n.create_inv_validation_date;
+        } else if (_venueController.text.trim().isEmpty) {
+          return l10n.create_inv_validation_venue;
+        }
       case 5:
-        if (_eventDate == null) return l10n.create_inv_validation_date;
+        if (!_isTravel && _eventDate == null) return l10n.create_inv_validation_date;
     }
     return null;
   }
@@ -226,7 +246,7 @@ class _CreateInvitationScreenState
     final isEdit = widget.editData != null;
     try {
       final client = Supabase.instance.client;
-      final venueFormatted = _venueController.text.trim().isEmpty
+      final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
           ? null
           : _venueController.text.trim().split(' ')
               .where((w) => w.isNotEmpty)
@@ -350,32 +370,7 @@ class _CreateInvitationScreenState
                 child: PageView(
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _StepFlowType(
-                        selected: _flowType,
-                        onSelected: (v) =>
-                            setState(() => _flowType = v)),
-                    _StepCategory(
-                        selected: _category,
-                        onSelected: (v) =>
-                            setState(() => _category = v)),
-                    _StepTitle(controller: _titleController),
-                    _StepDescription(
-                        controller: _descriptionController,
-                        flowType: _flowType,
-                        category: _category),
-                    _StepVenue(
-                        controller: _venueController,
-                        category: _category),
-                    _StepDateTime(
-                        date: _eventDate,
-                        onSelected: (d) =>
-                            setState(() => _eventDate = d)),
-                    _StepDuration(
-                        selected: _expiryHours,
-                        onSelected: (h) =>
-                            setState(() => _expiryHours = h)),
-                  ],
+                  children: _buildPages(l10n),
                 ),
               ),
               // ── Footer CTA ────────────────────────────────────────────
@@ -781,6 +776,26 @@ class _StepVenue extends StatelessWidget {
   final InvitationCategory? category;
   const _StepVenue({required this.controller, this.category});
 
+  String _question(AppLocalizations l10n) {
+    switch (category) {
+      case InvitationCategory.gift:    return l10n.create_inv_venue_question_gift;
+      case InvitationCategory.cinema:  return l10n.create_inv_venue_question_cinema;
+      case InvitationCategory.theater: return l10n.create_inv_venue_question_theater;
+      case InvitationCategory.concert: return l10n.create_inv_venue_question_concert;
+      default: return l10n.create_inv_venue_question;
+    }
+  }
+
+  String _subtitle(AppLocalizations l10n) {
+    switch (category) {
+      case InvitationCategory.gift:    return l10n.create_inv_venue_subtitle_gift;
+      case InvitationCategory.cinema:  return l10n.create_inv_venue_subtitle_cinema;
+      case InvitationCategory.theater: return l10n.create_inv_venue_subtitle_theater;
+      case InvitationCategory.concert: return l10n.create_inv_venue_subtitle_concert;
+      default: return l10n.create_inv_venue_subtitle;
+    }
+  }
+
   String _placeholder(AppLocalizations l10n) {
     switch (category) {
       case InvitationCategory.food:    return l10n.create_inv_venue_ph_food;
@@ -805,9 +820,9 @@ class _StepVenue extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(l10n.create_inv_venue_question, style: AppTextStyles.displayMedium),
+            Text(_question(l10n), style: AppTextStyles.displayMedium),
             const SizedBox(height: 8),
-            Text(l10n.create_inv_venue_subtitle, style: AppTextStyles.bodyMedium),
+            Text(_subtitle(l10n), style: AppTextStyles.bodyMedium),
             const SizedBox(height: 32),
             TextField(
               controller: controller,

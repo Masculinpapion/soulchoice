@@ -477,6 +477,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Где встретимся?';
 
   @override
+  String get create_inv_validation_description_travel =>
+      'Напишите, куда хотите поехать';
+
+  @override
+  String get create_inv_venue_question_gift => 'Где встретимся?';
+
+  @override
+  String get create_inv_venue_subtitle_gift =>
+      'Место встречи, где вы передадите подарок';
+
+  @override
+  String get create_inv_venue_question_cinema => 'В каком кинотеатре?';
+
+  @override
+  String get create_inv_venue_subtitle_cinema =>
+      'Кинотеатр, где вы посмотрите фильм';
+
+  @override
+  String get create_inv_venue_question_theater => 'В каком театре?';
+
+  @override
+  String get create_inv_venue_subtitle_theater =>
+      'Театр, где пройдёт спектакль';
+
+  @override
+  String get create_inv_venue_question_concert => 'На какой площадке?';
+
+  @override
+  String get create_inv_venue_subtitle_concert =>
+      'Площадка, где пройдёт мероприятие';
+
+  @override
   String get create_inv_desc_invite_food => 'Куда идёшь?';
 
   @override

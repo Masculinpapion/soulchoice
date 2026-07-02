@@ -476,6 +476,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Where shall we meet?';
 
   @override
+  String get create_inv_validation_description_travel =>
+      'Please write where you want to go';
+
+  @override
+  String get create_inv_venue_question_gift => 'Where shall we meet?';
+
+  @override
+  String get create_inv_venue_subtitle_gift =>
+      'The meeting point where you\'ll hand over the gift';
+
+  @override
+  String get create_inv_venue_question_cinema => 'Which cinema?';
+
+  @override
+  String get create_inv_venue_subtitle_cinema =>
+      'The cinema where you\'ll watch the movie';
+
+  @override
+  String get create_inv_venue_question_theater => 'Which theatre?';
+
+  @override
+  String get create_inv_venue_subtitle_theater =>
+      'The theatre where the play will take place';
+
+  @override
+  String get create_inv_venue_question_concert => 'Which venue?';
+
+  @override
+  String get create_inv_venue_subtitle_concert =>
+      'The venue where the event will take place';
+
+  @override
   String get create_inv_desc_invite_food => 'Where are you going?';
 
   @override

@@ -982,6 +982,60 @@ abstract class AppLocalizations {
   /// **'Where shall we meet?'**
   String get create_inv_venue_ph_gift;
 
+  /// No description provided for @create_inv_validation_description_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write where you want to go'**
+  String get create_inv_validation_description_travel;
+
+  /// No description provided for @create_inv_venue_question_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Where shall we meet?'**
+  String get create_inv_venue_question_gift;
+
+  /// No description provided for @create_inv_venue_subtitle_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'The meeting point where you\'ll hand over the gift'**
+  String get create_inv_venue_subtitle_gift;
+
+  /// No description provided for @create_inv_venue_question_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'Which cinema?'**
+  String get create_inv_venue_question_cinema;
+
+  /// No description provided for @create_inv_venue_subtitle_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'The cinema where you\'ll watch the movie'**
+  String get create_inv_venue_subtitle_cinema;
+
+  /// No description provided for @create_inv_venue_question_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'Which theatre?'**
+  String get create_inv_venue_question_theater;
+
+  /// No description provided for @create_inv_venue_subtitle_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'The theatre where the play will take place'**
+  String get create_inv_venue_subtitle_theater;
+
+  /// No description provided for @create_inv_venue_question_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'Which venue?'**
+  String get create_inv_venue_question_concert;
+
+  /// No description provided for @create_inv_venue_subtitle_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'The venue where the event will take place'**
+  String get create_inv_venue_subtitle_concert;
+
   /// No description provided for @create_inv_desc_invite_food.
   ///
   /// In en, this message translates to:

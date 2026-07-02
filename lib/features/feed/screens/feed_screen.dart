@@ -173,11 +173,21 @@ class _Header extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(16, 10, 12, 4),
       child: Row(
         children: [
-          // Logo — canonical wordmark PNG (font'tan render YASAK, bkz reference_canonical_wordmark)
-          Image.asset(
-            'assets/branding/soulchoice_wordmark.png',
-            height: MediaQuery.of(context).size.width < 360 ? 24.0 : 28.0,
-            fit: BoxFit.contain,
+          // Logo — gradient shimmer
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(bounds.left - 4, bounds.top - 2, bounds.right + 14, bounds.bottom + 4)),
+            child: Text(
+              'SoulChoice',
+              style: TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontSize: MediaQuery.of(context).size.width < 360 ? 22.0 : 26,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: -0.5,
+              ),
+            ),
           ),
           const Spacer(),
           // City pill — bell'in hemen solunda
@@ -1568,29 +1578,20 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               // ── Başlık ──
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Builder(
-                  builder: (ctx) {
-                    final title = AppLocalizations.of(ctx)!.feed_city_picker_title;
-                    const baseStyle = TextStyle(
+                child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+                  child: Text(
+                    AppLocalizations.of(context)!.feed_city_picker_title,
+                    style: TextStyle(
                       fontFamily: 'Fraunces',
                       fontStyle: FontStyle.italic,
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
+                      color: Colors.white,
                       letterSpacing: -0.5,
-                    );
-                    final tp = TextPainter(
-                      text: TextSpan(text: title, style: baseStyle),
-                      textDirection: TextDirection.ltr,
-                    )..layout();
-                    return Text(
-                      title,
-                      style: baseStyle.copyWith(
-                        foreground: Paint()
-                          ..shader = AuroraTheme.redBlueGradient
-                              .createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 14),

@@ -453,28 +453,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           size: 16, color: Colors.white),
                     ),
                     const SizedBox(width: 14),
-                    Builder(
-                      builder: (ctx) {
-                        const baseStyle = TextStyle(
+                    ShaderMask(
+                      shaderCallback: (b) =>
+                          AuroraTheme.redBlueGradient.createShader(b),
+                      child: Text(
+                        l10n.settings_title,
+                        style: const TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
+                          color: Colors.white,
                           letterSpacing: -0.5,
-                        );
-                        final tp = TextPainter(
-                          text: TextSpan(text: l10n.settings_title, style: baseStyle),
-                          textDirection: TextDirection.ltr,
-                        )..layout();
-                        return Text(
-                          l10n.settings_title,
-                          style: baseStyle.copyWith(
-                            foreground: Paint()
-                              ..shader = AuroraTheme.redBlueGradient
-                                  .createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
-                          ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
                   ],
                 ),

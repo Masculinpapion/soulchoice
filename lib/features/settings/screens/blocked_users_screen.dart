@@ -93,20 +93,29 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           size: 16, color: Colors.white),
                     ),
                     const SizedBox(width: 14),
-                    ShaderMask(
-                      shaderCallback: (b) =>
-                          AuroraTheme.redBlueGradient.createShader(b),
-                      child: Text(
-                        AppLocalizations.of(context)!.blocked_users_title,
-                        style: const TextStyle(
+                    Builder(
+                      builder: (ctx) {
+                        final title = AppLocalizations.of(ctx)!.blocked_users_title;
+                        const baseStyle = TextStyle(
                           fontFamily: 'Fraunces',
                           fontStyle: FontStyle.italic,
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white,
                           letterSpacing: -0.5,
-                        ),
-                      ),
+                        );
+                        final tp = TextPainter(
+                          text: TextSpan(text: title, style: baseStyle),
+                          textDirection: TextDirection.ltr,
+                        )..layout();
+                        return Text(
+                          title,
+                          style: baseStyle.copyWith(
+                            foreground: Paint()
+                              ..shader = AuroraTheme.redBlueGradient
+                                  .createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

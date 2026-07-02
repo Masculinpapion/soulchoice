@@ -470,8 +470,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           l10n.settings_title,
                           style: baseStyle.copyWith(
                             foreground: Paint()
-                              ..shader = AuroraTheme.redBlueGradient
-                                  .createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
+                              ..shader = const LinearGradient(
+                                colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
                           ),
                         );
                       },

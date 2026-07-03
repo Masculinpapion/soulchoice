@@ -116,7 +116,6 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     final isOtherSelected = _selectedReason == _otherReasonIndex;
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -264,7 +265,7 @@ class _GlassPill extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 String _notifTitle(NotificationItem item, AppLocalizations l) {
-  final name = (item.payload['name'] ?? item.payload['applicant_name'] ?? item.payload['sender_name'] ?? '') as String;
+  final name = item.actorName ?? '';
   switch (item.type) {
     case 'new_application': return l.notif_type_new_application_title;
     case 'selected':        return l.notif_type_selected_title;
@@ -279,7 +280,7 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
 }
 
 String _notifBody(NotificationItem item, AppLocalizations l) {
-  final name = (item.payload['name'] ?? item.payload['applicant_name'] ?? item.payload['sender_name'] ?? '') as String;
+  final name = item.actorName ?? '';
   switch (item.type) {
     case 'new_application': return l.notif_type_new_application_body(name);
     case 'selected':        return l.notif_type_selected_body;
@@ -290,6 +291,19 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
     case 'meeting_reminder':return l.notif_type_meeting_reminder_body;
     case 'feedback_request':return l.notif_type_feedback_request_body;
     default:                return item.body;
+  }
+}
+
+/// Instagram tarzı satırda avatarın yanında gösterilecek isimsiz aksiyon metni
+/// ("{isim}" + bu metin birleşip tek satırda gösteriliyor). Sadece actor_id
+/// olan (kişiye özel) türler için tanımlı — sistem bildirimlerinde null döner.
+String? _notifActionText(NotificationItem item, AppLocalizations l) {
+  switch (item.type) {
+    case 'new_message':     return l.notif_action_new_message;
+    case 'new_application': return l.notif_action_new_application;
+    case 'selected':        return l.notif_action_selected;
+    case 'not_selected':    return l.notif_action_not_selected;
+    default:                return null;
   }
 }
 
@@ -329,10 +343,152 @@ class _NotifTile extends StatelessWidget {
     }
   }
 
+  Widget _buildLeading(List<Color> colors) {
+    final hasActor = item.actorName != null && item.actorName!.isNotEmpty;
+    if (hasActor) {
+      final ring = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.7);
+      final photoUrl = item.actorPhotoUrl;
+      return Container(
+        width: 46,
+        height: 46,
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: ring, width: item.isRead ? 1 : 2),
+        ),
+        child: ClipOval(
+          child: photoUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: photoUrl,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => _DefaultActorAvatar(name: item.actorName!),
+                )
+              : _DefaultActorAvatar(name: item.actorName!),
+        ),
+      );
+    }
+    // Sistem bildirimi (actor yok) — Aurora glow icon
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: colors[0].withOpacity(0.12),
+        border: Border.all(color: colors[0].withOpacity(0.28)),
+        boxShadow: [
+          BoxShadow(
+            color: colors[0].withOpacity(0.30),
+            blurRadius: 14,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Center(
+        child: ShaderMask(
+          blendMode: BlendMode.srcIn,
+          shaderCallback: (b) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(b),
+          child: Icon(item.iconData, color: Colors.white, size: 22),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, String? actionText) {
+    final l10n = AppLocalizations.of(context)!;
+    if (actionText != null && item.actorName != null && item.actorName!.isNotEmpty) {
+      // Instagram tarzı: "İsim aksiyon metni" tek satırda, isim kalın.
+      final children = <Widget>[
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: item.actorName,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: Colors.white,
+                ),
+              ),
+              TextSpan(
+                text: ' $actionText',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 13,
+                  color: item.isRead
+                      ? Colors.white.withOpacity(0.85)
+                      : Colors.white,
+                ),
+              ),
+            ],
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ];
+      // Yeni mesajlarda ikinci satır olarak mesaj önizlemesi anlamlı
+      // (isim+aksiyon zaten "mesaj gönderdi" dediği için tekrar olmaz).
+      if (item.type == 'new_message' && item.body.isNotEmpty) {
+        children.addAll([
+          const SizedBox(height: 3),
+          Text(
+            item.body,
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 12,
+              color: AuroraTheme.textSecondary,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ]);
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      );
+    }
+
+    // Sistem bildirimi — eski iki satırlı (başlık/gövde) tasarım.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _notifTitle(item, l10n),
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+            color: item.isRead ? Colors.white.withOpacity(0.85) : Colors.white,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 3),
+        Text(
+          _notifBody(item, l10n),
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 12,
+            color: AuroraTheme.textSecondary,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = _iconGradient();
     final accentColor = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.5);
+    final actionText = _notifActionText(item, AppLocalizations.of(context)!);
     final tile = Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GestureDetector(
@@ -352,67 +508,9 @@ class _NotifTile extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // Aurora glow icon — daire bg + ShaderMask gradient icon
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colors[0].withOpacity(0.12),
-                      border: Border.all(color: colors[0].withOpacity(0.28)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colors[0].withOpacity(0.30),
-                          blurRadius: 14,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: ShaderMask(
-                        blendMode: BlendMode.srcIn,
-                        shaderCallback: (b) => LinearGradient(
-                          colors: colors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(b),
-                        child: Icon(item.iconData, color: Colors.white, size: 22),
-                      ),
-                    ),
-                  ),
+                  _buildLeading(colors),
                   const SizedBox(width: 12),
-                  // İçerik
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _notifTitle(item, AppLocalizations.of(context)!),
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                            color: item.isRead
-                                ? Colors.white.withOpacity(0.85)
-                                : Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          _notifBody(item, AppLocalizations.of(context)!),
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 12,
-                            color: AuroraTheme.textSecondary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: _buildContent(context, actionText)),
                   const SizedBox(width: 8),
                   // Zaman
                   Text(
@@ -454,6 +552,26 @@ class _NotifTile extends StatelessWidget {
     }
     return tile;
   }
+}
+
+class _DefaultActorAvatar extends StatelessWidget {
+  final String name;
+  const _DefaultActorAvatar({required this.name});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: AuroraTheme.redBlueGradient,
+        ),
+        child: Center(
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : '?',
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
 }
 
 // ── Empty State ───────────────────────────────────────────────────────────────

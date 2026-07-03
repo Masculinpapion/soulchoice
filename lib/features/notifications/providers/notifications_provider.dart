@@ -11,6 +11,8 @@ class NotificationItem {
   final Map<String, dynamic> payload;
   final bool isRead;
   final DateTime createdAt;
+  final String? actorName;
+  final String? actorPhotoUrl;
 
   const NotificationItem({
     required this.id,
@@ -20,6 +22,8 @@ class NotificationItem {
     required this.payload,
     required this.isRead,
     required this.createdAt,
+    this.actorName,
+    this.actorPhotoUrl,
   });
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) =>
@@ -31,6 +35,19 @@ class NotificationItem {
         payload: (json['payload'] as Map<String, dynamic>?) ?? {},
         isRead: json['read_at'] != null,
         createdAt: DateTime.parse(json['created_at'] as String),
+      );
+
+  NotificationItem copyWithActor({String? actorName, String? actorPhotoUrl}) =>
+      NotificationItem(
+        id: id,
+        type: type,
+        title: title,
+        body: body,
+        payload: payload,
+        isRead: isRead,
+        createdAt: createdAt,
+        actorName: actorName,
+        actorPhotoUrl: actorPhotoUrl,
       );
 
   String get routePath {
@@ -70,16 +87,57 @@ final notificationsProvider =
   final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return [];
 
-  final data = await Supabase.instance.client
+  final client = Supabase.instance.client;
+
+  final data = await client
       .from('notifications')
       .select()
       .eq('user_id', uid)
       .order('created_at', ascending: false)
       .limit(100);
 
-  return (data as List)
-      .map((r) => NotificationItem.fromJson(r as Map<String, dynamic>))
+  final rows = (data as List).cast<Map<String, dynamic>>();
+  if (rows.isEmpty) return [];
+
+  final items = rows.map((r) => NotificationItem.fromJson(r)).toList();
+
+  // Bildirimlere sebep olan kişilerin (actor) id'lerini topla — tek toplu
+  // sorguyla users+user_photos'a join et, N+1 sorgu olmasın.
+  final actorIds = items
+      .map((i) => i.payload['actor_id'] as String?)
+      .whereType<String>()
+      .toSet()
       .toList();
+
+  if (actorIds.isEmpty) return items;
+
+  final actorRows = await client
+      .from('users')
+      .select(
+        'id, name, photos:user_photos(url, is_primary, is_selfie, order_index)',
+      )
+      .inFilter('id', actorIds);
+
+  final actors = <String, ({String name, String? photoUrl})>{};
+  for (final u in (actorRows as List).cast<Map<String, dynamic>>()) {
+    final photos = (u['photos'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>()
+        .where((p) => p['is_selfie'] == false)
+        .toList()
+      ..sort((a, b) => (a['order_index'] as int? ?? 99)
+          .compareTo(b['order_index'] as int? ?? 99));
+    actors[u['id'] as String] = (
+      name: u['name'] as String? ?? '',
+      photoUrl: photos.firstOrNull?['url'] as String?,
+    );
+  }
+
+  return items.map((item) {
+    final actorId = item.payload['actor_id'] as String?;
+    final actor = actorId != null ? actors[actorId] : null;
+    if (actor == null) return item;
+    return item.copyWithActor(actorName: actor.name, actorPhotoUrl: actor.photoUrl);
+  }).toList();
 });
 
 final unreadNotificationCountProvider = Provider.autoDispose<int>((ref) {

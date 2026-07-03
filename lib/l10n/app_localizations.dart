@@ -2962,6 +2962,42 @@ abstract class AppLocalizations {
   /// **'Got it'**
   String get create_inv_gate_action_ok;
 
+  /// No description provided for @create_inv_active_limit_title_invite.
+  ///
+  /// In en, this message translates to:
+  /// **'You Already Have an Active Invitation'**
+  String get create_inv_active_limit_title_invite;
+
+  /// No description provided for @create_inv_active_limit_title_request.
+  ///
+  /// In en, this message translates to:
+  /// **'You Already Have an Active Request'**
+  String get create_inv_active_limit_title_request;
+
+  /// No description provided for @create_inv_active_limit_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the current one to expire or cancel it before creating a new one.'**
+  String get create_inv_active_limit_body;
+
+  /// No description provided for @create_inv_active_limit_cta_view.
+  ///
+  /// In en, this message translates to:
+  /// **'View Current One'**
+  String get create_inv_active_limit_cta_view;
+
+  /// No description provided for @create_inv_active_limit_cta_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Got It'**
+  String get create_inv_active_limit_cta_ok;
+
+  /// No description provided for @create_inv_error_active_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active invitation or request, you can\'t create a new one.'**
+  String get create_inv_error_active_limit;
+
   /// No description provided for @paywall_title.
   ///
   /// In en, this message translates to:

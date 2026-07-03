@@ -138,6 +138,58 @@ class _CreateInvitationScreenState
     }
   }
 
+  Future<bool> _checkActiveInvitationLimit(InvitationFlowType flowType) async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return false;
+    final rows = await Supabase.instance.client
+        .from('invitations')
+        .select('id')
+        .eq('owner_id', uid)
+        .eq('flow_type', flowType.name)
+        .eq('status', 'active')
+        .gt('expires_at', DateTime.now().toUtc().toIso8601String())
+        .order('created_at', ascending: false)
+        .limit(1);
+    if (rows.isEmpty || !mounted) return false;
+
+    final existingId = rows.first['id'] as String;
+    final l = AppLocalizations.of(context)!;
+    final isInvite = flowType == InvitationFlowType.invite;
+    final goView = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          isInvite
+              ? l.create_inv_active_limit_title_invite
+              : l.create_inv_active_limit_title_request,
+          style: AppTextStyles.titleMedium,
+        ),
+        content: Text(l.create_inv_active_limit_body, style: AppTextStyles.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.create_inv_active_limit_cta_ok,
+                style: const TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.create_inv_active_limit_cta_view,
+                style: const TextStyle(
+                    fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return true;
+    if (goView == true) {
+      context.pushReplacement('/invitation/$existingId');
+    }
+    return true;
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -169,7 +221,11 @@ class _CreateInvitationScreenState
     return null;
   }
 
-  void _next() {
+  Future<void> _next() async {
+    if (_step == 0 && widget.editData == null) {
+      final blocked = await _checkActiveInvitationLimit(_flowType);
+      if (!mounted || blocked) return;
+    }
     final l10n = AppLocalizations.of(context)!;
     final error = _validateCurrentStep(l10n);
     if (error != null) {
@@ -308,9 +364,12 @@ class _CreateInvitationScreenState
       }
     } catch (e) {
       if (mounted) {
+        final isLimitError = e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(AppLocalizations.of(context)!.create_inv_error_publish(e.toString())),
+              content: Text(isLimitError
+                  ? AppLocalizations.of(context)!.create_inv_error_active_limit
+                  : AppLocalizations.of(context)!.create_inv_error_publish(e.toString())),
               backgroundColor: AppColors.error),
         );
       }

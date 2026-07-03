@@ -1560,6 +1560,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_gate_action_ok => 'Got it';
 
   @override
+  String get create_inv_active_limit_title_invite =>
+      'You Already Have an Active Invitation';
+
+  @override
+  String get create_inv_active_limit_title_request =>
+      'You Already Have an Active Request';
+
+  @override
+  String get create_inv_active_limit_body =>
+      'Wait for the current one to expire or cancel it before creating a new one.';
+
+  @override
+  String get create_inv_active_limit_cta_view => 'View Current One';
+
+  @override
+  String get create_inv_active_limit_cta_ok => 'Got It';
+
+  @override
+  String get create_inv_error_active_limit =>
+      'You already have an active invitation or request, you can\'t create a new one.';
+
+  @override
   String get paywall_title => 'You\'ve used your free application';
 
   @override

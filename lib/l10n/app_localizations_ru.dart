@@ -1591,6 +1591,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_gate_action_ok => 'Понятно';
 
   @override
+  String get create_inv_active_limit_title_invite =>
+      'У тебя уже есть активное приглашение';
+
+  @override
+  String get create_inv_active_limit_title_request =>
+      'У тебя уже есть активный запрос';
+
+  @override
+  String get create_inv_active_limit_body =>
+      'Прежде чем создать новое, нужно дождаться истечения срока текущего или отменить его.';
+
+  @override
+  String get create_inv_active_limit_cta_view => 'Посмотреть текущее';
+
+  @override
+  String get create_inv_active_limit_cta_ok => 'Понятно';
+
+  @override
+  String get create_inv_error_active_limit =>
+      'У тебя уже есть активное приглашение или запрос, создать новое нельзя.';
+
+  @override
   String get paywall_title => 'Бесплатная заявка использована';
 
   @override

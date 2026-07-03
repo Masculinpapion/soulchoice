@@ -1556,6 +1556,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_gate_action_ok => 'Anladım';
 
   @override
+  String get create_inv_active_limit_title_invite =>
+      'Zaten Aktif Bir Davetiyen Var';
+
+  @override
+  String get create_inv_active_limit_title_request =>
+      'Zaten Aktif Bir İsteğin Var';
+
+  @override
+  String get create_inv_active_limit_body =>
+      'Yenisini oluşturmadan önce mevcut olanın süresi dolmalı ya da onu iptal etmelisin.';
+
+  @override
+  String get create_inv_active_limit_cta_view => 'Mevcut Olanı Gör';
+
+  @override
+  String get create_inv_active_limit_cta_ok => 'Tamam';
+
+  @override
+  String get create_inv_error_active_limit =>
+      'Zaten aktif bir davetiyen/isteğin var, yenisini oluşturamazsın.';
+
+  @override
   String get paywall_title => 'Ücretsiz başvuru hakkını kullandın';
 
   @override

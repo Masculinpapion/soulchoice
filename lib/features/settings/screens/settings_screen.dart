@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -558,7 +559,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.help_outline,
                           label: l10n.settings_help,
-                          onTap: () => launchUrl(Uri.parse('mailto:support@soulchoice.app')),
+                          onTap: () => launchUrl(Uri.parse('mailto:${AppConstants.supportEmail}')),
                         ),
                         _SettingsTile(
                           icon: Icons.info_outline,

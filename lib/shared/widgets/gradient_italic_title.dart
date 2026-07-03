@@ -3,13 +3,21 @@ import '../../core/theme/aurora_theme.dart';
 
 /// Fraunces italik marka başlığı — brandTitleGradient.
 ///
-/// ShaderMask kullanır çünkü shaderCallback'e gelen bounds widget'ın KENDİ
-/// lokal boyutudur; Text.foreground'a doğrudan Paint().shader= verirsek
-/// shader mutlak çizim koordinatlarında değerlendirilir ve widget ekranda
-/// (0,0) dışında bir yere (örn. ortalanmış bir başlık) çizildiğinde gradyan
-/// tamamen kayar (offset > rect genişliği ise düz tek renk görünür).
-/// +14/-4/-2/+4 payı Fraunces italiğin uç kıvrımının bounds dışına taşmasını
-/// karşılar (feed_screen.dart'taki diğer ShaderMask başlıklarıyla aynı pay).
+/// CustomPainter kullanır. İki geçmiş yaklaşımın da kendine özgü bug'ı vardı:
+/// - ShaderMask + BlendMode.srcIn: glyph kenarında beyaz leke (compositing
+///   hatası — Skia'nın italik metin + mask katmanını birleştirme şekliyle
+///   ilgili, matematiksel olarak olmaması gerekirken oluşuyor).
+/// - Text.foreground = Paint()..shader=, Rect(0,0,w,h) ile: widget ekranda
+///   (0,0) dışında bir yere çizildiğinde (örn. ortalanmış başlık) gradyan
+///   kayıyor — çünkü RenderParagraph, offset'i canvas transformuna değil
+///   doğrudan glyph koordinatlarına ekliyor.
+///
+/// CustomPaint bu ikisini de çözer: RenderCustomPaint, painter'ı çağırmadan
+/// önce canvas'ı widget'ın offset'i kadar translate eder, yani painter içi
+/// HER ZAMAN (0,0) tabanlı yerel bir tuval görür — mutlak koordinat kayması
+/// yapısal olarak imkansız olur. Aynı zamanda foreground+Paint tekniğini
+/// (ShaderMask değil) kullanmaya devam ettiğimiz için mask/compositing
+/// katmanı hiç yok — beyaz leke de yapısal olarak imkansız olur.
 class GradientItalicTitle extends StatelessWidget {
   final String text;
   final double fontSize;
@@ -26,24 +34,73 @@ class GradientItalicTitle extends StatelessWidget {
     this.gradient = AuroraTheme.brandTitleGradient,
   });
 
+  TextStyle get _baseStyle => TextStyle(
+        fontFamily: 'Fraunces',
+        fontStyle: FontStyle.italic,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        letterSpacing: letterSpacing,
+      );
+
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.srcIn,
-      shaderCallback: (b) => gradient.createShader(
-        Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: 'Fraunces',
-          fontStyle: FontStyle.italic,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: Colors.white,
-          letterSpacing: letterSpacing,
-        ),
+    final textScaler = MediaQuery.textScalerOf(context);
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: _baseStyle),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+    )..layout();
+    return CustomPaint(
+      size: Size(tp.width, tp.height),
+      painter: _GradientTextPainter(
+        text: text,
+        style: _baseStyle,
+        textScaler: textScaler,
+        gradient: gradient,
+        textSize: Size(tp.width, tp.height),
       ),
     );
+  }
+}
+
+class _GradientTextPainter extends CustomPainter {
+  final String text;
+  final TextStyle style;
+  final TextScaler textScaler;
+  final Gradient gradient;
+  final Size textSize;
+
+  _GradientTextPainter({
+    required this.text,
+    required this.style,
+    required this.textScaler,
+    required this.gradient,
+    required this.textSize,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Fraunces italiğin uç kıvrımı mantıksal genişliğin ötesine taşar;
+    // feed_screen.dart'taki ShaderMask başlıklarındaki aynı pay (+14/-4/-2/+4).
+    final rect = Rect.fromLTRB(-4, -2, textSize.width + 14, textSize.height + 4);
+    final tp = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: style.copyWith(
+          foreground: Paint()..shader = gradient.createShader(rect),
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+    )..layout();
+    tp.paint(canvas, Offset.zero);
+  }
+
+  @override
+  bool shouldRepaint(covariant _GradientTextPainter oldDelegate) {
+    return oldDelegate.text != text ||
+        oldDelegate.style != style ||
+        oldDelegate.gradient != gradient ||
+        oldDelegate.textSize != textSize;
   }
 }

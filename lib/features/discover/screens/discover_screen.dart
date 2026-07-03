@@ -10,6 +10,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 import '../../../shared/widgets/sc_button.dart' show ScButton;
 import '../providers/discover_provider.dart';
 import '../../../core/providers/city_provider.dart';
@@ -46,31 +47,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                 child: Builder(
-                  builder: (ctx) {
-                    final title = AppLocalizations.of(ctx)!.discover_title;
-                    final baseStyle = TextStyle(
-                      fontFamily: 'Fraunces',
-                      fontStyle: FontStyle.italic,
-                      fontSize: MediaQuery.of(ctx).size.width < 360 ? 25.5 : 30,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.5,
-                    );
-                    final tp = TextPainter(
-                      text: TextSpan(text: title, style: baseStyle),
-                      textDirection: TextDirection.ltr,
-                    )..layout();
-                    return Text(
-                      title,
-                      style: baseStyle.copyWith(
-                        foreground: Paint()
-                          ..shader = LinearGradient(
-                            colors: const [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
-                      ),
-                    );
-                  },
+                  builder: (ctx) => GradientItalicTitle(
+                    AppLocalizations.of(ctx)!.discover_title,
+                    fontSize: MediaQuery.of(ctx).size.width < 360 ? 25.5 : 30,
+                  ),
                 ),
               ),
               // Filtre chip'leri

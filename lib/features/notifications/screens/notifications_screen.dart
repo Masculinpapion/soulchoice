@@ -7,6 +7,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
@@ -148,31 +149,10 @@ class _NotificationsScreenState
                     const SizedBox(width: 12),
                     // Başlık
                     Builder(
-                      builder: (ctx) {
-                        final title = AppLocalizations.of(ctx)!.notifications_title;
-                        final baseStyle = const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.5,
-                        );
-                        final tp = TextPainter(
-                          text: TextSpan(text: title, style: baseStyle),
-                          textDirection: TextDirection.ltr,
-                        )..layout();
-                        return Text(
-                          title,
-                          style: baseStyle.copyWith(
-                            foreground: Paint()
-                              ..shader = LinearGradient(
-                                colors: const [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ).createShader(Rect.fromLTWH(0, 0, tp.width, tp.height)),
-                          ),
-                        );
-                      },
+                      builder: (ctx) => GradientItalicTitle(
+                        AppLocalizations.of(ctx)!.notifications_title,
+                        fontSize: 26,
+                      ),
                     ),
                     const Spacer(),
                     // Tümünü oku

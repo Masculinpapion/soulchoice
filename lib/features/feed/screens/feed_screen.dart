@@ -13,6 +13,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/invitations_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -1590,20 +1591,9 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               // ── Başlık ──
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
-                  child: Text(
-                    AppLocalizations.of(context)!.feed_city_picker_title,
-                    style: TextStyle(
-                      fontFamily: 'Fraunces',
-                      fontStyle: FontStyle.italic,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
+                child: GradientItalicTitle(
+                  AppLocalizations.of(context)!.feed_city_picker_title,
+                  fontSize: 22,
                 ),
               ),
               const SizedBox(height: 14),

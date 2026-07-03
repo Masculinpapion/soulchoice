@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
@@ -93,20 +94,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           size: 16, color: Colors.white),
                     ),
                     const SizedBox(width: 14),
-                    ShaderMask(
-                      shaderCallback: (b) =>
-                          AuroraTheme.redBlueGradient.createShader(b),
-                      child: Text(
-                        AppLocalizations.of(context)!.blocked_users_title,
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
+                    GradientItalicTitle(
+                      AppLocalizations.of(context)!.blocked_users_title,
+                      fontSize: 22,
                     ),
                   ],
                 ),

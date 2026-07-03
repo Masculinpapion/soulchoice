@@ -12,6 +12,7 @@ import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 import '../../discover/providers/discover_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 
@@ -453,21 +454,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           size: 16, color: Colors.white),
                     ),
                     const SizedBox(width: 14),
-                    ShaderMask(
-                      shaderCallback: (b) =>
-                          AuroraTheme.redBlueGradient.createShader(b),
-                      child: Text(
-                        l10n.settings_title,
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ),
+                    GradientItalicTitle(l10n.settings_title, fontSize: 26),
                   ],
                 ),
               ),

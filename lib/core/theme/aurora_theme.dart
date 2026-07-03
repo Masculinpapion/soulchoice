@@ -23,6 +23,17 @@ class AuroraTheme {
     colors: [auroraRed, auroraBlue],
   );
 
+  static const LinearGradient brandTitleGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFFF2D55),
+      Color(0xFFC03070),
+      Color(0xFF6050C0),
+      Color(0xFF2D7FFF),
+    ],
+  );
+
   static const LinearGradient titleGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,

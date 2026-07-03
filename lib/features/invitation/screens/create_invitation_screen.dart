@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../features/feed/providers/invitations_provider.dart';
@@ -13,6 +11,63 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+
+// Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
+const _displayMediumStyle = TextStyle(
+  fontFamily: 'Fraunces',
+  fontStyle: FontStyle.italic,
+  fontSize: 34,
+  fontWeight: FontWeight.w400,
+  color: AuroraTheme.textPrimary,
+  letterSpacing: -0.5,
+  height: 1.15,
+);
+final _bodyMediumStyle = TextStyle(
+  fontFamily: 'Manrope',
+  fontSize: 14,
+  fontWeight: FontWeight.w400,
+  color: AuroraTheme.textSecondary,
+  height: 1.5,
+);
+const _bodyLargeStyle = TextStyle(
+  fontFamily: 'Manrope',
+  fontSize: 16,
+  fontWeight: FontWeight.w400,
+  color: AuroraTheme.textPrimary,
+  height: 1.6,
+);
+const _titleStyle = TextStyle(
+  fontFamily: 'Manrope',
+  fontSize: 17,
+  fontWeight: FontWeight.w700,
+  color: AuroraTheme.textPrimary,
+  letterSpacing: -0.1,
+);
+final _monoSmallStyle = TextStyle(
+  fontFamily: 'JetBrainsMono',
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+  color: AuroraTheme.textMuted,
+  letterSpacing: 0.25,
+);
+final _labelMediumStyle = TextStyle(
+  fontFamily: 'Manrope',
+  fontSize: 13,
+  fontWeight: FontWeight.w600,
+  color: AuroraTheme.textSecondary,
+  letterSpacing: 0.05,
+);
+const _feedCardTitleStyle = TextStyle(
+  fontFamily: 'Manrope',
+  fontSize: 22,
+  fontWeight: FontWeight.w800,
+  color: AuroraTheme.textPrimary,
+  letterSpacing: 1.2,
+  shadows: [
+    Shadow(color: Color(0xCC000000), offset: Offset(0, 2), blurRadius: 12),
+    Shadow(color: Color(0x40FF2D55), offset: Offset(0, 0), blurRadius: 20),
+  ],
+);
 
 class CreateInvitationScreen extends ConsumerStatefulWidget {
   final Map<String, dynamic>? editData;
@@ -106,14 +161,14 @@ class _CreateInvitationScreenState
       builder: (ctx) => AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l.create_inv_gate_title, style: AppTextStyles.titleMedium),
+        title: Text(l.create_inv_gate_title, style: _titleStyle),
         content: Text(
           status == 'pending'
               ? l.create_inv_gate_pending
               : status == 'rejected'
                   ? l.create_inv_gate_rejected
                   : l.create_inv_gate_none,
-          style: AppTextStyles.bodyMedium,
+          style: _bodyMediumStyle,
         ),
         actions: [
           TextButton(
@@ -165,9 +220,9 @@ class _CreateInvitationScreenState
           isInvite
               ? l.create_inv_active_limit_title_invite
               : l.create_inv_active_limit_title_request,
-          style: AppTextStyles.titleMedium,
+          style: _titleStyle,
         ),
-        content: Text(l.create_inv_active_limit_body, style: AppTextStyles.bodyMedium),
+        content: Text(l.create_inv_active_limit_body, style: _bodyMediumStyle),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -367,10 +422,28 @@ class _CreateInvitationScreenState
         final isLimitError = e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(isLimitError
-                  ? AppLocalizations.of(context)!.create_inv_error_active_limit
-                  : AppLocalizations.of(context)!.create_inv_error_publish(e.toString())),
-              backgroundColor: AppColors.error),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            backgroundColor: AuroraTheme.bgDeep,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: AuroraTheme.auroraRed.withOpacity(0.4)),
+            ),
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: AuroraTheme.auroraRed, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    isLimitError
+                        ? AppLocalizations.of(context)!.create_inv_error_active_limit
+                        : AppLocalizations.of(context)!.create_inv_error_publish(e.toString()),
+                    style: const TextStyle(fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       }
     } finally {
@@ -383,7 +456,7 @@ class _CreateInvitationScreenState
     final l10n = AppLocalizations.of(context)!;
     final steps = _getSteps(l10n);
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
@@ -396,7 +469,7 @@ class _CreateInvitationScreenState
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new,
-                          color: AppColors.textPrimary, size: 20),
+                          color: AuroraTheme.textPrimary, size: 20),
                       onPressed: _back,
                     ),
                     Expanded(
@@ -418,8 +491,8 @@ class _CreateInvitationScreenState
                     const SizedBox(width: 10),
                     Text(
                       steps[_step],
-                      style: AppTextStyles.monoSmall.copyWith(
-                          color: AppColors.textSecondary),
+                      style: _monoSmallStyle.copyWith(
+                          color: AuroraTheme.textSecondary),
                     ),
                   ],
                 ),
@@ -466,7 +539,7 @@ class _GradientProgressBar extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         height: 4,
         decoration: BoxDecoration(
-          color: AppColors.glassBorder,
+          color: AuroraTheme.glassBorder,
           borderRadius: BorderRadius.circular(4),
         ),
         child: FractionallySizedBox(
@@ -474,7 +547,7 @@ class _GradientProgressBar extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Container(
             decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
+              gradient: AuroraTheme.redBlueGradient,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -503,11 +576,11 @@ class _StepDots extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 2),
             decoration: BoxDecoration(
               gradient: (isActive || isPast)
-                  ? AppColors.primaryGradient
+                  ? AuroraTheme.redBlueGradient
                   : null,
               color: (isActive || isPast)
                   ? null
-                  : AppColors.glassBorderBright,
+                  : Colors.white.withOpacity(0.25),
               borderRadius: BorderRadius.circular(3),
             ),
           );
@@ -534,13 +607,13 @@ class _StepFlowType extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
           Text(AppLocalizations.of(context)!.create_inv_flow_question,
-              style: AppTextStyles.displayMedium),
+              style: _displayMediumStyle),
           const SizedBox(height: 40),
           _FlowTypeCard(
             title: AppLocalizations.of(context)!.create_inv_flow_invite_title,
             subtitle: AppLocalizations.of(context)!.create_inv_flow_invite_subtitle,
             icon: Icons.wine_bar_rounded,
-            gradientColors: const [Color(0xFFFF2D55), Color(0xFF8B5CF6)],
+            gradientColors: const [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
             isSelected: selected == InvitationFlowType.invite,
             onTap: () => onSelected(InvitationFlowType.invite),
           ),
@@ -549,7 +622,7 @@ class _StepFlowType extends StatelessWidget {
             title: AppLocalizations.of(context)!.create_inv_flow_request_title,
             subtitle: AppLocalizations.of(context)!.create_inv_flow_request_subtitle,
             icon: Icons.explore_rounded,
-            gradientColors: const [Color(0xFF2D7FFF), Color(0xFF8B5CF6)],
+            gradientColors: const [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet],
             isSelected: selected == InvitationFlowType.request,
             onTap: () => onSelected(InvitationFlowType.request),
           ),
@@ -583,13 +656,13 @@ class _FlowTypeCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.gradientStart.withOpacity(0.08)
-                : AppColors.glassBgMedium,
+                ? AuroraTheme.auroraRed.withOpacity(0.08)
+                : AuroraTheme.glassBg,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isSelected
-                  ? AppColors.gradientStart
-                  : AppColors.glassBorder,
+                  ? AuroraTheme.auroraRed
+                  : AuroraTheme.glassBorder,
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -621,10 +694,10 @@ class _FlowTypeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(title, style: AppTextStyles.titleMedium),
+                    Text(title, style: _titleStyle),
                     if (subtitle.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Text(subtitle, style: AppTextStyles.bodyMedium),
+                      Text(subtitle, style: _bodyMediumStyle),
                     ],
                   ],
                 ),
@@ -632,7 +705,7 @@ class _FlowTypeCard extends StatelessWidget {
               if (isSelected)
                 ShaderMask(
                   blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AppColors.primaryGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                   child: const Icon(Icons.check_circle,
                       color: Colors.white, size: 22),
                 ),
@@ -660,10 +733,10 @@ class _StepCategory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.create_inv_step_category, style: AppTextStyles.displayMedium),
+          Text(AppLocalizations.of(context)!.create_inv_step_category, style: _displayMediumStyle),
           const SizedBox(height: 8),
           Text(AppLocalizations.of(context)!.create_inv_category_question,
-              style: AppTextStyles.bodyMedium),
+              style: _bodyMediumStyle),
           const SizedBox(height: 32),
           GridView.count(
             shrinkWrap: true,
@@ -680,16 +753,16 @@ class _StepCategory extends StatelessWidget {
                   duration: const Duration(milliseconds: 180),
                   decoration: BoxDecoration(
                     gradient: isSelected
-                        ? AppColors.primaryGradient
+                        ? AuroraTheme.redBlueGradient
                         : null,
                     color: isSelected
                         ? null
-                        : AppColors.glassBgMedium,
+                        : AuroraTheme.glassBg,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
                           ? Colors.transparent
-                          : AppColors.glassBorder,
+                          : AuroraTheme.glassBorder,
                     ),
                   ),
                   child: Column(
@@ -718,10 +791,10 @@ class _StepCategory extends StatelessWidget {
                         c.labelFor(AppLocalizations.of(context)!),
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.labelMedium.copyWith(
+                        style: _labelMediumStyle.copyWith(
                           color: isSelected
-                              ? AppColors.textPrimary
-                              : AppColors.textSecondary,
+                              ? AuroraTheme.textPrimary
+                              : AuroraTheme.textSecondary,
                         ),
                       ),
                     ],
@@ -751,17 +824,17 @@ class _StepTitle extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.create_inv_step_title, style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.create_inv_step_title, style: _displayMediumStyle),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.create_inv_title_subtitle,
-              style: AppTextStyles.bodyMedium,
+              style: _bodyMediumStyle,
             ),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
               maxLength: 60,
-              style: AppTextStyles.feedCardTitle.copyWith(fontSize: 20),
+              style: _feedCardTitleStyle.copyWith(fontSize: 20),
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.create_inv_title_label),
             ),
           ],
@@ -806,15 +879,15 @@ class _StepDescription extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(l10n.create_inv_step_description, style: AppTextStyles.displayMedium),
+            Text(l10n.create_inv_step_description, style: _displayMediumStyle),
             const SizedBox(height: 8),
-            Text(subtitle, style: AppTextStyles.bodyMedium),
+            Text(subtitle, style: _bodyMediumStyle),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
               maxLines: 4,
               maxLength: 300,
-              style: AppTextStyles.bodyLarge,
+              style: _bodyLargeStyle,
               decoration: InputDecoration(
                 hintText: l10n.create_inv_desc_input_hint,
                 alignLabelWithHint: true,
@@ -882,18 +955,18 @@ class _StepVenue extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(_question(l10n), style: AppTextStyles.displayMedium),
+            Text(_question(l10n), style: _displayMediumStyle),
             const SizedBox(height: 8),
-            Text(_subtitle(l10n), style: AppTextStyles.bodyMedium),
+            Text(_subtitle(l10n), style: _bodyMediumStyle),
             const SizedBox(height: 32),
             TextField(
               controller: controller,
-              style: AppTextStyles.bodyLarge,
+              style: _bodyLargeStyle,
               decoration: InputDecoration(
                 labelText: l10n.create_inv_venue_label,
                 hintText: _placeholder(l10n),
                 prefixIcon: Icon(Icons.location_on_outlined,
-                    color: AppColors.textTertiary),
+                    color: AuroraTheme.textMuted),
               ),
             ),
           ],
@@ -928,9 +1001,9 @@ class _StepDuration extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(l10n.create_inv_duration_question, style: AppTextStyles.displayMedium),
+            Text(l10n.create_inv_duration_question, style: _displayMediumStyle),
             const SizedBox(height: 8),
-            Text(l10n.create_inv_duration_subtitle, style: AppTextStyles.bodyMedium),
+            Text(l10n.create_inv_duration_subtitle, style: _bodyMediumStyle),
             const SizedBox(height: 32),
             ..._options(l10n).map((opt) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -940,11 +1013,11 @@ class _StepDuration extends StatelessWidget {
                       duration: const Duration(milliseconds: 180),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
-                        gradient: selected == opt.$1 ? AppColors.primaryGradient : null,
-                        color: selected == opt.$1 ? null : AppColors.glassBgMedium,
+                        gradient: selected == opt.$1 ? AuroraTheme.redBlueGradient : null,
+                        color: selected == opt.$1 ? null : AuroraTheme.glassBg,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: selected == opt.$1 ? Colors.transparent : AppColors.glassBorder,
+                          color: selected == opt.$1 ? Colors.transparent : AuroraTheme.glassBorder,
                         ),
                       ),
                       child: Row(
@@ -953,14 +1026,14 @@ class _StepDuration extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(opt.$2, style: AppTextStyles.titleMedium),
+                                Text(opt.$2, style: _titleStyle),
                                 const SizedBox(height: 2),
                                 Text(
                                   opt.$3,
-                                  style: AppTextStyles.bodyMedium.copyWith(
+                                  style: _bodyMediumStyle.copyWith(
                                     color: selected == opt.$1
-                                        ? AppColors.textPrimary.withOpacity(0.75)
-                                        : AppColors.textSecondary,
+                                        ? AuroraTheme.textPrimary.withOpacity(0.75)
+                                        : AuroraTheme.textSecondary,
                                   ),
                                 ),
                               ],
@@ -970,7 +1043,7 @@ class _StepDuration extends StatelessWidget {
                             ShaderMask(
                               blendMode: BlendMode.srcIn,
                               shaderCallback: (b) =>
-                                  selected == opt.$1 ? const LinearGradient(colors: [Colors.white, Colors.white]).createShader(b) : AppColors.primaryGradient.createShader(b),
+                                  selected == opt.$1 ? const LinearGradient(colors: [Colors.white, Colors.white]).createShader(b) : AuroraTheme.redBlueGradient.createShader(b),
                               child: const Icon(Icons.check_circle, color: Colors.white, size: 22),
                             ),
                         ],
@@ -1009,10 +1082,10 @@ class _StepDateTime extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.create_inv_datetime_question, style: AppTextStyles.displayMedium),
+            Text(AppLocalizations.of(context)!.create_inv_datetime_question, style: _displayMediumStyle),
             const SizedBox(height: 8),
             Text(AppLocalizations.of(context)!.create_inv_datetime_subtitle,
-                style: AppTextStyles.bodyMedium),
+                style: _bodyMediumStyle),
             const SizedBox(height: 32),
             GlassCard(
               onTap: () async {
@@ -1043,17 +1116,17 @@ class _StepDateTime extends StatelessWidget {
                 children: [
                   ShaderMask(
                     blendMode: BlendMode.srcIn,
-                    shaderCallback: (b) => AppColors.primaryGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
+                    shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
                     child: const Icon(Icons.calendar_today_outlined,
                         color: Colors.white),
                   ),
                   const SizedBox(width: 14),
                   Text(
                     date != null ? _format(date!) : AppLocalizations.of(context)!.create_inv_datetime_placeholder,
-                    style: AppTextStyles.bodyLarge.copyWith(
+                    style: _bodyLargeStyle.copyWith(
                       color: date != null
-                          ? AppColors.textPrimary
-                          : AppColors.textTertiary,
+                          ? AuroraTheme.textPrimary
+                          : AuroraTheme.textMuted,
                     ),
                   ),
                 ],

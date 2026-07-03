@@ -3,8 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -120,7 +118,27 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.decision_error(e.toString())), backgroundColor: AppColors.error),
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            backgroundColor: AuroraTheme.bgDeep,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: AuroraTheme.auroraRed.withOpacity(0.4)),
+            ),
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: AuroraTheme.auroraRed, size: 18),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.decision_error(e.toString()),
+                    style: const TextStyle(fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
         setState(() => _isLoading = false);
       }
@@ -147,7 +165,7 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
     final title = _invitationTitle ?? '...';
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
@@ -186,21 +204,49 @@ class _DecisionScreenState extends State<DecisionScreen> with SingleTickerProvid
                   },
                 ),
                 const SizedBox(height: 40),
-                Text(AppLocalizations.of(context)!.decision_selected_title, style: AppTextStyles.displayLarge),
+                Text(
+                  AppLocalizations.of(context)!.decision_selected_title,
+                  style: TextStyle(
+                    fontFamily: 'Fraunces',
+                    fontStyle: FontStyle.italic,
+                    fontSize: 42,
+                    fontWeight: FontWeight.w700,
+                    color: AuroraTheme.textPrimary,
+                    letterSpacing: -1.0,
+                    height: 1.1,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.decision_selected_body(name, title),
-                  style: AppTextStyles.bodyLarge,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 16,
+                    color: AuroraTheme.textPrimary,
+                    height: 1.6,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
-                Text(_timeLabel, style: AppTextStyles.monoLarge.copyWith(color: AuroraTheme.auroraRed)),
+                Text(
+                  _timeLabel,
+                  style: const TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: AuroraTheme.auroraRed,
+                    letterSpacing: -0.5,
+                  ),
+                ),
                 Text(
                   _timeExpired
                       ? AppLocalizations.of(context)!.decision_time_expired
                       : AppLocalizations.of(context)!.decision_time_remaining,
-                  style: AppTextStyles.monoSmall.copyWith(
-                    color: _timeExpired ? AppColors.error : null,
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 11,
+                    color: _timeExpired ? AuroraTheme.auroraRed : AuroraTheme.textMuted,
+                    letterSpacing: 0.25,
                   ),
                 ),
                 const Spacer(),

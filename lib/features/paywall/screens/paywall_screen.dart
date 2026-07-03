@@ -72,6 +72,13 @@ class PaywallScreen extends StatelessWidget {
                         color: AuroraTheme.textSecondary,
                       ),
                     ),
+                    const SizedBox(height: 22),
+                    _PerksList(perks: [
+                      l10n.paywall_perk_unlimited_invitations,
+                      l10n.paywall_perk_unlimited_applications,
+                      l10n.paywall_perk_chat_after_match,
+                      l10n.paywall_perk_priority_moderation,
+                    ]),
                     const Spacer(),
                     _PriceBox(price: l10n.paywall_price),
                     const SizedBox(height: 14),
@@ -137,6 +144,49 @@ class _GradientBadge extends StatelessWidget {
       child: const Center(
         child: Icon(Icons.workspace_premium, color: Colors.white, size: 44),
       ),
+    );
+  }
+}
+
+class _PerksList extends StatelessWidget {
+  final List<String> perks;
+  const _PerksList({required this.perks});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final perk in perks) ...[
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                  ),
+                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 13),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  perk,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (perk != perks.last) const SizedBox(height: 12),
+        ],
+      ],
     );
   }
 }

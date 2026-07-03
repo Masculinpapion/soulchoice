@@ -566,10 +566,12 @@
   "report_reason_illegal": "Yasadışı faaliyet",
   "report_reason_other": "Diğer",
   "report_desc_label": "Açıklama (isteğe bağlı)",
+  "report_desc_label_required": "Açıklama (zorunlu)",
   "report_desc_hint": "Daha fazla detay ekleyebilirsin...",
   "report_btn_sending": "Gönderiliyor...",
   "report_btn_submit": "Şikayeti gönder",
   "report_error_no_reason": "Lütfen bir neden seç",
+  "report_error_desc_required": "\"Diğer\" için açıklama yazmalısın",
   "report_success": "Şikayetin alındı, inceleyeceğiz",
   "report_error": "Hata: {error}",
   "@report_error": {

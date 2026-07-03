@@ -566,10 +566,12 @@
   "report_reason_illegal": "Незаконная деятельность",
   "report_reason_other": "Другое",
   "report_desc_label": "Описание (необязательно)",
+  "report_desc_label_required": "Описание (обязательно)",
   "report_desc_hint": "Можешь добавить подробности...",
   "report_btn_sending": "Отправка...",
   "report_btn_submit": "Отправить жалобу",
   "report_error_no_reason": "Пожалуйста, выбери причину",
+  "report_error_desc_required": "Для причины \"Другое\" нужно написать описание",
   "report_success": "Твоя жалоба получена, мы её рассмотрим",
   "report_error": "Ошибка: {error}",
   "@report_error": {

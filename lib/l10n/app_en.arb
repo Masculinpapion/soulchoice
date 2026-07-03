@@ -566,10 +566,12 @@
   "report_reason_illegal": "Illegal activity",
   "report_reason_other": "Other",
   "report_desc_label": "Description (optional)",
+  "report_desc_label_required": "Description (required)",
   "report_desc_hint": "You can add more detail...",
   "report_btn_sending": "Sending...",
   "report_btn_submit": "Submit report",
   "report_error_no_reason": "Please select a reason",
+  "report_error_desc_required": "Please add a description for \"Other\"",
   "report_success": "Your report has been received, we will review it",
   "report_error": "Error: {error}",
   "@report_error": {

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
-import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class ReportUserScreen extends StatefulWidget {
@@ -28,9 +26,12 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     ];
   }
 
+  static const int _otherReasonIndex = 4;
+
   int? _selectedReason;
   final _descController = TextEditingController();
   bool _sending = false;
+  bool _descError = false;
 
   @override
   void dispose() {
@@ -38,16 +39,53 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     super.dispose();
   }
 
+  void _showAuroraSnack(String message, {required Color accentColor, required IconData icon}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      backgroundColor: AuroraTheme.bgDeep,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: accentColor.withOpacity(0.4)),
+      ),
+      content: Row(
+        children: [
+          Icon(icon, color: accentColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 13,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+
   Future<void> _submit() async {
     final l = AppLocalizations.of(context)!;
     if (_selectedReason == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l.report_error_no_reason),
-        backgroundColor: AppColors.warning,
-      ));
+      _showAuroraSnack(l.report_error_no_reason,
+          accentColor: AuroraTheme.auroraGold, icon: Icons.error_outline);
       return;
     }
-    setState(() => _sending = true);
+    final isOther = _selectedReason == _otherReasonIndex;
+    final descEmpty = _descController.text.trim().isEmpty;
+    if (isOther && descEmpty) {
+      setState(() => _descError = true);
+      _showAuroraSnack(l.report_error_desc_required,
+          accentColor: AuroraTheme.auroraGold, icon: Icons.error_outline);
+      return;
+    }
+    setState(() {
+      _descError = false;
+      _sending = true;
+    });
     try {
       final uid = Supabase.instance.client.auth.currentUser!.id;
       await Supabase.instance.client.from('reports').insert({
@@ -58,18 +96,14 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
         'status': 'pending',
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l.report_success),
-          backgroundColor: AppColors.success,
-        ));
+        _showAuroraSnack(l.report_success,
+            accentColor: AuroraTheme.auroraBlue, icon: Icons.check_circle_outline);
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.report_error(e.toString())),
-          backgroundColor: AppColors.error,
-        ));
+        _showAuroraSnack(AppLocalizations.of(context)!.report_error(e.toString()),
+            accentColor: AuroraTheme.auroraRed, icon: Icons.error_outline);
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -78,8 +112,10 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isOtherSelected = _selectedReason == _otherReasonIndex;
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -87,81 +123,203 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimary, size: 20),
+              color: AuroraTheme.textPrimary, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text(AppLocalizations.of(context)!.report_title,
-            style: AppTextStyles.titleMedium),
+        title: Text(
+          l10n.report_title,
+          style: const TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: AuroraTheme.textPrimary,
+            letterSpacing: -0.1,
+          ),
+        ),
       ),
       body: AmbientBackground(
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Text(AppLocalizations.of(context)!.report_why,
-                style: AppTextStyles.labelLarge),
+            Text(
+              l10n.report_why,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: 0.1,
+              ),
+            ),
             const SizedBox(height: 12),
-            ..._getReasons(context).asMap().entries.map((e) => GestureDetector(
+            ..._getReasons(context).asMap().entries.map((e) {
+              final isSelected = _selectedReason == e.key;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GestureDetector(
                   onTap: () => setState(() => _selectedReason = e.key),
-                  child: GlassCard(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _selectedReason == e.key
-                                  ? AppColors.gradientStart
-                                  : AppColors.glassBorder,
-                              width: 2,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
+                      boxShadow: isSelected ? AuroraTheme.redGlow : null,
+                    ),
+                    child: GlassCard(
+                      backgroundColor:
+                          isSelected ? AuroraTheme.auroraRed.withOpacity(0.10) : null,
+                      borderColor: isSelected ? AuroraTheme.auroraRed : null,
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AuroraTheme.auroraRed
+                                    : AuroraTheme.glassBorder,
+                                width: 2,
+                              ),
+                            ),
+                            child: isSelected
+                                ? const Center(
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: AuroraTheme.auroraRed,
+                                      ),
+                                      child: SizedBox(width: 10, height: 10),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              e.value,
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: AuroraTheme.textPrimary,
+                              ),
                             ),
                           ),
-                          child: _selectedReason == e.key
-                              ? Center(
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppColors.gradientStart,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(e.value, style: AppTextStyles.bodyLarge),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                )),
+                ),
+              );
+            }),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.report_desc_label,
-                style: AppTextStyles.labelLarge),
+            Text(
+              isOtherSelected ? l10n.report_desc_label_required : l10n.report_desc_label,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: _descError ? AuroraTheme.auroraGold : AuroraTheme.textPrimary,
+                letterSpacing: 0.1,
+              ),
+            ),
             const SizedBox(height: 8),
             GlassCard(
+              borderColor: _descError ? AuroraTheme.auroraGold : null,
               child: TextField(
                 controller: _descController,
-                style: AppTextStyles.bodyLarge,
+                onChanged: (_) {
+                  if (_descError) setState(() => _descError = false);
+                },
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: AuroraTheme.textPrimary,
+                ),
                 maxLines: 4,
                 maxLength: 500,
                 decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.report_desc_hint,
-                  hintStyle: AppTextStyles.bodyMedium,
+                  filled: false,
+                  hintText: l10n.report_desc_hint,
+                  hintStyle: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textMuted,
+                  ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
-                  counterStyle: AppTextStyles.monoSmall,
+                  counterStyle: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 11,
+                    color: AuroraTheme.textMuted,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            ScButton(
-              label: _sending ? AppLocalizations.of(context)!.report_btn_sending : AppLocalizations.of(context)!.report_btn_submit,
-              onPressed: _sending ? null : _submit,
+            _ReportSubmitButton(
+              label: _sending ? l10n.report_btn_sending : l10n.report_btn_submit,
+              isLoading: _sending,
+              onTap: _sending ? null : _submit,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportSubmitButton extends StatelessWidget {
+  final String label;
+  final bool isLoading;
+  final VoidCallback? onTap;
+  const _ReportSubmitButton({required this.label, required this.isLoading, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDisabled = onTap == null && !isLoading;
+    return Opacity(
+      opacity: isDisabled ? 0.45 : 1.0,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: isDisabled
+                ? null
+                : [
+                    BoxShadow(
+                      color: AuroraTheme.auroraRed.withOpacity(0.35),
+                      blurRadius: 24,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+          ),
+          alignment: Alignment.center,
+          child: isLoading
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 0.6,
+                  ),
+                ),
         ),
       ),
     );

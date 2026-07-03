@@ -9,8 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
@@ -1358,7 +1356,7 @@ class InvitationCard extends StatelessWidget {
                             ? const Text('♫', style: TextStyle(
                                 fontSize: 24,
                                 height: 1.0,
-                                color: AppColors.primaryRed,
+                                color: AuroraTheme.auroraRed,
                               ))
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),

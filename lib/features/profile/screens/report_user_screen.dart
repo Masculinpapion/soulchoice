@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -116,30 +117,38 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     final isOtherSelected = _selectedReason == _otherReasonIndex;
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AuroraTheme.textPrimary, size: 20),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          l10n.report_title,
-          style: const TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.w700,
-            fontSize: 17,
-            color: AuroraTheme.textPrimary,
-            letterSpacing: -0.1,
-          ),
-        ),
-      ),
       body: AmbientBackground(
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                child: Row(
+                  children: [
+                    _GlassPill(
+                      onTap: () => context.pop(),
+                      child: const Icon(Icons.arrow_back_ios_new,
+                          size: 16, color: AuroraTheme.textPrimary),
+                    ),
+                    const SizedBox(width: 14),
+                    Text(
+                      l10n.report_title,
+                      style: const TextStyle(
+                        fontFamily: 'Manrope',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                        color: AuroraTheme.textPrimary,
+                        letterSpacing: -0.1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  children: [
             Text(
               l10n.report_why,
               style: const TextStyle(
@@ -261,11 +270,41 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
               isLoading: _sending,
               onTap: _sending ? null : _submit,
             ),
-          ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _GlassPill extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  const _GlassPill({required this.child, this.onTap});
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AuroraTheme.glassBg,
+                shape: BoxShape.circle,
+                border: Border.all(color: AuroraTheme.glassBorder),
+              ),
+              child: child,
+            ),
+          ),
+        ),
+      );
 }
 
 class _ReportSubmitButton extends StatelessWidget {

@@ -543,6 +543,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: l10n.settings_camera_permission,
                           onTap: () => openAppSettings(),
                         ),
+                        _SettingsTile(
+                          icon: Icons.block_outlined,
+                          label: l10n.blocked_users_title,
+                          onTap: () => context.push('/settings/blocked-users'),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),

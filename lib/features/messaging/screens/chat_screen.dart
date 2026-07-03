@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -251,6 +249,36 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         .subscribe();
   }
 
+  void _showAuroraSnack(String message,
+      {required Color accentColor, required IconData icon}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      backgroundColor: AuroraTheme.bgDeep,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: accentColor.withOpacity(0.4)),
+      ),
+      content: Row(
+        children: [
+          Icon(icon, color: accentColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 13,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+
   String _currentUserGender() {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return 'other';
@@ -311,10 +339,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (mounted) {
         setState(() =>
             _messages.removeWhere((m) => m.id == optimistic.id));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.chat_send_error(e.toString())),
-          backgroundColor: AppColors.error,
-        ));
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.chat_send_error(e.toString()),
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
       }
     }
   }
@@ -377,10 +406,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     if (mounted) {
       setState(() => _myConfirmation = attended);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(attended ? AppLocalizations.of(context)!.chat_meeting_saved : AppLocalizations.of(context)!.chat_noted),
-        backgroundColor: attended ? AppColors.success : AppColors.warning,
-      ));
+      _showAuroraSnack(
+        attended
+            ? AppLocalizations.of(context)!.chat_meeting_saved
+            : AppLocalizations.of(context)!.chat_noted,
+        accentColor: attended ? AuroraTheme.auroraBlue : AuroraTheme.auroraGold,
+        icon: attended ? Icons.check_circle_outline : Icons.info_outline,
+      );
     }
   }
 
@@ -393,10 +425,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (mounted) context.go('/messages');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.chat_send_error(e.toString())),
-          backgroundColor: AppColors.error,
-        ));
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.chat_send_error(e.toString()),
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
       }
     }
   }
@@ -479,7 +512,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation(
-                              AppColors.gradientStart),
+                              AuroraTheme.auroraRed),
                         ),
                       ),
                     )
@@ -501,7 +534,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                     height: 20,
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: AppColors.red),
+                                        color: AuroraTheme.auroraRed),
                                   ),
                                 ),
                               );
@@ -539,19 +572,23 @@ class _ArchivedBanner extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.textTertiary.withOpacity(0.12),
+          color: Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.textTertiary.withOpacity(0.3)),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.archive_outlined,
-                size: 16, color: AppColors.textTertiary),
+            Icon(Icons.archive_outlined,
+                size: 16, color: AuroraTheme.textMuted),
             const SizedBox(width: 8),
             Text(
               AppLocalizations.of(context)!.chat_archived,
-              style: AppTextStyles.monoSmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: TextStyle(
+                fontFamily: 'JetBrainsMono',
+                fontSize: 11,
+                color: AuroraTheme.textSecondary,
+                letterSpacing: 0.25,
+              ),
             ),
           ],
         ),
@@ -577,9 +614,9 @@ class _AttendanceBanner extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.12),
+                color: AuroraTheme.auroraGold.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.warning.withOpacity(0.4)),
+                border: Border.all(color: AuroraTheme.auroraGold.withOpacity(0.4)),
               ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -587,12 +624,17 @@ class _AttendanceBanner extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(Icons.help_outline,
-                        size: 16, color: AppColors.warning),
+                        size: 16, color: AuroraTheme.auroraGold),
                     const SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context)!.chat_meeting_question,
-                      style: AppTextStyles.labelLarge.copyWith(
-                          color: AppColors.warning, fontSize: 14),
+                      style: const TextStyle(
+                        fontFamily: 'Manrope',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: AuroraTheme.auroraGold,
+                        letterSpacing: 0.1,
+                      ),
                     ),
                   ],
                 ),
@@ -602,7 +644,7 @@ class _AttendanceBanner extends StatelessWidget {
                     Expanded(
                       child: _BannerButton(
                         label: AppLocalizations.of(context)!.chat_yes_we_met,
-                        color: AppColors.success,
+                        color: AuroraTheme.auroraBlue,
                         onTap: onYes,
                       ),
                     ),
@@ -610,7 +652,7 @@ class _AttendanceBanner extends StatelessWidget {
                     Expanded(
                       child: _BannerButton(
                         label: AppLocalizations.of(context)!.chat_other_no_show,
-                        color: AppColors.error,
+                        color: AuroraTheme.auroraRed,
                         onTap: onNo,
                       ),
                     ),
@@ -645,8 +687,13 @@ class _BannerButton extends StatelessWidget {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: AppTextStyles.labelMedium
-                .copyWith(color: color, fontSize: 12),
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              color: color,
+              letterSpacing: 0.05,
+            ),
           ),
         ),
       );
@@ -918,7 +965,7 @@ class _DefaultAvatar extends StatelessWidget {
         height: 40,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          gradient: AppColors.primaryGradient,
+          gradient: AuroraTheme.redBlueGradient,
         ),
         child: Center(
           child: Text(
@@ -998,13 +1045,18 @@ class _EmptyState extends StatelessWidget {
           children: [
             ShaderMask(
               shaderCallback: (b) =>
-                  AppColors.primaryGradient.createShader(b),
+                  AuroraTheme.redBlueGradient.createShader(b),
               child: const Icon(Icons.chat_bubble_outline,
                   color: Colors.white, size: 44),
             ),
             const SizedBox(height: 16),
             Text(AppLocalizations.of(context)!.chat_empty_hint,
-                style: AppTextStyles.bodyMedium),
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: AuroraTheme.textSecondary,
+                  height: 1.5,
+                )),
           ],
         ),
       );
@@ -1056,7 +1108,7 @@ class _SentBubble extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
+          gradient: AuroraTheme.redBlueGradient,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
@@ -1065,7 +1117,7 @@ class _SentBubble extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.gradientStart.withOpacity(0.2),
+              color: AuroraTheme.auroraRed.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -1075,13 +1127,21 @@ class _SentBubble extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(message.content,
-                style: AppTextStyles.bodyLarge
-                    .copyWith(color: AppColors.textPrimary)),
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  color: AuroraTheme.textPrimary,
+                  height: 1.6,
+                )),
             const SizedBox(height: 4),
             Text(
               time,
-              style: AppTextStyles.monoSmall
-                  .copyWith(color: Colors.white.withOpacity(0.6)),
+              style: TextStyle(
+                fontFamily: 'JetBrainsMono',
+                fontSize: 11,
+                color: Colors.white.withOpacity(0.6),
+                letterSpacing: 0.25,
+              ),
             ),
           ],
         ),
@@ -1107,21 +1167,33 @@ class _ReceivedBubble extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: AppColors.glassBgMedium,
+              color: AuroraTheme.glassStrong,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
                 bottomLeft: Radius.circular(4),
                 bottomRight: Radius.circular(20),
               ),
-              border: Border.all(color: AppColors.glassBorder),
+              border: Border.all(color: AuroraTheme.glassBorder),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(message.content, style: AppTextStyles.bodyLarge),
+                Text(message.content,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 16,
+                      color: AuroraTheme.textPrimary,
+                      height: 1.6,
+                    )),
                 const SizedBox(height: 4),
-                Text(time, style: AppTextStyles.monoSmall),
+                Text(time,
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      color: AuroraTheme.textMuted,
+                      letterSpacing: 0.25,
+                    )),
               ],
             ),
           ),
@@ -1200,11 +1272,11 @@ class _InputBar extends StatelessWidget {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
+                    gradient: AuroraTheme.redBlueGradient,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.gradientStart.withOpacity(0.35),
+                        color: AuroraTheme.auroraRed.withOpacity(0.35),
                         blurRadius: 14,
                         offset: const Offset(0, 4),
                       ),

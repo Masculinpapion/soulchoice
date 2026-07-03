@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -71,7 +70,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: Center(
           child: FadeTransition(
@@ -99,9 +98,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   const SizedBox(height: 12),
                   Text(
                     'CHOOSE YOUR MOMENT',
-                    style: AppTextStyles.monoSmall.copyWith(
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
                       letterSpacing: 5,
-                      color: AppColors.textTertiary,
+                      color: AuroraTheme.textMuted,
                     ),
                   ),
                 ],

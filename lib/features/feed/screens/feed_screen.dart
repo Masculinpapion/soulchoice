@@ -175,7 +175,7 @@ class _Header extends ConsumerWidget {
           // Logo — gradient shimmer
           ShaderMask(
             blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(bounds.left - 4, bounds.top - 2, bounds.right + 14, bounds.bottom + 4)),
+            shaderCallback: (bounds) => AuroraTheme.brandTitleGradient.createShader(Rect.fromLTRB(bounds.left - 4, bounds.top - 2, bounds.right + 14, bounds.bottom + 4)),
             child: Text(
               'SoulChoice',
               style: TextStyle(

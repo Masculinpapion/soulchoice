@@ -2,8 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 
@@ -30,20 +29,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     final pages = [
       _OnboardingPageData(
-        pillColor: AppColors.red,
-        pillGlow: AppColors.redGlow,
+        pillColor: AuroraTheme.auroraRed,
+        pillGlow: AuroraTheme.auroraRed,
         title: l10n.onboarding_1_title,
         subtitle: l10n.onboarding_1_desc,
       ),
       _OnboardingPageData(
-        pillColor: AppColors.blue,
-        pillGlow: AppColors.blueGlow,
+        pillColor: AuroraTheme.auroraBlue,
+        pillGlow: AuroraTheme.auroraBlue,
         title: l10n.onboarding_2_title,
         subtitle: l10n.onboarding_2_desc,
       ),
       _OnboardingPageData(
-        pillColor: AppColors.gold,
-        pillGlow: AppColors.gold,
+        pillColor: AuroraTheme.auroraGold,
+        pillGlow: AuroraTheme.auroraGold,
         isGold: true,
         title: l10n.onboarding_3_title,
         subtitle: l10n.onboarding_3_desc,
@@ -51,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -78,8 +77,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 6,
                         decoration: BoxDecoration(
                           color: _currentPage == i
-                              ? AppColors.red
-                              : AppColors.glassBorder,
+                              ? AuroraTheme.auroraRed
+                              : AuroraTheme.glassBorder,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -107,8 +106,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () => context.go('/auth/phone'),
-                      child: Text(l10n.onboarding_skip,
-                          style: AppTextStyles.bodyMedium),
+                      child: Text(
+                        l10n.onboarding_skip,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                          color: AuroraTheme.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
                     ),
                   ],
                   const SizedBox(height: 20),
@@ -155,7 +161,7 @@ class _OnboardingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _Pill(
-            isBlue: data.pillColor == AppColors.blue,
+            isBlue: data.pillColor == AuroraTheme.auroraBlue,
             isGold: data.isGold,
             delay: Duration.zero,
           ),
@@ -166,7 +172,15 @@ class _OnboardingPage extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 340),
               child: Text(
                 data.title,
-                style: AppTextStyles.displayMedium.copyWith(height: 1.35),
+                style: const TextStyle(
+                  fontFamily: 'Fraunces',
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 32,
+                  color: AuroraTheme.textPrimary,
+                  letterSpacing: -0.4,
+                  height: 1.35,
+                ),
                 textAlign: TextAlign.center,
                 softWrap: true,
                 overflow: TextOverflow.visible,
@@ -180,8 +194,10 @@ class _OnboardingPage extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 340),
               child: Text(
                 data.subtitle,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: AuroraTheme.textSecondary,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,

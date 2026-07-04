@@ -3,8 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -35,7 +34,7 @@ class _AdminScreenState extends State<AdminScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -43,17 +42,36 @@ class _AdminScreenState extends State<AdminScreen>
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimary, size: 20),
+              color: AuroraTheme.textPrimary, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text(AppLocalizations.of(context)!.admin_title, style: AppTextStyles.titleMedium),
+        title: Text(
+          AppLocalizations.of(context)!.admin_title,
+          style: const TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: AuroraTheme.textPrimary,
+            letterSpacing: -0.1,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabController,
-          labelStyle: AppTextStyles.labelMedium,
-          unselectedLabelStyle: AppTextStyles.labelMedium,
-          labelColor: AppColors.red,
-          unselectedLabelColor: AppColors.textTertiary,
-          indicatorColor: AppColors.red,
+          labelStyle: const TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.05,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.05,
+          ),
+          labelColor: AuroraTheme.auroraRed,
+          unselectedLabelColor: AuroraTheme.textMuted,
+          indicatorColor: AuroraTheme.auroraRed,
           tabs: [
             Tab(text: AppLocalizations.of(context)!.admin_tab_selfies),
             Tab(text: AppLocalizations.of(context)!.admin_tab_reports),
@@ -136,10 +154,19 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSt) => AlertDialog(
-          backgroundColor: AppColors.bgCard,
+          backgroundColor: AuroraTheme.bgDeep,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(l.admin_reject_reason_title, style: AppTextStyles.titleMedium),
+          title: Text(
+            l.admin_reject_reason_title,
+            style: const TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AuroraTheme.textPrimary,
+              letterSpacing: -0.1,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: reasons.asMap().entries.map((e) {
@@ -147,17 +174,32 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                 value: e.key,
                 groupValue: selectedReason,
                 onChanged: (v) => setSt(() => selectedReason = v),
-                title: Text(e.value, style: AppTextStyles.bodyMedium),
-                activeColor: AppColors.error,
+                title: Text(
+                  e.value,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
+                activeColor: AuroraTheme.auroraRed,
               );
             }).toList(),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(l.admin_btn_cancel,
-                  style: AppTextStyles.labelMedium
-                      .copyWith(color: AppColors.textTertiary)),
+              child: Text(
+                l.admin_btn_cancel,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.05,
+                  color: AuroraTheme.textMuted,
+                ),
+              ),
             ),
             TextButton(
               onPressed: selectedReason == null
@@ -170,9 +212,16 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                       }).eq('id', userId);
                       _load();
                     },
-              child: Text(l.admin_btn_reject,
-                  style:
-                      AppTextStyles.labelMedium.copyWith(color: AppColors.error)),
+              child: Text(
+                l.admin_btn_reject,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.05,
+                  color: AuroraTheme.auroraRed,
+                ),
+              ),
             ),
           ],
         ),
@@ -189,7 +238,7 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
           height: 28,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation(AppColors.gradientStart),
+            valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
           ),
         ),
       );
@@ -200,16 +249,24 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.check_circle_outline,
-                color: AppColors.success, size: 48),
+                color: Color(0xFF10B981), size: 48),
             const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.admin_selfies_empty, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.admin_selfies_empty,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
           ],
         ),
       );
     }
     return RefreshIndicator(
-      color: AppColors.gradientStart,
-      backgroundColor: AppColors.bgCard,
+      color: AuroraTheme.auroraRed,
+      backgroundColor: AuroraTheme.glassBg,
       onRefresh: _load,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -243,14 +300,27 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                     children: [
                       Text(
                         '${u['name']}, ${u['age']}',
-                        style: AppTextStyles.titleMedium,
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AuroraTheme.textPrimary,
+                          letterSpacing: -0.1,
+                        ),
                       ),
                       const Spacer(),
                       GestureDetector(
                         onTap: () => context.push('/profile/${u['id']}'),
-                        child: Text(AppLocalizations.of(context)!.admin_view_profile,
-                            style: AppTextStyles.monoSmall.copyWith(
-                                color: AppColors.gradientStart)),
+                        child: Text(
+                          AppLocalizations.of(context)!.admin_view_profile,
+                          style: const TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.25,
+                            color: AuroraTheme.auroraRed,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -285,15 +355,22 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              color: AppColors.success.withOpacity(0.15),
+                              color: const Color(0xFF10B981).withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  color: AppColors.success.withOpacity(0.5)),
+                                  color: const Color(0xFF10B981).withOpacity(0.5)),
                             ),
                             child: Center(
-                              child: Text(AppLocalizations.of(context)!.admin_btn_approve,
-                                  style: AppTextStyles.labelMedium
-                                      .copyWith(color: AppColors.success)),
+                              child: Text(
+                                AppLocalizations.of(context)!.admin_btn_approve,
+                                style: const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.05,
+                                  color: Color(0xFF10B981),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -306,15 +383,22 @@ class _PendingSelfiestTabState extends State<_PendingSelfiestTab> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withOpacity(0.15),
+                              color: AuroraTheme.auroraRed.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                  color: AppColors.error.withOpacity(0.5)),
+                                  color: AuroraTheme.auroraRed.withOpacity(0.5)),
                             ),
                             child: Center(
-                              child: Text(AppLocalizations.of(context)!.admin_btn_reject_action,
-                                  style: AppTextStyles.labelMedium
-                                      .copyWith(color: AppColors.error)),
+                              child: Text(
+                                AppLocalizations.of(context)!.admin_btn_reject_action,
+                                style: const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.05,
+                                  color: AuroraTheme.auroraRed,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -367,9 +451,9 @@ class _PhotoBox extends StatelessWidget {
     return Container(
       height: 180,
       decoration: BoxDecoration(
-        color: AppColors.glassBg,
+        color: AuroraTheme.glassBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.glassBorder),
+        border: Border.all(color: AuroraTheme.glassBorder),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -378,13 +462,20 @@ class _PhotoBox extends StatelessWidget {
             isSelfie
                 ? Icons.camera_front
                 : Icons.person_outline,
-            color: AppColors.textTertiary,
+            color: AuroraTheme.textMuted,
             size: 36,
           ),
           const SizedBox(height: 6),
-          Text(label,
-              style: AppTextStyles.monoSmall
-                  .copyWith(color: AppColors.textTertiary)),
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'JetBrainsMono',
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0.25,
+              color: AuroraTheme.textMuted,
+            ),
+          ),
         ],
       ),
     );
@@ -436,7 +527,7 @@ class _ReportsTabState extends State<_ReportsTab> {
         .update({'banned': true}).eq('id', userId);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(AppLocalizations.of(context)!.admin_user_banned),
-      backgroundColor: AppColors.error,
+      backgroundColor: AuroraTheme.auroraRed,
     ));
   }
 
@@ -456,7 +547,7 @@ class _ReportsTabState extends State<_ReportsTab> {
           height: 28,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation(AppColors.gradientStart),
+            valueColor: AlwaysStoppedAnimation(AuroraTheme.auroraRed),
           ),
         ),
       );
@@ -467,16 +558,24 @@ class _ReportsTabState extends State<_ReportsTab> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.shield_outlined,
-                color: AppColors.success, size: 48),
+                color: Color(0xFF10B981), size: 48),
             const SizedBox(height: 12),
-            Text(AppLocalizations.of(context)!.admin_reports_empty, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.admin_reports_empty,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
           ],
         ),
       );
     }
     return RefreshIndicator(
-      color: AppColors.gradientStart,
-      backgroundColor: AppColors.bgCard,
+      color: AuroraTheme.auroraRed,
+      backgroundColor: AuroraTheme.glassBg,
       onRefresh: _load,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -493,37 +592,64 @@ class _ReportsTabState extends State<_ReportsTab> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.flag, color: AppColors.error, size: 16),
+                      const Icon(Icons.flag, color: AuroraTheme.auroraRed, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           AppLocalizations.of(context)!.admin_report_about(reported?['name'] ?? '—'),
-                          style: AppTextStyles.titleMedium,
+                          style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: AuroraTheme.textPrimary,
+                            letterSpacing: -0.1,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(AppLocalizations.of(context)!.admin_reporter_label(reporter?['name'] ?? '—'),
-                      style: AppTextStyles.monoSmall),
-                  Text(AppLocalizations.of(context)!.admin_reason_label(r['reason'] as String? ?? '—'),
-                      style: AppTextStyles.bodyMedium),
+                  Text(
+                    AppLocalizations.of(context)!.admin_reporter_label(reporter?['name'] ?? '—'),
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.25,
+                      color: AuroraTheme.textMuted,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.admin_reason_label(r['reason'] as String? ?? '—'),
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 14,
+                      color: AuroraTheme.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
                   if ((r['description'] as String?)?.isNotEmpty == true)
-                    Text(r['description'] as String,
-                        style: AppTextStyles.bodyMedium
-                            .copyWith(color: AppColors.textTertiary)),
+                    Text(
+                      r['description'] as String,
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 14,
+                        height: 1.5,
+                        color: AuroraTheme.textMuted,
+                      ),
+                    ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
                       _ActionBtn(
                         label: AppLocalizations.of(context)!.admin_btn_ban,
-                        color: AppColors.error,
+                        color: AuroraTheme.auroraRed,
                         onTap: () => _banUser(reported?['id'] as String? ?? ''),
                       ),
                       const SizedBox(width: 8),
                       _ActionBtn(
                         label: AppLocalizations.of(context)!.admin_btn_dismiss,
-                        color: AppColors.textTertiary,
+                        color: AuroraTheme.textMuted,
                         onTap: () => _dismiss(r['id'] as String),
                       ),
                     ],
@@ -558,8 +684,16 @@ class _ActionBtn extends StatelessWidget {
               border: Border.all(color: color.withOpacity(0.4)),
             ),
             child: Center(
-              child: Text(label,
-                  style: AppTextStyles.monoSmall.copyWith(color: color)),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: 0.25,
+                  color: color,
+                ),
+              ),
             ),
           ),
         ),

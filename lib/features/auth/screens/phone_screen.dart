@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 import 'package:url_launcher/url_launcher.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -64,7 +63,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
@@ -77,17 +76,31 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 // Brand mark
                 ShaderMask(
                   shaderCallback: (b) =>
-                      AppColors.primaryGradient.createShader(b),
+                      AuroraTheme.redBlueGradient.createShader(b),
                   child: const Icon(Icons.phone_iphone,
                       color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 24),
-                Text(AppLocalizations.of(context)!.phone_title,
-                    style: AppTextStyles.displayMedium),
+                Text(
+                  AppLocalizations.of(context)!.phone_title,
+                  style: const TextStyle(
+                    fontFamily: 'Fraunces',
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 32,
+                    color: AuroraTheme.textPrimary,
+                    letterSpacing: -0.4,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 Text(
                   AppLocalizations.of(context)!.phone_subtitle,
-                  style: AppTextStyles.bodyMedium,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                    height: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 40),
                 // Phone input field
@@ -99,25 +112,38 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 18, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.glassBgMedium,
+                        color: AuroraTheme.glassStrong,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: AppColors.glassBorder),
+                        border: Border.all(color: AuroraTheme.glassBorder),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(_countryCode, style: AppTextStyles.bodyLarge),
+                          Text(
+                            _countryCode,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 16,
+                              color: AuroraTheme.textPrimary,
+                              height: 1.6,
+                            ),
+                          ),
                           const SizedBox(width: 10),
                           Container(
                               width: 1,
                               height: 28,
-                              color: AppColors.glassBorder),
+                              color: AuroraTheme.glassBorder),
                           const SizedBox(width: 14),
                           Expanded(
                             child: TextField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
-                              style: AppTextStyles.bodyLarge,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 16,
+                                color: AuroraTheme.textPrimary,
+                                height: 1.6,
+                              ),
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.transparent,
@@ -125,8 +151,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 hintText: '999 123 45 67',
-                                hintStyle: AppTextStyles.bodyLarge.copyWith(
-                                  color: AppColors.textTertiary,
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 16,
+                                  height: 1.6,
+                                  color: AuroraTheme.textMuted,
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 16),
@@ -144,13 +173,17 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                   Row(
                     children: [
                       const Icon(Icons.error_outline,
-                          size: 14, color: AppColors.error),
+                          size: 14, color: AuroraTheme.auroraRed),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.error),
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 14,
+                            height: 1.5,
+                            color: AuroraTheme.auroraRed,
+                          ),
                         ),
                       ),
                     ],
@@ -167,19 +200,24 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      style: AppTextStyles.bodyMedium.copyWith(fontSize: 12),
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 12,
+                        color: AuroraTheme.textSecondary,
+                        height: 1.5,
+                      ),
                       children: [
                         TextSpan(text: AppLocalizations.of(context)!.phone_terms + ' '),
                         TextSpan(
                           text: AppLocalizations.of(context)!.phone_terms_link_privacy,
-                          style: const TextStyle(color: Color(0xFFE63946), decoration: TextDecoration.underline),
+                          style: const TextStyle(color: AuroraTheme.auroraRed, decoration: TextDecoration.underline),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => launchUrl(Uri.parse('https://soulchoice.app/privacy')),
                         ),
                         const TextSpan(text: ' & '),
                         TextSpan(
                           text: AppLocalizations.of(context)!.phone_terms_link_terms,
-                          style: const TextStyle(color: Color(0xFFE63946), decoration: TextDecoration.underline),
+                          style: const TextStyle(color: AuroraTheme.auroraRed, decoration: TextDecoration.underline),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => launchUrl(Uri.parse('https://soulchoice.app/terms')),
                         ),
@@ -199,40 +237,65 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   void _showCountryPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.bgCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 14),
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.glassBorder,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      backgroundColor: Colors.transparent,
+      builder: (_) => ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D0D12).withOpacity(0.92),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 14),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AuroraTheme.glassBorder,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ..._commonCountries.map(
+                  (c) => ListTile(
+                    leading: Text(c.$2.split(' ')[0],
+                        style: const TextStyle(fontSize: 24)),
+                    title: Text(
+                      c.$2.split(' ').skip(1).join(' '),
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 16,
+                        color: AuroraTheme.textPrimary,
+                        height: 1.6,
+                      ),
+                    ),
+                    trailing: Text(
+                      c.$1,
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 13,
+                        color: AuroraTheme.textMuted,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    onTap: () {
+                      setState(() => _countryCode = c.$1);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          ..._commonCountries.map(
-            (c) => ListTile(
-              leading: Text(c.$2.split(' ')[0],
-                  style: const TextStyle(fontSize: 24)),
-              title: Text(c.$2.split(' ').skip(1).join(' '),
-                  style: AppTextStyles.bodyLarge),
-              trailing: Text(c.$1, style: AppTextStyles.mono),
-              onTap: () {
-                setState(() => _countryCode = c.$1);
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
+        ),
       ),
     );
   }

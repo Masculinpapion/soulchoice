@@ -5,8 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
 import '../../../core/services/native_uploader.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -69,25 +68,57 @@ class _SelfieScreenState extends State<SelfieScreen> {
       if (mounted) context.go('/feed');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppLocalizations.of(context)!.error_generic}: $e'), backgroundColor: AppColors.error),
+        _showAuroraSnack(
+          '${AppLocalizations.of(context)!.error_generic}: $e',
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
         );
         setState(() => _isUploading = false);
       }
     }
   }
 
+  void _showAuroraSnack(String message,
+      {required Color accentColor, required IconData icon}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      backgroundColor: AuroraTheme.bgDeep,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: accentColor.withOpacity(0.4)),
+      ),
+      content: Row(
+        children: [
+          Icon(icon, color: accentColor, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 13,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
           onPressed: () => context.pop(),
         ),
       ),
@@ -99,11 +130,26 @@ class _SelfieScreenState extends State<SelfieScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(AppLocalizations.of(context)!.selfie_title, style: AppTextStyles.displayMedium),
+                Text(
+                  AppLocalizations.of(context)!.selfie_title,
+                  style: const TextStyle(
+                    fontFamily: 'Fraunces',
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 32,
+                    color: AuroraTheme.textPrimary,
+                    letterSpacing: -0.4,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.selfie_subtitle,
-                  style: AppTextStyles.bodyMedium,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                    height: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 Center(
@@ -113,10 +159,10 @@ class _SelfieScreenState extends State<SelfieScreen> {
                       width: 220,
                       height: 260,
                       decoration: BoxDecoration(
-                        color: AppColors.glassBg,
+                        color: AuroraTheme.glassBg,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: _selfie != null ? AppColors.red : AppColors.glassBorder,
+                          color: _selfie != null ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
                         ),
                       ),
                       child: _selfie != null
@@ -127,9 +173,17 @@ class _SelfieScreenState extends State<SelfieScreen> {
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.camera_front, size: 48, color: AppColors.textTertiary),
+                                Icon(Icons.camera_front, size: 48, color: AuroraTheme.textMuted),
                                 const SizedBox(height: 12),
-                                Text(AppLocalizations.of(context)!.selfie_take_btn, style: AppTextStyles.bodyMedium),
+                                Text(
+                                  AppLocalizations.of(context)!.selfie_take_btn,
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 14,
+                                    color: AuroraTheme.textSecondary,
+                                    height: 1.5,
+                                  ),
+                                ),
                               ],
                             ),
                     ),
@@ -172,9 +226,17 @@ class _Tip extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Icon(icon, size: 18, color: AppColors.textSecondary),
+          Icon(icon, size: 18, color: AuroraTheme.textSecondary),
           const SizedBox(width: 12),
-          Text(text, style: AppTextStyles.bodyMedium),
+          Text(
+            text,
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 14,
+              color: AuroraTheme.textSecondary,
+              height: 1.5,
+            ),
+          ),
         ],
       );
 }

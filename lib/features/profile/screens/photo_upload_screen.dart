@@ -9,8 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/supabase_constants.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
@@ -128,7 +127,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.photo_upload_pick_error(e.toString())),
-          backgroundColor: AppColors.error,
+          backgroundColor: AuroraTheme.auroraRed,
         ),
       );
     }
@@ -303,7 +302,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(AppLocalizations.of(context)!.photo_upload_error(e.toString())),
-              backgroundColor: AppColors.error),
+              backgroundColor: AuroraTheme.auroraRed),
         );
       }
     } finally {
@@ -314,20 +313,20 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: _isLoading
               ? const Center(
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: AppColors.red))
+                      strokeWidth: 2, color: AuroraTheme.auroraRed))
               : Padding(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+                        icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
                         onPressed: () => context.pop(),
                         padding: EdgeInsets.zero,
                         alignment: Alignment.centerLeft,
@@ -337,12 +336,25 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                         widget.isEditing
                             ? AppLocalizations.of(context)!.photo_upload_title_edit
                             : AppLocalizations.of(context)!.photo_upload_title_add,
-                        style: AppTextStyles.displayMedium,
+                        style: const TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                          color: AuroraTheme.textPrimary,
+                          letterSpacing: -0.4,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         AppLocalizations.of(context)!.photo_upload_subtitle(AppConstants.minPhotos, AppConstants.maxPhotos, _filledCount, AppConstants.maxPhotos),
-                        style: AppTextStyles.mono,
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: AuroraTheme.textMuted,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                       const SizedBox(height: 32),
                       Expanded(
@@ -412,27 +424,27 @@ class _PhotoSlot extends StatelessWidget {
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
                 placeholder: (_, __) => Container(
-                  color: AppColors.glassBg,
+                  color: AuroraTheme.glassBg,
                   child: const Center(
                       child: CircularProgressIndicator(
-                          strokeWidth: 1.5, color: AppColors.red)),
+                          strokeWidth: 1.5, color: AuroraTheme.auroraRed)),
                 ),
                 errorWidget: (_, __, ___) => Container(
-                  color: AppColors.glassBg,
-                  child: const Icon(Icons.broken_image_outlined,
-                      color: AppColors.textTertiary),
+                  color: AuroraTheme.glassBg,
+                  child: Icon(Icons.broken_image_outlined,
+                      color: AuroraTheme.textMuted),
                 ),
               )
             else
               // Boş slot
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.glassBg,
+                  color: AuroraTheme.glassBg,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isPrimary
-                        ? AppColors.red.withOpacity(0.5)
-                        : AppColors.glassBorder,
+                        ? AuroraTheme.auroraRed.withOpacity(0.5)
+                        : AuroraTheme.glassBorder,
                   ),
                 ),
                 child: Column(
@@ -440,14 +452,21 @@ class _PhotoSlot extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.add_photo_alternate_outlined,
-                      color: isPrimary ? AppColors.red : AppColors.textTertiary,
+                      color: isPrimary ? AuroraTheme.auroraRed : AuroraTheme.textMuted,
                       size: 28,
                     ),
                     if (isPrimary) ...[
                       const SizedBox(height: 6),
-                      Text(AppLocalizations.of(context)!.photo_upload_primary_label,
-                          style: AppTextStyles.monoSmall
-                              .copyWith(color: AppColors.red)),
+                      Text(
+                        AppLocalizations.of(context)!.photo_upload_primary_label,
+                        style: const TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.25,
+                          color: AuroraTheme.auroraRed,
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -465,11 +484,11 @@ class _PhotoSlot extends StatelessWidget {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: AppColors.bgBlack.withOpacity(0.8),
+                      color: AuroraTheme.bgDeep.withOpacity(0.8),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.close,
-                        size: 16, color: AppColors.textPrimary),
+                        size: 16, color: AuroraTheme.textPrimary),
                   ),
                 ),
               ),
@@ -486,11 +505,11 @@ class _PhotoSlot extends StatelessWidget {
                     width: 28,
                     height: 28,
                     decoration: BoxDecoration(
-                      color: AppColors.bgBlack.withOpacity(0.8),
+                      color: AuroraTheme.bgDeep.withOpacity(0.8),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.star_outline,
-                        size: 16, color: AppColors.textPrimary),
+                        size: 16, color: AuroraTheme.textPrimary),
                   ),
                 ),
               ),
@@ -504,12 +523,19 @@ class _PhotoSlot extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: AppColors.red,
+                    color: AuroraTheme.auroraRed,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(AppLocalizations.of(context)!.photo_upload_primary_badge,
-                      style: AppTextStyles.monoSmall
-                          .copyWith(color: AppColors.textPrimary)),
+                  child: Text(
+                    AppLocalizations.of(context)!.photo_upload_primary_badge,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.25,
+                      color: AuroraTheme.textPrimary,
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -545,9 +571,9 @@ class _CropScreenState extends State<_CropScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050709),
+      backgroundColor: AuroraTheme.bgDeep,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF050709),
+        backgroundColor: AuroraTheme.bgDeep,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(null),
@@ -567,7 +593,7 @@ class _CropScreenState extends State<_CropScreen> {
               style: TextStyle(
                 fontFamily: 'JetBrainsMono',
                 fontWeight: FontWeight.w700,
-                color: _isCropping ? Colors.white38 : const Color(0xFFFF2D55),
+                color: _isCropping ? Colors.white38 : AuroraTheme.auroraRed,
               ),
             ),
           ),
@@ -586,7 +612,7 @@ class _CropScreenState extends State<_CropScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(AppLocalizations.of(context)!.photo_crop_error(result.cause.toString())),
-                        backgroundColor: AppColors.error,
+                        backgroundColor: AuroraTheme.auroraRed,
                       ),
                     );
                   }

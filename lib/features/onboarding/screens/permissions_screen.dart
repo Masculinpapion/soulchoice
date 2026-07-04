@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -126,7 +125,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     final result = _results[_currentStep];
     final steps = _getSteps(context);
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -162,10 +161,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                             onTap: _advance,
                             child: Text(
                               AppLocalizations.of(context)!.perm_not_now,
-                              style: AppTextStyles.labelMedium.copyWith(
-                                color: AppColors.textTertiary,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.05,
+                                color: AuroraTheme.textMuted,
                                 decoration: TextDecoration.underline,
-                                decorationColor: AppColors.textTertiary,
+                                decorationColor: AuroraTheme.textMuted,
                               ),
                             ),
                           ),
@@ -207,8 +210,8 @@ class _ProgressDots extends StatelessWidget {
             width: isActive ? 24 : 8,
             height: 8,
             decoration: BoxDecoration(
-              gradient: isActive ? AppColors.primaryGradient : null,
-              color: isActive ? null : AppColors.glassBgStrong,
+              gradient: isActive ? AuroraTheme.redBlueGradient : null,
+              color: isActive ? null : AuroraTheme.glassStrong,
               borderRadius: BorderRadius.circular(4),
             ),
           );
@@ -229,11 +232,29 @@ class _StepPage extends StatelessWidget {
           children: [
             _EmojiIllustration(emoji: step.emoji, granted: result),
             const SizedBox(height: 40),
-            Text(step.title, style: AppTextStyles.displayMedium,
-                textAlign: TextAlign.center),
+            Text(
+              step.title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
-            Text(step.description, style: AppTextStyles.bodyMedium,
-                textAlign: TextAlign.center),
+            Text(
+              step.description,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       );
@@ -254,8 +275,8 @@ class _EmojiIllustration extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(colors: [
-                AppColors.gradientStart.withOpacity(0.15),
-                AppColors.gradientEnd.withOpacity(0.05),
+                AuroraTheme.auroraRed.withOpacity(0.15),
+                AuroraTheme.auroraBlue.withOpacity(0.05),
                 Colors.transparent,
               ]),
             ),
@@ -268,8 +289,8 @@ class _EmojiIllustration extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.glassBgMedium,
-                  border: Border.all(color: AppColors.glassBorder),
+                  color: AuroraTheme.glassStrong,
+                  border: Border.all(color: AuroraTheme.glassBorder),
                 ),
                 child: Center(
                     child: Text(emoji, style: const TextStyle(fontSize: 52))),
@@ -284,7 +305,7 @@ class _EmojiIllustration extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: AppColors.success),
+                    shape: BoxShape.circle, color: Color(0xFF10B981)),
                 child: const Icon(Icons.check, color: Colors.white, size: 18),
               ),
             ),
@@ -297,7 +318,7 @@ class _EmojiIllustration extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.error.withOpacity(0.85)),
+                    color: AuroraTheme.auroraRed.withOpacity(0.85)),
                 child: const Icon(Icons.close, color: Colors.white, size: 18),
               ),
             ),
@@ -320,17 +341,22 @@ class _DeniedWidget extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.warning.withOpacity(0.15),
+                    color: AuroraTheme.auroraGold.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.info_outline,
-                      color: AppColors.warning, size: 20),
+                      color: AuroraTheme.auroraGold, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     AppLocalizations.of(context)!.perm_denied_hint,
-                    style: AppTextStyles.bodyMedium,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 14,
+                      color: AuroraTheme.textSecondary,
+                      height: 1.5,
+                    ),
                   ),
                 ),
               ],

@@ -20,9 +20,10 @@
 
 ## SUPABASE ENDPOINTS
 
-- API: https://mybinancebot.duckdns.org/rest/v1/
-- Storage: https://mybinancebot.duckdns.org/storage/v1/
-- Auth: https://mybinancebot.duckdns.org/auth/v1/
+- API: https://soulchoice.app/rest/v1/
+- Storage: https://soulchoice.app/storage/v1/
+- Auth: https://soulchoice.app/auth/v1/
+- Backend sunucu: Timeweb 89.169.1.127 (Hetzner terkedildi)
 
 API keys: lib/core/constants/supabase_constants.dart
 

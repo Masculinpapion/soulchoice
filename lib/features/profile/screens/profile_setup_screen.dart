@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
@@ -134,7 +133,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       if (_nameController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l10n.profile_setup_validation_name),
-          backgroundColor: AppColors.error,
+          backgroundColor: AuroraTheme.auroraRed,
         ));
         return;
       }
@@ -143,7 +142,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           _age! > AppConstants.maxAge) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l10n.profile_setup_validation_age(AppConstants.minAge, AppConstants.maxAge)),
-          backgroundColor: AppColors.error,
+          backgroundColor: AuroraTheme.auroraRed,
         ));
         return;
       }
@@ -151,14 +150,14 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     if (_step == 1 && (_gender == null || _gender!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(l10n.profile_setup_validation_gender),
-        backgroundColor: AppColors.error,
+        backgroundColor: AuroraTheme.auroraRed,
       ));
       return;
     }
     if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(l10n.profile_setup_validation_city),
-        backgroundColor: AppColors.error,
+        backgroundColor: AuroraTheme.auroraRed,
       ));
       return;
     }
@@ -212,7 +211,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.profile_setup_error(e.toString())), backgroundColor: AppColors.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.profile_setup_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
         );
       }
     } finally {
@@ -247,13 +246,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final l10n = AppLocalizations.of(context)!;
     final steps = _getSteps(l10n);
     if (_isLoadingProfile) {
-      return const Scaffold(
-        backgroundColor: AppColors.bgBlack,
-        body: Center(child: CircularProgressIndicator(color: AppColors.red)),
+      return Scaffold(
+        backgroundColor: AuroraTheme.bgDeep,
+        body: const Center(child: CircularProgressIndicator(color: AuroraTheme.auroraRed)),
       );
     }
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
@@ -267,7 +266,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       children: [
                         if (_step > 0)
                           IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+                            icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
                             onPressed: _back,
                           )
                         else
@@ -277,8 +276,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: (_step + 1) / _stepCount,
-                              backgroundColor: AppColors.glassBorder,
-                              color: AppColors.red,
+                              backgroundColor: AuroraTheme.glassBorder,
+                              color: AuroraTheme.auroraRed,
                               minHeight: 3,
                             ),
                           ),
@@ -289,7 +288,13 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                     const SizedBox(height: 8),
                     Text(
                       '${_step + 1} / $_stepCount  •  ${steps[_step]}',
-                      style: AppTextStyles.monoSmall,
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 0.25,
+                        color: AuroraTheme.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -365,17 +370,37 @@ class _StepNameAge extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_name_question, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_name_question,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 32),
             TextField(
               controller: nameController,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_name_label),
             ),
             const SizedBox(height: 20),
             TextFormField(
               keyboardType: TextInputType.number,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               initialValue: age?.toString(),
               onChanged: (v) => onAgeChanged(int.tryParse(v)),
               decoration: InputDecoration(
@@ -404,7 +429,17 @@ class _StepGender extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_step_gender, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_step_gender,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 40),
             _GenderOption(
               label: AppLocalizations.of(context)!.profile_setup_gender_female,
@@ -437,16 +472,25 @@ class _GenderOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
+      borderColor: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, color: isSelected ? AppColors.red : AppColors.textSecondary, size: 28),
+          Icon(icon, color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.textSecondary, size: 28),
           const SizedBox(width: 16),
-          Text(label, style: AppTextStyles.titleMedium),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Manrope',
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AuroraTheme.textPrimary,
+              letterSpacing: -0.1,
+            ),
+          ),
           const Spacer(),
           if (isSelected)
-            const Icon(Icons.check_circle, color: AppColors.red, size: 22),
+            const Icon(Icons.check_circle, color: AuroraTheme.auroraRed, size: 22),
         ],
       ),
     );
@@ -522,27 +566,52 @@ class _StepCityState extends State<_StepCity> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_city_question, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_city_question,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 24),
             TextField(
               controller: _searchCtrl,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.profile_setup_city_search,
-                prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
+                prefixIcon: Icon(Icons.search, color: AuroraTheme.textMuted, size: 20),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? GestureDetector(
                         onTap: () => _searchCtrl.clear(),
-                        child: const Icon(Icons.close, color: AppColors.textTertiary, size: 18),
+                        child: Icon(Icons.close, color: AuroraTheme.textMuted, size: 18),
                       )
                     : null,
               ),
             ),
             const SizedBox(height: 20),
             if (_loading)
-              const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.red))
+              const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AuroraTheme.auroraRed))
             else if (_filtered.isEmpty)
-              Center(child: Text(AppLocalizations.of(context)!.profile_setup_city_not_found, style: AppTextStyles.bodyMedium))
+              Center(
+                child: Text(
+                  AppLocalizations.of(context)!.profile_setup_city_not_found,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
+              )
             else
               ..._filtered.map((c) {
                 final name = _localizedName(c);
@@ -551,14 +620,22 @@ class _StepCityState extends State<_StepCity> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GlassCard(
-                    borderColor: isSelected ? AppColors.red : AppColors.glassBorder,
+                    borderColor: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
                     onTap: () => widget.onSelected(id),
                     child: Row(
                       children: [
-                        Text(name, style: AppTextStyles.bodyLarge),
+                        Text(
+                          name,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 16,
+                            color: AuroraTheme.textPrimary,
+                            height: 1.6,
+                          ),
+                        ),
                         const Spacer(),
                         if (isSelected)
-                          const Icon(Icons.check_circle, color: AppColors.red, size: 20),
+                          const Icon(Icons.check_circle, color: AuroraTheme.auroraRed, size: 20),
                       ],
                     ),
                   ),
@@ -585,15 +662,38 @@ class _StepBio extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_bio_title, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_bio_title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.profile_setup_bio_subtitle, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_bio_subtitle,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 32),
             TextField(
               controller: bioController,
               maxLength: AppConstants.maxBioLength,
               maxLines: 5,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.profile_setup_bio_hint,
                 alignLabelWithHint: true,
@@ -621,19 +721,47 @@ class _StepJobEducation extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_job_title, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_job_title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.profile_setup_step_job_edu, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_step_job_edu,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 32),
             TextField(
               controller: jobController,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_job_label),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: educationController,
-              style: AppTextStyles.bodyLarge,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                color: AuroraTheme.textPrimary,
+                height: 1.6,
+              ),
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_education_label),
             ),
           ],
@@ -682,9 +810,27 @@ class _StepInterests extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(l10n.profile_setup_interests_title, style: AppTextStyles.displayMedium),
+            Text(
+              l10n.profile_setup_interests_title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(l10n.profile_setup_interests_subtitle, style: AppTextStyles.bodyMedium),
+            Text(
+              l10n.profile_setup_interests_subtitle,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 24),
             Wrap(
               spacing: 8,
@@ -695,14 +841,18 @@ class _StepInterests extends StatelessWidget {
                   label: Text(_label(interest, l10n)),
                   selected: isSelected,
                   onSelected: (_) => onToggle(interest),
-                  backgroundColor: AppColors.glassBg,
-                  selectedColor: AppColors.red.withOpacity(0.2),
-                  checkmarkColor: AppColors.red,
+                  backgroundColor: AuroraTheme.glassBg,
+                  selectedColor: AuroraTheme.auroraRed.withOpacity(0.2),
+                  checkmarkColor: AuroraTheme.auroraRed,
                   side: BorderSide(
-                    color: isSelected ? AppColors.red : AppColors.glassBorder,
+                    color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
                   ),
-                  labelStyle: AppTextStyles.labelMedium.copyWith(
-                    color: isSelected ? AppColors.red : AppColors.textSecondary,
+                  labelStyle: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.05,
+                    color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.textSecondary,
                   ),
                 );
               }).toList(),
@@ -730,14 +880,38 @@ class _StepAgeRange extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_age_range_title, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_age_range_title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.profile_setup_age_range_subtitle, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_age_range_subtitle,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 40),
             Center(
               child: Text(
                 AppLocalizations.of(context)!.profile_setup_age_range_value(minAge, maxAge),
-                style: AppTextStyles.titleMedium.copyWith(fontSize: 22),
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: AuroraTheme.textPrimary,
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -746,8 +920,8 @@ class _StepAgeRange extends StatelessWidget {
               min: 21,
               max: 60,
               divisions: 39,
-              activeColor: AppColors.red,
-              inactiveColor: AppColors.glassBorder,
+              activeColor: AuroraTheme.auroraRed,
+              inactiveColor: AuroraTheme.glassBorder,
               labels: RangeLabels('$minAge', '$maxAge'),
               onChanged: (v) => onChanged(v.start.round(), v.end.round()),
             ),
@@ -774,19 +948,51 @@ class _StepPrompts extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.profile_setup_prompts_title, style: AppTextStyles.displayMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_prompts_title,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.profile_setup_prompts_subtitle, style: AppTextStyles.bodyMedium),
+            Text(
+              AppLocalizations.of(context)!.profile_setup_prompts_subtitle,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 32),
             ...questions.entries.map((e) => Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(e.value, style: AppTextStyles.labelLarge),
+                      Text(
+                        e.value,
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AuroraTheme.textPrimary,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       TextFormField(
-                        style: AppTextStyles.bodyLarge,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 16,
+                          color: AuroraTheme.textPrimary,
+                          height: 1.6,
+                        ),
                         initialValue: answers[e.key] ?? '',
                         onChanged: (v) => onAnswered(e.key, v),
                         decoration: InputDecoration(hintText: AppLocalizations.of(context)!.profile_setup_prompts_answer_hint),

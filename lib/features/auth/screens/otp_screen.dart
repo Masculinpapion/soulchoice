@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -113,14 +112,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
           onPressed: () => context.go('/auth/phone'),
         ),
       ),
@@ -133,21 +132,39 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               children: [
                 const SizedBox(height: 8),
                 ShaderMask(
-                  shaderCallback: (b) => AppColors.primaryGradient.createShader(b),
+                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
                   child: const Icon(Icons.phone_in_talk_outlined, color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 20),
-                Text(AppLocalizations.of(context)!.otp_title, style: AppTextStyles.displayMedium),
+                Text(
+                  AppLocalizations.of(context)!.otp_title,
+                  style: const TextStyle(
+                    fontFamily: 'Fraunces',
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 32,
+                    color: AuroraTheme.textPrimary,
+                    letterSpacing: -0.4,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.bodyMedium,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 14,
+                      color: AuroraTheme.textSecondary,
+                      height: 1.5,
+                    ),
                     children: [
                       TextSpan(text: AppLocalizations.of(context)!.otp_sent_to),
                       TextSpan(
                         text: widget.phone,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textPrimary,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                          height: 1.5,
+                          color: AuroraTheme.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -157,7 +174,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.otp_call_hint,
-                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    height: 1.5,
+                    color: AuroraTheme.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: 44),
                 Row(
@@ -188,12 +210,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      const Icon(Icons.error_outline, size: 14, color: AppColors.error),
+                      const Icon(Icons.error_outline, size: 14, color: AuroraTheme.auroraRed),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           _error!,
-                          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 14,
+                            height: 1.5,
+                            color: AuroraTheme.auroraRed,
+                          ),
                         ),
                       ),
                     ],
@@ -204,15 +231,26 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   child: _resendSeconds > 0
                       ? Text(
                           AppLocalizations.of(context)!.otp_resend_countdown(_resendSeconds),
-                          style: AppTextStyles.bodyMedium,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 14,
+                            color: AuroraTheme.textSecondary,
+                            height: 1.5,
+                          ),
                         )
                       : GestureDetector(
                           onTap: _resend,
                           child: ShaderMask(
-                            shaderCallback: (b) => AppColors.primaryGradient.createShader(b),
+                            shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
                             child: Text(
                               AppLocalizations.of(context)!.otp_resend,
-                              style: AppTextStyles.labelMedium.copyWith(color: Colors.white),
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.05,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -283,18 +321,18 @@ class _OtpBoxState extends State<_OtpBox> {
             decoration: BoxDecoration(
               gradient: isFocused
                   ? LinearGradient(colors: [
-                      AppColors.gradientStart.withOpacity(0.12),
-                      AppColors.gradientEnd.withOpacity(0.08),
+                      AuroraTheme.auroraRed.withOpacity(0.12),
+                      AuroraTheme.auroraBlue.withOpacity(0.08),
                     ])
                   : null,
-              color: isFocused ? null : AppColors.glassBgMedium,
+              color: isFocused ? null : AuroraTheme.glassStrong,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isFocused
-                    ? AppColors.gradientStart
+                    ? AuroraTheme.auroraRed
                     : hasValue
-                        ? AppColors.glassBorderBright
-                        : AppColors.glassBorder,
+                        ? const Color(0x40FFFFFF)
+                        : AuroraTheme.glassBorder,
                 width: isFocused ? 1.5 : 1,
               ),
             ),
@@ -304,7 +342,13 @@ class _OtpBoxState extends State<_OtpBox> {
               maxLength: 1,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              style: AppTextStyles.titleLarge.copyWith(fontSize: 24),
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.3,
+                color: AuroraTheme.textPrimary,
+                fontSize: 24,
+              ),
               onChanged: widget.onChanged,
               decoration: const InputDecoration(
                 counterText: '',

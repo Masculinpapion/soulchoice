@@ -2,8 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/applications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -17,7 +16,7 @@ class ApplicantsScreen extends ConsumerWidget {
     final async = ref.watch(applicantsProvider(invitationId));
 
     return Scaffold(
-      backgroundColor: AppColors.bgBlack,
+      backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -31,10 +30,28 @@ class ApplicantsScreen extends ConsumerWidget {
                       onPressed: () => context.pop(),
                     ),
                     Expanded(
-                      child: Text(AppLocalizations.of(context)!.applicants_title, style: AppTextStyles.titleMedium),
+                      child: Text(
+                        AppLocalizations.of(context)!.applicants_title,
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: AuroraTheme.textPrimary,
+                          letterSpacing: -0.1,
+                        ),
+                      ),
                     ),
                     async.maybeWhen(
-                      data: (list) => Text(AppLocalizations.of(context)!.applicants_count(list.length), style: AppTextStyles.mono),
+                      data: (list) => Text(
+                        AppLocalizations.of(context)!.applicants_count(list.length),
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: AuroraTheme.textMuted,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
                       orElse: () => const SizedBox.shrink(),
                     ),
                   ],
@@ -42,24 +59,32 @@ class ApplicantsScreen extends ConsumerWidget {
               ),
               Expanded(
                 child: async.when(
-                  loading: () => const Center(child: CircularProgressIndicator(color: AppColors.red)),
-                  error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: AppColors.textSecondary))),
+                  loading: () => const Center(child: CircularProgressIndicator(color: AuroraTheme.auroraRed)),
+                  error: (e, _) => Center(child: Text('$e', style: TextStyle(color: AuroraTheme.textSecondary))),
                   data: (applicants) {
                     if (applicants.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.people_outline, color: AppColors.textTertiary, size: 48),
+                            Icon(Icons.people_outline, color: AuroraTheme.textMuted, size: 48),
                             const SizedBox(height: 12),
-                            Text(AppLocalizations.of(context)!.applicants_empty, style: AppTextStyles.bodyMedium),
+                            Text(
+                              AppLocalizations.of(context)!.applicants_empty,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: AuroraTheme.textSecondary,
+                                height: 1.5,
+                              ),
+                            ),
                           ],
                         ),
                       );
                     }
                     return RefreshIndicator(
-                      color: AppColors.red,
-                      backgroundColor: AppColors.glassBg,
+                      color: AuroraTheme.auroraRed,
+                      backgroundColor: AuroraTheme.glassBg,
                       onRefresh: () => ref.refresh(applicantsProvider(invitationId).future),
                       child: GridView.builder(
                         padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
@@ -141,15 +166,15 @@ class _ApplicantTile extends StatelessWidget {
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
                 errorWidget: (_, __, ___) => Container(
-                  color: AppColors.glassBg,
-                  child: const Icon(Icons.person_outline, color: AppColors.textSecondary, size: 36),
+                  color: AuroraTheme.glassBg,
+                  child: Icon(Icons.person_outline, color: AuroraTheme.textSecondary, size: 36),
                 ),
               )
             else
               Container(
-                color: AppColors.glassBg,
-                child: const Center(
-                  child: Icon(Icons.person_outline, color: AppColors.textSecondary, size: 36),
+                color: AuroraTheme.glassBg,
+                child: Center(
+                  child: Icon(Icons.person_outline, color: AuroraTheme.textSecondary, size: 36),
                 ),
               ),
 

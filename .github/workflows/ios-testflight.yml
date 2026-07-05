@@ -115,7 +115,7 @@ jobs:
       - name: Upload dSYMs to Crashlytics
         continue-on-error: true
         run: |
-          UPLOAD=$(find /Users/runner/Library/Developer/Xcode/DerivedData ~/Library/Developer/Xcode/DerivedData -name upload-symbols 2>/dev/null | grep -i firebase | head -1)
+          UPLOAD=$(find /Users/runner "$PWD" -name upload-symbols -type f 2>/dev/null | head -1)
           GSP="$PWD/ios/Runner/GoogleService-Info.plist"
           DSYM_DIR=$(ls -d "$PWD"/build/ios/archive/*.xcarchive/dSYMs 2>/dev/null | head -1)
           echo "upload-symbols=$UPLOAD"
@@ -123,7 +123,8 @@ jobs:
           if [ -n "$UPLOAD" ] && [ -f "$GSP" ] && [ -d "$DSYM_DIR" ]; then
             "$UPLOAD" -gsp "$GSP" -p ios "$DSYM_DIR"
           else
-            echo "::warning::dSYM upload skipped (upload-symbols or dSYM dir not found)"
+            echo "::warning::dSYM upload skipped (upload-symbols not found)"
+            echo "DIAG upload-symbols candidates:"; find /Users/runner "$PWD" -name 'upload-symbols' 2>/dev/null | head -10
           fi
 
       - name: Upload to TestFlight

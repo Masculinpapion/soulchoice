@@ -66,6 +66,12 @@ Future<void> main() async {
 
   _saveFcmToken();
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    // Gözlem amaçlı breadcrumb — RLS/session debug (feed boş görünme sorunu).
+    // Davranış değişikliği yok, sadece log.
+    final msg = 'auth_state_change: ${data.event.name} at '
+        '${DateTime.now().toIso8601String()}, hasSession=${data.session != null}';
+    debugPrint(msg);
+    FirebaseCrashlytics.instance.log(msg);
     if (data.event == AuthChangeEvent.signedIn) _saveFcmToken();
   });
   FirebaseMessaging.instance.onTokenRefresh.listen((_) => _saveFcmToken());

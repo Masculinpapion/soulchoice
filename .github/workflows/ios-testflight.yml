@@ -2,17 +2,14 @@ name: iOS TestFlight
 
 on:
   workflow_dispatch:
-  # push trigger geçici olarak kapatıldı (03.07.2026) — sertifika/SPM hatası
-  # çözülene kadar her push'ta boşuna çalışıp fail oluyordu. Sorun giderilince
-  # aşağıdaki push bloğu geri eklenecek:
-  # push:
-  #   branches: [main]
-  #   paths-ignore:
-  #     - '.github/**'
-  #     - 'docs/**'
-  #     - '**.md'
-  #     - 'landing/**'
-  #     - 'supabase/**'
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - '**.md'
+      - 'landing/**'
+      - 'supabase/**'
 
 concurrency:
   group: ios-testflight

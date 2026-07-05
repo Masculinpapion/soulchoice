@@ -82,9 +82,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ]);
         otherUser = results[0] as Map<String, dynamic>?;
         myUser = results[1] as Map<String, dynamic>?;
-      } catch (e) {
-        debugPrint('chat _loadMatchInfo users error: $e');
-      }
+      } catch (_) {}
       try {
         final photoRows = await client
             .from('user_photos')
@@ -96,9 +94,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         if (photoRows is List && photoRows.isNotEmpty) {
           photoUrl = (photoRows.first as Map<String, dynamic>)['url'] as String?;
         }
-      } catch (e) {
-        debugPrint('chat _loadMatchInfo photos error: $e');
-      }
+      } catch (_) {}
 
       if (!mounted) return;
 
@@ -126,8 +122,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _myUtcOffset = (myCity?['utc_offset'] as num?)?.toInt();
         _otherUtcOffset = (otherCity?['utc_offset'] as num?)?.toInt();
       });
-    } catch (e, st) {
-      debugPrint('chat _loadMatchInfo fatal: $e\n$st');
+    } catch (_) {
       if (mounted) setState(() => _matchInfo = {});
     }
 

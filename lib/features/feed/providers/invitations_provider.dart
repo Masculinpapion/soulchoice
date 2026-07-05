@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
@@ -67,22 +65,6 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     final data = await query.order('created_at', ascending: false).limit(30);
 
     final rows = data as List;
-
-    // Gözlem amaçlı log — RLS/session debug (feed boş görünme sorunu).
-    // Davranış değişikliği yok, sadece log: owner embed'i beklenmedik şekilde
-    // null gelirse (auth session düşmüş olabilir) burada işaretliyoruz.
-    final nullOwnerCount = rows
-        .where((r) => (r as Map<String, dynamic>)['owner'] == null)
-        .length;
-    if (nullOwnerCount > 0) {
-      final session = client.auth.currentSession;
-      final msg = 'invitations_null_owner: $nullOwnerCount/${rows.length} rows '
-          'missing owner embed, hasSession=${session != null}, '
-          'expiresAt=${session?.expiresAt}, '
-          'nowEpoch=${DateTime.now().millisecondsSinceEpoch ~/ 1000}';
-      debugPrint(msg);
-      FirebaseCrashlytics.instance.log(msg);
-    }
 
     return rows.map((row) {
       // ── Owner ─────────────────────────────────────────────────────────────

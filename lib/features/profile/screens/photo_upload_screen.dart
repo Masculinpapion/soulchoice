@@ -189,7 +189,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
         final entry = filled[orderIdx].value;
         final isPrimary = filled[orderIdx].key == 0;
-        debugPrint('SAVE[$orderIdx]: id=${entry.remoteId} isPrimary=$isPrimary');
 
         if (entry.isLocal) {
           // Yeni fotoğraf: native HttpURLConnection ile yükle + DB'ye ekle
@@ -266,12 +265,6 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
             .not('id', 'in', '(${keptIds.join(',')})');
       }
 
-      final check = await Supabase.instance.client
-          .from('user_photos')
-          .select('id,order_index,is_primary')
-          .eq('user_id', uid)
-          .order('order_index');
-      debugPrint('DB CHECK: $check');
 
       if (!mounted) return;
       if (widget.isEditing) {

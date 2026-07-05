@@ -10,6 +10,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const TEST_PHONE = '+79295774238'
 const TEST_CODE = '1234'
+// Test bypass yalnızca ALLOW_TEST_OTP=true ortamında (dev) çalışır. Production
+// edge function ortamında bu değişken TANIMSIZ olduğundan bypass asla açılmaz —
+// gerçek SMS.ru call-OTP akışı devreye girer. Dev'de test için env'e ekle.
+const ALLOW_TEST_OTP = Deno.env.get('ALLOW_TEST_OTP') === 'true'
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -20,7 +24,7 @@ serve(async (req) => {
 
     let code: string
 
-    if (phone === TEST_PHONE) {
+    if (ALLOW_TEST_OTP && phone === TEST_PHONE) {
       code = TEST_CODE
     } else {
       const url = 'https://sms.ru/code/call?phone=' + encodeURIComponent(phone) + '&api_id=' + SMS_RU_API_KEY + '&json=1'

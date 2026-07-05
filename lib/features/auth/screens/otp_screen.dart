@@ -114,7 +114,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -125,144 +125,153 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       ),
       body: AmbientBackground(
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                ShaderMask(
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Icon(Icons.phone_in_talk_outlined, color: Colors.white, size: 36),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  AppLocalizations.of(context)!.otp_title,
-                  style: const TextStyle(
-                    fontFamily: 'Fraunces',
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 32,
-                    color: AuroraTheme.textPrimary,
-                    letterSpacing: -0.4,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 14,
-                      color: AuroraTheme.textSecondary,
-                      height: 1.5,
-                    ),
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(text: AppLocalizations.of(context)!.otp_sent_to),
-                      TextSpan(
-                        text: widget.phone,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 14,
-                          height: 1.5,
+                      const SizedBox(height: 8),
+                      ShaderMask(
+                        shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+                        child: const Icon(Icons.phone_in_talk_outlined, color: Colors.white, size: 36),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        AppLocalizations.of(context)!.otp_title,
+                        style: const TextStyle(
+                          fontFamily: 'Fraunces',
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
                           color: AuroraTheme.textPrimary,
-                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.4,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.otp_call_hint,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 14,
-                    height: 1.5,
-                    color: AuroraTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 44),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(
-                    _codeLength,
-                    (i) => _OtpBox(
-                      controller: _controllers[i],
-                      focusNode: _focusNodes[i],
-                      onChanged: (val) {
-                        if (val.length == 1 && i < _codeLength - 1) {
-                          _focusNodes[i + 1].requestFocus();
-                        } else if (val.isEmpty && i > 0) {
-                          _focusNodes[i - 1].requestFocus();
-                        }
-                        if (_otp.length == _codeLength) _verify();
-                      },
-                      onBackspace: i > 0
-                          ? () {
-                              _controllers[i - 1].clear();
-                              _focusNodes[i - 1].requestFocus();
-                            }
-                          : null,
-                    ),
-                  ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      const Icon(Icons.error_outline, size: 14, color: AuroraTheme.auroraRed),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          _error!,
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 14,
-                            height: 1.5,
-                            color: AuroraTheme.auroraRed,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 28),
-                Center(
-                  child: _resendSeconds > 0
-                      ? Text(
-                          AppLocalizations.of(context)!.otp_resend_countdown(_resendSeconds),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 14,
                             color: AuroraTheme.textSecondary,
                             height: 1.5,
                           ),
-                        )
-                      : GestureDetector(
-                          onTap: _resend,
-                          child: ShaderMask(
-                            shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                            child: Text(
-                              AppLocalizations.of(context)!.otp_resend,
-                              style: const TextStyle(
+                          children: [
+                            TextSpan(text: AppLocalizations.of(context)!.otp_sent_to),
+                            TextSpan(
+                              text: widget.phone,
+                              style: TextStyle(
                                 fontFamily: 'Manrope',
-                                fontSize: 13,
+                                fontSize: 14,
+                                height: 1.5,
+                                color: AuroraTheme.textPrimary,
                                 fontWeight: FontWeight.w600,
-                                letterSpacing: 0.05,
-                                color: Colors.white,
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        AppLocalizations.of(context)!.otp_call_hint,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                          height: 1.5,
+                          color: AuroraTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 44),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(
+                          _codeLength,
+                          (i) => _OtpBox(
+                            controller: _controllers[i],
+                            focusNode: _focusNodes[i],
+                            onChanged: (val) {
+                              if (val.length == 1 && i < _codeLength - 1) {
+                                _focusNodes[i + 1].requestFocus();
+                              } else if (val.isEmpty && i > 0) {
+                                _focusNodes[i - 1].requestFocus();
+                              }
+                              if (_otp.length == _codeLength) _verify();
+                            },
+                            onBackspace: i > 0
+                                ? () {
+                                    _controllers[i - 1].clear();
+                                    _focusNodes[i - 1].requestFocus();
+                                  }
+                                : null,
                           ),
                         ),
+                      ),
+                      if (_error != null) ...[
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            const Icon(Icons.error_outline, size: 14, color: AuroraTheme.auroraRed),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                _error!,
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 14,
+                                  height: 1.5,
+                                  color: AuroraTheme.auroraRed,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 28),
+                      Center(
+                        child: _resendSeconds > 0
+                            ? Text(
+                                AppLocalizations.of(context)!.otp_resend_countdown(_resendSeconds),
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 14,
+                                  color: AuroraTheme.textSecondary,
+                                  height: 1.5,
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: _resend,
+                                child: ShaderMask(
+                                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.otp_resend,
+                                    style: const TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.05,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ),
+                      const Spacer(),
+                      ScButton(
+                        label: AppLocalizations.of(context)!.otp_verify,
+                        onPressed: _otp.length == _codeLength ? _verify : null,
+                        isLoading: _isLoading,
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                ScButton(
-                  label: AppLocalizations.of(context)!.otp_verify,
-                  onPressed: _otp.length == _codeLength ? _verify : null,
-                  isLoading: _isLoading,
                 ),
-                const SizedBox(height: 8),
-              ],
+              ),
             ),
           ),
         ),

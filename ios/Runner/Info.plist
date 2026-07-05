@@ -56,16 +56,16 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>SoulChoice needs location to show nearby events</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>SoulChoice needs location to show nearby events</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>SoulChoice needs photo access to upload profile photos</string>
 	<key>NSCameraUsageDescription</key>
 	<string>SoulChoice needs camera access for selfie verification</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>SoulChoice needs permission to save photos to your library</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>SoulChoice needs microphone access for video features</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>SoulChoice uses this to measure app performance and improve your experience. Your data is not shared with third parties for advertising.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

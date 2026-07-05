@@ -110,6 +110,22 @@ jobs:
       - name: Flutter build IPA
         run: flutter build ipa --release --export-options-plist=/tmp/ExportOptions.plist
 
+      # dSYM'leri Crashlytics'e yükle ki iOS çökmeleri sembolize gelsin.
+      # non-fatal: aracı/dSYM bulunamazsa yalnızca uyarır, release'i ASLA kırmaz.
+      - name: Upload dSYMs to Crashlytics
+        continue-on-error: true
+        run: |
+          UPLOAD=$(find /Users/runner/Library/Developer/Xcode/DerivedData ~/Library/Developer/Xcode/DerivedData -name upload-symbols 2>/dev/null | grep -i firebase | head -1)
+          GSP="$PWD/ios/Runner/GoogleService-Info.plist"
+          DSYM_DIR=$(ls -d "$PWD"/build/ios/archive/*.xcarchive/dSYMs 2>/dev/null | head -1)
+          echo "upload-symbols=$UPLOAD"
+          echo "gsp=$GSP dsym=$DSYM_DIR"
+          if [ -n "$UPLOAD" ] && [ -f "$GSP" ] && [ -d "$DSYM_DIR" ]; then
+            "$UPLOAD" -gsp "$GSP" -p ios "$DSYM_DIR"
+          else
+            echo "::warning::dSYM upload skipped (upload-symbols or dSYM dir not found)"
+          fi
+
       - name: Upload to TestFlight
         run: |
           IPA=$(ls build/ios/ipa/*.ipa | head -1)

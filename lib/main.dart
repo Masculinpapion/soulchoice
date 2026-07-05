@@ -47,17 +47,21 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await FirebaseMessaging.instance.requestPermission();
-  AppMetrica.activate(const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'));
+  AppMetrica.activate(
+    const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'),
+  );
 
   timeago.setLocaleMessages('tr', timeago.TrMessages());
   timeago.setLocaleMessages('ru', timeago.RuMessages());
   timeago.setLocaleMessages('en', timeago.EnMessages());
   timeago.setLocaleMessages('de', timeago.DeMessages());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
 
   await Supabase.initialize(
     url: SupabaseConstants.supabaseUrl,
@@ -68,7 +72,8 @@ Future<void> main() async {
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     // Gözlem amaçlı breadcrumb — RLS/session debug (feed boş görünme sorunu).
     // Davranış değişikliği yok, sadece log.
-    final msg = 'auth_state_change: ${data.event.name} at '
+    final msg =
+        'auth_state_change: ${data.event.name} at '
         '${DateTime.now().toIso8601String()}, hasSession=${data.session != null}';
     debugPrint(msg);
     FirebaseCrashlytics.instance.log(msg);
@@ -90,6 +95,13 @@ class SoulChoiceApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'SoulChoice',
       debugShowCheckedModeBanner: false,
+      // Boş alana dokununca klavyeyi kapat — tüm ekranlarda tutarlı,
+      // yeni eklenen ekranlar da otomatik kapsanır.
+      builder: (context, child) => GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: child,
+      ),
       theme: AppTheme.dark,
       routerConfig: router,
       locale: locale,
@@ -99,11 +111,7 @@ class SoulChoiceApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('ru'),
-        Locale('en'),
-        Locale('tr'),
-      ],
+      supportedLocales: const [Locale('ru'), Locale('en'), Locale('tr')],
     );
   }
 }

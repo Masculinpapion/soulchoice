@@ -10,6 +10,7 @@ import '../../../features/invitation/providers/invitation_provider.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
@@ -108,13 +109,34 @@ class _CreateInvitationScreenState
   ];
 
   List<Widget> _buildPages(AppLocalizations l10n) => [
-    _StepFlowType(selected: _flowType, onSelected: (v) => setState(() => _flowType = v)),
-    _StepCategory(selected: _category, onSelected: (v) => setState(() => _category = v)),
+    _StepFlowType(
+      selected: _flowType,
+      onSelected: (v) => setState(() => _flowType = v),
+    ),
+    _StepCategory(
+      selected: _category,
+      onSelected: (v) => setState(() => _category = v),
+    ),
     _StepTitle(controller: _titleController),
-    _StepDescription(controller: _descriptionController, flowType: _flowType, category: _category),
-    if (!_isTravel) _StepVenue(controller: _venueController, category: _category, flowType: _flowType),
-    _StepDateTime(date: _eventDate, onSelected: (d) => setState(() => _eventDate = d)),
-    _StepDuration(selected: _expiryHours, onSelected: (h) => setState(() => _expiryHours = h)),
+    _StepDescription(
+      controller: _descriptionController,
+      flowType: _flowType,
+      category: _category,
+    ),
+    if (!_isTravel)
+      _StepVenue(
+        controller: _venueController,
+        category: _category,
+        flowType: _flowType,
+      ),
+    _StepDateTime(
+      date: _eventDate,
+      onSelected: (d) => setState(() => _eventDate = d),
+    ),
+    _StepDuration(
+      selected: _expiryHours,
+      onSelected: (h) => setState(() => _expiryHours = h),
+    ),
   ];
 
   @override
@@ -166,8 +188,8 @@ class _CreateInvitationScreenState
           status == 'pending'
               ? l.create_inv_gate_pending
               : status == 'rejected'
-                  ? l.create_inv_gate_rejected
-                  : l.create_inv_gate_none,
+              ? l.create_inv_gate_rejected
+              : l.create_inv_gate_none,
           style: _bodyMediumStyle,
         ),
         actions: [
@@ -178,8 +200,9 @@ class _CreateInvitationScreenState
                   ? l.create_inv_gate_action_upload
                   : l.create_inv_gate_action_ok,
               style: const TextStyle(
-                  fontFamily: 'JetBrainsMono',
-                  color: AuroraTheme.auroraRed),
+                fontFamily: 'JetBrainsMono',
+                color: AuroraTheme.auroraRed,
+              ),
             ),
           ),
         ],
@@ -226,14 +249,23 @@ class _CreateInvitationScreenState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l.create_inv_active_limit_cta_ok,
-                style: const TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+            child: Text(
+              l.create_inv_active_limit_cta_ok,
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: Colors.white54,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l.create_inv_active_limit_cta_view,
-                style: const TextStyle(
-                    fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+            child: Text(
+              l.create_inv_active_limit_cta_view,
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: AuroraTheme.auroraRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -259,7 +291,8 @@ class _CreateInvitationScreenState
       case 1:
         if (_category == null) return l10n.create_inv_validation_category;
       case 2:
-        if (_titleController.text.trim().isEmpty) return l10n.create_inv_validation_title;
+        if (_titleController.text.trim().isEmpty)
+          return l10n.create_inv_validation_title;
       case 3:
         if (_isTravel && _descriptionController.text.trim().isEmpty) {
           return l10n.create_inv_validation_description_travel;
@@ -271,7 +304,8 @@ class _CreateInvitationScreenState
           return l10n.create_inv_validation_venue;
         }
       case 5:
-        if (!_isTravel && _eventDate == null) return l10n.create_inv_validation_date;
+        if (!_isTravel && _eventDate == null)
+          return l10n.create_inv_validation_date;
     }
     return null;
   }
@@ -286,11 +320,18 @@ class _CreateInvitationScreenState
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error,
-              style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w600)),
+          content: Text(
+            error,
+            style: const TextStyle(
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           backgroundColor: AuroraTheme.auroraRed,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         ),
       );
@@ -299,8 +340,9 @@ class _CreateInvitationScreenState
     if (_step < _stepCount - 1) {
       setState(() => _step++);
       _pageController.nextPage(
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeInOutCubic);
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOutCubic,
+      );
     } else {
       _publish();
     }
@@ -310,8 +352,9 @@ class _CreateInvitationScreenState
     if (_step > 0) {
       setState(() => _step--);
       _pageController.previousPage(
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeInOutCubic);
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOutCubic,
+      );
     } else {
       context.pop();
     }
@@ -359,23 +402,28 @@ class _CreateInvitationScreenState
       final client = Supabase.instance.client;
       final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
           ? null
-          : _venueController.text.trim().split(' ')
-              .where((w) => w.isNotEmpty)
-              .map((w) => w[0].toUpperCase() + w.substring(1))
-              .join(' ');
+          : _venueController.text
+                .trim()
+                .split(' ')
+                .where((w) => w.isNotEmpty)
+                .map((w) => w[0].toUpperCase() + w.substring(1))
+                .join(' ');
 
       if (isEdit) {
         final editId = widget.editData!['id'] as String;
-        await client.from('invitations').update({
-          'flow_type': _flowType.name,
-          'category': _category?.name ?? InvitationCategory.food.name,
-          'title': _fixCase(_titleController.text),
-          'description': _descriptionController.text.trim().isEmpty
-              ? null
-              : _fixCase(_descriptionController.text),
-          'venue_name': venueFormatted,
-          'event_date': _eventDate?.toIso8601String(),
-        }).eq('id', editId);
+        await client
+            .from('invitations')
+            .update({
+              'flow_type': _flowType.name,
+              'category': _category?.name ?? InvitationCategory.food.name,
+              'title': _fixCase(_titleController.text),
+              'description': _descriptionController.text.trim().isEmpty
+                  ? null
+                  : _fixCase(_descriptionController.text),
+              'venue_name': venueFormatted,
+              'event_date': _eventDate?.toIso8601String(),
+            })
+            .eq('id', editId);
 
         if (mounted) {
           ref.invalidate(invitationDetailProvider(editId));
@@ -406,7 +454,10 @@ class _CreateInvitationScreenState
               : _fixCase(_descriptionController.text),
           'venue_name': venueFormatted,
           'event_date': _eventDate?.toIso8601String(),
-          'expires_at': DateTime.now().toUtc().add(Duration(hours: _expiryHours)).toIso8601String(),
+          'expires_at': DateTime.now()
+              .toUtc()
+              .add(Duration(hours: _expiryHours))
+              .toIso8601String(),
           'city_id': cityId,
           'slots_total': 1,
           'status': 'active',
@@ -419,7 +470,8 @@ class _CreateInvitationScreenState
       }
     } catch (e) {
       if (mounted) {
-        final isLimitError = e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
+        final isLimitError =
+            e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
@@ -431,14 +483,26 @@ class _CreateInvitationScreenState
             ),
             content: Row(
               children: [
-                const Icon(Icons.error_outline, color: AuroraTheme.auroraRed, size: 18),
+                const Icon(
+                  Icons.error_outline,
+                  color: AuroraTheme.auroraRed,
+                  size: 18,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     isLimitError
-                        ? AppLocalizations.of(context)!.create_inv_error_active_limit
-                        : AppLocalizations.of(context)!.create_inv_error_publish(e.toString()),
-                    style: const TextStyle(fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
+                        ? AppLocalizations.of(
+                            context,
+                          )!.create_inv_error_active_limit
+                        : AppLocalizations.of(
+                            context,
+                          )!.create_inv_error_publish(e.toString()),
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -455,9 +519,8 @@ class _CreateInvitationScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final steps = _getSteps(l10n);
-    return Scaffold(
+    return ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
-      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -468,8 +531,11 @@ class _CreateInvitationScreenState
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new,
-                          color: AuroraTheme.textPrimary, size: 20),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: AuroraTheme.textPrimary,
+                        size: 20,
+                      ),
                       onPressed: _back,
                     ),
                     Expanded(
@@ -486,13 +552,13 @@ class _CreateInvitationScreenState
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _StepDots(
-                        total: _stepCount, current: _step),
+                    _StepDots(total: _stepCount, current: _step),
                     const SizedBox(width: 10),
                     Text(
                       steps[_step],
                       style: _monoSmallStyle.copyWith(
-                          color: AuroraTheme.textSecondary),
+                        color: AuroraTheme.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -512,11 +578,10 @@ class _CreateInvitationScreenState
                   label: _step < _stepCount - 1
                       ? l10n.create_inv_btn_next
                       : (widget.editData != null
-                          ? l10n.create_inv_btn_update
-                          : l10n.create_inv_btn_publish),
+                            ? l10n.create_inv_btn_update
+                            : l10n.create_inv_btn_publish),
                   onPressed: _isPublishing ? null : _next,
-                  isLoading:
-                      _isPublishing && _step == _stepCount - 1,
+                  isLoading: _isPublishing && _step == _stepCount - 1,
                 ),
               ),
             ],
@@ -537,22 +602,22 @@ class _GradientProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        height: 4,
+    height: 4,
+    decoration: BoxDecoration(
+      color: AuroraTheme.glassBorder,
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: FractionallySizedBox(
+      widthFactor: value,
+      alignment: Alignment.centerLeft,
+      child: Container(
         decoration: BoxDecoration(
-          color: AuroraTheme.glassBorder,
+          gradient: AuroraTheme.redBlueGradient,
           borderRadius: BorderRadius.circular(4),
         ),
-        child: FractionallySizedBox(
-          widthFactor: value,
-          alignment: Alignment.centerLeft,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: AuroraTheme.redBlueGradient,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -566,26 +631,22 @@ class _StepDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(total, (i) {
-          final isActive = i == current;
-          final isPast = i < current;
-          return Container(
-            width: isActive ? 16 : 5,
-            height: 5,
-            margin: const EdgeInsets.symmetric(horizontal: 2),
-            decoration: BoxDecoration(
-              gradient: (isActive || isPast)
-                  ? AuroraTheme.redBlueGradient
-                  : null,
-              color: (isActive || isPast)
-                  ? null
-                  : Colors.white.withOpacity(0.25),
-              borderRadius: BorderRadius.circular(3),
-            ),
-          );
-        }),
+    mainAxisSize: MainAxisSize.min,
+    children: List.generate(total, (i) {
+      final isActive = i == current;
+      final isPast = i < current;
+      return Container(
+        width: isActive ? 16 : 5,
+        height: 5,
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          gradient: (isActive || isPast) ? AuroraTheme.redBlueGradient : null,
+          color: (isActive || isPast) ? null : Colors.white.withOpacity(0.25),
+          borderRadius: BorderRadius.circular(3),
+        ),
       );
+    }),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -606,23 +667,35 @@ class _StepFlowType extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.create_inv_flow_question,
-              style: _displayMediumStyle),
+          Text(
+            AppLocalizations.of(context)!.create_inv_flow_question,
+            style: _displayMediumStyle,
+          ),
           const SizedBox(height: 40),
           _FlowTypeCard(
             title: AppLocalizations.of(context)!.create_inv_flow_invite_title,
-            subtitle: AppLocalizations.of(context)!.create_inv_flow_invite_subtitle,
+            subtitle: AppLocalizations.of(
+              context,
+            )!.create_inv_flow_invite_subtitle,
             icon: Icons.wine_bar_rounded,
-            gradientColors: const [AuroraTheme.auroraRed, AuroraTheme.auroraViolet],
+            gradientColors: const [
+              AuroraTheme.auroraRed,
+              AuroraTheme.auroraViolet,
+            ],
             isSelected: selected == InvitationFlowType.invite,
             onTap: () => onSelected(InvitationFlowType.invite),
           ),
           const SizedBox(height: 14),
           _FlowTypeCard(
             title: AppLocalizations.of(context)!.create_inv_flow_request_title,
-            subtitle: AppLocalizations.of(context)!.create_inv_flow_request_subtitle,
+            subtitle: AppLocalizations.of(
+              context,
+            )!.create_inv_flow_request_subtitle,
             icon: Icons.explore_rounded,
-            gradientColors: const [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet],
+            gradientColors: const [
+              AuroraTheme.auroraBlue,
+              AuroraTheme.auroraViolet,
+            ],
             isSelected: selected == InvitationFlowType.request,
             onTap: () => onSelected(InvitationFlowType.request),
           ),
@@ -650,69 +723,77 @@ class _FlowTypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AuroraTheme.auroraRed.withOpacity(0.08)
-                : AuroraTheme.glassBg,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isSelected
-                  ? AuroraTheme.auroraRed
-                  : AuroraTheme.glassBorder,
-              width: isSelected ? 1.5 : 1,
+    onTap: onTap,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? AuroraTheme.auroraRed.withOpacity(0.08)
+            : AuroraTheme.glassBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+          width: isSelected ? 1.5 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors[0].withOpacity(0.45),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title, style: _titleStyle),
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(subtitle, style: _bodyMediumStyle),
+                ],
+              ],
             ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: gradientColors,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: gradientColors[0].withOpacity(0.45),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Icon(icon, color: Colors.white, size: 26),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(title, style: _titleStyle),
-                    if (subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(subtitle, style: _bodyMediumStyle),
-                    ],
-                  ],
+          if (isSelected)
+            ShaderMask(
+              blendMode: BlendMode.srcIn,
+              shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(
+                Rect.fromLTRB(
+                  b.left - 4,
+                  b.top - 2,
+                  b.right + 14,
+                  b.bottom + 4,
                 ),
               ),
-              if (isSelected)
-                ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
-                  child: const Icon(Icons.check_circle,
-                      color: Colors.white, size: 22),
-                ),
-            ],
-          ),
-        ),
-      );
+              child: const Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -733,10 +814,15 @@ class _StepCategory extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.create_inv_step_category, style: _displayMediumStyle),
+          Text(
+            AppLocalizations.of(context)!.create_inv_step_category,
+            style: _displayMediumStyle,
+          ),
           const SizedBox(height: 8),
-          Text(AppLocalizations.of(context)!.create_inv_category_question,
-              style: _bodyMediumStyle),
+          Text(
+            AppLocalizations.of(context)!.create_inv_category_question,
+            style: _bodyMediumStyle,
+          ),
           const SizedBox(height: 32),
           GridView.count(
             shrinkWrap: true,
@@ -752,12 +838,8 @@ class _StepCategory extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   decoration: BoxDecoration(
-                    gradient: isSelected
-                        ? AuroraTheme.redBlueGradient
-                        : null,
-                    color: isSelected
-                        ? null
-                        : AuroraTheme.glassBg,
+                    gradient: isSelected ? AuroraTheme.redBlueGradient : null,
+                    color: isSelected ? null : AuroraTheme.glassBg,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
@@ -773,17 +855,24 @@ class _StepCategory extends StatelessWidget {
                         height: 36,
                         child: Center(
                           child: c == InvitationCategory.bar
-                              ? Image.asset('assets/icons/bar.png', width: 32, height: 32)
+                              ? Image.asset(
+                                  'assets/icons/bar.png',
+                                  width: 32,
+                                  height: 32,
+                                )
                               : c == InvitationCategory.concert
-                                  ? const Text(
-                                      '♫',
-                                      style: TextStyle(
-                                        fontSize: 36,
-                                        height: 1.0,
-                                        color: AuroraTheme.auroraRed,
-                                      ),
-                                    )
-                                  : Text(c.emoji, style: const TextStyle(fontSize: 28)),
+                              ? const Text(
+                                  '♫',
+                                  style: TextStyle(
+                                    fontSize: 36,
+                                    height: 1.0,
+                                    color: AuroraTheme.auroraRed,
+                                  ),
+                                )
+                              : Text(
+                                  c.emoji,
+                                  style: const TextStyle(fontSize: 28),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -819,27 +908,32 @@ class _StepTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.create_inv_step_title, style: _displayMediumStyle),
-            const SizedBox(height: 8),
-            Text(
-              AppLocalizations.of(context)!.create_inv_title_subtitle,
-              style: _bodyMediumStyle,
-            ),
-            const SizedBox(height: 32),
-            TextField(
-              controller: controller,
-              maxLength: 60,
-              style: _feedCardTitleStyle.copyWith(fontSize: 20),
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.create_inv_title_label),
-            ),
-          ],
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          AppLocalizations.of(context)!.create_inv_step_title,
+          style: _displayMediumStyle,
         ),
-      );
+        const SizedBox(height: 8),
+        Text(
+          AppLocalizations.of(context)!.create_inv_title_subtitle,
+          style: _bodyMediumStyle,
+        ),
+        const SizedBox(height: 32),
+        TextField(
+          controller: controller,
+          maxLength: 60,
+          style: _feedCardTitleStyle.copyWith(fontSize: 20),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.create_inv_title_label,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -850,21 +944,55 @@ class _StepDescription extends StatelessWidget {
   final TextEditingController controller;
   final InvitationFlowType flowType;
   final InvitationCategory? category;
-  const _StepDescription({required this.controller, required this.flowType, this.category});
+  const _StepDescription({
+    required this.controller,
+    required this.flowType,
+    this.category,
+  });
 
   String _hint(AppLocalizations l10n) {
     final isInvite = flowType == InvitationFlowType.invite;
     switch (category) {
-      case InvitationCategory.food:    return isInvite ? l10n.create_inv_desc_invite_food    : l10n.create_inv_desc_request_food;
-      case InvitationCategory.bar:     return isInvite ? l10n.create_inv_desc_invite_bar     : l10n.create_inv_desc_request_bar;
-      case InvitationCategory.coffee:  return isInvite ? l10n.create_inv_desc_invite_coffee  : l10n.create_inv_desc_request_coffee;
-      case InvitationCategory.cinema:  return isInvite ? l10n.create_inv_desc_invite_cinema  : l10n.create_inv_desc_request_cinema;
-      case InvitationCategory.theater: return isInvite ? l10n.create_inv_desc_invite_theater : l10n.create_inv_desc_request_theater;
-      case InvitationCategory.concert: return isInvite ? l10n.create_inv_desc_invite_concert : l10n.create_inv_desc_request_concert;
-      case InvitationCategory.culture: return isInvite ? l10n.create_inv_desc_invite_culture : l10n.create_inv_desc_request_culture;
-      case InvitationCategory.travel:  return isInvite ? l10n.create_inv_desc_invite_travel  : l10n.create_inv_desc_request_travel;
-      case InvitationCategory.gift:    return isInvite ? l10n.create_inv_desc_invite_gift    : l10n.create_inv_desc_request_gift;
-      default: return isInvite ? l10n.create_inv_desc_invite_hint : l10n.create_inv_desc_request_hint;
+      case InvitationCategory.food:
+        return isInvite
+            ? l10n.create_inv_desc_invite_food
+            : l10n.create_inv_desc_request_food;
+      case InvitationCategory.bar:
+        return isInvite
+            ? l10n.create_inv_desc_invite_bar
+            : l10n.create_inv_desc_request_bar;
+      case InvitationCategory.coffee:
+        return isInvite
+            ? l10n.create_inv_desc_invite_coffee
+            : l10n.create_inv_desc_request_coffee;
+      case InvitationCategory.cinema:
+        return isInvite
+            ? l10n.create_inv_desc_invite_cinema
+            : l10n.create_inv_desc_request_cinema;
+      case InvitationCategory.theater:
+        return isInvite
+            ? l10n.create_inv_desc_invite_theater
+            : l10n.create_inv_desc_request_theater;
+      case InvitationCategory.concert:
+        return isInvite
+            ? l10n.create_inv_desc_invite_concert
+            : l10n.create_inv_desc_request_concert;
+      case InvitationCategory.culture:
+        return isInvite
+            ? l10n.create_inv_desc_invite_culture
+            : l10n.create_inv_desc_request_culture;
+      case InvitationCategory.travel:
+        return isInvite
+            ? l10n.create_inv_desc_invite_travel
+            : l10n.create_inv_desc_request_travel;
+      case InvitationCategory.gift:
+        return isInvite
+            ? l10n.create_inv_desc_invite_gift
+            : l10n.create_inv_desc_request_gift;
+      default:
+        return isInvite
+            ? l10n.create_inv_desc_invite_hint
+            : l10n.create_inv_desc_request_hint;
     }
   }
 
@@ -873,29 +1001,29 @@ class _StepDescription extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final subtitle = _hint(l10n);
     return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(l10n.create_inv_step_description, style: _displayMediumStyle),
-            const SizedBox(height: 8),
-            Text(subtitle, style: _bodyMediumStyle),
-            const SizedBox(height: 32),
-            TextField(
-              controller: controller,
-              maxLines: 4,
-              maxLength: 300,
-              style: _bodyLargeStyle,
-              decoration: InputDecoration(
-                hintText: l10n.create_inv_desc_input_hint,
-                alignLabelWithHint: true,
-              ),
+      padding: const EdgeInsets.all(24),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text(l10n.create_inv_step_description, style: _displayMediumStyle),
+          const SizedBox(height: 8),
+          Text(subtitle, style: _bodyMediumStyle),
+          const SizedBox(height: 32),
+          TextField(
+            controller: controller,
+            maxLines: 4,
+            maxLength: 300,
+            style: _bodyLargeStyle,
+            decoration: InputDecoration(
+              hintText: l10n.create_inv_desc_input_hint,
+              alignLabelWithHint: true,
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -907,15 +1035,24 @@ class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
   final InvitationFlowType flowType;
-  const _StepVenue({required this.controller, this.category, required this.flowType});
+  const _StepVenue({
+    required this.controller,
+    this.category,
+    required this.flowType,
+  });
 
   String _question(AppLocalizations l10n) {
     switch (category) {
-      case InvitationCategory.gift:    return l10n.create_inv_venue_question_gift;
-      case InvitationCategory.cinema:  return l10n.create_inv_venue_question_cinema;
-      case InvitationCategory.theater: return l10n.create_inv_venue_question_theater;
-      case InvitationCategory.concert: return l10n.create_inv_venue_question_concert;
-      default: return l10n.create_inv_venue_question;
+      case InvitationCategory.gift:
+        return l10n.create_inv_venue_question_gift;
+      case InvitationCategory.cinema:
+        return l10n.create_inv_venue_question_cinema;
+      case InvitationCategory.theater:
+        return l10n.create_inv_venue_question_theater;
+      case InvitationCategory.concert:
+        return l10n.create_inv_venue_question_concert;
+      default:
+        return l10n.create_inv_venue_question;
     }
   }
 
@@ -923,26 +1060,42 @@ class _StepVenue extends StatelessWidget {
     final isInvite = flowType == InvitationFlowType.invite;
     switch (category) {
       case InvitationCategory.gift:
-        return isInvite ? l10n.create_inv_venue_subtitle_gift : l10n.create_inv_venue_subtitle_gift_request;
-      case InvitationCategory.cinema:  return l10n.create_inv_venue_subtitle_cinema;
-      case InvitationCategory.theater: return l10n.create_inv_venue_subtitle_theater;
-      case InvitationCategory.concert: return l10n.create_inv_venue_subtitle_concert;
-      default: return l10n.create_inv_venue_subtitle;
+        return isInvite
+            ? l10n.create_inv_venue_subtitle_gift
+            : l10n.create_inv_venue_subtitle_gift_request;
+      case InvitationCategory.cinema:
+        return l10n.create_inv_venue_subtitle_cinema;
+      case InvitationCategory.theater:
+        return l10n.create_inv_venue_subtitle_theater;
+      case InvitationCategory.concert:
+        return l10n.create_inv_venue_subtitle_concert;
+      default:
+        return l10n.create_inv_venue_subtitle;
     }
   }
 
   String _placeholder(AppLocalizations l10n) {
     switch (category) {
-      case InvitationCategory.food:    return l10n.create_inv_venue_ph_food;
-      case InvitationCategory.bar:     return l10n.create_inv_venue_ph_bar;
-      case InvitationCategory.coffee:  return l10n.create_inv_venue_ph_coffee;
-      case InvitationCategory.cinema:  return l10n.create_inv_venue_ph_cinema;
-      case InvitationCategory.theater: return l10n.create_inv_venue_ph_theater;
-      case InvitationCategory.concert: return l10n.create_inv_venue_ph_concert;
-      case InvitationCategory.culture: return l10n.create_inv_venue_ph_culture;
-      case InvitationCategory.travel:  return l10n.create_inv_venue_ph_travel;
-      case InvitationCategory.gift:    return l10n.create_inv_venue_ph_gift;
-      default: return l10n.create_inv_venue_placeholder;
+      case InvitationCategory.food:
+        return l10n.create_inv_venue_ph_food;
+      case InvitationCategory.bar:
+        return l10n.create_inv_venue_ph_bar;
+      case InvitationCategory.coffee:
+        return l10n.create_inv_venue_ph_coffee;
+      case InvitationCategory.cinema:
+        return l10n.create_inv_venue_ph_cinema;
+      case InvitationCategory.theater:
+        return l10n.create_inv_venue_ph_theater;
+      case InvitationCategory.concert:
+        return l10n.create_inv_venue_ph_concert;
+      case InvitationCategory.culture:
+        return l10n.create_inv_venue_ph_culture;
+      case InvitationCategory.travel:
+        return l10n.create_inv_venue_ph_travel;
+      case InvitationCategory.gift:
+        return l10n.create_inv_venue_ph_gift;
+      default:
+        return l10n.create_inv_venue_placeholder;
     }
   }
 
@@ -950,28 +1103,30 @@ class _StepVenue extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(_question(l10n), style: _displayMediumStyle),
-            const SizedBox(height: 8),
-            Text(_subtitle(l10n), style: _bodyMediumStyle),
-            const SizedBox(height: 32),
-            TextField(
-              controller: controller,
-              style: _bodyLargeStyle,
-              decoration: InputDecoration(
-                labelText: l10n.create_inv_venue_label,
-                hintText: _placeholder(l10n),
-                prefixIcon: Icon(Icons.location_on_outlined,
-                    color: AuroraTheme.textMuted),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text(_question(l10n), style: _displayMediumStyle),
+          const SizedBox(height: 8),
+          Text(_subtitle(l10n), style: _bodyMediumStyle),
+          const SizedBox(height: 32),
+          TextField(
+            controller: controller,
+            style: _bodyLargeStyle,
+            decoration: InputDecoration(
+              labelText: l10n.create_inv_venue_label,
+              hintText: _placeholder(l10n),
+              prefixIcon: Icon(
+                Icons.location_on_outlined,
+                color: AuroraTheme.textMuted,
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -996,64 +1151,80 @@ class _StepDuration extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(l10n.create_inv_duration_question, style: _displayMediumStyle),
-            const SizedBox(height: 8),
-            Text(l10n.create_inv_duration_subtitle, style: _bodyMediumStyle),
-            const SizedBox(height: 32),
-            ..._options(l10n).map((opt) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: GestureDetector(
-                    onTap: () => onSelected(opt.$1),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      decoration: BoxDecoration(
-                        gradient: selected == opt.$1 ? AuroraTheme.redBlueGradient : null,
-                        color: selected == opt.$1 ? null : AuroraTheme.glassBg,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: selected == opt.$1 ? Colors.transparent : AuroraTheme.glassBorder,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(opt.$2, style: _titleStyle),
-                                const SizedBox(height: 2),
-                                Text(
-                                  opt.$3,
-                                  style: _bodyMediumStyle.copyWith(
-                                    color: selected == opt.$1
-                                        ? AuroraTheme.textPrimary.withOpacity(0.75)
-                                        : AuroraTheme.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (selected == opt.$1)
-                            ShaderMask(
-                              blendMode: BlendMode.srcIn,
-                              shaderCallback: (b) =>
-                                  selected == opt.$1 ? const LinearGradient(colors: [Colors.white, Colors.white]).createShader(b) : AuroraTheme.redBlueGradient.createShader(b),
-                              child: const Icon(Icons.check_circle, color: Colors.white, size: 22),
-                            ),
-                        ],
-                      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 24),
+          Text(l10n.create_inv_duration_question, style: _displayMediumStyle),
+          const SizedBox(height: 8),
+          Text(l10n.create_inv_duration_subtitle, style: _bodyMediumStyle),
+          const SizedBox(height: 32),
+          ..._options(l10n).map(
+            (opt) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: GestureDetector(
+                onTap: () => onSelected(opt.$1),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: selected == opt.$1
+                        ? AuroraTheme.redBlueGradient
+                        : null,
+                    color: selected == opt.$1 ? null : AuroraTheme.glassBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: selected == opt.$1
+                          ? Colors.transparent
+                          : AuroraTheme.glassBorder,
                     ),
                   ),
-                )),
-          ],
-        ),
-      );
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(opt.$2, style: _titleStyle),
+                            const SizedBox(height: 2),
+                            Text(
+                              opt.$3,
+                              style: _bodyMediumStyle.copyWith(
+                                color: selected == opt.$1
+                                    ? AuroraTheme.textPrimary.withOpacity(0.75)
+                                    : AuroraTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (selected == opt.$1)
+                        ShaderMask(
+                          blendMode: BlendMode.srcIn,
+                          shaderCallback: (b) => selected == opt.$1
+                              ? const LinearGradient(
+                                  colors: [Colors.white, Colors.white],
+                                ).createShader(b)
+                              : AuroraTheme.redBlueGradient.createShader(b),
+                          child: const Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1077,63 +1248,81 @@ class _StepDateTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(AppLocalizations.of(context)!.create_inv_datetime_question, style: _displayMediumStyle),
-            const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)!.create_inv_datetime_subtitle,
-                style: _bodyMediumStyle),
-            const SizedBox(height: 32),
-            GlassCard(
-              onTap: () async {
-                final now = DateTime.now();
-                final pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: now.add(const Duration(hours: 2)),
-                  firstDate: now,
-                  lastDate: now.add(const Duration(days: 30)),
-                );
-                if (pickedDate == null || !context.mounted) return;
-                final pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime:
-                      TimeOfDay(hour: (now.hour + 2) % 24, minute: 0),
-                  initialEntryMode: TimePickerEntryMode.input,
-                );
-                if (pickedTime == null) return;
-                onSelected(DateTime(
-                  pickedDate.year,
-                  pickedDate.month,
-                  pickedDate.day,
-                  pickedTime.hour,
-                  pickedTime.minute,
-                ));
-              },
-              child: Row(
-                children: [
-                  ShaderMask(
-                    blendMode: BlendMode.srcIn,
-                    shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
-                    child: const Icon(Icons.calendar_today_outlined,
-                        color: Colors.white),
-                  ),
-                  const SizedBox(width: 14),
-                  Text(
-                    date != null ? _format(date!) : AppLocalizations.of(context)!.create_inv_datetime_placeholder,
-                    style: _bodyLargeStyle.copyWith(
-                      color: date != null
-                          ? AuroraTheme.textPrimary
-                          : AuroraTheme.textMuted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          AppLocalizations.of(context)!.create_inv_datetime_question,
+          style: _displayMediumStyle,
         ),
-      );
+        const SizedBox(height: 8),
+        Text(
+          AppLocalizations.of(context)!.create_inv_datetime_subtitle,
+          style: _bodyMediumStyle,
+        ),
+        const SizedBox(height: 32),
+        GlassCard(
+          onTap: () async {
+            final now = DateTime.now();
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: now.add(const Duration(hours: 2)),
+              firstDate: now,
+              lastDate: now.add(const Duration(days: 30)),
+            );
+            if (pickedDate == null || !context.mounted) return;
+            final pickedTime = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay(hour: (now.hour + 2) % 24, minute: 0),
+              initialEntryMode: TimePickerEntryMode.input,
+            );
+            if (pickedTime == null) return;
+            onSelected(
+              DateTime(
+                pickedDate.year,
+                pickedDate.month,
+                pickedDate.day,
+                pickedTime.hour,
+                pickedTime.minute,
+              ),
+            );
+          },
+          child: Row(
+            children: [
+              ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(
+                  Rect.fromLTRB(
+                    b.left - 4,
+                    b.top - 2,
+                    b.right + 14,
+                    b.bottom + 4,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.calendar_today_outlined,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Text(
+                date != null
+                    ? _format(date!)
+                    : AppLocalizations.of(
+                        context,
+                      )!.create_inv_datetime_placeholder,
+                style: _bodyLargeStyle.copyWith(
+                  color: date != null
+                      ? AuroraTheme.textPrimary
+                      : AuroraTheme.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
-

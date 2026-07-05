@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -19,9 +20,14 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   static const _codeLength = 4;
-  final List<TextEditingController> _controllers =
-      List.generate(_codeLength, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(_codeLength, (_) => FocusNode());
+  final List<TextEditingController> _controllers = List.generate(
+    _codeLength,
+    (_) => TextEditingController(),
+  );
+  final List<FocusNode> _focusNodes = List.generate(
+    _codeLength,
+    (_) => FocusNode(),
+  );
   bool _isLoading = false;
   String? _error;
   int _resendSeconds = 60;
@@ -60,12 +66,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
       final data = response.data as Map<String, dynamic>?;
       if (data == null || data['access_token'] == null) {
-        if (mounted) setState(() => _error = data?['error']?.toString() ?? AppLocalizations.of(context)!.otp_error_failed);
+        if (mounted)
+          setState(
+            () => _error =
+                data?['error']?.toString() ??
+                AppLocalizations.of(context)!.otp_error_failed,
+          );
         return;
       }
 
       final refreshToken = data['refresh_token'] as String;
-      final authResponse = await Supabase.instance.client.auth.setSession(refreshToken);
+      final authResponse = await Supabase.instance.client.auth.setSession(
+        refreshToken,
+      );
       if (!mounted) return;
 
       final user = authResponse.user;
@@ -111,166 +124,175 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AuroraTheme.textPrimary,
+          ),
           onPressed: () => context.go('/auth/phone'),
         ),
       ),
       body: AmbientBackground(
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Padding(
-                  padding: const EdgeInsets.all(28),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      ShaderMask(
-                        shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                        child: const Icon(Icons.phone_in_talk_outlined, color: Colors.white, size: 36),
+          child: ScKeyboardFill(
+            child: Padding(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  ShaderMask(
+                    shaderCallback: (b) =>
+                        AuroraTheme.redBlueGradient.createShader(b),
+                    child: const Icon(
+                      Icons.phone_in_talk_outlined,
+                      color: Colors.white,
+                      size: 36,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    AppLocalizations.of(context)!.otp_title,
+                    style: const TextStyle(
+                      fontFamily: 'Fraunces',
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 32,
+                      color: AuroraTheme.textPrimary,
+                      letterSpacing: -0.4,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 14,
+                        color: AuroraTheme.textSecondary,
+                        height: 1.5,
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        AppLocalizations.of(context)!.otp_title,
-                        style: const TextStyle(
-                          fontFamily: 'Fraunces',
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 32,
-                          color: AuroraTheme.textPrimary,
-                          letterSpacing: -0.4,
+                      children: [
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.otp_sent_to,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      RichText(
-                        text: TextSpan(
+                        TextSpan(
+                          text: widget.phone,
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 14,
-                            color: AuroraTheme.textSecondary,
                             height: 1.5,
+                            color: AuroraTheme.textPrimary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          children: [
-                            TextSpan(text: AppLocalizations.of(context)!.otp_sent_to),
-                            TextSpan(
-                              text: widget.phone,
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                fontSize: 14,
-                                height: 1.5,
-                                color: AuroraTheme.textPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppLocalizations.of(context)!.otp_call_hint,
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 14,
-                          height: 1.5,
-                          color: AuroraTheme.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 44),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(
-                          _codeLength,
-                          (i) => _OtpBox(
-                            controller: _controllers[i],
-                            focusNode: _focusNodes[i],
-                            onChanged: (val) {
-                              if (val.length == 1 && i < _codeLength - 1) {
-                                _focusNodes[i + 1].requestFocus();
-                              } else if (val.isEmpty && i > 0) {
-                                _focusNodes[i - 1].requestFocus();
-                              }
-                              if (_otp.length == _codeLength) _verify();
-                            },
-                            onBackspace: i > 0
-                                ? () {
-                                    _controllers[i - 1].clear();
-                                    _focusNodes[i - 1].requestFocus();
-                                  }
-                                : null,
-                          ),
-                        ),
-                      ),
-                      if (_error != null) ...[
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            const Icon(Icons.error_outline, size: 14, color: AuroraTheme.auroraRed),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                _error!,
-                                style: TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 14,
-                                  height: 1.5,
-                                  color: AuroraTheme.auroraRed,
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
                       ],
-                      const SizedBox(height: 28),
-                      Center(
-                        child: _resendSeconds > 0
-                            ? Text(
-                                AppLocalizations.of(context)!.otp_resend_countdown(_resendSeconds),
-                                style: TextStyle(
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(context)!.otp_call_hint,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 14,
+                      height: 1.5,
+                      color: AuroraTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 44),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      _codeLength,
+                      (i) => _OtpBox(
+                        controller: _controllers[i],
+                        focusNode: _focusNodes[i],
+                        onChanged: (val) {
+                          if (val.length == 1 && i < _codeLength - 1) {
+                            _focusNodes[i + 1].requestFocus();
+                          } else if (val.isEmpty && i > 0) {
+                            _focusNodes[i - 1].requestFocus();
+                          }
+                          if (_otp.length == _codeLength) _verify();
+                        },
+                        onBackspace: i > 0
+                            ? () {
+                                _controllers[i - 1].clear();
+                                _focusNodes[i - 1].requestFocus();
+                              }
+                            : null,
+                      ),
+                    ),
+                  ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 14,
+                          color: AuroraTheme.auroraRed,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            _error!,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 14,
+                              height: 1.5,
+                              color: AuroraTheme.auroraRed,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 28),
+                  Center(
+                    child: _resendSeconds > 0
+                        ? Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.otp_resend_countdown(_resendSeconds),
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 14,
+                              color: AuroraTheme.textSecondary,
+                              height: 1.5,
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: _resend,
+                            child: ShaderMask(
+                              shaderCallback: (b) =>
+                                  AuroraTheme.redBlueGradient.createShader(b),
+                              child: Text(
+                                AppLocalizations.of(context)!.otp_resend,
+                                style: const TextStyle(
                                   fontFamily: 'Manrope',
-                                  fontSize: 14,
-                                  color: AuroraTheme.textSecondary,
-                                  height: 1.5,
-                                ),
-                              )
-                            : GestureDetector(
-                                onTap: _resend,
-                                child: ShaderMask(
-                                  shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-                                  child: Text(
-                                    AppLocalizations.of(context)!.otp_resend,
-                                    style: const TextStyle(
-                                      fontFamily: 'Manrope',
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.05,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.05,
+                                  color: Colors.white,
                                 ),
                               ),
-                      ),
-                      const Spacer(),
-                      ScButton(
-                        label: AppLocalizations.of(context)!.otp_verify,
-                        onPressed: _otp.length == _codeLength ? _verify : null,
-                        isLoading: _isLoading,
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                            ),
+                          ),
                   ),
-                ),
-                ),
+                  const Spacer(),
+                  ScButton(
+                    label: AppLocalizations.of(context)!.otp_verify,
+                    onPressed: _otp.length == _codeLength ? _verify : null,
+                    isLoading: _isLoading,
+                  ),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
           ),
@@ -329,10 +351,12 @@ class _OtpBoxState extends State<_OtpBox> {
           child: Container(
             decoration: BoxDecoration(
               gradient: isFocused
-                  ? LinearGradient(colors: [
-                      AuroraTheme.auroraRed.withOpacity(0.12),
-                      AuroraTheme.auroraBlue.withOpacity(0.08),
-                    ])
+                  ? LinearGradient(
+                      colors: [
+                        AuroraTheme.auroraRed.withOpacity(0.12),
+                        AuroraTheme.auroraBlue.withOpacity(0.08),
+                      ],
+                    )
                   : null,
               color: isFocused ? null : AuroraTheme.glassStrong,
               borderRadius: BorderRadius.circular(14),
@@ -340,8 +364,8 @@ class _OtpBoxState extends State<_OtpBox> {
                 color: isFocused
                     ? AuroraTheme.auroraRed
                     : hasValue
-                        ? const Color(0x40FFFFFF)
-                        : AuroraTheme.glassBorder,
+                    ? const Color(0x40FFFFFF)
+                    : AuroraTheme.glassBorder,
                 width: isFocused ? 1.5 : 1,
               ),
             ),

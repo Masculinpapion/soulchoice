@@ -9,6 +9,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class SelfieScreen extends StatefulWidget {
@@ -47,14 +48,17 @@ class _SelfieScreenState extends State<SelfieScreen> {
       final bytes = await selfie.readAsBytes();
       final accessToken = client.auth.currentSession!.accessToken;
       await NativeUploader.uploadBytes(
-        url: '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.selfiesBucket}/$path',
+        url:
+            '${SupabaseConstants.supabaseUrl}/storage/v1/object/${SupabaseConstants.selfiesBucket}/$path',
         accessToken: accessToken,
         apiKey: SupabaseConstants.supabaseAnonKey,
         bytes: bytes,
         contentType: 'image/jpeg',
       );
 
-      final url = client.storage.from(SupabaseConstants.selfiesBucket).getPublicUrl(path);
+      final url = client.storage
+          .from(SupabaseConstants.selfiesBucket)
+          .getPublicUrl(path);
 
       await client.from('user_photos').insert({
         'user_id': uid,
@@ -78,39 +82,44 @@ class _SelfieScreenState extends State<SelfieScreen> {
     }
   }
 
-  void _showAuroraSnack(String message,
-      {required Color accentColor, required IconData icon}) {
+  void _showAuroraSnack(
+    String message, {
+    required Color accentColor,
+    required IconData icon,
+  }) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      backgroundColor: AuroraTheme.bgDeep,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: accentColor.withOpacity(0.4)),
-      ),
-      content: Row(
-        children: [
-          Icon(icon, color: accentColor, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 13,
-                color: Colors.white,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: accentColor.withOpacity(0.4)),
+        ),
+        content: Row(
+          children: [
+            Icon(icon, color: accentColor, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 13,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -118,11 +127,13 @@ class _SelfieScreenState extends State<SelfieScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AuroraTheme.textPrimary,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
-      resizeToAvoidBottomInset: false,
       body: AmbientBackground(
         child: SafeArea(
           child: SingleChildScrollView(
@@ -162,7 +173,9 @@ class _SelfieScreenState extends State<SelfieScreen> {
                         color: AuroraTheme.glassBg,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: _selfie != null ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+                          color: _selfie != null
+                              ? AuroraTheme.auroraRed
+                              : AuroraTheme.glassBorder,
                         ),
                       ),
                       child: _selfie != null
@@ -173,7 +186,11 @@ class _SelfieScreenState extends State<SelfieScreen> {
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.camera_front, size: 48, color: AuroraTheme.textMuted),
+                                Icon(
+                                  Icons.camera_front,
+                                  size: 48,
+                                  color: AuroraTheme.textMuted,
+                                ),
                                 const SizedBox(height: 12),
                                 Text(
                                   AppLocalizations.of(context)!.selfie_take_btn,
@@ -193,11 +210,20 @@ class _SelfieScreenState extends State<SelfieScreen> {
                 GlassCard(
                   child: Column(
                     children: [
-                      _Tip(icon: Icons.light_mode_outlined, text: AppLocalizations.of(context)!.selfie_tip_lighting),
+                      _Tip(
+                        icon: Icons.light_mode_outlined,
+                        text: AppLocalizations.of(context)!.selfie_tip_lighting,
+                      ),
                       const SizedBox(height: 10),
-                      _Tip(icon: Icons.face_outlined, text: AppLocalizations.of(context)!.selfie_tip_face),
+                      _Tip(
+                        icon: Icons.face_outlined,
+                        text: AppLocalizations.of(context)!.selfie_tip_face,
+                      ),
                       const SizedBox(height: 10),
-                      _Tip(icon: Icons.timer_outlined, text: AppLocalizations.of(context)!.selfie_tip_approval),
+                      _Tip(
+                        icon: Icons.timer_outlined,
+                        text: AppLocalizations.of(context)!.selfie_tip_approval,
+                      ),
                     ],
                   ),
                 ),
@@ -225,18 +251,18 @@ class _Tip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        children: [
-          Icon(icon, size: 18, color: AuroraTheme.textSecondary),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 14,
-              color: AuroraTheme.textSecondary,
-              height: 1.5,
-            ),
-          ),
-        ],
-      );
+    children: [
+      Icon(icon, size: 18, color: AuroraTheme.textSecondary),
+      const SizedBox(width: 12),
+      Text(
+        text,
+        style: TextStyle(
+          fontFamily: 'Manrope',
+          fontSize: 14,
+          color: AuroraTheme.textSecondary,
+          height: 1.5,
+        ),
+      ),
+    ],
+  );
 }

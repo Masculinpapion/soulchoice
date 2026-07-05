@@ -5,6 +5,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
@@ -24,7 +25,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       final client = Supabase.instance.client;
       final response = await client.functions.invoke('delete-account');
       if (response.status != 200) {
-        throw Exception((response.data as Map<String, dynamic>?)?['error'] ?? 'delete failed');
+        throw Exception(
+          (response.data as Map<String, dynamic>?)?['error'] ?? 'delete failed',
+        );
       }
       await client.auth.signOut();
       if (mounted) {
@@ -39,7 +42,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
       if (mounted) {
         setState(() => _isDeleting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.delete_account_error)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.delete_account_error),
+          ),
         );
       }
     }
@@ -47,10 +52,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -84,7 +88,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   color: AuroraTheme.auroraRed.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.warning_amber_rounded, color: AuroraTheme.auroraRed, size: 28),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: AuroraTheme.auroraRed,
+                  size: 28,
+                ),
               ),
               const SizedBox(height: 24),
               Text(
@@ -111,20 +119,38 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               GlassCard(
                 child: Column(
                   children: [
-                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_profile),
+                    _WarnItem(
+                      text: AppLocalizations.of(
+                        context,
+                      )!.delete_account_warn_profile,
+                    ),
                     const SizedBox(height: 10),
-                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_messages),
+                    _WarnItem(
+                      text: AppLocalizations.of(
+                        context,
+                      )!.delete_account_warn_messages,
+                    ),
                     const SizedBox(height: 10),
-                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_invitations),
+                    _WarnItem(
+                      text: AppLocalizations.of(
+                        context,
+                      )!.delete_account_warn_invitations,
+                    ),
                     const SizedBox(height: 10),
-                    _WarnItem(text: AppLocalizations.of(context)!.delete_account_warn_phone),
+                    _WarnItem(
+                      text: AppLocalizations.of(
+                        context,
+                      )!.delete_account_warn_phone,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
               GlassCard(
                 onTap: () => setState(() => _confirmed = !_confirmed),
-                borderColor: _confirmed ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+                borderColor: _confirmed
+                    ? AuroraTheme.auroraRed
+                    : AuroraTheme.glassBorder,
                 child: Row(
                   children: [
                     Checkbox(
@@ -136,7 +162,11 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     Expanded(
                       child: Text(
                         AppLocalizations.of(context)!.delete_account_checkbox,
-                        style: const TextStyle(color: AuroraTheme.textPrimary, fontFamily: 'Manrope', fontSize: 14),
+                        style: const TextStyle(
+                          color: AuroraTheme.textPrimary,
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ],
@@ -145,7 +175,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               const Spacer(),
               if (_confirmed)
                 ScButton(
-                  label: AppLocalizations.of(context)!.delete_account_btn_delete,
+                  label: AppLocalizations.of(
+                    context,
+                  )!.delete_account_btn_delete,
                   onPressed: _delete,
                   isLoading: _isDeleting,
                   icon: Icons.fingerprint,
@@ -171,22 +203,21 @@ class _WarnItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.close, color: AuroraTheme.auroraRed, size: 16),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 14,
-                color: AuroraTheme.textSecondary,
-                height: 1.5,
-              ),
-            ),
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Icon(Icons.close, color: AuroraTheme.auroraRed, size: 16),
+      const SizedBox(width: 10),
+      Expanded(
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 14,
+            color: AuroraTheme.textSecondary,
+            height: 1.5,
           ),
-        ],
-      );
+        ),
+      ),
+    ],
+  );
 }
-

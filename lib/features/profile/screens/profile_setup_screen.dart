@@ -6,6 +6,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../shared/widgets/sc_scaffold.dart';
 import '../providers/profile_provider.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -40,9 +41,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   static const _stepCount = 8;
   static const _allInterestKeys = [
-    'art', 'music', 'sports', 'books', 'travel', 'food',
-    'film', 'theatre', 'dance', 'yoga', 'photography', 'games',
-    'technology', 'nature', 'history', 'fashion',
+    'art',
+    'music',
+    'sports',
+    'books',
+    'travel',
+    'food',
+    'film',
+    'theatre',
+    'dance',
+    'yoga',
+    'photography',
+    'games',
+    'technology',
+    'nature',
+    'history',
+    'fashion',
   ];
 
   List<String> _getSteps(AppLocalizations l10n) => [
@@ -79,7 +93,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     try {
       final row = await client
           .from('users')
-          .select('name, age, gender, city_id, bio, job, education, interests, min_age, max_age, cities(name, name_ru, name_tr, name_en)')
+          .select(
+            'name, age, gender, city_id, bio, job, education, interests, min_age, max_age, cities(name, name_ru, name_tr, name_en)',
+          )
           .eq('id', user.id)
           .maybeSingle();
       if (!mounted) return;
@@ -131,34 +147,47 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (_step == 0) {
       if (_nameController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.profile_setup_validation_name),
-          backgroundColor: AuroraTheme.auroraRed,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.profile_setup_validation_name),
+            backgroundColor: AuroraTheme.auroraRed,
+          ),
+        );
         return;
       }
       if (_age == null ||
           _age! < AppConstants.minAge ||
           _age! > AppConstants.maxAge) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.profile_setup_validation_age(AppConstants.minAge, AppConstants.maxAge)),
-          backgroundColor: AuroraTheme.auroraRed,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.profile_setup_validation_age(
+                AppConstants.minAge,
+                AppConstants.maxAge,
+              ),
+            ),
+            backgroundColor: AuroraTheme.auroraRed,
+          ),
+        );
         return;
       }
     }
     if (_step == 1 && (_gender == null || _gender!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.profile_setup_validation_gender),
-        backgroundColor: AuroraTheme.auroraRed,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.profile_setup_validation_gender),
+          backgroundColor: AuroraTheme.auroraRed,
+        ),
+      );
       return;
     }
     if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.profile_setup_validation_city),
-        backgroundColor: AuroraTheme.auroraRed,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.profile_setup_validation_city),
+          backgroundColor: AuroraTheme.auroraRed,
+        ),
+      );
       return;
     }
     if (_step < _stepCount - 1) {
@@ -190,28 +219,46 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         'age': _age,
         'gender': _gender,
         'city_id': _cityId,
-        'bio': _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
-        'job': _jobController.text.trim().isEmpty ? null : _jobController.text.trim(),
-        'education': _educationController.text.trim().isEmpty ? null : _educationController.text.trim(),
+        'bio': _bioController.text.trim().isEmpty
+            ? null
+            : _bioController.text.trim(),
+        'job': _jobController.text.trim().isEmpty
+            ? null
+            : _jobController.text.trim(),
+        'education': _educationController.text.trim().isEmpty
+            ? null
+            : _educationController.text.trim(),
         'interests': _interests.toList(),
         'min_age': _minAge,
         'max_age': _maxAge,
       });
 
       if (_prompts.isNotEmpty) {
-        await client.from('user_prompts').upsert(
-          _prompts.entries
-              .where((e) => e.value.trim().isNotEmpty)
-              .map((e) => {'user_id': uid, 'question_key': e.key, 'answer': e.value.trim()})
-              .toList(),
-          onConflict: 'user_id,question_key',
-        );
+        await client
+            .from('user_prompts')
+            .upsert(
+              _prompts.entries
+                  .where((e) => e.value.trim().isNotEmpty)
+                  .map(
+                    (e) => {
+                      'user_id': uid,
+                      'question_key': e.key,
+                      'answer': e.value.trim(),
+                    },
+                  )
+                  .toList(),
+              onConflict: 'user_id,question_key',
+            );
       }
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.profile_setup_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.profile_setup_error(e.toString()),
+            ),
+            backgroundColor: AuroraTheme.auroraRed,
+          ),
         );
       }
     } finally {
@@ -246,14 +293,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final l10n = AppLocalizations.of(context)!;
     final steps = _getSteps(l10n);
     if (_isLoadingProfile) {
-      return Scaffold(
+      return ScScaffold(
         backgroundColor: AuroraTheme.bgDeep,
-        body: const Center(child: CircularProgressIndicator(color: AuroraTheme.auroraRed)),
+        body: const Center(
+          child: CircularProgressIndicator(color: AuroraTheme.auroraRed),
+        ),
       );
     }
-    return Scaffold(
+    return ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
-      resizeToAvoidBottomInset: true,
       body: AmbientBackground(
         child: SafeArea(
           child: Column(
@@ -266,7 +314,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       children: [
                         if (_step > 0)
                           IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              color: AuroraTheme.textPrimary,
+                            ),
                             onPressed: _back,
                           )
                         else
@@ -326,7 +377,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       allInterests: _allInterestKeys,
                       selected: _interests,
                       onToggle: (v) => setState(() {
-                        _interests.contains(v) ? _interests.remove(v) : _interests.add(v);
+                        _interests.contains(v)
+                            ? _interests.remove(v)
+                            : _interests.add(v);
                       }),
                     ),
                     _StepPrompts(
@@ -337,14 +390,21 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                     _StepAgeRange(
                       minAge: _minAge,
                       maxAge: _maxAge,
-                      onChanged: (min, max) => setState(() { _minAge = min; _maxAge = max; }),
+                      onChanged: (min, max) => setState(() {
+                        _minAge = min;
+                        _maxAge = max;
+                      }),
                     ),
                   ],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                child: ScButton(label: l10n.profile_setup_btn_next, onPressed: _isSaving ? null : _next, isLoading: _isSaving),
+                child: ScButton(
+                  label: l10n.profile_setup_btn_next,
+                  onPressed: _isSaving ? null : _next,
+                  isLoading: _isSaving,
+                ),
               ),
             ],
           ),
@@ -359,7 +419,11 @@ class _StepNameAge extends StatelessWidget {
   final int? age;
   final ValueChanged<int?> onAgeChanged;
 
-  const _StepNameAge({required this.nameController, required this.age, required this.onAgeChanged});
+  const _StepNameAge({
+    required this.nameController,
+    required this.age,
+    required this.onAgeChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +454,11 @@ class _StepNameAge extends StatelessWidget {
                 color: AuroraTheme.textPrimary,
                 height: 1.6,
               ),
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_name_label),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(
+                  context,
+                )!.profile_setup_name_label,
+              ),
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -404,7 +472,11 @@ class _StepNameAge extends StatelessWidget {
               initialValue: age?.toString(),
               onChanged: (v) => onAgeChanged(int.tryParse(v)),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.profile_setup_age_label(AppConstants.minAge, AppConstants.maxAge),
+                labelText: AppLocalizations.of(context)!
+                    .profile_setup_age_label(
+                      AppConstants.minAge,
+                      AppConstants.maxAge,
+                    ),
               ),
             ),
           ],
@@ -467,7 +539,12 @@ class _GenderOption extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _GenderOption({required this.label, required this.icon, required this.isSelected, required this.onTap});
+  const _GenderOption({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +553,13 @@ class _GenderOption extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(icon, color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.textSecondary, size: 28),
+          Icon(
+            icon,
+            color: isSelected
+                ? AuroraTheme.auroraRed
+                : AuroraTheme.textSecondary,
+            size: 28,
+          ),
           const SizedBox(width: 16),
           Text(
             label,
@@ -490,7 +573,11 @@ class _GenderOption extends StatelessWidget {
           ),
           const Spacer(),
           if (isSelected)
-            const Icon(Icons.check_circle, color: AuroraTheme.auroraRed, size: 22),
+            const Icon(
+              Icons.check_circle,
+              color: AuroraTheme.auroraRed,
+              size: 22,
+            ),
         ],
       ),
     );
@@ -529,8 +616,10 @@ class _StepCityState extends State<_StepCity> {
 
   String _localizedName(Map<String, dynamic> c) {
     final lang = Localizations.localeOf(context).languageCode;
-    if (lang == 'ru') return c['name_ru'] as String? ?? c['name'] as String? ?? '';
-    if (lang == 'tr') return c['name_tr'] as String? ?? c['name'] as String? ?? '';
+    if (lang == 'ru')
+      return c['name_ru'] as String? ?? c['name'] as String? ?? '';
+    if (lang == 'tr')
+      return c['name_tr'] as String? ?? c['name'] as String? ?? '';
     return c['name_en'] as String? ?? c['name'] as String? ?? '';
   }
 
@@ -553,7 +642,9 @@ class _StepCityState extends State<_StepCity> {
     setState(() {
       _filtered = q.isEmpty
           ? _cities
-          : _cities.where((c) => _localizedName(c).toLowerCase().contains(q)).toList();
+          : _cities
+                .where((c) => _localizedName(c).toLowerCase().contains(q))
+                .toList();
     });
   }
 
@@ -587,19 +678,34 @@ class _StepCityState extends State<_StepCity> {
                 height: 1.6,
               ),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.profile_setup_city_search,
-                prefixIcon: Icon(Icons.search, color: AuroraTheme.textMuted, size: 20),
+                hintText: AppLocalizations.of(
+                  context,
+                )!.profile_setup_city_search,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: AuroraTheme.textMuted,
+                  size: 20,
+                ),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? GestureDetector(
                         onTap: () => _searchCtrl.clear(),
-                        child: Icon(Icons.close, color: AuroraTheme.textMuted, size: 18),
+                        child: Icon(
+                          Icons.close,
+                          color: AuroraTheme.textMuted,
+                          size: 18,
+                        ),
                       )
                     : null,
               ),
             ),
             const SizedBox(height: 20),
             if (_loading)
-              const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AuroraTheme.auroraRed))
+              const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AuroraTheme.auroraRed,
+                ),
+              )
             else if (_filtered.isEmpty)
               Center(
                 child: Text(
@@ -620,7 +726,9 @@ class _StepCityState extends State<_StepCity> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: GlassCard(
-                    borderColor: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+                    borderColor: isSelected
+                        ? AuroraTheme.auroraRed
+                        : AuroraTheme.glassBorder,
                     onTap: () => widget.onSelected(id),
                     child: Row(
                       children: [
@@ -635,7 +743,11 @@ class _StepCityState extends State<_StepCity> {
                         ),
                         const Spacer(),
                         if (isSelected)
-                          const Icon(Icons.check_circle, color: AuroraTheme.auroraRed, size: 20),
+                          const Icon(
+                            Icons.check_circle,
+                            color: AuroraTheme.auroraRed,
+                            size: 20,
+                          ),
                       ],
                     ),
                   ),
@@ -710,7 +822,10 @@ class _StepJobEducation extends StatelessWidget {
   final TextEditingController jobController;
   final TextEditingController educationController;
 
-  const _StepJobEducation({required this.jobController, required this.educationController});
+  const _StepJobEducation({
+    required this.jobController,
+    required this.educationController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -751,7 +866,11 @@ class _StepJobEducation extends StatelessWidget {
                 color: AuroraTheme.textPrimary,
                 height: 1.6,
               ),
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_job_label),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(
+                  context,
+                )!.profile_setup_job_label,
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -762,7 +881,11 @@ class _StepJobEducation extends StatelessWidget {
                 color: AuroraTheme.textPrimary,
                 height: 1.6,
               ),
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.profile_setup_education_label),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(
+                  context,
+                )!.profile_setup_education_label,
+              ),
             ),
           ],
         ),
@@ -776,27 +899,48 @@ class _StepInterests extends StatelessWidget {
   final Set<String> selected;
   final ValueChanged<String> onToggle;
 
-  const _StepInterests({required this.allInterests, required this.selected, required this.onToggle});
+  const _StepInterests({
+    required this.allInterests,
+    required this.selected,
+    required this.onToggle,
+  });
 
   String _label(String key, AppLocalizations l10n) {
     switch (key) {
-      case 'art': return l10n.profile_setup_interest_art;
-      case 'music': return l10n.profile_setup_interest_music;
-      case 'sports': return l10n.profile_setup_interest_sports;
-      case 'books': return l10n.profile_setup_interest_books;
-      case 'travel': return l10n.profile_setup_interest_travel;
-      case 'food': return l10n.profile_setup_interest_food;
-      case 'film': return l10n.profile_setup_interest_film;
-      case 'theatre': return l10n.profile_setup_interest_theatre;
-      case 'dance': return l10n.profile_setup_interest_dance;
-      case 'yoga': return l10n.profile_setup_interest_yoga;
-      case 'photography': return l10n.profile_setup_interest_photography;
-      case 'games': return l10n.profile_setup_interest_games;
-      case 'technology': return l10n.profile_setup_interest_technology;
-      case 'nature': return l10n.profile_setup_interest_nature;
-      case 'history': return l10n.profile_setup_interest_history;
-      case 'fashion': return l10n.profile_setup_interest_fashion;
-      default: return key;
+      case 'art':
+        return l10n.profile_setup_interest_art;
+      case 'music':
+        return l10n.profile_setup_interest_music;
+      case 'sports':
+        return l10n.profile_setup_interest_sports;
+      case 'books':
+        return l10n.profile_setup_interest_books;
+      case 'travel':
+        return l10n.profile_setup_interest_travel;
+      case 'food':
+        return l10n.profile_setup_interest_food;
+      case 'film':
+        return l10n.profile_setup_interest_film;
+      case 'theatre':
+        return l10n.profile_setup_interest_theatre;
+      case 'dance':
+        return l10n.profile_setup_interest_dance;
+      case 'yoga':
+        return l10n.profile_setup_interest_yoga;
+      case 'photography':
+        return l10n.profile_setup_interest_photography;
+      case 'games':
+        return l10n.profile_setup_interest_games;
+      case 'technology':
+        return l10n.profile_setup_interest_technology;
+      case 'nature':
+        return l10n.profile_setup_interest_nature;
+      case 'history':
+        return l10n.profile_setup_interest_history;
+      case 'fashion':
+        return l10n.profile_setup_interest_fashion;
+      default:
+        return key;
     }
   }
 
@@ -845,14 +989,18 @@ class _StepInterests extends StatelessWidget {
                   selectedColor: AuroraTheme.auroraRed.withOpacity(0.2),
                   checkmarkColor: AuroraTheme.auroraRed,
                   side: BorderSide(
-                    color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+                    color: isSelected
+                        ? AuroraTheme.auroraRed
+                        : AuroraTheme.glassBorder,
                   ),
                   labelStyle: TextStyle(
                     fontFamily: 'Manrope',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.05,
-                    color: isSelected ? AuroraTheme.auroraRed : AuroraTheme.textSecondary,
+                    color: isSelected
+                        ? AuroraTheme.auroraRed
+                        : AuroraTheme.textSecondary,
                   ),
                 );
               }).toList(),
@@ -869,7 +1017,11 @@ class _StepAgeRange extends StatelessWidget {
   final int maxAge;
   final void Function(int min, int max) onChanged;
 
-  const _StepAgeRange({required this.minAge, required this.maxAge, required this.onChanged});
+  const _StepAgeRange({
+    required this.minAge,
+    required this.maxAge,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -904,7 +1056,9 @@ class _StepAgeRange extends StatelessWidget {
             const SizedBox(height: 40),
             Center(
               child: Text(
-                AppLocalizations.of(context)!.profile_setup_age_range_value(minAge, maxAge),
+                AppLocalizations.of(
+                  context,
+                )!.profile_setup_age_range_value(minAge, maxAge),
                 style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 22,
@@ -937,7 +1091,11 @@ class _StepPrompts extends StatelessWidget {
   final Map<String, String> answers;
   final void Function(String key, String val) onAnswered;
 
-  const _StepPrompts({required this.questions, required this.answers, required this.onAnswered});
+  const _StepPrompts({
+    required this.questions,
+    required this.answers,
+    required this.onAnswered,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -970,36 +1128,42 @@ class _StepPrompts extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            ...questions.entries.map((e) => Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        e.value,
-                        style: const TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AuroraTheme.textPrimary,
-                          letterSpacing: 0.1,
-                        ),
+            ...questions.entries.map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      e.value,
+                      style: const TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AuroraTheme.textPrimary,
+                        letterSpacing: 0.1,
                       ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 16,
-                          color: AuroraTheme.textPrimary,
-                          height: 1.6,
-                        ),
-                        initialValue: answers[e.key] ?? '',
-                        onChanged: (v) => onAnswered(e.key, v),
-                        decoration: InputDecoration(hintText: AppLocalizations.of(context)!.profile_setup_prompts_answer_hint),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 16,
+                        color: AuroraTheme.textPrimary,
+                        height: 1.6,
                       ),
-                    ],
-                  ),
-                )),
+                      initialValue: answers[e.key] ?? '',
+                      onChanged: (v) => onAnswered(e.key, v),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.profile_setup_prompts_answer_hint,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

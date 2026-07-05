@@ -96,6 +96,8 @@ jobs:
           script: |
             cd /tmp && rm -rf sc_deploy
             git clone https://${{ secrets.GH_DEPLOY_TOKEN }}@github.com/Masculinpapion/soulchoice.git sc_deploy
-            cp -r /tmp/sc_deploy/supabase/functions/* /root/supabase/docker/volumes/functions/
+            # Canlı edge-functions container /root/volumes/functions'tan mount ediyor.
+            # (Eski /root/supabase/docker/volumes/functions ölü — container ona bakmıyor.)
+            cp -r /tmp/sc_deploy/supabase/functions/* /root/volumes/functions/
             rm -rf /tmp/sc_deploy
             docker restart supabase-edge-functions

@@ -861,13 +861,11 @@ class _StepCategory extends StatelessWidget {
                                   height: 32,
                                 )
                               : c == InvitationCategory.concert
-                              ? const Text(
-                                  '♫',
-                                  style: TextStyle(
-                                    fontSize: 36,
-                                    height: 1.0,
-                                    color: AuroraTheme.auroraRed,
-                                  ),
+                              ? Image.asset(
+                                  'assets/icons/music.png',
+                                  width: 22,
+                                  height: 22,
+                                  color: AuroraTheme.auroraRed,
                                 )
                               : Text(
                                   c.emoji,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -850,18 +849,11 @@ class _CategoryChips extends StatelessWidget {
                     if (c == InvitationCategory.bar)
                       Image.asset('assets/icons/bar.png', width: 14, height: 14)
                     else if (c == InvitationCategory.concert)
-                      SizedBox(
-                        width: 16, height: 16,
-                        child: OverflowBox(
-                          alignment: Alignment.center,
-                          maxWidth: 26,
-                          maxHeight: 26,
-                          child: Text('♫', style: TextStyle(
-                            fontSize: 24,
-                            height: 1.0,
-                            color: isSelected ? Colors.white : AuroraTheme.auroraRed,
-                          )),
-                        ),
+                      Image.asset(
+                        'assets/icons/music.png',
+                        width: 14.7,
+                        height: 14.7,
+                        color: isSelected ? Colors.white : AuroraTheme.auroraRed,
                       )
                     else
                       Text(c.emoji,
@@ -1353,11 +1345,9 @@ class InvitationCard extends StatelessWidget {
                         child: category == InvitationCategory.bar
                             ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                             : category == InvitationCategory.concert
-                            ? const Text('♫', style: TextStyle(
-                                fontSize: 24,
-                                height: 1.0,
-                                color: AuroraTheme.auroraRed,
-                              ))
+                            ? Image.asset('assets/icons/music.png',
+                                width: 14.7, height: 14.7,
+                                color: AuroraTheme.auroraRed)
                             : Text(category.emoji, style: const TextStyle(fontSize: 14)),
                       ),
                     ),
@@ -1820,13 +1810,14 @@ class _CardFallbackGradient extends StatelessWidget {
         children: [
           category == InvitationCategory.bar
               ? Image.asset('assets/icons/bar.png', width: 80, height: 80)
-              : Text(
-                  category.emoji,
-                  style: TextStyle(
-                    fontSize: category == InvitationCategory.concert ? (Platform.isIOS ? 80 : 120) : 80,
-                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                  ),
-                ),
+              : category == InvitationCategory.concert
+                  ? Image.asset('assets/icons/music.png',
+                      width: 73.5, height: 73.5,
+                      color: AuroraTheme.auroraRed)
+                  : Text(
+                      category.emoji,
+                      style: const TextStyle(fontSize: 80),
+                    ),
           const SizedBox(height: 28),
           Container(
             width: 90,

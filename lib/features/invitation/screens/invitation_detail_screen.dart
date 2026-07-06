@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -278,11 +277,12 @@ class _InvitationDetailScreenState
                                         children: [
                                           category == InvitationCategory.bar
                                               ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
-                                              : Text(category.emoji,
-                                                  style: TextStyle(
-                                                    fontSize: category == InvitationCategory.concert ? (Platform.isIOS ? 13 : 18) : 13,
-                                                    color: category == InvitationCategory.concert ? AuroraTheme.auroraRed : null,
-                                                  )),
+                                              : category == InvitationCategory.concert
+                                                  ? Image.asset('assets/icons/music.png',
+                                                      width: 11, height: 11,
+                                                      color: AuroraTheme.auroraRed)
+                                                  : Text(category.emoji,
+                                                      style: const TextStyle(fontSize: 13)),
                                           const SizedBox(width: 4),
                                           Text(
                                             category.labelFor(AppLocalizations.of(context)!),

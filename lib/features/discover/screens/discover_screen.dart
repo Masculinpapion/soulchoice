@@ -337,11 +337,9 @@ class _DiscoverCard extends StatelessWidget {
                           child: inv.category == InvitationCategory.bar
                               ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
                               : inv.category == InvitationCategory.concert
-                              ? const Text('♫', style: TextStyle(
-                                  fontSize: 24,
-                                  height: 1.0,
-                                  color: AuroraTheme.auroraRed,
-                                ))
+                              ? Image.asset('assets/icons/music.png',
+                                  width: 14.7, height: 14.7,
+                                  color: AuroraTheme.auroraRed)
                               : Text(inv.category.emoji, style: const TextStyle(fontSize: 14)),
                         ),
                       ),
@@ -511,21 +509,11 @@ class _FilterChip extends StatelessWidget {
                 if (iconWidget != null)
                   iconWidget!
                 else if (emoji == '♫')
-                  SizedBox(
-                    width: 14, height: 14,
-                    child: OverflowBox(
-                      alignment: Alignment.center,
-                      maxWidth: 22,
-                      maxHeight: 22,
-                      child: Text(
-                        '♫',
-                        style: TextStyle(
-                          fontSize: 20,
-                          height: 1.0,
-                          color: selected ? Colors.white : AuroraTheme.auroraRed,
-                        ),
-                      ),
-                    ),
+                  Image.asset(
+                    'assets/icons/music.png',
+                    width: 12.2,
+                    height: 12.2,
+                    color: selected ? Colors.white : AuroraTheme.auroraRed,
                   )
                 else
                   Text(emoji, style: const TextStyle(fontSize: 11)),

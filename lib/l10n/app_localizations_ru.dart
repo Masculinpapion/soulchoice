@@ -222,7 +222,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get feed_active_requests => 'АКТИВНЫЕ ЗАПРОСЫ';
 
   @override
-  String get feed_24h_badge => '24 ЧАС';
+  String get feed_24h_badge => '24 ЧАСА';
 
   @override
   String feed_error(String error) {

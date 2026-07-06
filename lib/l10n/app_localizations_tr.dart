@@ -1629,4 +1629,36 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get paywall_close => 'Kapat';
+
+  @override
+  String get profile_inv_section => 'DAVETİYEM';
+
+  @override
+  String get profile_inv_empty_title => 'Henüz aktif davetin yok';
+
+  @override
+  String get profile_inv_create_cta => '+ Yeni davetiye oluştur';
+
+  @override
+  String profile_inv_applicants(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count başvuran',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profile_inv_expired => 'Süresi doldu';
+
+  @override
+  String profile_inv_hours_left(int h) {
+    return '${h}sa kaldı';
+  }
+
+  @override
+  String profile_inv_minutes_left(int m) {
+    return '${m}dk';
+  }
 }

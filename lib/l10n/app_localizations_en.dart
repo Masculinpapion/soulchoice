@@ -1633,4 +1633,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paywall_close => 'Close';
+
+  @override
+  String get profile_inv_section => 'MY INVITATION';
+
+  @override
+  String get profile_inv_empty_title => 'No active invitation';
+
+  @override
+  String get profile_inv_create_cta => '+ Create invitation';
+
+  @override
+  String profile_inv_applicants(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count applicants',
+      one: '$count applicant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profile_inv_expired => 'Expired';
+
+  @override
+  String profile_inv_hours_left(int h) {
+    return '${h}h left';
+  }
+
+  @override
+  String profile_inv_minutes_left(int m) {
+    return '${m}m';
+  }
 }

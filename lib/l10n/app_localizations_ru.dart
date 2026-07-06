@@ -1665,4 +1665,39 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paywall_close => 'Закрыть';
+
+  @override
+  String get profile_inv_section => 'МОЯ ЗАЯВКА';
+
+  @override
+  String get profile_inv_empty_title => 'Активной заявки нет';
+
+  @override
+  String get profile_inv_create_cta => '+ Создать заявку';
+
+  @override
+  String profile_inv_applicants(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count заявки',
+      many: '$count заявок',
+      few: '$count заявки',
+      one: '$count заявка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profile_inv_expired => 'Истекло';
+
+  @override
+  String profile_inv_hours_left(int h) {
+    return '$hч осталось';
+  }
+
+  @override
+  String profile_inv_minutes_left(int m) {
+    return '$mмин';
+  }
 }

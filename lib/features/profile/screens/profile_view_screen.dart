@@ -1569,84 +1569,12 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _MyInvitationSection extends ConsumerWidget {
-  String _lang(BuildContext context) =>
-      Localizations.localeOf(context).languageCode;
-
-  String _sectionLabel(String lang) {
-    switch (lang) {
-      case 'ru':
-        return 'МОЯ ЗАЯВКА';
-      case 'en':
-        return 'MY INVITATION';
-      default:
-        return 'DAVETİYEM';
-    }
-  }
-
-  String _emptyTitle(String lang) {
-    switch (lang) {
-      case 'ru':
-        return 'Активной заявки нет';
-      case 'en':
-        return 'No active invitation';
-      default:
-        return 'Henüz aktif davetin yok';
-    }
-  }
-
-  String _createCta(String lang) {
-    switch (lang) {
-      case 'ru':
-        return '+ Создать заявку';
-      case 'en':
-        return '+ Create invitation';
-      default:
-        return '+ Yeni davetiye oluştur';
-    }
-  }
-
-  String _applicantsLabel(int count, String lang) {
-    switch (lang) {
-      case 'ru':
-        return '$count заявок';
-      case 'en':
-        return '$count applicants';
-      default:
-        return '$count başvuran';
-    }
-  }
-
-  String _remainingLabel(Duration d, String lang) {
-    if (d.isNegative) {
-      switch (lang) {
-        case 'ru':
-          return 'Истекло';
-        case 'en':
-          return 'Expired';
-        default:
-          return 'Süresi doldu';
-      }
-    }
+  String _remainingLabel(Duration d, AppLocalizations l10n) {
+    if (d.isNegative) return l10n.profile_inv_expired;
     final h = d.inHours;
     final m = d.inMinutes.remainder(60);
-    if (h > 0) {
-      switch (lang) {
-        case 'ru':
-          return '${h}ч осталось';
-        case 'en':
-          return '${h}h left';
-        default:
-          return '${h}sa kaldı';
-      }
-    }
-    switch (lang) {
-      case 'ru':
-        return '${m}мин';
-      case 'en':
-        return '${m}m';
-      default:
-        return '${m}dk';
-    }
+    if (h > 0) return l10n.profile_inv_hours_left(h);
+    return l10n.profile_inv_minutes_left(m);
   }
 
   String _category(String? key, AppLocalizations l10n) {
@@ -1674,14 +1602,13 @@ class _MyInvitationSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = _lang(context);
     final l10n = AppLocalizations.of(context)!;
     final asyncInv = ref.watch(myActiveInvitationProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_sectionLabel(lang), style: AuroraTheme.monoLabel),
+        Text(l10n.profile_inv_section, style: AuroraTheme.monoLabel),
         const SizedBox(height: 14),
         asyncInv.when(
           loading: () => Container(
@@ -1707,8 +1634,8 @@ class _MyInvitationSection extends ConsumerWidget {
           data: (inv) {
             if (inv == null) {
               return _CreateInvitationCta(
-                label: _createCta(lang),
-                emptyTitle: _emptyTitle(lang),
+                label: l10n.profile_inv_create_cta,
+                emptyTitle: l10n.profile_inv_empty_title,
               );
             }
             final id = inv['id'] as String;
@@ -1811,7 +1738,7 @@ class _MyInvitationSection extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_applicantsLabel(count, lang)} · ${_remainingLabel(remaining, lang)}',
+                              '${l10n.profile_inv_applicants(count)} · ${_remainingLabel(remaining, l10n)}',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.7),
                                 fontSize: 11,

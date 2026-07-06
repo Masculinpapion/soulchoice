@@ -798,5 +798,12 @@
   "paywall_cta": "Devam et",
   "paywall_cancel_anytime": "İstediğin zaman iptal edebilirsin.",
   "paywall_coming_soon": "Ödeme sistemi yakında — ИП kuruluşu bekleniyor.",
-  "paywall_close": "Kapat"
+  "paywall_close": "Kapat",
+  "profile_inv_section": "DAVETİYEM",
+  "profile_inv_empty_title": "Henüz aktif davetin yok",
+  "profile_inv_create_cta": "+ Yeni davetiye oluştur",
+  "profile_inv_applicants": "{count, plural, other{{count} başvuran}}",
+  "profile_inv_expired": "Süresi doldu",
+  "profile_inv_hours_left": "{h}sa kaldı",
+  "profile_inv_minutes_left": "{m}dk"
 }

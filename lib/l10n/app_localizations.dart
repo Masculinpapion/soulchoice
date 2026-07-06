@@ -3099,6 +3099,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get paywall_close;
+
+  /// No description provided for @profile_inv_section.
+  ///
+  /// In en, this message translates to:
+  /// **'MY INVITATION'**
+  String get profile_inv_section;
+
+  /// No description provided for @profile_inv_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No active invitation'**
+  String get profile_inv_empty_title;
+
+  /// No description provided for @profile_inv_create_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Create invitation'**
+  String get profile_inv_create_cta;
+
+  /// No description provided for @profile_inv_applicants.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} applicant} other{{count} applicants}}'**
+  String profile_inv_applicants(int count);
+
+  /// No description provided for @profile_inv_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get profile_inv_expired;
+
+  /// No description provided for @profile_inv_hours_left.
+  ///
+  /// In en, this message translates to:
+  /// **'{h}h left'**
+  String profile_inv_hours_left(int h);
+
+  /// No description provided for @profile_inv_minutes_left.
+  ///
+  /// In en, this message translates to:
+  /// **'{m}m'**
+  String profile_inv_minutes_left(int m);
 }
 
 class _AppLocalizationsDelegate

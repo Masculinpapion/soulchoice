@@ -798,5 +798,12 @@
   "paywall_cta": "Продолжить",
   "paywall_cancel_anytime": "Отменить можно в любой момент.",
   "paywall_coming_soon": "Платёжная система скоро — ждём регистрацию ИП.",
-  "paywall_close": "Закрыть"
+  "paywall_close": "Закрыть",
+  "profile_inv_section": "МОЯ ЗАЯВКА",
+  "profile_inv_empty_title": "Активной заявки нет",
+  "profile_inv_create_cta": "+ Создать заявку",
+  "profile_inv_applicants": "{count, plural, one{{count} заявка} few{{count} заявки} many{{count} заявок} other{{count} заявки}}",
+  "profile_inv_expired": "Истекло",
+  "profile_inv_hours_left": "{h}ч осталось",
+  "profile_inv_minutes_left": "{m}мин"
 }

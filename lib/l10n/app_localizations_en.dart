@@ -1178,6 +1178,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get report_desc_label => 'Description (optional)';
 
   @override
+  String get report_desc_label_required => 'Description (required)';
+
+  @override
   String get report_desc_hint => 'You can add more detail...';
 
   @override
@@ -1188,6 +1191,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get report_error_no_reason => 'Please select a reason';
+
+  @override
+  String get report_error_desc_required =>
+      'Please add a description for \"Other\"';
 
   @override
   String get report_success =>
@@ -1510,6 +1517,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Share your experience';
 
   @override
+  String get notif_action_new_message => 'sent a message';
+
+  @override
+  String get notif_action_new_application => 'applied to your invitation';
+
+  @override
+  String get notif_action_selected => 'selected you 🎉';
+
+  @override
+  String get notif_action_not_selected => 'responded to your application';
+
+  @override
   String get chat_delete_conversation => 'Delete Chat';
 
   @override
@@ -1586,6 +1605,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paywall_subtitle => 'Subscribe for unlimited applications.';
+
+  @override
+  String get paywall_perk_unlimited_invitations => 'Unlimited invitations';
+
+  @override
+  String get paywall_perk_unlimited_applications => 'Unlimited applications';
+
+  @override
+  String get paywall_perk_chat_after_match => 'Chat after mutual selection';
+
+  @override
+  String get paywall_perk_priority_moderation => 'Priority moderation';
 
   @override
   String get paywall_price => '1000₽ / month';

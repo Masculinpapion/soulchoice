@@ -1198,6 +1198,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get report_desc_label => 'Описание (необязательно)';
 
   @override
+  String get report_desc_label_required => 'Описание (обязательно)';
+
+  @override
   String get report_desc_hint => 'Можешь добавить подробности...';
 
   @override
@@ -1208,6 +1211,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get report_error_no_reason => 'Пожалуйста, выбери причину';
+
+  @override
+  String get report_error_desc_required =>
+      'Для причины \"Другое\" нужно написать описание';
 
   @override
   String get report_success => 'Твоя жалоба получена, мы её рассмотрим';
@@ -1535,6 +1542,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Расскажи о своём опыте';
 
   @override
+  String get notif_action_new_message => 'отправил(а) сообщение';
+
+  @override
+  String get notif_action_new_application =>
+      'откликнулся(ась) на ваше приглашение';
+
+  @override
+  String get notif_action_selected => 'выбрал(а) тебя 🎉';
+
+  @override
+  String get notif_action_not_selected => 'ответил(а) на твою заявку';
+
+  @override
   String get chat_delete_conversation => 'Удалить чат';
 
   @override
@@ -1617,6 +1637,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paywall_subtitle => 'Для безлимитных заявок оформи подписку.';
+
+  @override
+  String get paywall_perk_unlimited_invitations => 'Безлимитные приглашения';
+
+  @override
+  String get paywall_perk_unlimited_applications => 'Безлимитные заявки';
+
+  @override
+  String get paywall_perk_chat_after_match => 'Чат после взаимного выбора';
+
+  @override
+  String get paywall_perk_priority_moderation => 'Приоритет модерации';
 
   @override
   String get paywall_price => '1000₽ / месяц';

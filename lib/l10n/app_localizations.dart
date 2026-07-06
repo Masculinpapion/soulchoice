@@ -2266,6 +2266,12 @@ abstract class AppLocalizations {
   /// **'Description (optional)'**
   String get report_desc_label;
 
+  /// No description provided for @report_desc_label_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (required)'**
+  String get report_desc_label_required;
+
   /// No description provided for @report_desc_hint.
   ///
   /// In en, this message translates to:
@@ -2289,6 +2295,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select a reason'**
   String get report_error_no_reason;
+
+  /// No description provided for @report_error_desc_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add a description for \"Other\"'**
+  String get report_error_desc_required;
 
   /// No description provided for @report_success.
   ///
@@ -2878,6 +2890,30 @@ abstract class AppLocalizations {
   /// **'Share your experience'**
   String get notif_type_feedback_request_body;
 
+  /// No description provided for @notif_action_new_message.
+  ///
+  /// In en, this message translates to:
+  /// **'sent a message'**
+  String get notif_action_new_message;
+
+  /// No description provided for @notif_action_new_application.
+  ///
+  /// In en, this message translates to:
+  /// **'applied to your invitation'**
+  String get notif_action_new_application;
+
+  /// No description provided for @notif_action_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'selected you 🎉'**
+  String get notif_action_selected;
+
+  /// No description provided for @notif_action_not_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'responded to your application'**
+  String get notif_action_not_selected;
+
   /// No description provided for @chat_delete_conversation.
   ///
   /// In en, this message translates to:
@@ -3009,6 +3045,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subscribe for unlimited applications.'**
   String get paywall_subtitle;
+
+  /// No description provided for @paywall_perk_unlimited_invitations.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited invitations'**
+  String get paywall_perk_unlimited_invitations;
+
+  /// No description provided for @paywall_perk_unlimited_applications.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited applications'**
+  String get paywall_perk_unlimited_applications;
+
+  /// No description provided for @paywall_perk_chat_after_match.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat after mutual selection'**
+  String get paywall_perk_chat_after_match;
+
+  /// No description provided for @paywall_perk_priority_moderation.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority moderation'**
+  String get paywall_perk_priority_moderation;
 
   /// No description provided for @paywall_price.
   ///

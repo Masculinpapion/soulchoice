@@ -1175,6 +1175,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get report_desc_label => 'Açıklama (isteğe bağlı)';
 
   @override
+  String get report_desc_label_required => 'Açıklama (zorunlu)';
+
+  @override
   String get report_desc_hint => 'Daha fazla detay ekleyebilirsin...';
 
   @override
@@ -1185,6 +1188,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get report_error_no_reason => 'Lütfen bir neden seç';
+
+  @override
+  String get report_error_desc_required => '\"Diğer\" için açıklama yazmalısın';
 
   @override
   String get report_success => 'Şikayetin alındı, inceleyeceğiz';
@@ -1506,6 +1512,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Deneyimini paylaş';
 
   @override
+  String get notif_action_new_message => 'mesaj gönderdi';
+
+  @override
+  String get notif_action_new_application => 'davetinize başvurdu';
+
+  @override
+  String get notif_action_selected => 'seni seçti 🎉';
+
+  @override
+  String get notif_action_not_selected => 'başvurunu yanıtladı';
+
+  @override
   String get chat_delete_conversation => 'Sohbeti Sil';
 
   @override
@@ -1582,6 +1600,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get paywall_subtitle => 'Sınırsız başvuru için aboneliği başlat.';
+
+  @override
+  String get paywall_perk_unlimited_invitations => 'Sınırsız davetiye';
+
+  @override
+  String get paywall_perk_unlimited_applications => 'Sınırsız başvuru';
+
+  @override
+  String get paywall_perk_chat_after_match =>
+      'Karşılıklı seçimden sonra sohbet';
+
+  @override
+  String get paywall_perk_priority_moderation => 'Öncelikli moderasyon';
 
   @override
   String get paywall_price => '1000₽ / ay';

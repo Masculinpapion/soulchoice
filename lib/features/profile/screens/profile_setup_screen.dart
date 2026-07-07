@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -39,7 +41,16 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   bool _isSaving = false;
   bool _isLoadingProfile = true;
 
-  static const _stepCount = 8;
+  // 152-ФЗ: kayıt tamamlanmadan önce üç ayrı aktif onay gerekiyor —
+  // mevcut pasif "devam ederek kabul edersin" metni (phone_screen) tek
+  // başına yeterli değil. Onay anı + hangi metin sürümüne onay verildiği
+  // audit için users.consent_given_at / consent_version'a yazılıyor.
+  bool _ageConfirmed = false;
+  bool _dataConsent = false;
+  bool _profileVisibilityConsent = false;
+  static const _consentVersion = '2026-07-08';
+
+  static const _stepCount = 9;
   static const _allInterestKeys = [
     'art',
     'music',
@@ -68,6 +79,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     l10n.profile_setup_step_interests,
     l10n.profile_setup_step_prompts,
     l10n.profile_setup_step_age_range,
+    l10n.profile_setup_step_consent,
   ];
 
   Map<String, String> _getPromptQuestions(AppLocalizations l10n) => {
@@ -142,6 +154,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     _pageController.dispose();
     super.dispose();
   }
+
+  // Son adımda (Onaylar) üç aktif onay işaretlenmeden buton pasif kalır.
+  bool get _canProceed =>
+      _step != _stepCount - 1 ||
+      (_ageConfirmed && _dataConsent && _profileVisibilityConsent);
 
   Future<void> _next() async {
     final l10n = AppLocalizations.of(context)!;
@@ -231,6 +248,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         'interests': _interests.toList(),
         'min_age': _minAge,
         'max_age': _maxAge,
+        'consent_given_at': DateTime.now().toUtc().toIso8601String(),
+        'consent_version': _consentVersion,
       });
 
       if (_prompts.isNotEmpty) {
@@ -395,6 +414,16 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                         _maxAge = max;
                       }),
                     ),
+                    _StepConsent(
+                      ageConfirmed: _ageConfirmed,
+                      dataConsent: _dataConsent,
+                      profileVisibilityConsent: _profileVisibilityConsent,
+                      onAgeChanged: (v) => setState(() => _ageConfirmed = v),
+                      onDataConsentChanged: (v) =>
+                          setState(() => _dataConsent = v),
+                      onProfileVisibilityChanged: (v) =>
+                          setState(() => _profileVisibilityConsent = v),
+                    ),
                   ],
                 ),
               ),
@@ -402,7 +431,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                 child: ScButton(
                   label: l10n.profile_setup_btn_next,
-                  onPressed: _isSaving ? null : _next,
+                  onPressed: (_isSaving || !_canProceed) ? null : _next,
                   isLoading: _isSaving,
                 ),
               ),
@@ -1166,6 +1195,158 @@ class _StepPrompts extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _StepConsent extends StatelessWidget {
+  final bool ageConfirmed;
+  final bool dataConsent;
+  final bool profileVisibilityConsent;
+  final ValueChanged<bool> onAgeChanged;
+  final ValueChanged<bool> onDataConsentChanged;
+  final ValueChanged<bool> onProfileVisibilityChanged;
+
+  const _StepConsent({
+    required this.ageConfirmed,
+    required this.dataConsent,
+    required this.profileVisibilityConsent,
+    required this.onAgeChanged,
+    required this.onDataConsentChanged,
+    required this.onProfileVisibilityChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            Text(
+              l10n.profile_setup_step_consent,
+              style: const TextStyle(
+                fontFamily: 'Fraunces',
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                color: AuroraTheme.textPrimary,
+                letterSpacing: -0.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.profile_setup_consent_subtitle,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                color: AuroraTheme.textSecondary,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 28),
+            _ConsentCheckbox(
+              value: ageConfirmed,
+              onChanged: onAgeChanged,
+              text: l10n.profile_setup_consent_age,
+            ),
+            const SizedBox(height: 12),
+            _ConsentCheckbox(
+              value: dataConsent,
+              onChanged: onDataConsentChanged,
+              text: l10n.profile_setup_consent_data,
+              linkText: l10n.profile_setup_consent_data_link,
+              linkUrl: 'https://soulchoice.app/privacy',
+            ),
+            const SizedBox(height: 12),
+            _ConsentCheckbox(
+              value: profileVisibilityConsent,
+              onChanged: onProfileVisibilityChanged,
+              text: l10n.profile_setup_consent_visibility,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Onay satırı: checkbox + metin, opsiyonel olarak metne gömülü
+/// tıklanabilir belge linki (delete_account_screen'deki Checkbox+GlassCard
+/// kalıbıyla aynı stil). Kart kasıtlı olarak onTap almıyor — tüm satırı
+/// tıklanabilir yapmak, link kısmına basıldığında gesture arena'da
+/// checkbox toggle'ıyla çakışır; kutuya net basmak onay UX'i için doğrusu.
+class _ConsentCheckbox extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final String text;
+  final String? linkText;
+  final String? linkUrl;
+
+  const _ConsentCheckbox({
+    required this.value,
+    required this.onChanged,
+    required this.text,
+    this.linkText,
+    this.linkUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      borderColor: value ? AuroraTheme.auroraRed : AuroraTheme.glassBorder,
+      padding: const EdgeInsets.fromLTRB(8, 4, 16, 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Checkbox(
+            value: value,
+            onChanged: (v) => onChanged(v ?? false),
+            activeColor: AuroraTheme.auroraRed,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 14),
+              child: linkText == null
+                  ? Text(
+                      text,
+                      style: const TextStyle(
+                        color: AuroraTheme.textPrimary,
+                        fontFamily: 'Manrope',
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                    )
+                  : RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          color: AuroraTheme.textPrimary,
+                          fontFamily: 'Manrope',
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                        children: [
+                          TextSpan(text: '$text '),
+                          TextSpan(
+                            text: linkText,
+                            style: const TextStyle(
+                              color: AuroraTheme.auroraRed,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () =>
+                                  launchUrl(Uri.parse(linkUrl!)),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }

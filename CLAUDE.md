@@ -194,3 +194,7 @@ Feed tasarımı:
 5. Store screenshot + açıklama (1 oturum)
 6. Google Play Internal Testing → Production review
 
+## HUKUKİ
+
+- Detaylı kayıt/checklist: docs/legal-todos.md
+- Roskomnadzor kişisel veri operatörü bildirimi: TAMAMLANDI (07.07.2026)

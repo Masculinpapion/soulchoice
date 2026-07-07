@@ -94,9 +94,11 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                           size: 16, color: Colors.white),
                     ),
                     const SizedBox(width: 14),
-                    GradientItalicTitle(
-                      AppLocalizations.of(context)!.blocked_users_title,
-                      fontSize: 22,
+                    Expanded(
+                      child: GradientItalicTitle(
+                        AppLocalizations.of(context)!.blocked_users_title,
+                        fontSize: 22,
+                      ),
                     ),
                   ],
                 ),

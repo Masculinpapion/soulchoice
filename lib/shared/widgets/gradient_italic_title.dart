@@ -50,14 +50,21 @@ class GradientItalicTitle extends StatelessWidget {
       textDirection: TextDirection.ltr,
       textScaler: textScaler,
     )..layout();
-    return CustomPaint(
-      size: Size(tp.width, tp.height),
-      painter: _GradientTextPainter(
-        text: text,
-        style: _baseStyle,
-        textScaler: textScaler,
-        gradient: gradient,
-        textSize: Size(tp.width, tp.height),
+    // Dar alanda (uzun RU başlıklar, küçük ekranlar) otomatik küçül:
+    // sabit-boyut CustomPaint tek başına RenderFlex taşması üretebiliyordu
+    // ("RIGHT OVERFLOWED" — blocked_users başlığı, 07.07.2026).
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: CustomPaint(
+        size: Size(tp.width, tp.height),
+        painter: _GradientTextPainter(
+          text: text,
+          style: _baseStyle,
+          textScaler: textScaler,
+          gradient: gradient,
+          textSize: Size(tp.width, tp.height),
+        ),
       ),
     );
   }

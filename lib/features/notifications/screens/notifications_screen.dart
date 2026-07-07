@@ -149,10 +149,12 @@ class _NotificationsScreenState
                     ),
                     const SizedBox(width: 12),
                     // Başlık
-                    Builder(
-                      builder: (ctx) => GradientItalicTitle(
-                        AppLocalizations.of(ctx)!.notifications_title,
-                        fontSize: 26,
+                    Flexible(
+                      child: Builder(
+                        builder: (ctx) => GradientItalicTitle(
+                          AppLocalizations.of(ctx)!.notifications_title,
+                          fontSize: 26,
+                        ),
                       ),
                     ),
                     const Spacer(),

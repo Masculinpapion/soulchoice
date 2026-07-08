@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
@@ -30,7 +31,10 @@ Future<void> _saveFcmToken() async {
     if (token == null) return;
     await Supabase.instance.client
         .from('users')
-        .update({'fcm_token': token})
+        .update({
+          'fcm_token': token,
+          'last_platform': Platform.isIOS ? 'ios' : 'android',
+        })
         .eq('id', uid);
   } catch (_) {}
 }

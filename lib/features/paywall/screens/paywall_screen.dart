@@ -133,7 +133,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      l10n.paywall_subtitle,
+                      _mode == 'link'
+                          ? l10n.paywall_subtitle
+                          : l10n.paywall_subtitle_ios,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Manrope',
@@ -150,8 +152,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       l10n.paywall_perk_priority_moderation,
                     ]),
                     const Spacer(),
-                    _PriceBox(price: l10n.paywall_price),
+                    // hidden modda (iOS consumption-only) fiyat + CTA + abonelik
+                    // iması gösterilmez — App Store steering kuralı
                     if (_mode == 'link') ...[
+                      _PriceBox(price: l10n.paywall_price),
                       const SizedBox(height: 14),
                       _CtaButton(
                         label: l10n.paywall_cta,
@@ -161,7 +165,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ],
                     const SizedBox(height: 12),
                     Text(
-                      l10n.paywall_cancel_anytime,
+                      _mode == 'link'
+                          ? l10n.paywall_cancel_anytime
+                          : l10n.paywall_footer_ios,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'JetBrainsMono',

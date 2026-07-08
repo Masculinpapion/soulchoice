@@ -796,6 +796,8 @@
   "create_inv_error_active_limit": "Zaten aktif bir davetiyen/isteğin var, yenisini oluşturamazsın.",
   "paywall_title": "Ücretsiz başvuru hakkını kullandın",
   "paywall_subtitle": "Sınırsız başvuru için aboneliği başlat.",
+  "paywall_subtitle_ios": "Premium sınırsız başvuru sağlar.",
+  "paywall_footer_ios": "Premium hesabına bağlıdır ve otomatik etkinleşir.",
   "paywall_perk_unlimited_invitations": "Sınırsız davetiye",
   "paywall_perk_unlimited_applications": "Sınırsız başvuru",
   "paywall_perk_chat_after_match": "Karşılıklı seçimden sonra sohbet",

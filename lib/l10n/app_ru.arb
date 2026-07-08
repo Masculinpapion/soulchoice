@@ -796,8 +796,6 @@
   "create_inv_error_active_limit": "У тебя уже есть активное приглашение или запрос, создать новое нельзя.",
   "paywall_title": "Бесплатная заявка использована",
   "paywall_subtitle": "Для безлимитных заявок оформи подписку.",
-  "paywall_subtitle_ios": "Premium открывает безлимитные заявки.",
-  "paywall_footer_ios": "Premium привязан к аккаунту и активируется автоматически.",
   "paywall_perk_unlimited_invitations": "Безлимитные приглашения",
   "paywall_perk_unlimited_applications": "Безлимитные заявки",
   "paywall_perk_chat_after_match": "Чат после взаимного выбора",

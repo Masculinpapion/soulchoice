@@ -796,8 +796,6 @@
   "create_inv_error_active_limit": "You already have an active invitation or request, you can't create a new one.",
   "paywall_title": "You've used your free application",
   "paywall_subtitle": "Subscribe for unlimited applications.",
-  "paywall_subtitle_ios": "Premium unlocks unlimited applications.",
-  "paywall_footer_ios": "Premium is linked to your account and activates automatically.",
   "paywall_perk_unlimited_invitations": "Unlimited invitations",
   "paywall_perk_unlimited_applications": "Unlimited applications",
   "paywall_perk_chat_after_match": "Chat after mutual selection",

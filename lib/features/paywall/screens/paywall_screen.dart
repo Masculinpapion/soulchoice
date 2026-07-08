@@ -1,12 +1,82 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 
-class PaywallScreen extends StatelessWidget {
+class PaywallScreen extends StatefulWidget {
   const PaywallScreen({super.key});
+
+  @override
+  State<PaywallScreen> createState() => _PaywallScreenState();
+}
+
+class _PaywallScreenState extends State<PaywallScreen> {
+  // Sunucu bayrağı gelene kadar platform varsayılanı: iOS'ta CTA gizli
+  // (App Store External Purchase entitlement onayına kadar), Android'de açık.
+  late String _mode = Platform.isIOS ? 'hidden' : 'link';
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPaywallMode();
+  }
+
+  Future<void> _loadPaywallMode() async {
+    try {
+      final row = await Supabase.instance.client
+          .from('feature_flags')
+          .select('value')
+          .eq('key', 'paywall_mode')
+          .maybeSingle();
+      final value = row?['value'];
+      if (value is Map) {
+        final mode = value[Platform.isIOS ? 'ios' : 'android'];
+        if (mode is String && mounted) setState(() => _mode = mode);
+      }
+    } catch (_) {
+      // Bayrak okunamazsa platform varsayılanı geçerli kalır
+    }
+  }
+
+  Future<void> _pay() async {
+    if (_isLoading) return;
+    setState(() => _isLoading = true);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'create-tochka-payment',
+        body: {'source': Platform.isIOS ? 'ios_app' : 'android'},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      final link = data?['paymentLink'] as String?;
+      if (link == null) throw Exception(data?['error'] ?? 'no_link');
+      final launched = await launchUrl(
+        Uri.parse(link),
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched) throw Exception('launch_failed');
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          backgroundColor: AuroraTheme.bgDeep,
+          content: Text(
+            AppLocalizations.of(context)!.error_generic,
+            style: const TextStyle(
+                fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
+          ),
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +151,14 @@ class PaywallScreen extends StatelessWidget {
                     ]),
                     const Spacer(),
                     _PriceBox(price: l10n.paywall_price),
-                    const SizedBox(height: 14),
-                    _CtaButton(
-                      label: l10n.paywall_cta,
-                      onTap: () => _showComingSoon(context, l10n),
-                    ),
+                    if (_mode == 'link') ...[
+                      const SizedBox(height: 14),
+                      _CtaButton(
+                        label: l10n.paywall_cta,
+                        isLoading: _isLoading,
+                        onTap: _pay,
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     Text(
                       l10n.paywall_cancel_anytime,
@@ -105,19 +178,6 @@ class PaywallScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showComingSoon(BuildContext context, AppLocalizations l10n) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      backgroundColor: AuroraTheme.bgDeep,
-      content: Text(
-        l10n.paywall_coming_soon,
-        style: const TextStyle(
-            fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
-      ),
-    ));
   }
 }
 
@@ -228,8 +288,13 @@ class _PriceBox extends StatelessWidget {
 
 class _CtaButton extends StatelessWidget {
   final String label;
+  final bool isLoading;
   final VoidCallback onTap;
-  const _CtaButton({required this.label, required this.onTap});
+  const _CtaButton({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -251,16 +316,25 @@ class _CtaButton extends StatelessWidget {
           ],
         ),
         alignment: Alignment.center,
-        child: Text(
-          label,
-          style: const TextStyle(
-            fontFamily: 'JetBrainsMono',
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: 0.6,
-          ),
-        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 0.6,
+                ),
+              ),
       ),
     );
   }

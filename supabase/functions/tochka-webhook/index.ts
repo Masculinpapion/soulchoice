@@ -143,13 +143,19 @@ serve(async (req) => {
             returning premium_until`,
           [userId, PREMIUM_DAYS],
         )
-        const expiresAt = prem.rows[0]?.premium_until ?? null
-        await db.queryObject(
-          `insert into subscriptions
-             (user_id, status, provider, started_at, expires_at, auto_renew, price_paid, currency)
-           values ($1, 'active', 'tochka', now(), $2, false, $3, 'RUB')`,
-          [userId, expiresAt, Math.round(amount)],
-        )
+        if (prem.rows.length === 0) {
+          // auth kullanıcısı var ama public.users profili yok (web'den ödeme,
+          // app kaydı tamamlanmamış) — FK'li subscriptions insert'i atla
+          console.error('paid but no users profile, premium not applied', operationId, userId)
+        } else {
+          const expiresAt = prem.rows[0].premium_until
+          await db.queryObject(
+            `insert into subscriptions
+               (user_id, status, provider, started_at, expires_at, auto_renew, price_paid, currency)
+             values ($1, 'active', 'tochka', now(), $2, false, $3, 'RUB')`,
+            [userId, expiresAt, Math.round(amount)],
+          )
+        }
       }
     } finally {
       await db.end()

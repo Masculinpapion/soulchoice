@@ -68,9 +68,27 @@ serve(async (req) => {
         '?customerCode=' + CUSTOMER_CODE,
       { headers: { Authorization: 'Bearer ' + TOCHKA_JWT } },
     )
-    if (!verifyRes.ok) {
-      console.error('tochka verify failed', operationId, verifyRes.status)
+    if (verifyRes.status >= 500) {
+      console.error('tochka verify unavailable', operationId, verifyRes.status)
       return new Response('verify_failed', { status: 500 }) // Точка tekrar dener
+    }
+    if (!verifyRes.ok) {
+      // Operasyon bankada bulunamadı (404/424). Точка'nın webhook kayıt testi
+      // sentetik bir operationId ile gerçek bildirim gönderir — o yüzden
+      // bilinmeyen operasyona 200 dönmek zorundayız. Ama bizim pending
+      // kaydımız varsa bu bir yarış olabilir: retry için 500 dön.
+      const pendingRes = await fetch(
+        SUPABASE_URL + '/rest/v1/payments?operation_id=eq.' +
+          encodeURIComponent(operationId) + '&status=eq.pending&select=id&limit=1',
+        { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } },
+      )
+      const pending = await pendingRes.json().catch(() => [])
+      if (Array.isArray(pending) && pending.length > 0) {
+        console.error('verify failed for known pending op, will retry', operationId, verifyRes.status)
+        return new Response('verify_failed', { status: 500 })
+      }
+      console.log('unknown operation, ignoring (probably registration test)', operationId, verifyRes.status)
+      return new Response('ok')
     }
     const verifyJson = await verifyRes.json()
     const op = verifyJson?.Data?.Operation?.[0]

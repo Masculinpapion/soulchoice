@@ -2,14 +2,18 @@
 
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
-> **DURUM: Faz 1 TAMAMLANDI ✅ (09.07.2026)** — migration PROD'DA (yedek:
-> `/root/pre_f2_faz1_20260709_0841.sql.gz`; doğrulandı: 8+4 kolon, 3 tablo RLS'li,
-> billing_config seed'li). Oferta revizyonu ONAYLI → `docs/oferta-f2.html` (deploy Faz 4/6'da;
-> yürürlük tarihi deploy günü güncellenecek — dosyada TODO işaretli). UI metin seti ONAYLI (§7).
-> Точка destek bileti Mustafa'da (S1-S5). Faz 2 planı sunuldu, onay bekliyor.
-> NOT: payments UNIQUE(operation_id)→(operation_id, order_id) geçişi bilinçli olarak Faz 2'ye
-> ertelendi (canlı webhook'un `on conflict (operation_id)` yolu kırılmasın; webhook deploy'uyla
-> atomik yapılacak).
+> **DURUM: Faz 2 KOD HAZIR, DEPLOY ONAY BEKLİYOR (09.07.2026).** Repo'da: `_shared/billing-email.ts`,
+> `create-tochka-subscription`, `tochka-webhook` v2 (Order-diff + orphan-fix), `manage-subscription`,
+> `delete-account` (lokal iptal), `migrations/20260710_f2_payments_unique_swap.sql`.
+> **Deploy paketi (tek pencere, düşük trafik saati, Mustafa onayıyla):** DB yedeği → mini migration
+> → 5 fn dosyasını /root/volumes/functions'a kopyala (+_shared) → functions restart → smoke test.
+> **SMTP:** BILLING_SMTP_* env'de + functions container'da; compose'da functions bloğuna eklendi
+> (yedek: docker-compose.yml.bak.*); secrets repo güncel. ⚠️ ENGEL: Timeweb VPS'ten dışarı TÜM SMTP
+> portları (25/465/587/2525) kapalı — Mustafa Timeweb desteğinden SMTP egress açılmasını isteyecek;
+> açılınca test maili tekrarlanacak. NOT: compose `--env-file /root/supabase/docker/.env` olmadan
+> ÇALIŞTIRILMAZ (env'ler boş kalır; 09.07 dersi — komut güvenli şekilde reddetti, stack etkilenmedi).
+> Faz 1 ✅ (migration prod'da, yedek `/root/pre_f2_faz1_20260709_0841.sql.gz`; oferta `docs/oferta-f2.html`
+> onaylı, deploy Faz 4/6'da; UI metinleri §7). Точка destek bileti Mustafa'da (S1-S5) + Timeweb SMTP talebi.
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

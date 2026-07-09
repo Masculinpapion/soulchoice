@@ -35,6 +35,35 @@ Deno.serve(async (req: Request) => {
       })
     }
 
+    // F2: hesap silinmeden ÖNCE aktif abonelik lokal iptal edilir ve iz billing_events'e
+    // düşülür (subscriptions satırı CASCADE ile silinir; event user_id SET NULL ile kalır).
+    // Bankada iptal endpoint'i yok — çekimi yalnız biz tetiklediğimiz için lokal iptal yeterli;
+    // CofToken'ın bankadan tamamen silinmesi destek prosedürüne bağlı (bkz. docs/f2-billing-plan.md S4).
+    const { data: subs } = await adminClient
+      .from('subscriptions')
+      .select('id, tochka_subscription_id, status')
+      .eq('user_id', user.id)
+      .in('status', ['pending_binding', 'active', 'past_due', 'cancelled'])
+    if (subs && subs.length > 0) {
+      await adminClient
+        .from('subscriptions')
+        .update({ auto_renew: false, status: 'cancelled', cancelled_at: new Date().toISOString() })
+        .eq('user_id', user.id)
+        .in('status', ['pending_binding', 'active', 'past_due'])
+      await adminClient.from('billing_events').insert(
+        subs.map((s) => ({
+          subscription_id: s.id,
+          user_id: user.id,
+          event: 'cancelled',
+          detail: {
+            reason: 'account_deleted',
+            tochka_subscription_id: s.tochka_subscription_id,
+            prev_status: s.status,
+          },
+        })),
+      )
+    }
+
     await adminClient.from('users').delete().eq('id', user.id)
 
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)

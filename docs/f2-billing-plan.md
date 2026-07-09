@@ -2,18 +2,20 @@
 
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
-> **DURUM: Faz 2 KOD HAZIR, DEPLOY ONAY BEKLİYOR (09.07.2026).** Repo'da: `_shared/billing-email.ts`,
-> `create-tochka-subscription`, `tochka-webhook` v2 (Order-diff + orphan-fix), `manage-subscription`,
-> `delete-account` (lokal iptal), `migrations/20260710_f2_payments_unique_swap.sql`.
-> **Deploy paketi (tek pencere, düşük trafik saati, Mustafa onayıyla):** DB yedeği → mini migration
-> → 5 fn dosyasını /root/volumes/functions'a kopyala (+_shared) → functions restart → smoke test.
-> **SMTP:** BILLING_SMTP_* env'de + functions container'da; compose'da functions bloğuna eklendi
-> (yedek: docker-compose.yml.bak.*); secrets repo güncel. ⚠️ ENGEL: Timeweb VPS'ten dışarı TÜM SMTP
-> portları (25/465/587/2525) kapalı — Mustafa Timeweb desteğinden SMTP egress açılmasını isteyecek;
-> açılınca test maili tekrarlanacak. NOT: compose `--env-file /root/supabase/docker/.env` olmadan
-> ÇALIŞTIRILMAZ (env'ler boş kalır; 09.07 dersi — komut güvenli şekilde reddetti, stack etkilenmedi).
-> Faz 1 ✅ (migration prod'da, yedek `/root/pre_f2_faz1_20260709_0841.sql.gz`; oferta `docs/oferta-f2.html`
-> onaylı, deploy Faz 4/6'da; UI metinleri §7). Точка destek bileti Mustafa'da (S1-S5) + Timeweb SMTP talebi.
+> **DURUM: Faz 2 TAMAMLANDI ✅ (09.07.2026)** — deploy + 2₽ UÇTAN UCA TEST GEÇTİ.
+> Deploy: yedek `pre_f2_faz2_20260709_0919.sql.gz` + `/root/f2_rollback/`; unique-swap migration
+> prod'da; 5 fn + _shared canlıda; smoke 8/8 temiz (sahte webhook idempotent-200 dahil), rollback
+> gerekmedi. Deploy sırasında yakalanan fix: P9 kontrolü F1 log satırlarını saymasın (`9ba824ac`).
+> **2₽ E2E (test aboneliği `ae83fb94`, kart •••• 4385):** create fn → pending_binding + consent_autopay
+> (oferta_version kanıtı) → ödeme → webhook aktivasyonu (order 5761626, premium+30g, kart maskesi) →
+> manuel charge → webhook Order-diff renewal (order 5761697, premium 07.09'a uzadı, charge_ok) →
+> cancel (lokal, sade mesaj) → resume (ödemesiz) → status action tam veri → final cancel + kullanıcı
+> free'ye sıfırlandı. **SMTP AÇILDI** (Timeweb talebi işlendi, 465 açık) — cancel_confirm e-postası
+> CANLIDA GÖNDERİLDİ (email_ok:true). İade: 2×2₽ (5761626+5761697) kabinetten Mustafa'da.
+> Testin banka tarafı kalıntısı: abonelik bankada Active (iptal yolu yok — S1); charge'ı yalnız biz
+> tetikleriz, risksiz. NOT: compose daima `--env-file /root/supabase/docker/.env` ile.
+> Faz 1 ✅ (oferta `docs/oferta-f2.html` onaylı, deploy Faz 4/6'da; UI metinleri §7).
+> SIRADA: Faz 3 (billing-cron) planı Mustafa onayına sunulacak; Точка bileti cevabı (S1-S5) açık.
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

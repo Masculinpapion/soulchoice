@@ -2,7 +2,8 @@
 
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
-> **DURUM: Faz 0 sürüyor** — 2₽ canlı abonelik testi. Faz 1'e Mustafa onayıyla geçilir.
+> **DURUM: Faz 0 TAMAMLANDI ✅ (09.07.2026)** — bulgular §6. Sırada: Точка destek bileti
+> (Mustafa gönderecek) + Faz 1 (Mustafa onayı bekliyor). Destek cevabı Faz 1'i BLOKLAMAZ.
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 
@@ -24,41 +25,70 @@ daha iyi yol görülürse uygulanır ve sapma gerekçesiyle raporlanır. İki is
   e-posta**; **en az biri başarıyla gönderilmeden çekim yapılmaz**; ikisi de gönderilemezse çekim
   yok, süre dolunca free. Gönderim: support@soulchoice.app / Timeweb SMTP (işlem mailleri:
   hatırlatma, başarılı/başarısız, iptal onayı). Aynı e-posta fiskal çek (54-ФЗ) adresi.
+  ⚠️ Not (Faz 0): çek fiilen banka ödeme sayfasında müşterinin girdiği adrese gider —
+  UI bankadaki adresle billing_email'in aynı olmasını telkin eder; pre-fill imkânı destek
+  biletinde soruluyor (S5).
+- **KARAR 4 — Yumuşak iptal (09.07.2026, Faz 0 sonrası):**
+  - İptal = bizde `auto_renew=false` (çekim %100 durur — çekimi yalnız biz tetikliyoruz);
+    kart bağı bankada kalır (API'de/kabinette iptal yok, Faz 0 bulgusu).
+  - Tekrar abonelik: tek tık, YENİ ÖDEME YOK, çekim dönem sonunda devam eder.
+  - İptal ekranı mesajı SADE: "Aboneliğin iptal edildi, premium X tarihine kadar aktif" —
+    kart saklama lafı EKRANDA GEÇMEZ.
+  - Kart saklama açıklaması YALNIZ oferta maddesinde: "İptal otomatik çekimi durdurur; ödeme
+    bilgisi banka tarafında saklanır, tamamen silinmesi için support@soulchoice.app'e
+    başvurulabilir."
+  - Şeffaflık ekranda şöyle: abonelik ekranında kartın son 4 hanesi görünür; geri dönüşte
+    "•••• XXXX ile devam et" butonu.
 - **P-öncelikleri:** P1 (billing_events audit log), P2 (sabah digest), P3 (dead-man switch),
   P6 (billing_config fiyat/parametre tablosu), P7 (JWT süre alarmı), P9 (rate limit + tek pending
   abonelik kuralı) → **F2 çekirdeğinde**. P4 (günlük mutabakat) + P8 (dunning banner) → F2 sonrası
   hemen. P5 (ops panel sekmesi) + P10 (churn metrik view) → panel Adım 2 ile.
 
-## 2. Точка recurring — doğrulanmış bulgular (09.07.2026)
+## 2. Точка recurring — doğrulanmış model (doküman + Faz 0 canlı testi)
 
-- **Grafiksiz abonelik** (changelog 18.04.2025): Create Subscription'da `recurring: true` →
-  çekim takvimi yok; çekim **bizim** `POST /acquiring/v1.0/subscriptions/{operationId}/charge`
-  çağrımızla olur (zorunlu alan sadece `amount`, canlı validasyon probuyla doğrulandı) →
-  iptale kadar süresiz aylık model kurulabilir, tranche limiti yok.
-- Abonelik API'si sözleşmemizde **aktif**: `GET /subscriptions?customerCode=305892846` → 200
-  (mevcut JWT ile; ek aktivasyon gerekmedi).
-- Create Subscription zorunlu alanları (validasyon probu): `customerCode`, `amount`, `purpose`.
-- **Kart-ONLY** (СБП abonelikte yok → komisyon %2,8). Bağlama linki 7 gün geçerli; linke giren
-  müşterinin ödemeye 1 saati var. 3DS/onay ilk ödemede banka sayfasında.
-- Webhook'ta abonelik için ayrı event YOK; abonelik ödemeleri de `acquiringInternetPayment`.
-  06.07.2026'dan beri kartlı ödemede `maskedPan`, `cardType`, `tokenCardId` alanları geliyor
-  (yönetim ekranındaki "son 4 hane" kaynağı).
-- İptal: `POST /subscriptions/{operationId}/status` (zorunlu alan `status`; dokümana göre
-  Cancelled yapılabiliyor). Abonelik ödemesinin iadesi **sadece internet bankadan** (API yok).
-- Kart verisi/token bizde durmaz — Точка'da. Biz sadece `operationId` + maske saklarız (PCI yükü yok).
+- **Grafiksiz abonelik:** Create Subscription'da `recurring: true` → çekim takvimi yok; çekim
+  **bizim** `POST /acquiring/v1.0/subscriptions/{operationId}/charge` çağrımızla (`amount` tek
+  zorunlu alan). İptale kadar süresiz aylık model; tranche limiti yok. Kart-ONLY (СБП yok,
+  komisyon %2,8; ödeme sayfasında yalnız "Банковской картой" çıktığı canlıda görüldü).
+- Sözleşmemizde aktif, mevcut JWT yetiyor. Create zorunlu alanları: `customerCode`, `amount`,
+  `purpose`; `merchantId`, `recurring`, `redirectUrl`, `failRedirectUrl` kabul ediliyor (test
+  edildi). Yanıt: `operationId`, `paymentLink` (7 gün; sayfa açılınca ödemeye 1 saat),
+  `consumerId`, `paymentLinkId`.
+- Banka ödeme sayfası kendi **"Соглашаюсь с условиями автоплатежей"** onay kutusunu ve
+  **"Сохранить карту"** işaretini gösteriyor; çek e-postası **"Куда отправить чек?"** alanıyla
+  müşteriden alınıyor (Faz 0 ekran kanıtı).
+- **ÇEKİM MODELİ (Faz 0 kritik bulgusu):** Charge YENİ OPERASYON YARATMAZ. Senkron
+  `{"Data":{"result":true}}` döner; çekim aynı operasyonun `Order[]` dizisine
+  `{orderId, type:"approval", amount, time}` satırı olarak eklenir ve `GET /payments/{opId}`'de
+  ANINDA görünür. → Renewal eşleştirme birimi **orderId**'dir, operationId değil.
+- **Webhook:** abonelik için ayrı event yok; bağlama VE her charge `acquiringInternetPayment`
+  tetikler (Faz 0: 3 çekim = 3 webhook), hepsi AYNI operationId ile. Operasyon gövdesinde
+  `CofToken: {tokenCardId, cardType, maskedPan}` var (hem webhook hem GET) → "son 4 hane" kaynağı.
+- **İptal: API'DE VE KABİNETTE YOK (Faz 0).** Set Subscription Status grafiksiz aboneliği
+  görmüyor (424 "Subscription not found" — query/body/recurring=true tüm varyantlarda; DELETE
+  501). Kabinette abonelik detayı VAR ama iptal butonu YOK. → İptal mimarisi lokaldir (KARAR 4);
+  banka tarafı prosedürü destek biletinde soruluyor.
+- **Liste:** `GET /subscriptions` grafiksizleri ancak `?recurring=true` parametresiyle döner
+  (P4 mutabakat cron'u bu parametreyi kullanacak).
+- **Status:** `Preparing` (ödeme öncesi) → `Active`. Set Status enum'u yalnız `Cancelled`
+  (grafikli abonelikler için; bizimkilere uygulanamıyor).
+- **Fiskalizasyon (54-ФЗ): KUTUDAN TAM ÇÖZÜLÜ.** Bağlama ödemesi + HER charge için çek OTOMATİK
+  kesiliyor (digitalKassaTochka/ЦИБ agent kassası), bağlamada girilen e-postaya gidiyor
+  (Faz 0: 3 çekim = 3 çek maili). Ek kassa entegrasyonu GEREKMİYOR.
+- **İade:** Abonelik çekimlerinin iadesi işlem bazında KABİNETTEN yapılıyor: abonelik detay
+  sayfası → operasyona tıkla → "Вернуть платёж" (Faz 0'da 3×2₽ bu yolla iade edildi, "Возвращен").
+  API'den abonelik iadesi yok. İadeler ANA hesaptan çıkar (Фонды tamponu).
 
-### Faz 0'da netleşecekler (doğrulanamayanlar)
-| # | Soru | Faz 0 adımı |
+### Açık kalanlar → Точка destek bileti (Mustafa gönderecek)
+| S | Soru | Durum |
 |---|---|---|
-| 1 | İlk bağlama ödemesi `amount` kadar mı (ilk ay peşin mi)? | Adım 3 |
-| 2 | Charge hata gövdesi + aynı gün retry kuralları | Adım 7 (+ gerekirse banka desteği) |
-| 3 | **Fiskal çek:** bağlamada ve charge'da çek kesiliyor mu, müşteri e-postası verilebiliyor mu? | Adım 3+7 |
-| 4 | Abonelik status enum değerleri | Adım 2+6 |
-| 5 | Un-cancel mümkün mü / kart değiştirme mekanizması | Adım 9 |
-| 6 | Create'te `redirectUrl`/`paymentLinkId` kabul ediliyor mu | Adım 1 |
-| 7 | Charge webhook timing + `GET /payments/{opId}` ile sorgulanabilirlik | Adım 7 |
+| S1 | Grafiksiz aboneliğin API'den iptali/deaktivasyonu (planlanıyor mu?) | Cevap bekliyor |
+| S2 | Charge decline'ında dönen HTTP kod + gövde formatı (yetersiz bakiye vs kart kapalı) | Cevap bekliyor; kod her biçimi güvenli işleyecek |
+| S3 | Aynı abonelikte günlük Charge deneme limiti / anti-fraud kısıtı | Cevap bekliyor |
+| S4 | CofToken'ın (kart bağı) müşteri talebiyle tamamen silinme prosedürü | Cevap bekliyor |
+| S5 | Create Subscription'da çek e-postasını pre-fill etme alanı var mı | Cevap bekliyor (Claude önerisi) |
 
-## 3. Mimari (onaylı)
+## 3. Mimari (onaylı; Faz 0 düzeltmeleri işlendi)
 
 ### 3a. DB
 ```
@@ -69,66 +99,76 @@ subscriptions (mevcut + yeni kolonlar)
   + notified_channels      text[]        -- ['push','email'] hangisi başarılı
   + retry_count            int default 0
   + grace_until            timestamptz
-  + card_masked_pan        text          -- webhook maskedPan (maske, PAN DEĞİL)
+  + card_masked_pan        text          -- CofToken.maskedPan (maske, PAN DEĞİL)
   + card_type              text
   ~ status CHECK: active/cancelled/past_due/expired (+ pending_binding)
+  -- KARAR 4: cancelled satır SİLİNMEZ; auto_renew=false + cancelled_at; reaktivasyon
+  --          aynı satırda auto_renew=true'ya döner (tochka_subscription_id sabit)
 
 users
-  + billing_email text                   -- KARAR 3; çek + bildirim adresi
+  + billing_email text                   -- KARAR 3; bildirim adresi (çek adresi bankada girilir)
 
-payments (mevcut + )
+payments (mevcut + )  ⚠️ Faz 0 düzeltmesi
   + subscription_id uuid FK→subscriptions (nullable)
   + charge_type text CHECK: one_time/subscription_initial/subscription_renewal
+  + order_id text                        -- Точка Order[].orderId (renewal'ın gerçek kimliği)
+  ~ UNIQUE(operation_id) kaldırılır → UNIQUE(operation_id, order_id) (one_time'da order_id
+    sentinel/'' — migration detayı; idempotency anahtarı artık bu çift)
 
 billing_events (YENİ, append-only)         -- P1
-  id, subscription_id, user_id, event, detail jsonb, created_at
-
 billing_config (YENİ)                       -- P6
-  price_rub, grace_hours, retry_schedule, ...
-
 cron_heartbeat (YENİ)                       -- P3
 ```
 
 ### 3b. Akışlar
-**Abone olma:** paywall/web'de e-posta adımı (zorunlu, KARAR 3) → `create-tochka-subscription`
-edge fn → Точка `POST /subscriptions {recurring:true, amount, purpose, ...}` →
-subscriptions(pending_binding) + payments(pending, subscription_initial) → müşteri linkte kartla
-ilk 1000₽ öder → webhook: paid → `premium_until = greatest(now, mevcut)+30g`, status=active,
-auto_renew=true, `next_billing_at = premium_until`, kart maskesi kaydedilir.
-7 günde ödenmezse cron pending_binding'i expire eder.
+**Abone olma:** paywall/web'de e-posta adımı (zorunlu, KARAR 3; "çek için bankada aynı adresi
+gir" telkini) → `create-tochka-subscription` edge fn → Точка `POST /subscriptions
+{recurring:true, ...}` → subscriptions(pending_binding) + payments(pending,
+subscription_initial, order_id='') → müşteri linkte kartla ilk 1000₽ öder (banka sayfası:
+autoplatej onayı + kart kaydet + çek e-postası) → webhook: paid (ilk ödemenin operationId'si =
+abonelik operationId; Order[0].orderId payments'a yazılır) → `premium_until =
+greatest(now, mevcut)+30g`, status=active, auto_renew=true, `next_billing_at = premium_until`,
+CofToken'dan kart maskesi. 7 günde ödenmezse cron pending_binding'i expire eder.
 
 **Günlük billing-cron (07:25 UTC ≈ 10:25 MSK):**
 - FAZ A bildirim: `next_billing_at ≤ now()+36s` + bu döngüde bildirilmemiş → push + e-posta;
   en az biri başarılı → `renewal_notified_at` + `notified_channels`. İkisi de başarısız →
   çekim kapısı KAPALI (süre dolunca free) — KARAR 3.
-- FAZ B çekim: `next_billing_at ≤ now()` VE bildirim ≥24s önce → `charge {amount}` →
-  payments(pending, subscription_renewal) → sonuç WEBHOOK'tan: paid → premium_until+30g,
-  next_billing_at+30g, retry=0, "yenilendi" push+mail.
-- FAZ C kurtarma: 15+ dk pending renewal'ları `GET /payments/{opId}` ile poll et.
-- Başarısızlık (KARAR 2): retry 0/+24s/+48s → past_due + grace (premium açık) → grace bitince
-  auto_renew=false, expired, downgrade cron'u free'ye düşürür. Her aşamada bildirim.
-- Sabit 30 günlük döngü (takvim ayı değil) → 29-31 sorunu yok. `≤ now()` taraması → kaçan cron
-  koşusu kendini onarır. Koşu sonunda digest (P2) + heartbeat (P3).
+- FAZ B çekim (Faz 0 modeliyle): bildirim ≥24s önce şartıyla `charge {amount}` → senkron
+  `result:true` → HEMEN `GET /payments/{opId}` → `Order[]`'daki YENİ orderId tespit →
+  payments(paid, subscription_renewal, order_id) insert → premium_until+30g,
+  next_billing_at+30g, retry=0, "yenilendi" push+mail. **Çekim onayı webhook'a muhtaç değil;**
+  webhook ikincil teyit (aynı (operation_id, order_id) çifti — idempotent).
+- FAZ C kurtarma: charge sonrası doğrulanamayan/yarım kalan döngüleri GET ile tamamla.
+- Başarısızlık (KARAR 2): retry gün 0/+24s/+48s → past_due + grace (premium açık) → grace
+  bitince auto_renew=false, expired → downgrade cron'u free'ye düşürür. Her aşamada bildirim.
+- Sabit 30 günlük döngü; `≤ now()` taraması → kaçan koşu kendini onarır; koşu sonunda
+  digest (P2) + heartbeat (P3).
 
-**İptal (F2-2):** App Profil→Abonelik→İptal (≤2 tık + onay dialogu) ve web /premium'da aynı →
-`manage-subscription` fn → Точка Set Status Cancelled → auto_renew=false, cancelled_at →
-"X tarihine kadar premium" gösterilir; dönem sonunda mevcut downgrade cron'u düşürür.
-**Tekrar abonelik:** yeni bağlama ödemesi; süre `greatest(now, premium_until)+30g` ÜSTE eklenir
-(ekranda açıkça yazılır). (Faz 0 Adım 9 un-cancel'ı mümkün gösterirse akıcılaştırma önerilir.)
+**İptal (F2-2, KARAR 4 — yumuşak):** App Profil→Abonelik→İptal (≤2 tık + onay dialogu) ve web
+/premium'da aynı → `manage-subscription` fn → SADECE lokal: auto_renew=false, status=cancelled,
+cancelled_at (bankaya çağrı YOK — endpoint yok). Ekran: "Aboneliğin iptal edildi, premium X
+tarihine kadar aktif" (sade; kart lafı yok). Dönem sonunda downgrade cron'u free'ye düşürür
+(subscriptions→expired).
+**Tekrar abonelik (dönem içinde):** "•••• XXXX ile devam et" → auto_renew=true, status=active —
+ödeme YOK, çekim next_billing_at'te devam. Dönem bittiyse/expired ise: yeni bağlama akışı
+(yeni Create Subscription + ödeme; süre greatest ile üste).
 
-**Hesap silme:** `delete-account` fn'e Точка iptal adımı EKLENECEK (CASCADE'den önce) —
-yoksa silinmiş kullanıcının kartından çekim sürer.
+**Webhook genişletmesi:** operasyonda `CofToken` varsa abonelik operasyonudur → `Order[]` ile
+lokal payments'ı karşılaştır, eksik orderId'leri işle; lokal pending_binding varsa aktive et;
+hiç lokal kayıt yoksa 500/retry (orphan-insert YALNIZ CofToken'sız operasyonlara — mevcut
+koddaki sahipsiz-paid tuzağının düzeltmesi).
 
-**Webhook orphan-fix (mevcut kod tuzağı):** webhook bilinmeyen-APPROVED operasyonu kullanıcısız
-`paid` yazıyor; renewal yarışında abonelik uzamaz. Fix: operasyonda `tokenCardId` varsa ve lokal
-pending yoksa 500 dön (Точка retry) — orphan-insert sadece token'sız operasyonlara.
+**Hesap silme:** bankada iptal endpoint'i olmadığından: lokal cancel + billing_events kaydı;
+CofToken silme prosedürü destek cevabına (S4) göre eklenecek (o zamana dek: silinen kullanıcı
+için charge asla çağrılmaz — tek çekim tetikleyicisi biziz).
 
 ### 3c. Bildirimler (push = FCM `send-notification`; e-posta = Timeweb SMTP)
 Çekim öncesi ≥24s (F2-1, servis mesajı — ФЗ-38 reklam onayı gerektirmez) • çekim başarılı •
 çekim başarısız/past_due (+ app banner P8) • iptal onayı. Hepsi push+e-posta.
 **DNS hazır (09.07.2026 doğrulandı):** MX timeweb, SPF `include:_spf.timeweb.ru`, DKIM seçici
-`dkim` kayıtlı, DMARC `p=none` → Mail.ru/Yandex teslimat zemini var, kurulum gerekmez.
-**Eksik tek şey:** support@soulchoice.app SMTP şifresi (Mustafa'dan, Faz 2 ön koşulu).
+`dkim`, DMARC `p=none` → kurulum gerekmez. **Eksik tek şey:** support@soulchoice.app SMTP
+şifresi (Mustafa'dan, Faz 2 ön koşulu). Fiskal çekler bankadan otomatik gider (bizim işimiz değil).
 Kanal "başarılı" tanımı: FCM 200+geçerli token; SMTP 250 accepted — billing_events'e yazılır.
 
 ### 3d. F1 ile birlikte yaşama
@@ -138,56 +178,61 @@ KARAR 1 gereği iki seçenek kalıcı yan yana. Çakışma yok: her ödeme premi
 ### 3e. Oferta (F2-3) — eklenecek madde başlıkları
 Abonelik modeli+tutar+döngü • kartın bankada tokenize saklanması • çekim zamanı+ön bildirim
 taahhüdü • iptal yöntemleri (app+web, ücretsiz/anlık) • iptal sonrası dönem sonuna kadar erişim •
-başarısız çekim/grace politikası • fiyat değişikliğinde ön bildirim+iptal hakkı • abonelik
-iade koşulları • tek seferlik/abonelik ayrımı. Ödeme ekranlarında zorunlu consent checkbox
-(kabul zamanı+oferta versiyonu DB'ye). Metin taslağı Faz 1'de onaya sunulur.
-**F2-1/F2-2/F2-3 üçü tamamlanmadan F2 kapanmaz** (Mustafa şartı 08.07.2026).
+**KARAR 4 maddesi:** "İptal otomatik çekimi durdurur; ödeme bilgisi banka tarafında saklanır,
+tamamen silinmesi için support@soulchoice.app'e başvurulabilir" • başarısız çekim/grace
+politikası • fiyat değişikliğinde ön bildirim+iptal hakkı • abonelik iade koşulları •
+tek seferlik/abonelik ayrımı. Ödeme ekranlarında zorunlu consent checkbox (kabul zamanı+oferta
+versiyonu DB'ye; bankanın kendi "условия автоплатежей" kutusu bizi İKAME ETMEZ, ikisi de durur).
+Metin taslağı Faz 1'de onaya sunulur. **F2-1/F2-2/F2-3 üçü tamamlanmadan F2 kapanmaz.**
 
 ### 3f. iOS
 Web /premium = iOS'un tam yönetim kapısı. App'te iOS: durum + sonraki çekim + İPTAL görünür
-(iptal satın alma değil); abone ol/kart güncelle `paywall_mode` flag'iyle gizli, web'e link YOK
-(anti-steering).
+(iptal satın alma değil); abone ol/kart güncelle/"devam et" `paywall_mode` flag'iyle gizli,
+web'e link YOK (anti-steering).
 
 ## 4. Fazlar
 
-- **Faz 0 — Canlı doğrulama (kod yok):** aşağıdaki checklist. ✅ başlandı 09.07.2026.
+- **Faz 0 — Canlı doğrulama:** ✅ TAMAMLANDI 09.07.2026 (bulgular §6).
 - **Faz 1 — Zemin:** migration (subscriptions kolonları, users.billing_email, billing_events,
-  billing_config, payments kolonları, CHECK'ler; prod'da `supabase_admin` + önce yedek) +
-  oferta taslağı onaya + consent checkbox. ~4 dosya.
-- **Faz 2 — Edge fn'ler:** `create-tochka-subscription` (yeni; e-posta parametresi + P9 kuralları),
-  `tochka-webhook` genişletme (abonelik aktivasyonu, renewal, orphan-fix), `manage-subscription`
-  (durum+iptal), `delete-account`a iptal adımı, `send-billing-email` helper + 4 RU şablon
-  (SMTP creds ön koşul). ~5-6 dosya (repo+sunucu senkron).
-- **Faz 3 — billing-cron:** FAZ A/B/C + digest + heartbeat + pg_cron kaydı (07:25 UTC) +
-  P3 status endpoint + P7 JWT yaş kontrolü. F2-1 çift kanal kapısı burada koda gömülü. ~2 dosya.
+  billing_config, payments order_id/charge_type/subscription_id + UNIQUE değişimi, CHECK'ler;
+  prod'da `supabase_admin` + önce yedek) + oferta taslağı onaya (KARAR 4 diliyle) + consent
+  checkbox. ~4 dosya.
+- **Faz 2 — Edge fn'ler:** `create-tochka-subscription` (e-posta parametresi + P9 kuralları),
+  `tochka-webhook` genişletme (CofToken/Order-diff modeli, orphan-fix), `manage-subscription`
+  (durum + lokal iptal + "devam et" reaktivasyonu), `delete-account`a lokal cancel,
+  `send-billing-email` helper + 4 RU şablon (SMTP creds ön koşul). ~5-6 dosya (repo+sunucu senkron).
+- **Faz 3 — billing-cron:** FAZ A/B/C + digest + heartbeat + pg_cron (07:25 UTC) + P3 status
+  endpoint + P7 JWT yaş kontrolü. F2-1 çift kanal kapısı koda gömülü. ~2 dosya.
 - **Faz 4 — UI:** App Profil→Abonelik ekranı (plan/durum/sonraki çekim/kart son 4/geçmiş/2-tık
-  iptal; iOS kısıtlı mod) + paywall'a KARAR 1 düzeni + e-posta adımı + i18n; web premium.html
-  yönetim bölümü + e-posta alanı (varsa billing_email ön dolu). ~6-8 dosya.
-- **Faz 5 — Ops:** P4 mutabakat cron'u, P8 dunning banner (panel P5/P10 panel Adım 2 ile).
+  sade iptal/"•••• XXXX ile devam et"; iOS kısıtlı mod) + paywall KARAR 1 düzeni + e-posta adımı
+  + i18n; web premium.html yönetim bölümü + e-posta alanı. ~6-8 dosya.
+- **Faz 5 — Ops:** P4 mutabakat (`?recurring=true` listesiyle), P8 dunning banner.
 - **Faz 6 — Canlı geçiş:** 2₽ testinin F2 kod yoluyla tekrarı → gerçek fiyat → ilk hafta digest
   yakın izleme.
 
-## 5. Faz 0 — 2₽ canlı test checklist
+## 5. Faz 0 — test protokolü (arşiv)
 
-Komutlar sunucuda (`ssh root@89.169.1.127`), env: `source <(grep -E "^TOCHKA_" /root/supabase/docker/.env | sed "s/^/export /")`. Token repo'ya YAZILMAZ.
+Test aboneliği: operationId `fbaac9fb-d4ae-4631-a910-c8d1db5f6dfc`, paymentLinkId 8,
+consumerId `50e1895f-...`, tokenCardId `179771492` (Mastercard •••• 4385). 3×2₽ çekildi
+(orderId 5759323 bağlama / 5759423 charge / 5759455 charge — sonuncusu Claude dizilim hatası:
+cancel 424 dönmüşken "red beklenir" charge'ı koşuldu), 3'ü de kabinetten iade edildi
+("Возвращен"). Abonelik bankada Active kaldı (iptal yolu yok) — charge'ı yalnız biz
+tetikleyebildiğimiz için risk yok; destek cevabına göre kapatılacak.
+**Ders:** durum değiştiren her test adımı, önceki adımın doğrulamasına ŞARTLANIR.
 
-1. **Create** (Claude): `POST /uapi/acquiring/v1.0/subscriptions` body
-   `{"Data":{"customerCode":$CC,"merchantId":$MID,"amount":"2.00","purpose":"Тест подписки SoulChoice Premium","recurring":true,"redirectUrl":"https://soulchoice.app/?sub=ok","failRedirectUrl":"https://soulchoice.app/?sub=fail"}}`
-   → operationId + bağlama linki. (redirectUrl reddedilirse minimal gövdeyle tekrar → bulgu #6)
-2. **Status (ödeme öncesi)** (Claude): `GET /subscriptions/{opId}/status` → başlangıç enum'u (#4)
-3. **Ödeme** (Mustafa): linki aç (açınca 1 saat!), KARTLA 2₽ öde; sayfa e-posta soruyorsa gir →
-   çek nereye düştü not et (#1 #3)
-4. **Webhook izleme** (Claude): `docker logs supabase-edge-functions` → maskedPan/tokenCardId
-   alanları geldi mi; payments'e orphan satır düştü mü (beklenen davranış, bulgu olarak kaydedilir)
-5. **Status (ödeme sonrası)** (Claude): Active mi (#4)
-6. **Enum probu** (Claude): Set Status'a kasıtlı geçersiz değer → 400 hatası izinli değerleri
-   listeler (#4) — hiçbir şey değiştirmez
-7. **Charge 2₽** (Claude): `POST /subscriptions/{opId}/charge {"Data":{"amount":"2.00"}}` →
-   webhook timing (#7), `GET /payments/{chargeOpId}` (#7), çek e-postaya kesildi mi (#3);
-   hata olursa gövdeyi kaydet (#2)
-8. **Cancel** (Claude): Set Status Cancelled → status doğrula → charge tekrar dene (reddetmeli)
-9. **Un-cancel probu** (Claude): Set Status'la tekrar aktif etmeyi dene (#5)
-10. **İade** (Mustafa): internet bankadan 2×2₽ iade (⚠️ Фонды: ana hesapta tampon)
+## 6. Faz 0 bulguları (09.07.2026 — tamamı §2'ye işlendi)
 
-### Faz 0 bulguları
-_(test sonrası doldurulacak)_
+1. İlk bağlama ödemesi = `amount` (ilk ay peşin) ✓
+2. Charge: senkron `result:true`; yeni operasyon YOK → `Order[]`'a orderId satırı; GET anında
+   güncel → **renewal kimliği orderId; payments şeması buna göre düzeltildi (§3a)** ✓
+3. Fiskalizasyon: bağlama + her charge çeki OTOMATİK, bağlamada girilen e-postaya
+   (digitalkassa; 3 çekim = 3 çek maili, Mustafa doğruladı) → ek kassa GEREKMİYOR ✓
+4. Status: Preparing→Active; Set Status enum yalnız Cancelled ✓
+5. **İptal API'de + kabinette YOK** (424/501; kabinette buton yok — Mustafa doğruladı) →
+   KARAR 4 yumuşak iptal; S1/S4 destek biletinde ✓
+6. redirectUrl çalışıyor (ödeme sonrası soulchoice.app'e dönüş görüldü) ✓
+7. Her charge webhook tetikliyor (aynı operationId; 3 çağrı sayıldı); mevcut kod idempotent
+   yutuyor → F2 webhook'u Order-diff modeliyle güncellenecek ✓
+8. İade: kabinetten işlem bazında "Вернуть платёж" ✓ (API'den yok)
+9. Kalan bilinmeyenler: S2 decline formatı + S3 retry limiti (destek bileti; kod savunmacı
+   yazılır, Faz 1-3'ü bloklamaz)

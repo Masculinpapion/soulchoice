@@ -9,6 +9,7 @@
 // Bilinmeyen CofToken'lı operasyona 500 dönülür (Точка retry) — orphan-insert tuzağı düzeltmesi.
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
+import { sendBillingEmail } from '../_shared/billing-email.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -57,6 +58,27 @@ interface TochkaOrder {
   type: string
   amount: number
   time: string
+}
+
+function fmtDate(d: Date | null): string {
+  if (!d) return ''
+  const dt = new Date(d)
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${p(dt.getDate())}.${p(dt.getMonth() + 1)}.${dt.getFullYear()}`
+}
+
+async function sendPush(userId: string, title: string, body: string) {
+  try {
+    await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
+      method: 'POST',
+      headers: {
+        apikey: SERVICE_KEY,
+        Authorization: 'Bearer ' + SERVICE_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user_id: userId, title, body }),
+    })
+  } catch (_) { /* best effort */ }
 }
 
 // premium uzatma + abonelik alanlarını tazeleme (initial ve renewal için ortak formül)
@@ -217,7 +239,21 @@ serve(async (req) => {
              JSON.stringify({ via: 'webhook', order_id: order.orderId, amount: order.amount,
                               premium_until: until?.toISOString?.() ?? null })],
           )
-          if (chargeType === 'subscription_initial') bindingActivated = true
+          if (chargeType === 'subscription_initial') {
+            bindingActivated = true
+          } else {
+            // Renewal grant'ini yarışta webhook kazandıysa başarı bildirimi de buradan gider
+            // (grant tekil — cron kazanırsa cron bildirir; çift bildirim imkânsız). 09.07 prova bulgusu.
+            const dateStr = fmtDate(until)
+            await sendPush(sub.user_id, 'SoulChoice Premium',
+              `Подписка продлена. Premium активен до ${dateStr}.`)
+            const mail = await db.queryObject<{ billing_email: string | null }>(
+              `select billing_email from users where id = $1`,
+              [sub.user_id],
+            )
+            const email = mail.rows[0]?.billing_email
+            if (email) await sendBillingEmail(email, 'renewal_success', { date: dateStr })
+          }
         }
 
         // Bağlamada abonelik meta verilerini tamamla

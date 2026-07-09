@@ -78,6 +78,7 @@ serve(async (req) => {
            left join payments p
              on p.subscription_id = s.id and p.charge_type = 'subscription_initial'
           where s.user_id = $1
+            and s.tochka_subscription_id is not null -- F1 tek-seferlik log satırları sayılmaz
             and s.status in ('pending_binding', 'active', 'past_due', 'cancelled')
           order by s.created_at desc
           limit 1`,

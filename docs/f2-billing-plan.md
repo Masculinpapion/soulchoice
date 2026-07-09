@@ -36,16 +36,22 @@
 > (path alt çizgili — /with-receipt 501 verir!). Probe ile doğrulanan zorunlular: customerCode, amount,
 > purpose, `Client.email`, `Items[].name/amount/quantity`. Çek DAİMA billing_email'e kesilir; 2₽ kanıtı
 > Faz 6 provasında. **dry_run=false geçişi + Faz 6 canlı cron provası AYRI Mustafa onayı (değişmedi).**
-> **FAZ 4 KOD HAZIR (09.07.2026), önizleme/screencap onayı bekliyor.** App: paywall KARAR 1 düzeni
-> (abonelik varsayılan + tek seferlik link; e-posta+consent alt sayfası; oferta_version
-> feature_flags'ten) + yeni Profil→Abonelik ekranı (subscription_screen.dart; iptal/devam/geçmiş;
-> iOS kısıtlı mod) + profil giriş kartı + /subscription route + 3 dil arb (sub_* anahtarları,
-> onaylı §7 metinleri). Web: docs/premium-f2.html (yönetim paneli + e-posta/consent'li çift seçenek;
-> görsel onay için #demo-buy / #demo-manage-active / #demo-manage-cancelled / #demo-manage-pastdue
-> hash'leri). Önizleme: soulchoice.app/img/preview-premium.html. DEPLOY ADIMLARI (onay sonrası):
-> premium.html + oferta.html sunucuya (oferta tarihi deploy günü) + feature_flags'e oferta_version
-> satırı + app release. NOT: l10n generated dosyalar elle güncellenmez — flutter build gen-l10n'u
-> kendisi koşar (pubspec generate:true).
+> **FAZ 4 TAMAMLANDI ✅ (09.07.2026) — CANLI DEPLOY YAPILDI.** Web+oferta onaylı ekran turundan ve
+> S24 cihaz kanıtından (6 screencap) geçti. Deploy: premium.html + oferta.html canlıda (yedekler:
+> *.bak-f2-20260709-124921; yürürlük 9 июля 2026), `feature_flags.oferta_version={"v":"2026-07-09"}`,
+> önizleme kaldırıldı, smoke temiz. App sürümü repo `c721bd8f` (cihazda doğrulandı; mağaza dağıtımı
+> K/RuStore süreciyle). Turda düzeltilen 4 UI bug'ı: uppercase consent/e-posta etiketi, web i18n
+> re-render, sheet butonu SafeArea, boş-durum boşluğu + boş-tarih kenar durumu; past_due'ya
+> "Повторить оплату" (P8 ilk parça, _shared/billing-charge tek kaynak, S3 guard 20s/<2).
+> NOT: l10n generated dosyalar elle güncellenmez (flutter build gen-l10n koşar). CI kuyruk takılırsa:
+> cancel+rerun (attempt N, aynı run URL).
+> **SIRADA: Faz 6 provası (plan sunuldu, Mustafa'nın SON onayı bekleniyor)** — dry_run=false +
+> 2₽ gerçek abonelik + cron F2-1 bildirimi + gerçek çekim + cancel/resume + temizlik; prova sonrası
+> sistem CANLI modda kalır.
+> **BACKLOG: SMS-OTP geçişi** — Mustafa SMS.ru'da авторизационный şablon başvurusu yapıyor
+> (4 operatör). Onaylı şablon: «SoulChoice: код подтверждения %code%. Никому не сообщайте его.»
+> Operatör onayları gelince send/verify-call-otp çağrıdan SMS'e geçirilecek (Mustafa onayıyla,
+> kod şablonla %100 birebir olacak; şimdi kod değişikliği YOK).
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

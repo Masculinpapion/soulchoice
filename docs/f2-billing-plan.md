@@ -15,7 +15,16 @@
 > Testin banka tarafı kalıntısı: abonelik bankada Active (iptal yolu yok — S1); charge'ı yalnız biz
 > tetikleriz, risksiz. NOT: compose daima `--env-file /root/supabase/docker/.env` ile.
 > Faz 1 ✅ (oferta `docs/oferta-f2.html` onaylı, deploy Faz 4/6'da; UI metinleri §7).
-> SIRADA: Faz 3 (billing-cron) planı Mustafa onayına sunulacak; Точка bileti cevabı (S1-S5) açık.
+> **Faz 2 ek bulgular (Mustafa doğrulaması):** renewal çeki de otomatik (Чек №626) — fiskalizasyon
+> her çekimde kesin; Точка her ödemede kullanıcıya KENDİ onay mailini de atıyor (informer@tochka.com,
+> «автопродление» ibaresiyle) — bizim bildirimleri tamamlayan bağımsız katman; kabinette «Подписки»
+> ayrı sekme (payments-subscriptions) var, iki test aboneliği listeleniyor ama İPTAL BUTONU YOK (S1
+> geçerli); Faz 2 iadeleri yapıldı (2×2₽ Возвращен).
+> **Mail render fix (09.07.2026):** denomailer çıktısı Gmail'de bozuktu (ham QP gövde + ham encoded
+> konu + boş attachment katmanı) → `_shared/billing-email.ts` ham SMTP + elle MIME'a geçirildi
+> (tek text/plain utf-8, base64 CTE, RFC 2047 konu); 4 şablon test gönderimi yapıldı, Mustafa'nın
+> görsel onayı bekleniyor. Yardımcı: `billing-email-test` fn (service-key korumalı, kalıcı test aracı).
+> SIRADA: Faz 3 (billing-cron) planı sunuldu, Mustafa onayı bekleniyor; Точка bileti cevabı (S1-S5) açık.
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

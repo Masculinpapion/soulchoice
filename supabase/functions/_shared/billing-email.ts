@@ -14,6 +14,8 @@ export type BillingEmailKind =
   | 'renewal_success'
   | 'renewal_failed'
   | 'cancel_confirm'
+  | 'welcome'        // D+0 — servis tonu, fiyat/teklif YOK (rızasız da gider)
+  | 'premium_intro'  // D+2 — SADECE pazarlama rızalılara (ФЗ-38)
 
 export interface BillingEmailParams {
   date?: string // DD.MM.YYYY
@@ -48,6 +50,23 @@ function template(kind: BillingEmailKind, p: BillingEmailParams): { subject: str
       return {
         subject: 'Подписка SoulChoice Premium отменена',
         body: `Подписка отменена. Premium активен до ${p.date ?? ''}.` + FOOTER,
+      }
+    case 'welcome':
+      return {
+        subject: 'Добро пожаловать в SoulChoice',
+        body:
+          'Привет! Ты в SoulChoice — приложении для тех, кто выбирает живое общение.\n\n' +
+          'С чего начать: создай приглашение на ужин, концерт или прогулку — или откликнись на чужое. Дальше всё решает взаимный выбор.\n\n' +
+          'Вопросы: support@soulchoice.app' + FOOTER,
+      }
+    case 'premium_intro':
+      return {
+        subject: 'SoulChoice Premium — безлимитные приглашения и заявки',
+        body:
+          'Premium открывает: безлимитные приглашения и заявки, чат после взаимного выбора, приоритет модерации.\n\n' +
+          'Подписка — 1000 ₽ каждые 30 дней с автопродлением (отмена в любой момент, в один клик) или разовый доступ на 30 дней.\n\n' +
+          'Оформить: https://soulchoice.app/premium\n\n' +
+          '—\nВы получили это письмо, потому что дали согласие на новости SoulChoice.\nОтписаться: напишите на support@soulchoice.app',
       }
   }
 }

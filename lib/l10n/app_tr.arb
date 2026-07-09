@@ -845,5 +845,9 @@
   "sub_retry_failed": "Çekim başarısız. Kartını kontrol edip daha sonra tekrar dene.",
   "sub_retry_limit": "Bugün için deneme sınırına ulaşıldı — yarın tekrar dene.",
   "sub_resumed_note": "Otomatik yenileme açıldı. Sonraki çekim — {date}.",
-  "sub_price_month": "{price} ₽ / ay"
+  "sub_price_month": "{price} ₽ / ay",
+  "profile_setup_email_label": "E-posta (isteğe bağlı) — çek ve haberler için",
+  "profile_setup_email_hint": "you@example.com",
+  "profile_setup_marketing_consent": "SoulChoice haber ve özel tekliflerini (tanıtım dahil) e-posta ile almayı kabul ediyorum. Onayı istediğin zaman ayarlardan veya support@soulchoice.app adresine yazarak geri çekebilirsin.",
+  "paywall_subtitle_ios": "Premium sınırsızı açar."
 }

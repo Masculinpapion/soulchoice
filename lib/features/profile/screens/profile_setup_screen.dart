@@ -34,6 +34,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _bioController = TextEditingController();
   final _jobController = TextEditingController();
   final _educationController = TextEditingController();
+  // Seçenek B (09.07.2026): opsiyonel e-posta + ayrı pazarlama rızası (ФЗ-38)
+  final _emailController = TextEditingController();
+  bool _marketingConsent = false;
   final Set<String> _interests = {};
   final Map<String, String> _prompts = {};
   int _minAge = 21;
@@ -106,7 +109,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       final row = await client
           .from('users')
           .select(
-            'name, age, gender, city_id, bio, job, education, interests, min_age, max_age, cities(name, name_ru, name_tr, name_en)',
+            'name, age, gender, city_id, bio, job, education, interests, min_age, max_age, billing_email, cities(name, name_ru, name_tr, name_en)',
           )
           .eq('id', user.id)
           .maybeSingle();
@@ -119,6 +122,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       _bioController.text = row['bio'] as String? ?? '';
       _jobController.text = row['job'] as String? ?? '';
       _educationController.text = row['education'] as String? ?? '';
+      _emailController.text = row['billing_email'] as String? ?? '';
 
       final prompts = await client
           .from('user_prompts')
@@ -149,6 +153,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   void dispose() {
     _nameController.dispose();
     _bioController.dispose();
+    _emailController.dispose();
     _jobController.dispose();
     _educationController.dispose();
     _pageController.dispose();
@@ -251,6 +256,22 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         'consent_given_at': DateTime.now().toUtc().toIso8601String(),
         'consent_version': _consentVersion,
       });
+
+      // E-posta + pazarlama rızası: profil kaydını bloklamayan yan işlem;
+      // D+0 hoş geldin mailini ve consent logunu save-billing-email fn yapar
+      final email = _emailController.text.trim();
+      if (RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+        try {
+          await client.functions.invoke('save-billing-email', body: {
+            'email': email,
+            'marketing_consent': _marketingConsent,
+            'source': 'app_onboarding',
+          });
+        } catch (_) {
+          // sessiz: e-posta kaydı profili engellemez, cron/lifecycle telafi etmez ama
+          // kullanıcı profil düzenlemeden tekrar deneyebilir
+        }
+      }
 
       if (_prompts.isNotEmpty) {
         await client
@@ -423,6 +444,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           setState(() => _dataConsent = v),
                       onProfileVisibilityChanged: (v) =>
                           setState(() => _profileVisibilityConsent = v),
+                      emailController: _emailController,
+                      marketingConsent: _marketingConsent,
+                      onMarketingConsentChanged: (v) =>
+                          setState(() => _marketingConsent = v),
                     ),
                   ],
                 ),
@@ -1207,6 +1232,9 @@ class _StepConsent extends StatelessWidget {
   final ValueChanged<bool> onAgeChanged;
   final ValueChanged<bool> onDataConsentChanged;
   final ValueChanged<bool> onProfileVisibilityChanged;
+  final TextEditingController emailController;
+  final bool marketingConsent;
+  final ValueChanged<bool> onMarketingConsentChanged;
 
   const _StepConsent({
     required this.ageConfirmed,
@@ -1215,6 +1243,9 @@ class _StepConsent extends StatelessWidget {
     required this.onAgeChanged,
     required this.onDataConsentChanged,
     required this.onProfileVisibilityChanged,
+    required this.emailController,
+    required this.marketingConsent,
+    required this.onMarketingConsentChanged,
   });
 
   @override
@@ -1267,6 +1298,48 @@ class _StepConsent extends StatelessWidget {
               value: profileVisibilityConsent,
               onChanged: onProfileVisibilityChanged,
               text: l10n.profile_setup_consent_visibility,
+            ),
+            // Seçenek B: opsiyonel e-posta + AYRI, işaretsiz pazarlama rızası (ФЗ-38).
+            // Zorunlu onaylardan görsel olarak ayrık; _canProceed'e DAHİL DEĞİL.
+            const SizedBox(height: 24),
+            Text(
+              l10n.profile_setup_email_label,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 13,
+                color: AuroraTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              autocorrect: false,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 15,
+                color: AuroraTheme.textPrimary,
+              ),
+              decoration: InputDecoration(
+                hintText: l10n.profile_setup_email_hint,
+                hintStyle: TextStyle(color: AuroraTheme.textMuted),
+                filled: true,
+                fillColor: AuroraTheme.glassBg,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AuroraTheme.glassBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: AuroraTheme.glassBorder),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _ConsentCheckbox(
+              value: marketingConsent,
+              onChanged: onMarketingConsentChanged,
+              text: l10n.profile_setup_marketing_consent,
             ),
           ],
         ),

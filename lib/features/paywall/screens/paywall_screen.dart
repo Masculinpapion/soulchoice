@@ -322,7 +322,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      l10n.paywall_subtitle,
+                      // iOS (hidden mod): satın almaya çağıran fiil yok — Seçenek B (09.07.2026)
+                      _mode == 'link'
+                          ? l10n.paywall_subtitle
+                          : l10n.paywall_subtitle_ios,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Manrope',
@@ -339,8 +342,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       l10n.paywall_perk_priority_moderation,
                     ]),
                     const Spacer(),
-                    _PriceBox(price: l10n.paywall_price),
+                    // Seçenek B: fiyat kutusu YALNIZ satış açık moddayken —
+                    // iOS'ta fiyat göstermek 3.1.1 steering riski (K öncesi şart)
                     if (_mode == 'link') ...[
+                      _PriceBox(price: l10n.paywall_price),
                       const SizedBox(height: 6),
                       // KARAR 1: varsayılan abonelik + altta sade tek seferlik
                       Text(
@@ -383,18 +388,18 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                 ),
                               ),
                       ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.paywall_cancel_anytime,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'JetBrainsMono',
-                        fontSize: 10,
-                        color: AuroraTheme.textMuted,
-                        letterSpacing: 0.5,
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.paywall_cancel_anytime,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 10,
+                          color: AuroraTheme.textMuted,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

@@ -90,6 +90,7 @@ serve(async (req) => {
     charge_unknown: [] as string[],
     pending_verify: [] as string[],
     downgraded: [] as string[],
+    lifecycle_sent: [] as string[],
     expired_bindings: 0,
     would_notify: [] as string[],
     would_charge: [] as string[],
@@ -241,6 +242,30 @@ serve(async (req) => {
           and created_at < now() - interval '7 days'`,
     )
 
+    // ================= FAZ D — LIFECYCLE (Seçenek B: D+2 premium tanıtımı) =================
+    // SADECE pazarlama rızası olanlara, kayıt +2..4 gün penceresinde, ömür boyu 1 kez.
+    // Limit-anı/in-app olay tetiklemesi BİLEREK YOK (Sessiz Köprü ilkesi, karar 09.07.2026).
+    if (!cfg.dry_run) {
+      const lifecycleCands = await db.queryObject<{ id: string; billing_email: string }>(
+        `select u.id, u.billing_email
+           from users u
+          where u.billing_email is not null
+            and u.created_at between now() - interval '4 days' and now() - interval '2 days'
+            and exists (select 1 from billing_events be
+                         where be.user_id = u.id and be.event = 'marketing_consent')
+            and not exists (select 1 from billing_events be2
+                             where be2.user_id = u.id and be2.event = 'premium_intro_sent')`,
+      )
+      for (const u of lifecycleCands.rows) {
+        const mail = await sendBillingEmail(u.billing_email, 'premium_intro')
+        await logEvent(db, null, u.id, 'premium_intro_sent', {
+          ok: mail.ok, error: mail.error ?? null,
+        })
+        if (mail.ok) summary.lifecycle_sent.push(u.id.slice(0, 8))
+        else summary.errors.push(`lifecycle ${u.id.slice(0, 8)}: ${mail.error}`)
+      }
+    }
+
     // ================= DIGEST (P2) + JWT ALARMI (P7) =================
     const red = summary.charge_unknown.length > 0 || summary.errors.length > 0
     const jwtWarn = summary.jwt_days_left != null && summary.jwt_days_left < 90
@@ -250,6 +275,7 @@ serve(async (req) => {
       `Bildirim: ${summary.notified.length} ok, ${summary.notify_failed.length} başarısız`,
       `Çekim: ${summary.charged.length} ok, ${summary.charge_failed.length} başarısız, ${summary.charge_unknown.length} BELİRSİZ, ${summary.pending_verify.length} teyit bekliyor, ${summary.reconciled.length} mutabakatla kapandı`,
       `Düşüş: ${summary.downgraded.length} abonelik sona erdi; ${summary.expired_bindings} bağlanmamış kayıt temizlendi`,
+      summary.lifecycle_sent.length ? `Lifecycle: ${summary.lifecycle_sent.length} premium tanıtım maili (D+2)` : '',
       cfg.dry_run ? `DRY-RUN listeleri → bildirilecekti: [${summary.would_notify.join('; ') || '—'}] / çekilecekti: [${summary.would_charge.join('; ') || '—'}]` : '',
       summary.charge_failed.length ? `Başarısız: ${summary.charge_failed.join(' | ')}` : '',
       summary.charge_unknown.length ? `⚠️ BELİRSİZ (manuel bakılacak): ${summary.charge_unknown.join(' | ')}` : '',

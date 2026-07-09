@@ -845,5 +845,9 @@
   "sub_retry_failed": "Списание не удалось. Проверьте карту и попробуйте позже.",
   "sub_retry_limit": "Слишком много попыток за сегодня — попробуйте завтра.",
   "sub_resumed_note": "Автопродление включено. Следующее списание — {date}.",
-  "sub_price_month": "{price} ₽ / месяц"
+  "sub_price_month": "{price} ₽ / месяц",
+  "profile_setup_email_label": "E-mail (необязательно) — для чеков и новостей",
+  "profile_setup_email_hint": "you@example.com",
+  "profile_setup_marketing_consent": "Согласен(на) получать новости и специальные предложения SoulChoice, в том числе рекламные, по e-mail. Отозвать согласие можно в любой момент — в настройках или письмом на support@soulchoice.app.",
+  "paywall_subtitle_ios": "Premium открывает безлимит."
 }

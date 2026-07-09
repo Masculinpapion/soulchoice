@@ -908,5 +908,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "profile_setup_email_label": "Email (optional) — for receipts and news",
+  "profile_setup_email_hint": "you@example.com",
+  "profile_setup_marketing_consent": "I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.",
+  "paywall_subtitle_ios": "Premium unlocks unlimited access."
 }

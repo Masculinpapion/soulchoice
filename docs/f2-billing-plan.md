@@ -2,8 +2,12 @@
 
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
-> **DURUM: Faz 0 TAMAMLANDI ✅ (09.07.2026)** — bulgular §6. Sırada: Точка destek bileti
-> (Mustafa gönderecek) + Faz 1 (Mustafa onayı bekliyor). Destek cevabı Faz 1'i BLOKLAMAZ.
+> **DURUM: Faz 1 SÜRÜYOR (09.07.2026)** — migration taslağı repo'da
+> (`supabase/migrations/20260709_f2_subscriptions.sql`), PROD'A UYGULANMADI (ayrı onay + yedek
+> şart). Oferta + UI metinleri onaya sunuldu. Точка destek bileti Mustafa'da (S1-S5).
+> Faz 0 bulguları §6. NOT: payments UNIQUE(operation_id)→(operation_id, order_id) geçişi
+> bilinçli olarak Faz 2'ye ertelendi (canlı webhook'un `on conflict (operation_id)` yolu
+> kırılmasın; webhook deploy'uyla atomik yapılacak).
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

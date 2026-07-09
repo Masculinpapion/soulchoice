@@ -219,7 +219,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
                           children: [
-                            if (sub == null || status == 'expired' && !premiumActive)
+                            // Dönemi bitmiş cancelled/expired abonelik = fiilen "abonelik yok":
+                            // boş tarihli iptal notu yerine boş-durum kartı (09.07 cihaz bulgusu)
+                            if (sub == null ||
+                                (!premiumActive &&
+                                    (status == 'expired' || status == 'cancelled')))
                               _buildEmpty(l10n)
                             else ...[
                               _buildStatusCard(l10n, sub, premiumUntil, premiumActive),

@@ -45,9 +45,21 @@
 > "Повторить оплату" (P8 ilk parça, _shared/billing-charge tek kaynak, S3 guard 20s/<2).
 > NOT: l10n generated dosyalar elle güncellenmez (flutter build gen-l10n koşar). CI kuyruk takılırsa:
 > cancel+rerun (attempt N, aynı run URL).
-> **SIRADA: Faz 6 provası (plan sunuldu, Mustafa'nın SON onayı bekleniyor)** — dry_run=false +
-> 2₽ gerçek abonelik + cron F2-1 bildirimi + gerçek çekim + cancel/resume + temizlik; prova sonrası
-> sistem CANLI modda kalır.
+> **FAZ 6 PROVASI GEÇTİ ✅ (09.07.2026) — F2 KAPANDI, SİSTEM CANLI (dry_run=false).**
+> Uçtan uca kanıt: with_receipt bağlama (e-posta banka sayfasında ÖNDEN DOLU geldi) → webhook
+> aktivasyon → cron FAZ A çift kanal F2-1 bildirimi (push+mail, kullanıcı teyitli) → cron FAZ B
+> GERÇEK 2₽ çekimi (order 5766290; cron pending_verify dedi, webhook yarışı kazanıp granted —
+> çift katman tasarımı kanıtlandı) → renewal fiskal çeki otomatik → app'ten cancel/resume
+> (4 kez üst üste, hepsi doğru işledi) → temizlik. **F2-1/F2-2/F2-3 üçü de kanıtlı.**
+> Provada bulunan ve AYNI GÜN düzeltilen 3 şey: ① webhook renewal grant'inde başarı bildirimi
+> eksikti (yarışta bildirim atlanıyordu) → webhook'a eklendi; ② iptal/devam sonrası snackbar
+> onayı yoktu → eklendi (kullanıcı feedback'siz işlemi tekrarlıyordu — cihazda kanıtlandı);
+> ③ tarife satırı sabit 1000₽ yazıyordu → gerçek price_paid.
+> DERSLER: temp-şifre oturum üretme yöntemi GoTrue'da cihaz oturumunu düşürüyor (cihazda aktif
+> oturum varken kullanma); kabinet iadeleri payments'a yansımıyor → P4 mutabakata "REFUNDED
+> senkronu" kalemi eklendi. Bankada 3 test aboneliği Active kalır (fbaac9fb/ae83fb94/13792f60 —
+> S1: kapatılamıyor, charge'ı yalnız biz tetikleriz, risksiz).
+> İLK DOĞAL CANLI KOŞU: 10.07 10:25 MSK digest'i.
 > **BACKLOG: SMS-OTP geçişi** — Mustafa SMS.ru'da авторизационный şablon başvurusu yapıyor
 > (4 operatör). Onaylı şablon: «SoulChoice: код подтверждения %code%. Никому не сообщайте его.»
 > Operatör onayları gelince send/verify-call-otp çağrıdan SMS'e geçirilecek (Mustafa onayıyla,

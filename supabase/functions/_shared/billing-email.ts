@@ -139,6 +139,26 @@ async function smtpSend(to: string, subject: string, body: string): Promise<void
   }
 }
 
+// Serbest konu/gövde ile gönderim (digest vb. iç kullanım). Hata fırlatmaz.
+export async function sendCustomEmail(
+  to: string,
+  subject: string,
+  body: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!HOST || !USER || !PASS) return { ok: false, error: 'smtp_not_configured' }
+  if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return { ok: false, error: 'bad_recipient' }
+  try {
+    await Promise.race([
+      smtpSend(to, subject, body),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('smtp_timeout')), 20000)),
+    ])
+    return { ok: true }
+  } catch (e) {
+    console.error('custom email failed', e?.message ?? e)
+    return { ok: false, error: String(e?.message ?? e) }
+  }
+}
+
 // Dönüş: { ok } — çağıran taraf billing_events'e yazar. Hata fırlatmaz.
 export async function sendBillingEmail(
   to: string,

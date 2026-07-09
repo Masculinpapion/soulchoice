@@ -24,7 +24,15 @@
 > konu + boş attachment katmanı) → `_shared/billing-email.ts` ham SMTP + elle MIME'a geçirildi
 > (tek text/plain utf-8, base64 CTE, RFC 2047 konu); 4 şablon test gönderimi yapıldı, Mustafa'nın
 > görsel onayı bekleniyor. Yardımcı: `billing-email-test` fn (service-key korumalı, kalıcı test aracı).
-> SIRADA: Faz 3 (billing-cron) planı sunuldu, Mustafa onayı bekleniyor; Точка bileti cevabı (S1-S5) açık.
+> Mail render fix Mustafa tarafından Gmail'de DOĞRULANDI ✓ (İŞ 1 kapandı).
+> **Faz 3 ONAYLI ve KOD HAZIR (09.07.2026), deploy onayı bekliyor.** Tercihler: host crontab
+> (07:25 UTC = 10:25 MSK, /root/bin/billing-cron.sh + flock), digest → mustafaaladag.ma@gmail.com,
+> dry_run=true başlangıç (gerçek moda geçiş AYRI Mustafa onayı). Dosyalar: billing-cron/index.ts
+> (FAZ A/B/C + digest + heartbeat + P7 JWT alarmı), billing-status/index.ts (dead-man okuma ucu),
+> migrations/20260711_f2_billing_cron.sql (dry_run + max_daily_attempts=1 [S3] + digest_email +
+> grace-uyumlu downgrade_expired_premium + indeks), billing-cron.sh. _shared/billing-email.ts'e
+> sendCustomEmail eklendi (digest için). Точка bileti S1-S5 CEVAPLANDI (aşağıda) — S1: lokal iptal
+> resmi yöntem; S3: max günde 2 deneme (config 1'e sabit); S5: With-Receipt geçiş önerisi onay bekliyor.
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 
@@ -100,14 +108,14 @@ daha iyi yol görülürse uygulanır ve sapma gerekçesiyle raporlanır. İki is
   sayfası → operasyona tıkla → "Вернуть платёж" (Faz 0'da 3×2₽ bu yolla iade edildi, "Возвращен").
   API'den abonelik iadesi yok. İadeler ANA hesaptan çıkar (Фонды tamponu).
 
-### Açık kalanlar → Точка destek bileti (Mustafa gönderecek)
-| S | Soru | Durum |
+### Точка destek bileti — CEVAPLANDI (09.07.2026, banka sohbeti)
+| S | Soru | CEVAP |
 |---|---|---|
-| S1 | Grafiksiz aboneliğin API'den iptali/deaktivasyonu (planlanıyor mu?) | Cevap bekliyor |
-| S2 | Charge decline'ında dönen HTTP kod + gövde formatı (yetersiz bakiye vs kart kapalı) | Cevap bekliyor; kod her biçimi güvenli işleyecek |
-| S3 | Aynı abonelikte günlük Charge deneme limiti / anti-fraud kısıtı | Cevap bekliyor |
-| S4 | CofToken'ın (kart bağı) müşteri talebiyle tamamen silinme prosedürü | Cevap bekliyor |
-| S5 | Create Subscription'da çek e-postasını pre-fill etme alanı var mı | Cevap bekliyor (Claude önerisi) |
+| S1 | Grafiksiz abonelik iptali | **İptal edilemiyor; banka resmen "çekmemeniz yeterli" diyor** → KARAR 4 lokal iptal = bankanın önerdiği resmi yöntem. Kabinette buton olmaması da bundan. KAPANDI |
+| S2 | Decline formatı | Açıklamalı hata kodu dönüyor; anlaşılmazsa bankaya sorulabilir → charge_fail event'ine ham yanıt yazma yaklaşımı doğru |
+| S3 | Günlük deneme limiti | **Redde günde MAX 2 deneme** (başarılı çekimlerde limit yok) → `billing_config.max_daily_attempts=1` ile sabitlendi + cron'da attempt-önce-yaz + 20 saatlik sayaç çifte koruması |
+| S4 | CofToken silme | Destek sohbetinden istenince siliniyor → operasyonel akış: kullanıcı support@'a yazar → biz banka sohbetinden sildiririz (oferta §2.1 zaten böyle) |
+| S5 | Çek e-postası pre-fill | **Create Subscription WITH RECEIPT'te `Client.email` ZORUNLU** — banka "böyle yapın" diyor → geçiş analizi + öneri Faz 3 raporunda, Mustafa onayı bekliyor |
 
 ## 3. Mimari (onaylı; Faz 0 düzeltmeleri işlendi)
 

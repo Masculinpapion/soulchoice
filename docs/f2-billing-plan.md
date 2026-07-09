@@ -64,6 +64,16 @@
 > (4 operatör). Onaylı şablon: «SoulChoice: код подтверждения %code%. Никому не сообщайте его.»
 > Operatör onayları gelince send/verify-call-otp çağrıdan SMS'e geçirilecek (Mustafa onayıyla,
 > kod şablonla %100 birebir olacak; şimdi kod değişikliği YOK).
+> **iOS PREMIUM KEŞFİ — KARAR (09.07.2026): SEÇENEK B onaylı** (Sessiz Vitrin + e-posta):
+> paywall iOS varyantı fiyatsız/linksiz (rozet+fayda listesi), onboarding'e opsiyonel e-posta,
+> D+0 hoş geldin + D+2 premium tanıtım mailleri (fiyat/link e-postada serbest — Cameron v. Apple
+> istisnası). **SMS kanalı kararı: Varyant 2 (in-app tetikleyicili, örn. limit anında ödeme
+> linki SMS'i) KALICI HAYIR** — Sessiz Köprü ilkesi kanal bağımsız; e-posta serisi de limit
+> anına BAĞLANMAZ (D+2 zamanlı kalır). **Varyant 1 (zaman bazlı tanıtım SMS'i) backlog'da,
+> 3 koşullu:** ① operatör gönderici onayları ② hukukçu onaylı reklam-rıza metni canlıda ③ K
+> onayı cebimizde — o gün bile e-posta ikamesi değil, e-postası olmayanlara ömür boyu 1 adet
+> fallback. ФЗ-38: fiyat+link taşıyan SMS/e-posta reklamdır → onboarding'de ayrı, işaretsiz,
+> loglanan pazarlama rızası şart (tek metin e-posta+SMS'i kapsar).
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

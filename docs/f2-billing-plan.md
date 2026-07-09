@@ -2,12 +2,14 @@
 
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
-> **DURUM: Faz 1 SÜRÜYOR (09.07.2026)** — migration taslağı repo'da
-> (`supabase/migrations/20260709_f2_subscriptions.sql`), PROD'A UYGULANMADI (ayrı onay + yedek
-> şart). Oferta + UI metinleri onaya sunuldu. Точка destek bileti Mustafa'da (S1-S5).
-> Faz 0 bulguları §6. NOT: payments UNIQUE(operation_id)→(operation_id, order_id) geçişi
-> bilinçli olarak Faz 2'ye ertelendi (canlı webhook'un `on conflict (operation_id)` yolu
-> kırılmasın; webhook deploy'uyla atomik yapılacak).
+> **DURUM: Faz 1 TAMAMLANDI ✅ (09.07.2026)** — migration PROD'DA (yedek:
+> `/root/pre_f2_faz1_20260709_0841.sql.gz`; doğrulandı: 8+4 kolon, 3 tablo RLS'li,
+> billing_config seed'li). Oferta revizyonu ONAYLI → `docs/oferta-f2.html` (deploy Faz 4/6'da;
+> yürürlük tarihi deploy günü güncellenecek — dosyada TODO işaretli). UI metin seti ONAYLI (§7).
+> Точка destek bileti Mustafa'da (S1-S5). Faz 2 planı sunuldu, onay bekliyor.
+> NOT: payments UNIQUE(operation_id)→(operation_id, order_id) geçişi bilinçli olarak Faz 2'ye
+> ertelendi (canlı webhook'un `on conflict (operation_id)` yolu kırılmasın; webhook deploy'uyla
+> atomik yapılacak).
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 
@@ -240,3 +242,16 @@ tetikleyebildiğimiz için risk yok; destek cevabına göre kapatılacak.
 8. İade: kabinetten işlem bazında "Вернуть платёж" ✓ (API'den yok)
 9. Kalan bilinmeyenler: S2 decline formatı + S3 retry limiti (destek bileti; kod savunmacı
    yazılır, Faz 1-3'ü bloklamaz)
+
+## 7. Onaylı UI metin seti (09.07.2026 — Faz 4'te aynen; TR/DE bu anlamlardan çevrilir)
+
+| Öğe | RU | EN |
+|---|---|---|
+| Consent checkbox | Соглашаюсь с условиями Оферты и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки | I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel |
+| İptal dialogu | Отменить подписку? / Автопродление будет отключено. Premium останется активным до {дата}. | Cancel subscription? / Auto-renewal will be turned off. Premium stays active until {date}. |
+| Dialog butonları | Отменить подписку · Оставить | Cancel subscription · Keep it |
+| İptal sonrası durum (SADE — KARAR 4) | Подписка отменена. Premium активен до {дата}. | Subscription cancelled. Premium is active until {date}. |
+| Geri dönüş butonu | Продолжить с картой •••• {XXXX} | Continue with card •••• {XXXX} |
+| Çekim öncesi push/mail (F2-1) | Подписка SoulChoice Premium продлится завтра — спишется 1 000 ₽. Управление — в профиле. | Your SoulChoice Premium renews tomorrow — 1,000 ₽ will be charged. Manage it in your profile. |
+| Çekim başarılı | Подписка продлена. Premium активен до {дата}. | Subscription renewed. Premium is active until {date}. |
+| Çekim başarısız | Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку. | We couldn't renew your subscription — please check your card. Premium is still active; we'll retry. |

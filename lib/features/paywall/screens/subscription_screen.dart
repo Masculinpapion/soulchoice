@@ -223,9 +223,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             // boş tarihli iptal notu yerine boş-durum kartı (09.07 cihaz bulgusu)
                             if (sub == null ||
                                 (!premiumActive &&
-                                    (status == 'expired' || status == 'cancelled')))
-                              _buildEmpty(l10n)
-                            else ...[
+                                    (status == 'expired' || status == 'cancelled'))) ...[
+                              _buildEmpty(l10n),
+                              const SizedBox(height: 24), // ПЛАТЕЖИ başlığı karta yapışmasın
+                            ] else ...[
                               _buildStatusCard(l10n, sub, premiumUntil, premiumActive),
                               const SizedBox(height: 24),
                             ],

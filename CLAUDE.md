@@ -198,3 +198,7 @@ Feed tasarımı:
 
 - Detaylı kayıt/checklist: docs/legal-todos.md
 - Roskomnadzor kişisel veri operatörü bildirimi: TAMAMLANDI (07.07.2026)
+
+## F2 — OTOMATİK YENİLEMELİ ABONELİK
+
+- Plan + kararlar + Faz 0 checklist: docs/f2-billing-plan.md (session'lar arası TEK KAYNAK)

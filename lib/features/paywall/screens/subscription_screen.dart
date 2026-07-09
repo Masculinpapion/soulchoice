@@ -64,6 +64,34 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
+  // P8 kurtarma: past_due'da kullanıcı tetikli çekim denemesi
+  Future<void> _retry() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'manage-subscription',
+        body: {
+          'action': 'retry',
+          'source': Platform.isIOS ? 'ios_app' : 'android',
+        },
+      );
+      final data = (response.data as Map?)?.cast<String, dynamic>();
+      if (data?['ok'] == true) {
+        await _refresh();
+      } else if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        _snack(data?['reason'] == 'retry_limit'
+            ? l10n.sub_retry_limit
+            : l10n.sub_retry_failed);
+      }
+    } catch (_) {
+      if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _action(String action) async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -310,6 +338,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               _infoRow('', l10n.sub_premium_until(until)),
           ],
           const SizedBox(height: 18),
+          if (isPastDue) ...[
+            // P8: kurtarma eylemi — tek eylem iptal olmasın
+            _GradientButton(
+              label: l10n.sub_retry_button,
+              isLoading: _busy,
+              onTap: _retry,
+            ),
+            const SizedBox(height: 10),
+          ],
           if (isActive || isPastDue)
             _OutlineButton(
               label: l10n.sub_cancel_button,

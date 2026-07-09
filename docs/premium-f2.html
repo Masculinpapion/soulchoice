@@ -192,10 +192,14 @@ input:focus { border-color: rgba(255, 255, 255, 0.28); }
   align-items: flex-start;
   margin-top: 14px;
   font-size: 12.5px;
+  font-weight: 600;
   color: var(--muted);
   line-height: 1.45;
   cursor: pointer;
+  text-transform: none;   /* label'ın uppercase kuralını ez — onaylı §7 metni normal yazım */
+  letter-spacing: 0;
 }
+label.nocaps { text-transform: none; letter-spacing: 0.2px; }
 .consent input { width: auto; margin-top: 3px; accent-color: var(--blue); }
 .consent a { color: #B9C2D4; }
 .hint { font-size: 13px; color: var(--muted); margin-top: 12px; }
@@ -265,7 +269,7 @@ footer a { color: var(--muted); margin: 0 8px; }
     <!-- KARAR 1: iki seçenek — varsayılan abonelik + altta tek seferlik -->
     <div class="step" id="step-buy">
       <p class="ok-badge" data-i18n="verified">✓ Номер подтверждён</p>
-      <label for="email" data-i18n="email_label">E-mail для чеков и уведомлений</label>
+      <label for="email" class="nocaps" data-i18n="email_label">E-mail для чеков и уведомлений</label>
       <input id="email" type="email" inputmode="email" placeholder="you@example.com" autocomplete="email">
       <label class="consent"><input id="consent" type="checkbox">
         <span data-i18n-html="consent">Соглашаюсь с условиями <a href="/oferta" target="_blank">Оферты</a> и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки</span>
@@ -280,6 +284,7 @@ footer a { color: var(--muted); margin: 0 8px; }
     <div class="step" id="step-manage">
       <div class="status-line"><span class="dot" id="m-dot"></span><span id="m-status"></span></div>
       <div id="m-rows"></div>
+      <button class="btn" id="btn-retry" onclick="doRetry()" style="display:none"></button>
       <button class="btn danger" id="btn-cancel" onclick="askCancel()" data-i18n="btn_cancel" style="display:none">Отменить подписку</button>
       <div id="cancel-confirm" style="display:none">
         <p class="hint" id="cancel-q"></p>
@@ -341,6 +346,9 @@ const I18N = {
     btn_cancel_yes: 'Отменить подписку',
     btn_cancel_no: 'Оставить',
     btn_resume: 'Продолжить с картой •••• {last4}',
+    btn_retry: 'Повторить оплату',
+    err_retry_failed: 'Списание не удалось. Проверьте карту и попробуйте позже.',
+    err_retry_limit: 'Слишком много попыток за сегодня — попробуйте завтра.',
     btn_buy_again: 'Оформить Premium',
     history: 'ПЛАТЕЖИ',
     noprofile: 'Мы не нашли ваш профиль. Сначала зарегистрируйтесь в приложении SoulChoice с этим номером, затем вернитесь сюда.',
@@ -385,6 +393,9 @@ const I18N = {
     btn_cancel_yes: 'Cancel subscription',
     btn_cancel_no: 'Keep it',
     btn_resume: 'Continue with card •••• {last4}',
+    btn_retry: 'Retry payment',
+    err_retry_failed: 'The charge failed. Check your card and try again later.',
+    err_retry_limit: 'Too many attempts today — try again tomorrow.',
     btn_buy_again: 'Get Premium',
     history: 'PAYMENTS',
     noprofile: 'We could not find your profile. Sign up in the SoulChoice app with this number first, then come back here.',
@@ -400,6 +411,7 @@ const I18N = {
   },
 };
 let lang = localStorage.getItem('sc_lang') || 'ru';
+let manageData = null; // setLang'dan ONCE tanimli olmali (dil degisiminde panel yeniden cizilir)
 function t(key) { return I18N[lang][key]; }
 function setLang(l) {
   lang = l;
@@ -413,13 +425,15 @@ function setLang(l) {
   document.querySelectorAll('[data-i18n-html]').forEach((el) => {
     el.innerHTML = I18N[l][el.dataset.i18nHtml];
   });
+  // i18n fix (09.07.2026): yonetim paneli dinamik render — dil degisince yeniden ciz
+  const manageStep = document.getElementById('step-manage');
+  if (manageData && manageStep && manageStep.classList.contains('on')) renderManage();
 }
 setLang(lang);
 
 let phone = '';
 let accessToken = '';
 let ofertaVersion = '2026-07-07'; // feature_flags.oferta_version login sonrasi okunur
-let manageData = null;
 const err = document.getElementById('err');
 function showErr(key) { err.textContent = t(key); err.className = 'err on'; }
 function hideErr() { err.className = 'err'; }
@@ -558,6 +572,9 @@ function renderManage() {
     rows.innerHTML = html;
   }
 
+  const btnRetry = document.getElementById('btn-retry');
+  btnRetry.style.display = isPastDue ? '' : 'none';
+  btnRetry.textContent = t('btn_retry');
   document.getElementById('btn-cancel').style.display = (isActive || isPastDue) ? '' : 'none';
   document.getElementById('cancel-confirm').style.display = 'none';
   const btnResume = document.getElementById('btn-resume');
@@ -602,6 +619,26 @@ async function doCancel() {
     showErr('err_pay');
   }
 }
+async function doRetry() {
+  hideErr();
+  if (!accessToken) { showErr('err_pay'); return; } // demo modunda islem yok
+  busy('btn-retry', true);
+  try {
+    const r = await fetch(FN + '/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ action: 'retry', source: 'web' }),
+    });
+    const d = await r.json();
+    if (d.ok) { await loadStatus(); return; }
+    showErr(d.reason === 'retry_limit' ? 'err_retry_limit' : 'err_retry_failed');
+  } catch (_) {
+    showErr('err_pay');
+  } finally {
+    busy('btn-retry', false);
+  }
+}
+
 async function doResume() {
   hideErr();
   busy('btn-resume', true);

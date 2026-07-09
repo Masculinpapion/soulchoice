@@ -4,6 +4,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
 import { sendBillingEmail } from '../_shared/billing-email.ts'
+import { attemptCharge, attemptsLast20h, isUnknownLocked } from '../_shared/billing-charge.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -74,9 +75,10 @@ serve(async (req) => {
         price_paid: number | null
         cancelled_at: Date | null
         tochka_subscription_id: string | null
+        retry_count: number
       }>(
         `select id, status, auto_renew, next_billing_at, card_masked_pan, card_type,
-                price_paid, cancelled_at, tochka_subscription_id
+                price_paid, cancelled_at, tochka_subscription_id, retry_count
            from subscriptions
           where user_id = $1 and tochka_subscription_id is not null
           order by created_at desc
@@ -171,6 +173,37 @@ serve(async (req) => {
           [sub.id, user.id, JSON.stringify({ source: body?.source ?? 'unknown' })],
         )
         return json(200, { resumed: true, next_billing_at: premiumUntil })
+      }
+
+      if (action === 'retry') {
+        // P8 kurtarma: past_due'da kullanıcı tetikli çekim (banka S3 limiti: 20 saatte toplam <2).
+        // Bildirim kapısı ARANMAZ — kullanıcının kendi başlattığı ödeme, MIT çekim değil.
+        if (!sub || sub.status !== 'past_due' || !sub.tochka_subscription_id) {
+          return json(409, { error: 'nothing_to_retry' })
+        }
+        if (await isUnknownLocked(db, sub.id)) return json(200, { ok: false, reason: 'needs_support' })
+        if ((await attemptsLast20h(db, sub.id)) >= 2) return json(200, { ok: false, reason: 'retry_limit' })
+        const cfgR = await db.queryObject<{ period_days: number }>(
+          `select period_days from billing_config where id = 1`,
+        )
+        const r = await attemptCharge(db, {
+          id: sub.id,
+          user_id: user.id,
+          tochka_subscription_id: sub.tochka_subscription_id,
+          status: sub.status,
+          price_paid: sub.price_paid ?? 1000,
+          retry_count: sub.retry_count ?? 0,
+        }, cfgR.rows[0]?.period_days ?? 30, 'user_retry')
+        if (r.outcome === 'charged' || r.outcome === 'reconciled') {
+          const dateStr = fmtDate(r.until ?? premiumUntil)
+          await sendPush(user.id, 'SoulChoice Premium', `Подписка продлена. Premium активен до ${dateStr}.`)
+          if (billingEmail) {
+            await sendBillingEmail(billingEmail, 'renewal_success', { date: dateStr })
+          }
+          return json(200, { ok: true, premium_until: r.until })
+        }
+        if (r.outcome === 'fail') return json(200, { ok: false, reason: 'charge_failed' })
+        return json(200, { ok: false, reason: r.outcome }) // unknown | pending_verify
       }
 
       return json(400, { error: 'bad_action' })

@@ -889,5 +889,8 @@
   "sub_use_resume_hint": "Your subscription is cancelled but the period is still active — resume it in Profile → Subscription.",
   "sub_email_invalid": "Enter a valid email.",
   "sub_consent_required": "Please accept the terms to continue.",
-  "sub_continue": "Continue"
+  "sub_continue": "Continue",
+  "sub_retry_button": "Retry payment",
+  "sub_retry_failed": "The charge failed. Check your card and try again later.",
+  "sub_retry_limit": "Too many attempts today — try again tomorrow."
 }

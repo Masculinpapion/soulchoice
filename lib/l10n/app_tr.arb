@@ -840,5 +840,8 @@
   "sub_use_resume_hint": "Aboneliğin iptal edilmiş ama dönem hâlâ aktif — Profil → Abonelik'ten devam ettirebilirsin.",
   "sub_email_invalid": "Geçerli bir e-posta gir.",
   "sub_consent_required": "Devam etmek için koşulları kabul et.",
-  "sub_continue": "Devam"
+  "sub_continue": "Devam",
+  "sub_retry_button": "Ödemeyi tekrar dene",
+  "sub_retry_failed": "Çekim başarısız. Kartını kontrol edip daha sonra tekrar dene.",
+  "sub_retry_limit": "Bugün için deneme sınırına ulaşıldı — yarın tekrar dene."
 }

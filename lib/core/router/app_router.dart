@@ -28,6 +28,7 @@ import '../../features/settings/screens/delete_account_screen.dart';
 import '../../features/settings/screens/blocked_users_screen.dart';
 import '../../features/admin/screens/admin_screen.dart';
 import '../../features/paywall/screens/paywall_screen.dart';
+import '../../features/paywall/screens/subscription_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/profile/screens/report_user_screen.dart';
 import '../../shared/widgets/main_shell.dart';
@@ -193,6 +194,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/paywall',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (ctx, _) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/subscription',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, _) => const SubscriptionScreen(),
       ),
       GoRoute(
         path: '/notifications',

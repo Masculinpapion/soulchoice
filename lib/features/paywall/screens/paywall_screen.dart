@@ -20,11 +20,40 @@ class _PaywallScreenState extends State<PaywallScreen> {
   // (App Store External Purchase entitlement onayına kadar), Android'de açık.
   late String _mode = Platform.isIOS ? 'hidden' : 'link';
   bool _isLoading = false;
+  String? _billingEmail;
+  // Consent kanıtındaki oferta sürümü — sunucudan (feature_flags.oferta_version) okunur,
+  // bayrak yoksa canlıdaki oferta tarihi
+  String _ofertaVersion = '2026-07-07';
 
   @override
   void initState() {
     super.initState();
     _loadPaywallMode();
+    _loadBillingContext();
+  }
+
+  Future<void> _loadBillingContext() async {
+    try {
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      if (uid != null) {
+        final row = await Supabase.instance.client
+            .from('users')
+            .select('billing_email')
+            .eq('id', uid)
+            .maybeSingle();
+        final email = row?['billing_email'];
+        if (email is String && mounted) setState(() => _billingEmail = email);
+      }
+      final flag = await Supabase.instance.client
+          .from('feature_flags')
+          .select('value')
+          .eq('key', 'oferta_version')
+          .maybeSingle();
+      final v = (flag?['value'] as Map?)?['v'];
+      if (v is String && mounted) setState(() => _ofertaVersion = v);
+    } catch (_) {
+      // Ön doldurma başarısızsa kullanıcı elle girer
+    }
   }
 
   Future<void> _loadPaywallMode() async {
@@ -44,7 +73,29 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
-  Future<void> _pay() async {
+  void _snack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      backgroundColor: AuroraTheme.bgDeep,
+      content: Text(
+        msg,
+        style: const TextStyle(
+            fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
+      ),
+    ));
+  }
+
+  Future<void> _launchLink(String link) async {
+    final launched = await launchUrl(
+      Uri.parse(link),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!launched) throw Exception('launch_failed');
+  }
+
+  // KARAR 1: tek seferlik 30 gün — mevcut F1 akışı aynen
+  Future<void> _payOnce() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
     try {
@@ -55,26 +106,157 @@ class _PaywallScreenState extends State<PaywallScreen> {
       final data = response.data as Map<String, dynamic>?;
       final link = data?['paymentLink'] as String?;
       if (link == null) throw Exception(data?['error'] ?? 'no_link');
-      final launched = await launchUrl(
-        Uri.parse(link),
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched) throw Exception('launch_failed');
+      await _launchLink(link);
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          backgroundColor: AuroraTheme.bgDeep,
-          content: Text(
-            AppLocalizations.of(context)!.error_generic,
-            style: const TextStyle(
-                fontFamily: 'Manrope', fontSize: 13, color: Colors.white),
-          ),
-        ));
-      }
+      if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // KARAR 1 + KARAR 3: abonelik — zorunlu e-posta + consent checkbox'ı olan alt sayfa
+  Future<void> _subscribe() async {
+    final l10n = AppLocalizations.of(context)!;
+    final emailCtrl = TextEditingController(text: _billingEmail ?? '');
+    bool consent = false;
+    bool sheetBusy = false;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AuroraTheme.bgDeep,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(
+              24, 24, 24, 24 + MediaQuery.of(ctx).viewInsets.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.sub_email_label,
+                  style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      letterSpacing: 1,
+                      color: AuroraTheme.textMuted)),
+              const SizedBox(height: 10),
+              TextField(
+                controller: emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                style: const TextStyle(
+                    fontFamily: 'Manrope', fontSize: 15, color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'you@example.com',
+                  hintStyle: TextStyle(color: AuroraTheme.textMuted),
+                  filled: true,
+                  fillColor: AuroraTheme.glassBg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AuroraTheme.glassBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: AuroraTheme.glassBorder),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              GestureDetector(
+                onTap: () => setSheet(() => consent = !consent),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(
+                        consent
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
+                        size: 20,
+                        color: consent
+                            ? AuroraTheme.auroraBlue
+                            : AuroraTheme.textMuted,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l10n.sub_consent,
+                        style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 12.5,
+                            height: 1.4,
+                            color: AuroraTheme.textSecondary),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              _CtaButton(
+                label: l10n.sub_continue,
+                isLoading: sheetBusy,
+                onTap: () async {
+                  final email = emailCtrl.text.trim();
+                  if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+                    _snack(l10n.sub_email_invalid);
+                    return;
+                  }
+                  if (!consent) {
+                    _snack(l10n.sub_consent_required);
+                    return;
+                  }
+                  setSheet(() => sheetBusy = true);
+                  final ok = await _startSubscription(email);
+                  if (ctx.mounted) {
+                    if (ok) {
+                      Navigator.of(ctx).pop();
+                    } else {
+                      setSheet(() => sheetBusy = false);
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _startSubscription(String email) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'create-tochka-subscription',
+        body: {
+          'email': email,
+          'source': Platform.isIOS ? 'ios_app' : 'android',
+          'oferta_version': _ofertaVersion,
+        },
+      );
+      final data = response.data as Map<String, dynamic>?;
+      final link = data?['paymentLink'] as String?;
+      if (link == null) throw Exception(data?['error'] ?? 'no_link');
+      await _launchLink(link);
+      return true;
+    } on FunctionException catch (e) {
+      final code = (e.details is Map) ? (e.details as Map)['error'] : null;
+      if (code == 'already_subscribed') {
+        _snack(l10n.sub_already_active);
+      } else if (code == 'use_resume') {
+        _snack(l10n.sub_use_resume_hint);
+      } else {
+        _snack(l10n.error_generic);
+      }
+      return false;
+    } catch (_) {
+      if (mounted) _snack(l10n.error_generic);
+      return false;
     }
   }
 
@@ -152,14 +334,50 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     const Spacer(),
                     _PriceBox(price: l10n.paywall_price),
                     if (_mode == 'link') ...[
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 6),
+                      // KARAR 1: varsayılan abonelik + altta sade tek seferlik
+                      Text(
+                        l10n.sub_auto_renews,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 11.5,
+                          color: AuroraTheme.textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       _CtaButton(
-                        label: l10n.paywall_cta,
-                        isLoading: _isLoading,
-                        onTap: _pay,
+                        label: l10n.sub_subscribe_cta,
+                        isLoading: false,
+                        onTap: _subscribe,
+                      ),
+                      const SizedBox(height: 6),
+                      TextButton(
+                        onPressed: _isLoading ? null : _payOnce,
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 14,
+                                height: 14,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                ),
+                              )
+                            : Text(
+                                l10n.sub_onetime_cta,
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AuroraTheme.textSecondary,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AuroraTheme.textMuted,
+                                ),
+                              ),
                       ),
                     ],
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
                       l10n.paywall_cancel_anytime,
                       textAlign: TextAlign.center,

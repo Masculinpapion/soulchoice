@@ -160,6 +160,8 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                               const SizedBox(height: 28),
                               _MyInvitationSection(),
                               const SizedBox(height: 28),
+                              const _SubscriptionEntryCard(),
+                              const SizedBox(height: 28),
                             ],
 
                             // Bio
@@ -1842,3 +1844,55 @@ class _CreateInvitationCta extends StatelessWidget {
 }
 
 
+
+// ─────────────────────────────────────────────────────────────────
+// Subscription Entry — profilde Abonelik yönetimine giriş (F2-2: ≤2 tık)
+// ─────────────────────────────────────────────────────────────────
+class _SubscriptionEntryCard extends StatelessWidget {
+  const _SubscriptionEntryCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return GestureDetector(
+      onTap: () => GoRouter.of(context).push('/subscription'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: AuroraTheme.glassBg,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AuroraTheme.glassBorder),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [AuroraTheme.auroraRed, AuroraTheme.auroraBlue],
+                ),
+              ),
+              child: const Icon(Icons.workspace_premium,
+                  color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              l10n.sub_title,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            const Spacer(),
+            Icon(Icons.chevron_right,
+                color: AuroraTheme.textMuted, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+}

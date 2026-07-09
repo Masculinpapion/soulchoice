@@ -809,10 +809,85 @@
   "profile_inv_empty_title": "No active invitation",
   "profile_inv_create_cta": "+ Create invitation",
   "profile_inv_applicants": "{count, plural, one{{count} applicant} other{{count} applicants}}",
-  "@profile_inv_applicants": { "placeholders": { "count": { "type": "int" } } },
+  "@profile_inv_applicants": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "profile_inv_expired": "Expired",
   "profile_inv_hours_left": "{h}h left",
-  "@profile_inv_hours_left": { "placeholders": { "h": { "type": "int" } } },
+  "@profile_inv_hours_left": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
   "profile_inv_minutes_left": "{m}m",
-  "@profile_inv_minutes_left": { "placeholders": { "m": { "type": "int" } } }
+  "@profile_inv_minutes_left": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "sub_title": "Subscription",
+  "sub_status_active": "Active",
+  "sub_status_cancelled": "Cancelled",
+  "sub_status_past_due": "Payment issue",
+  "sub_none_title": "No subscription yet",
+  "sub_none_body": "Get Premium with auto-renewal or a one-time 30-day pass.",
+  "sub_get_premium": "Get Premium",
+  "sub_next_charge": "Next charge",
+  "sub_card": "Card",
+  "sub_price_label": "Plan",
+  "sub_premium_until": "Premium is active until {date}",
+  "@sub_premium_until": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sub_cancel_button": "Cancel subscription",
+  "sub_cancel_confirm_title": "Cancel subscription?",
+  "sub_cancel_confirm_body": "Auto-renewal will be turned off. Premium stays active until {date}.",
+  "@sub_cancel_confirm_body": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sub_cancel_confirm_yes": "Cancel subscription",
+  "sub_cancel_confirm_no": "Keep it",
+  "sub_cancelled_note": "Subscription cancelled. Premium is active until {date}.",
+  "@sub_cancelled_note": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sub_resume_button": "Continue with card •••• {last4}",
+  "@sub_resume_button": {
+    "placeholders": {
+      "last4": {
+        "type": "String"
+      }
+    }
+  },
+  "sub_history_title": "Payments",
+  "sub_email_label": "Email for receipts and notices",
+  "sub_consent": "I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel",
+  "sub_subscribe_cta": "Subscribe — 1000 ₽/month",
+  "sub_onetime_cta": "One-time 30 days — 1000 ₽",
+  "sub_auto_renews": "Renews automatically every 30 days. Cancel anytime.",
+  "sub_already_active": "You already have an active subscription.",
+  "sub_use_resume_hint": "Your subscription is cancelled but the period is still active — resume it in Profile → Subscription.",
+  "sub_email_invalid": "Enter a valid email.",
+  "sub_consent_required": "Please accept the terms to continue.",
+  "sub_continue": "Continue"
 }

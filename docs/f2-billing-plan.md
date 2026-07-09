@@ -36,6 +36,16 @@
 > (path alt çizgili — /with-receipt 501 verir!). Probe ile doğrulanan zorunlular: customerCode, amount,
 > purpose, `Client.email`, `Items[].name/amount/quantity`. Çek DAİMA billing_email'e kesilir; 2₽ kanıtı
 > Faz 6 provasında. **dry_run=false geçişi + Faz 6 canlı cron provası AYRI Mustafa onayı (değişmedi).**
+> **FAZ 4 KOD HAZIR (09.07.2026), önizleme/screencap onayı bekliyor.** App: paywall KARAR 1 düzeni
+> (abonelik varsayılan + tek seferlik link; e-posta+consent alt sayfası; oferta_version
+> feature_flags'ten) + yeni Profil→Abonelik ekranı (subscription_screen.dart; iptal/devam/geçmiş;
+> iOS kısıtlı mod) + profil giriş kartı + /subscription route + 3 dil arb (sub_* anahtarları,
+> onaylı §7 metinleri). Web: docs/premium-f2.html (yönetim paneli + e-posta/consent'li çift seçenek;
+> görsel onay için #demo-buy / #demo-manage-active / #demo-manage-cancelled / #demo-manage-pastdue
+> hash'leri). Önizleme: soulchoice.app/img/preview-premium.html. DEPLOY ADIMLARI (onay sonrası):
+> premium.html + oferta.html sunucuya (oferta tarihi deploy günü) + feature_flags'e oferta_version
+> satırı + app release. NOT: l10n generated dosyalar elle güncellenmez — flutter build gen-l10n'u
+> kendisi koşar (pubspec generate:true).
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="SoulChoice Premium — безлимитные приглашения и заявки.">
+<title>SoulChoice Premium</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16.png?v=2">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300..900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #050709;
+  --pink: #FF2D55;
+  --blue: #2D7FFF;
+  --purple: #8B5CF6;
+  --text: #FFFFFF;
+  --muted: #8B95A8;
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-bg-strong: rgba(255, 255, 255, 0.10);
+  --grad: linear-gradient(135deg, #FF2D55 0%, #8B5CF6 50%, #2D7FFF 100%);
+  --grad-pink-blue: linear-gradient(90deg, #FF2D55, #2D7FFF);
+  --ok: #6EE7A0;
+  --warn: #FFB020;
+  --danger: #FF6B81;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(900px circle at 10% 20%, rgba(255, 45, 85, 0.14), transparent 50%),
+    radial-gradient(700px circle at 90% 30%, rgba(45, 127, 255, 0.12), transparent 50%),
+    radial-gradient(600px circle at 50% 80%, rgba(139, 92, 246, 0.13), transparent 50%);
+  z-index: -2;
+  animation: bokehFloat 30s ease-in-out infinite alternate;
+}
+@keyframes bokehFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 20px) scale(1.05); }
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 24px;
+}
+.top a.brand { display: inline-flex; }
+.top img { height: 30px; display: block; }
+.lang {
+  display: flex;
+  gap: 4px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 100px;
+  padding: 4px;
+}
+.lang button {
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  font: 700 12px 'Manrope', sans-serif;
+  letter-spacing: 0.5px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+}
+.lang button.on { background: var(--glass-bg-strong); color: var(--text); }
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 48px;
+}
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 34px 28px 28px;
+}
+h1 {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+  background: var(--grad-pink-blue);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 4px;
+}
+.sub { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.perks { list-style: none; margin: 22px 0; display: grid; gap: 11px; }
+.perks li { display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #E7EBF2; }
+.perks li::before {
+  content: '✓';
+  flex: 0 0 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--grad-pink-blue);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.price {
+  text-align: center;
+  font-family: 'JetBrains Mono', 'Manrope', monospace;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 13px;
+  margin-bottom: 12px;
+}
+.renew-note { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.step { display: none; }
+.step.on { display: block; }
+label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.6px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+input[type="tel"], input[type="text"], input[type="email"] {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  color: var(--text);
+  font: 600 17px 'Manrope', sans-serif;
+  letter-spacing: 1px;
+  padding: 14px 16px;
+  outline: none;
+}
+input:focus { border-color: rgba(255, 255, 255, 0.28); }
+.btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 15px;
+  border: 0;
+  border-radius: 100px;
+  background: var(--grad-pink-blue);
+  background-clip: padding-box;
+  color: #fff;
+  font: 800 15px 'Manrope', sans-serif;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 45, 85, 0.35);
+}
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--muted);
+  box-shadow: none;
+  font-weight: 600;
+}
+.btn.danger {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 129, 0.55);
+  color: var(--danger);
+  box-shadow: none;
+}
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  cursor: pointer;
+}
+.consent input { width: auto; margin-top: 3px; accent-color: var(--blue); }
+.consent a { color: #B9C2D4; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 12px; }
+.err { display: none; font-size: 13px; color: #FF6B81; margin-top: 12px; }
+.err.on { display: block; }
+.ok-badge { font-size: 13px; color: var(--ok); margin-bottom: 14px; }
+.legal { font-size: 12px; color: var(--muted); margin-top: 14px; text-align: center; }
+.legal a { color: #B9C2D4; }
+.linkback { font-size: 13px; color: var(--muted); margin-top: 16px; text-align: center; }
+.linkback a { color: #B9C2D4; }
+.status-line { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; margin-bottom: 14px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.mrow { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; }
+.mrow .k { color: var(--muted); font-size: 13px; }
+.mrow .v { font-weight: 600; }
+.history { margin-top: 18px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
+.history h3 { font: 700 11px 'JetBrains Mono', monospace; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 8px; }
+.hrow { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: #E7EBF2; }
+.hrow.refunded { color: var(--muted); text-decoration: line-through; }
+footer {
+  text-align: center;
+  padding: 18px 16px 26px;
+  font-size: 12px;
+  color: var(--muted);
+}
+footer a { color: var(--muted); margin: 0 8px; }
+@media (max-width: 480px) {
+  .card { padding: 28px 20px 22px; border-radius: 20px; }
+  h1 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="top">
+  <a class="brand" href="/"><img src="/img/soulchoice_wordmark.png?v=7" alt="SoulChoice"></a>
+  <div class="lang">
+    <button id="lang-ru" onclick="setLang('ru')">RU</button>
+    <button id="lang-en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+<main>
+  <div class="card">
+    <h1 data-i18n="title">Premium</h1>
+    <p class="sub" data-i18n="sub">Безлимит на приглашения и заявки</p>
+    <ul class="perks" id="perks">
+      <li data-i18n="perk1">Безлимитные приглашения</li>
+      <li data-i18n="perk2">Безлимитные заявки</li>
+      <li data-i18n="perk3">Чат после взаимного выбора</li>
+      <li data-i18n="perk4">Приоритет модерации</li>
+    </ul>
+    <div class="price" id="price" data-i18n="price">1000 ₽ / месяц</div>
+
+    <div class="step on" id="step-phone">
+      <label for="phone" data-i18n="phone_label">Номер телефона</label>
+      <input id="phone" type="tel" inputmode="tel" value="+7" placeholder="+7 900 000-00-00" autocomplete="tel">
+      <button class="btn" id="btn-send" onclick="sendCode()" data-i18n="btn_send">Получить код</button>
+      <p class="hint" data-i18n="phone_hint">Тот же номер, что и в приложении SoulChoice.</p>
+    </div>
+
+    <div class="step" id="step-code">
+      <label for="code" data-i18n="code_label">Код из звонка</label>
+      <input id="code" type="text" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="one-time-code">
+      <button class="btn" id="btn-verify" onclick="verifyCode()" data-i18n="btn_verify">Подтвердить</button>
+      <p class="hint" data-i18n="code_hint">Вам позвонит робот — отвечать не нужно. Введите последние 4 цифры входящего номера.</p>
+    </div>
+
+    <!-- KARAR 1: iki seçenek — varsayılan abonelik + altta tek seferlik -->
+    <div class="step" id="step-buy">
+      <p class="ok-badge" data-i18n="verified">✓ Номер подтверждён</p>
+      <label for="email" data-i18n="email_label">E-mail для чеков и уведомлений</label>
+      <input id="email" type="email" inputmode="email" placeholder="you@example.com" autocomplete="email">
+      <label class="consent"><input id="consent" type="checkbox">
+        <span data-i18n-html="consent">Соглашаюсь с условиями <a href="/oferta" target="_blank">Оферты</a> и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки</span>
+      </label>
+      <button class="btn" id="btn-sub" onclick="buySub()" data-i18n="btn_sub">Оформить подписку — 1000 ₽/мес</button>
+      <p class="renew-note" style="margin:10px 0 0" data-i18n="renew_note">Продлевается автоматически каждые 30 дней. Отмена в любой момент.</p>
+      <button class="btn ghost" id="btn-once" onclick="buyOnce()" data-i18n="btn_once">Разовый доступ на 30 дней — 1000 ₽</button>
+      <p class="legal" data-i18n-html="legal_once">Разовый платёж: нажимая кнопку, вы принимаете условия <a href="/oferta" target="_blank">Оферты</a>. Без автопродления.</p>
+    </div>
+
+    <!-- Abonelik yönetimi (F2-2: iOS kullanıcısının tek kapısı) -->
+    <div class="step" id="step-manage">
+      <div class="status-line"><span class="dot" id="m-dot"></span><span id="m-status"></span></div>
+      <div id="m-rows"></div>
+      <button class="btn danger" id="btn-cancel" onclick="askCancel()" data-i18n="btn_cancel" style="display:none">Отменить подписку</button>
+      <div id="cancel-confirm" style="display:none">
+        <p class="hint" id="cancel-q"></p>
+        <button class="btn danger" onclick="doCancel()" data-i18n="btn_cancel_yes">Отменить подписку</button>
+        <button class="btn ghost" onclick="hideCancelConfirm()" data-i18n="btn_cancel_no">Оставить</button>
+      </div>
+      <button class="btn" id="btn-resume" onclick="doResume()" style="display:none"></button>
+      <button class="btn" id="btn-buy-again" onclick="show('step-buy')" data-i18n="btn_buy_again" style="display:none">Оформить Premium</button>
+      <div class="history" id="m-history" style="display:none">
+        <h3 data-i18n="history">ПЛАТЕЖИ</h3>
+        <div id="m-history-rows"></div>
+      </div>
+    </div>
+
+    <div class="step" id="step-noprofile">
+      <p class="hint" data-i18n="noprofile">Мы не нашли ваш профиль. Сначала зарегистрируйтесь в приложении SoulChoice с этим номером, затем вернитесь сюда.</p>
+      <p class="linkback"><a href="/" data-i18n="back_home">← На главную</a></p>
+    </div>
+
+    <p class="err" id="err"></p>
+  </div>
+</main>
+<footer>
+  <a href="/oferta" data-i18n="f_oferta">Оферта</a>
+  <a href="/privacy" data-i18n="f_privacy">Конфиденциальность</a>
+  <a href="/terms" data-i18n="f_terms">Условия</a>
+</footer>
+<script>
+const FN = '/functions/v1';
+const I18N = {
+  ru: {
+    title: 'Premium',
+    sub: 'Безлимит на приглашения и заявки',
+    perk1: 'Безлимитные приглашения',
+    perk2: 'Безлимитные заявки',
+    perk3: 'Чат после взаимного выбора',
+    perk4: 'Приоритет модерации',
+    price: '1000 ₽ / месяц',
+    phone_label: 'Номер телефона',
+    btn_send: 'Получить код',
+    phone_hint: 'Тот же номер, что и в приложении SoulChoice.',
+    code_label: 'Код из звонка',
+    btn_verify: 'Подтвердить',
+    code_hint: 'Вам позвонит робот — отвечать не нужно. Введите последние 4 цифры входящего номера.',
+    verified: '✓ Номер подтверждён',
+    email_label: 'E-mail для чеков и уведомлений',
+    consent: 'Соглашаюсь с условиями <a href="/oferta" target="_blank">Оферты</a> и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки',
+    btn_sub: 'Оформить подписку — 1000 ₽/мес',
+    renew_note: 'Продлевается автоматически каждые 30 дней. Отмена в любой момент.',
+    btn_once: 'Разовый доступ на 30 дней — 1000 ₽',
+    legal_once: 'Разовый платёж: нажимая кнопку, вы принимаете условия <a href="/oferta" target="_blank">Оферты</a>. Без автопродления.',
+    st_active: 'Подписка активна',
+    st_cancelled: 'Подписка отменена',
+    st_past_due: 'Проблема с оплатой',
+    k_plan: 'Тариф', k_next: 'Следующее списание', k_card: 'Карта', k_until: 'Premium активен до',
+    cancelled_note: 'Подписка отменена. Premium активен до {date}.',
+    btn_cancel: 'Отменить подписку',
+    cancel_q: 'Автопродление будет отключено. Premium останется активным до {date}.',
+    btn_cancel_yes: 'Отменить подписку',
+    btn_cancel_no: 'Оставить',
+    btn_resume: 'Продолжить с картой •••• {last4}',
+    btn_buy_again: 'Оформить Premium',
+    history: 'ПЛАТЕЖИ',
+    noprofile: 'Мы не нашли ваш профиль. Сначала зарегистрируйтесь в приложении SoulChoice с этим номером, затем вернитесь сюда.',
+    back_home: '← На главную',
+    f_oferta: 'Оферта', f_privacy: 'Конфиденциальность', f_terms: 'Условия',
+    err_phone: 'Введите номер в формате +7…',
+    err_send: 'Не получилось позвонить. Проверьте номер и попробуйте ещё раз.',
+    err_code: 'Неверный код. Попробуйте ещё раз.',
+    err_pay: 'Что-то пошло не так. Попробуйте ещё раз.',
+    err_email: 'Введите корректный e-mail.',
+    err_consent: 'Чтобы продолжить, примите условия.',
+    err_already: 'У вас уже есть активная подписка.',
+  },
+  en: {
+    title: 'Premium',
+    sub: 'Unlimited invitations and applications',
+    perk1: 'Unlimited invitations',
+    perk2: 'Unlimited applications',
+    perk3: 'Chat after mutual selection',
+    perk4: 'Priority moderation',
+    price: '1000 ₽ / month',
+    phone_label: 'Phone number',
+    btn_send: 'Get code',
+    phone_hint: 'Same number you use in the SoulChoice app.',
+    code_label: 'Code from the call',
+    btn_verify: 'Confirm',
+    code_hint: 'You will get a robocall — no need to answer. Enter the last 4 digits of the incoming number.',
+    verified: '✓ Number confirmed',
+    email_label: 'Email for receipts and notices',
+    consent: 'I agree to the <a href="/oferta" target="_blank">Offer</a> terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel',
+    btn_sub: 'Subscribe — 1000 ₽/month',
+    renew_note: 'Renews automatically every 30 days. Cancel anytime.',
+    btn_once: 'One-time 30 days — 1000 ₽',
+    legal_once: 'One-time payment: by tapping the button you accept the <a href="/oferta" target="_blank">Offer</a>. No auto-renewal.',
+    st_active: 'Subscription active',
+    st_cancelled: 'Subscription cancelled',
+    st_past_due: 'Payment issue',
+    k_plan: 'Plan', k_next: 'Next charge', k_card: 'Card', k_until: 'Premium active until',
+    cancelled_note: 'Subscription cancelled. Premium is active until {date}.',
+    btn_cancel: 'Cancel subscription',
+    cancel_q: 'Auto-renewal will be turned off. Premium stays active until {date}.',
+    btn_cancel_yes: 'Cancel subscription',
+    btn_cancel_no: 'Keep it',
+    btn_resume: 'Continue with card •••• {last4}',
+    btn_buy_again: 'Get Premium',
+    history: 'PAYMENTS',
+    noprofile: 'We could not find your profile. Sign up in the SoulChoice app with this number first, then come back here.',
+    back_home: '← Back to home',
+    f_oferta: 'Offer', f_privacy: 'Privacy', f_terms: 'Terms',
+    err_phone: 'Enter your number as +7…',
+    err_send: 'Call failed. Check the number and try again.',
+    err_code: 'Wrong code. Try again.',
+    err_pay: 'Something went wrong. Please try again.',
+    err_email: 'Enter a valid email.',
+    err_consent: 'Please accept the terms to continue.',
+    err_already: 'You already have an active subscription.',
+  },
+};
+let lang = localStorage.getItem('sc_lang') || 'ru';
+function t(key) { return I18N[lang][key]; }
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('sc_lang', l);
+  document.documentElement.lang = l;
+  document.getElementById('lang-ru').className = l === 'ru' ? 'on' : '';
+  document.getElementById('lang-en').className = l === 'en' ? 'on' : '';
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    el.textContent = I18N[l][el.dataset.i18n];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+    el.innerHTML = I18N[l][el.dataset.i18nHtml];
+  });
+}
+setLang(lang);
+
+let phone = '';
+let accessToken = '';
+let ofertaVersion = '2026-07-07'; // feature_flags.oferta_version login sonrasi okunur
+let manageData = null;
+const err = document.getElementById('err');
+function showErr(key) { err.textContent = t(key); err.className = 'err on'; }
+function hideErr() { err.className = 'err'; }
+function show(stepId) {
+  document.querySelectorAll('.step').forEach((s) => s.classList.remove('on'));
+  document.getElementById(stepId).classList.add('on');
+}
+function busy(id, on) { document.getElementById(id).disabled = on; }
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const p = (n) => String(n).padStart(2, '0');
+  return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear();
+}
+
+async function sendCode() {
+  hideErr();
+  phone = document.getElementById('phone').value.replace(/[^\d+]/g, '');
+  if (!/^\+\d{10,15}$/.test(phone)) { showErr('err_phone'); return; }
+  busy('btn-send', true);
+  try {
+    const r = await fetch(FN + '/send-call-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    });
+    const d = await r.json();
+    if (!r.ok || !d.success) throw new Error('send');
+    show('step-code');
+    document.getElementById('code').focus();
+  } catch (_) {
+    showErr('err_send');
+  } finally {
+    busy('btn-send', false);
+  }
+}
+
+async function verifyCode() {
+  hideErr();
+  const code = document.getElementById('code').value.trim();
+  if (!/^\d{4}$/.test(code)) { showErr('err_code'); return; }
+  busy('btn-verify', true);
+  try {
+    const r = await fetch(FN + '/verify-call-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code }),
+    });
+    const d = await r.json();
+    if (!d.access_token) throw new Error('code');
+    accessToken = d.access_token;
+    const hasProfile = await checkProfile();
+    if (!hasProfile) { show('step-noprofile'); return; }
+    await loadOfertaVersion();
+    await loadStatus();
+  } catch (_) {
+    showErr('err_code');
+  } finally {
+    busy('btn-verify', false);
+  }
+}
+
+async function checkProfile() {
+  try {
+    const r = await fetch('/rest/v1/users?select=id&limit=1', {
+      headers: { apikey: window.SC_ANON_KEY, Authorization: 'Bearer ' + accessToken },
+    });
+    const rows = await r.json();
+    return Array.isArray(rows) && rows.length > 0;
+  } catch (_) {
+    return true; // kontrol edilemezse odemeyi engelleme
+  }
+}
+
+async function loadOfertaVersion() {
+  try {
+    const r = await fetch('/rest/v1/feature_flags?key=eq.oferta_version&select=value', {
+      headers: { apikey: window.SC_ANON_KEY, Authorization: 'Bearer ' + accessToken },
+    });
+    const rows = await r.json();
+    const v = rows && rows[0] && rows[0].value && rows[0].value.v;
+    if (typeof v === 'string') ofertaVersion = v;
+  } catch (_) { /* fallback gecerli */ }
+}
+
+async function loadStatus() {
+  try {
+    const r = await fetch(FN + '/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ action: 'status' }),
+    });
+    manageData = await r.json();
+  } catch (_) {
+    manageData = null;
+  }
+  const sub = manageData && manageData.subscription;
+  const premiumActive = manageData && manageData.premium_until &&
+    new Date(manageData.premium_until) > new Date();
+  if (sub && (sub.status === 'active' || sub.status === 'past_due' ||
+      (sub.status === 'cancelled' && premiumActive))) {
+    renderManage();
+    show('step-manage');
+  } else {
+    if (manageData && manageData.billing_email) {
+      document.getElementById('email').value = manageData.billing_email;
+    }
+    show('step-buy');
+  }
+}
+
+function renderManage() {
+  const sub = manageData.subscription;
+  const until = fmtDate(manageData.premium_until);
+  const masked = sub.card_masked_pan || '';
+  const last4 = masked.slice(-4);
+  const dot = document.getElementById('m-dot');
+  const st = document.getElementById('m-status');
+  const rows = document.getElementById('m-rows');
+  const isActive = sub.status === 'active';
+  const isPastDue = sub.status === 'past_due';
+  const isCancelled = sub.status === 'cancelled';
+
+  dot.style.background = isActive ? 'var(--ok)' : isPastDue ? 'var(--warn)' : 'var(--muted)';
+  st.textContent = isActive ? t('st_active') : isPastDue ? t('st_past_due') : t('st_cancelled');
+
+  if (isCancelled) {
+    // KARAR 4: sade mesaj — kart saklama lafi ekranda gecmez
+    rows.innerHTML = '<p class="hint" style="margin:0 0 6px">' +
+      t('cancelled_note').replace('{date}', until) + '</p>';
+  } else {
+    let html = '<div class="mrow"><span class="k">' + t('k_plan') + '</span><span class="v">' + t('price') + '</span></div>';
+    if (sub.next_billing_at) html += '<div class="mrow"><span class="k">' + t('k_next') + '</span><span class="v">' + fmtDate(sub.next_billing_at) + '</span></div>';
+    if (last4) html += '<div class="mrow"><span class="k">' + t('k_card') + '</span><span class="v">•••• ' + last4 + '</span></div>';
+    if (until) html += '<div class="mrow"><span class="k">' + t('k_until') + '</span><span class="v">' + until + '</span></div>';
+    rows.innerHTML = html;
+  }
+
+  document.getElementById('btn-cancel').style.display = (isActive || isPastDue) ? '' : 'none';
+  document.getElementById('cancel-confirm').style.display = 'none';
+  const btnResume = document.getElementById('btn-resume');
+  btnResume.style.display = isCancelled ? '' : 'none';
+  btnResume.textContent = t('btn_resume').replace('{last4}', last4);
+  document.getElementById('btn-buy-again').style.display = 'none';
+
+  const hist = (manageData.payments || []).slice(0, 12);
+  const hbox = document.getElementById('m-history');
+  if (hist.length) {
+    hbox.style.display = '';
+    document.getElementById('m-history-rows').innerHTML = hist.map((p) =>
+      '<div class="hrow' + (p.status === 'refunded' ? ' refunded' : '') + '"><span>' +
+      fmtDate(p.paid_at || p.created_at) + '</span><span>' + p.amount + ' ₽</span></div>'
+    ).join('');
+  } else {
+    hbox.style.display = 'none';
+  }
+}
+
+function askCancel() {
+  document.getElementById('btn-cancel').style.display = 'none';
+  document.getElementById('cancel-q').textContent =
+    t('cancel_q').replace('{date}', fmtDate(manageData.premium_until));
+  document.getElementById('cancel-confirm').style.display = '';
+}
+function hideCancelConfirm() {
+  document.getElementById('cancel-confirm').style.display = 'none';
+  document.getElementById('btn-cancel').style.display = '';
+}
+async function doCancel() {
+  hideErr();
+  try {
+    const r = await fetch(FN + '/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ action: 'cancel', source: 'web' }),
+    });
+    if (!r.ok) throw new Error('cancel');
+    await loadStatus();
+  } catch (_) {
+    showErr('err_pay');
+  }
+}
+async function doResume() {
+  hideErr();
+  busy('btn-resume', true);
+  try {
+    const r = await fetch(FN + '/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ action: 'resume', source: 'web' }),
+    });
+    if (!r.ok) throw new Error('resume');
+    await loadStatus();
+  } catch (_) {
+    showErr('err_pay');
+  } finally {
+    busy('btn-resume', false);
+  }
+}
+
+async function buySub() {
+  hideErr();
+  const email = document.getElementById('email').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('err_email'); return; }
+  if (!document.getElementById('consent').checked) { showErr('err_consent'); return; }
+  busy('btn-sub', true);
+  try {
+    const r = await fetch(FN + '/create-tochka-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ email, source: 'web', oferta_version: ofertaVersion }),
+    });
+    const d = await r.json();
+    if (r.status === 409) {
+      if (d.error === 'use_resume') { await loadStatus(); return; }
+      showErr('err_already'); return;
+    }
+    if (!d.paymentLink) throw new Error('pay');
+    window.location.href = d.paymentLink;
+  } catch (_) {
+    showErr('err_pay');
+  } finally {
+    busy('btn-sub', false);
+  }
+}
+
+async function buyOnce() {
+  hideErr();
+  busy('btn-once', true);
+  try {
+    const r = await fetch(FN + '/create-tochka-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken },
+      body: JSON.stringify({ source: 'web' }),
+    });
+    const d = await r.json();
+    if (!d.paymentLink) throw new Error('pay');
+    window.location.href = d.paymentLink;
+  } catch (_) {
+    showErr('err_pay');
+  } finally {
+    busy('btn-once', false);
+  }
+}
+
+// Görsel onay için demo modu (veri/istek yok): #demo-buy, #demo-manage-active,
+// #demo-manage-cancelled, #demo-manage-pastdue
+(function demo() {
+  const h = location.hash;
+  if (!h.startsWith('#demo')) return;
+  if (h === '#demo-buy') { show('step-buy'); return; }
+  const status = h === '#demo-manage-cancelled' ? 'cancelled'
+    : h === '#demo-manage-pastdue' ? 'past_due' : 'active';
+  manageData = {
+    premium_until: new Date(Date.now() + 21 * 864e5).toISOString(),
+    billing_email: 'demo@example.com',
+    subscription: {
+      status,
+      auto_renew: status === 'active',
+      next_billing_at: new Date(Date.now() + 21 * 864e5).toISOString(),
+      card_masked_pan: '553691******4385',
+      card_type: 'Mastercard',
+      price_rub: 1000,
+    },
+    payments: [
+      { amount: '1000.00', status: 'paid', paid_at: new Date().toISOString() },
+      { amount: '1000.00', status: 'paid', paid_at: new Date(Date.now() - 30 * 864e5).toISOString() },
+      { amount: '1000.00', status: 'refunded', paid_at: new Date(Date.now() - 60 * 864e5).toISOString() },
+    ],
+  };
+  renderManage();
+  show('step-manage');
+})();
+</script>
+<script src="/premium-config.js"></script>
+</body>
+</html>

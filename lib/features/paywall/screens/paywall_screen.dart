@@ -129,10 +129,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => StatefulBuilder(
+        // viewInsets = klavye; SafeArea = sistem gezinme çubuğu. İkisi ayrı —
+        // yalnız viewInsets kullanılınca buton nav bar'ın altında kalıyordu (09.07 cihaz bulgusu).
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.fromLTRB(
-              24, 24, 24, 24 + MediaQuery.of(ctx).viewInsets.bottom),
-          child: Column(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+              child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -222,6 +227,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 },
               ),
             ],
+              ),
+            ),
           ),
         ),
       ),

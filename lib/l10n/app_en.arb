@@ -892,5 +892,21 @@
   "sub_continue": "Continue",
   "sub_retry_button": "Retry payment",
   "sub_retry_failed": "The charge failed. Check your card and try again later.",
-  "sub_retry_limit": "Too many attempts today — try again tomorrow."
+  "sub_retry_limit": "Too many attempts today — try again tomorrow.",
+  "sub_resumed_note": "Auto-renewal is on. Next charge — {date}.",
+  "@sub_resumed_note": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sub_price_month": "{price} ₽ / month",
+  "@sub_price_month": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  }
 }

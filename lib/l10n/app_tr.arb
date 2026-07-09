@@ -843,5 +843,7 @@
   "sub_continue": "Devam",
   "sub_retry_button": "Ödemeyi tekrar dene",
   "sub_retry_failed": "Çekim başarısız. Kartını kontrol edip daha sonra tekrar dene.",
-  "sub_retry_limit": "Bugün için deneme sınırına ulaşıldı — yarın tekrar dene."
+  "sub_retry_limit": "Bugün için deneme sınırına ulaşıldı — yarın tekrar dene.",
+  "sub_resumed_note": "Otomatik yenileme açıldı. Sonraki çekim — {date}.",
+  "sub_price_month": "{price} ₽ / ay"
 }

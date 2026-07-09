@@ -104,6 +104,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         },
       );
       await _refresh();
+      // 09.07 prova bulgusu: onay mesajı yokken kullanıcı işlemi tekrarlıyor
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        final until = _fmtDate(_data?['premium_until'] as String?);
+        if (action == 'cancel') {
+          _snack(l10n.sub_cancelled_note(until));
+        } else if (action == 'resume') {
+          _snack(l10n.sub_resumed_note(until));
+        }
+      }
     } catch (_) {
       if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
@@ -334,7 +344,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     height: 1.5,
                     color: Colors.white))
           else ...[
-            _infoRow(l10n.sub_price_label, l10n.paywall_price),
+            _infoRow(
+                l10n.sub_price_label,
+                sub['price_rub'] != null
+                    ? l10n.sub_price_month(sub['price_rub'].toString())
+                    : l10n.paywall_price),
             if (sub['next_billing_at'] != null)
               _infoRow(l10n.sub_next_charge,
                   _fmtDate(sub['next_billing_at'] as String?)),

@@ -14,8 +14,16 @@ TASARIMI ONAYLANDI (hash-persona + rebirth + is_test_user izolasyonu + teardown;
 dahil), kodlama yarın.
 
 **YARIN (öncelik sırası):**
-1. Seçenek B kalan kanıtlar: consent ekranı screencap (Android) + TestFlight turu (fiyatsız
-   paywall, web ödemesi→Подписка bölümü, onboarding iOS — Natalia iPhone, Mustafa 10 dk) → deploy
+1. Seçenek B kalan işler: ① consent ekranı screencap (Android) ② **iOS boş-durum metni fix'i
+   (09.07 akşam TestFlight bulgusu):** `sub_none_body` iOS'ta «Оформите Premium…» emir kipiyle
+   steering-komşusu → iOS varyantı nötr metin «Подписка, оформленная на другой платформе,
+   появится здесь.» (Mustafa sabah onaylayacak; 3 dil yeni anahtar `sub_none_body_ios`, hidden
+   modda gösterilir) ③ TestFlight kalan kanıt kararı (aktif-durum iOS ekranı: mevcut zincir
+   yeterli mi / bypass'la test hesabı mı — Mustafa karar verecek) → deploy.
+   NOT: TestFlight ana kanıtları 09.07 AKŞAMI GELDİ ✓ (Natalia iPhone): fiyatsız/butonsuz paywall
+   + nötr alt başlık canlıda, Подписка ekranı iOS kısıtlı modda (buton yok), profil giriş kartı
+   yerinde. Natalia'nın ПЛАТЕЖИ listesindeki 08.07 1000₽ pending = dünkü Android CTA test
+   kalıntısı (15.07'de expire).
 2. Canlılık simülasyonu kodlaması (onaylı tasarım) → DB kanıtı + iki saat farklı feed screencap → deploy
 3. Mustafa masası: SMS.ru bakiye + 4 operatör şablon başvurusu («SoulChoice: код подтверждения
    %code%. Никому не сообщайте его.») | 4₽ iade (yapılmadıysa) | test kullanıcı AI fotoğrafları

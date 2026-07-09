@@ -1,5 +1,30 @@
 # F2 — Otomatik Yenilemeli Abonelik: Plan + Kararlar
 
+## GÜN SONU 09.07.2026 — F2 KOMPLE KAPANDI, SİSTEM CANLI
+
+**Bugün tamamlananlar:** Faz 0 (Точка recurring canlı doğrulama) → Faz 1 (migration + oferta
+metinleri) → Faz 2 (edge fn'ler + SMTP + mail render fix) → Faz 3 (billing-cron, dry-run) →
+Faz 4 (UI: paywall/abonelik ekranı/web + oferta CANLI) → Faz 6 provası (gerçek 2₽ cron çekimi,
+uçtan uca kanıtlı) — dry_run=false. Точка S1-S5 cevapları işlendi; With-Receipt geçişi yapıldı;
+SMS.ru şablonu belirlendi. iOS stratejisi KESİN: Seçenek B (sessiz vitrin + e-posta), SMS
+Varyant 2 kalıcı red, Varyant 1 backlog (3 koşul), D+0'a premium satırı YOK (ФЗ-38). Seçenek B
+kodu yazıldı+deploy'da, kısmen kanıtlandı. Hetzner→timeweb_prod anahtar temizliği; canlı flag
+kuralı CLAUDE.md'de; expiry-race kök nedeni bulundu (cron :05 yarışı). Test canlılık simülasyonu
+TASARIMI ONAYLANDI (hash-persona + rebirth + is_test_user izolasyonu + teardown; race-fix pakete
+dahil), kodlama yarın.
+
+**YARIN (öncelik sırası):**
+1. Seçenek B kalan kanıtlar: consent ekranı screencap (Android) + TestFlight turu (fiyatsız
+   paywall, web ödemesi→Подписка bölümü, onboarding iOS — Natalia iPhone, Mustafa 10 dk) → deploy
+2. Canlılık simülasyonu kodlaması (onaylı tasarım) → DB kanıtı + iki saat farklı feed screencap → deploy
+3. Mustafa masası: SMS.ru bakiye + 4 operatör şablon başvurusu («SoulChoice: код подтверждения
+   %code%. Никому не сообщайте его.») | 4₽ iade (yapılmadıysa) | test kullanıcı AI fotoğrafları
+4. Sonraki sıra: store screenshot'ları (C), content rating (E/R), marka harçları (55.000₽,
+   deadline ~30 Ağustos)
+
+**Beklemedekiler:** 10.07 10:25 ilk doğal canlı digest (Gmail) • SMS operatör onayları (1-2 hafta) •
+hukukçu teyitleri: pazarlama rıza metni (SMS eklenirse) + D+0 sınıflandırması.
+
 > **TEK KAYNAK.** Session'lar arası referans dokümanı (legal-todos.md modeli).
 > Onay: 09.07.2026 (Mustafa). Değişiklik ancak Mustafa onayıyla.
 > **DURUM: Faz 2 TAMAMLANDI ✅ (09.07.2026)** — deploy + 2₽ UÇTAN UCA TEST GEÇTİ.

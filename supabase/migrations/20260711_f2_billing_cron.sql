@@ -35,3 +35,7 @@ create index if not exists idx_billing_events_sub_event
   on public.billing_events (subscription_id, event, created_at desc);
 
 commit;
+
+-- Ek (aynı gün): Точка JWT'sinde exp claim'i yok — P7 alarmı bilinen bitiş tarihinden sayar
+alter table public.billing_config
+  add column if not exists tochka_jwt_expires_at date not null default '2027-07-08';

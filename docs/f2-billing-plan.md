@@ -25,14 +25,17 @@
 > (tek text/plain utf-8, base64 CTE, RFC 2047 konu); 4 şablon test gönderimi yapıldı, Mustafa'nın
 > görsel onayı bekleniyor. Yardımcı: `billing-email-test` fn (service-key korumalı, kalıcı test aracı).
 > Mail render fix Mustafa tarafından Gmail'de DOĞRULANDI ✓ (İŞ 1 kapandı).
-> **Faz 3 ONAYLI ve KOD HAZIR (09.07.2026), deploy onayı bekliyor.** Tercihler: host crontab
-> (07:25 UTC = 10:25 MSK, /root/bin/billing-cron.sh + flock), digest → mustafaaladag.ma@gmail.com,
-> dry_run=true başlangıç (gerçek moda geçiş AYRI Mustafa onayı). Dosyalar: billing-cron/index.ts
-> (FAZ A/B/C + digest + heartbeat + P7 JWT alarmı), billing-status/index.ts (dead-man okuma ucu),
-> migrations/20260711_f2_billing_cron.sql (dry_run + max_daily_attempts=1 [S3] + digest_email +
-> grace-uyumlu downgrade_expired_premium + indeks), billing-cron.sh. _shared/billing-email.ts'e
-> sendCustomEmail eklendi (digest için). Точка bileti S1-S5 CEVAPLANDI (aşağıda) — S1: lokal iptal
-> resmi yöntem; S3: max günde 2 deneme (config 1'e sabit); S5: With-Receipt geçiş önerisi onay bekliyor.
+> **Faz 3 DEPLOY'DA ✅ (09.07.2026, DRY-RUN modda):** yedek `pre_f2_faz3_20260709_1028.sql.gz`;
+> migration uygulandı (dry_run=TRUE + max_daily_attempts=1 [S3] + digest_email + tochka_jwt_expires_at
+> [Точка JWT'sinde exp claim'i YOK — canlıda doğrulandı, P7 config tarihinden sayar: 363 gün] +
+> grace-uyumlu downgrade + indeks); billing-cron + billing-status canlıda; crontab kuruldu
+> (`25 7 * * * /root/bin/billing-cron.sh`, flock, log /var/log/billing-cron.log); smoke temiz
+> (status never_ran→ok, auth'suz 403, elle dry-run koşusu: 0 aksiyon + digest event + heartbeat ok).
+> İlk DRY-RUN digest maili Mustafa'nın Gmail teyidini bekliyor.
+> **S5 UYGULANDI:** create-tochka-subscription artık `POST /acquiring/v1.0/subscriptions_with_receipt`
+> (path alt çizgili — /with-receipt 501 verir!). Probe ile doğrulanan zorunlular: customerCode, amount,
+> purpose, `Client.email`, `Items[].name/amount/quantity`. Çek DAİMA billing_email'e kesilir; 2₽ kanıtı
+> Faz 6 provasında. **dry_run=false geçişi + Faz 6 canlı cron provası AYRI Mustafa onayı (değişmedi).**
 
 ## 0. Genel ilke — inisiyatif (Mustafa, 09.07.2026)
 

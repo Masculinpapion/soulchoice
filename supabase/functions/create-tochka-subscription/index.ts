@@ -121,7 +121,10 @@ serve(async (req) => {
         ? 'Тест подписки SoulChoice Premium (автопродление)'
         : 'Подписка SoulChoice Premium (автопродление)'
 
-      const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/subscriptions', {
+      // S5 (banka tavsiyesi, 09.07.2026): with_receipt varyantı — Client.email zorunlu,
+      // çek DAİMA billing_email'e kesilir, müşteri banka sayfasında e-posta girmez.
+      // Zorunlu alanlar canlı validasyon probuyla doğrulandı: Client.email, Items[].name/amount/quantity.
+      const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/subscriptions_with_receipt', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + TOCHKA_JWT, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -133,6 +136,8 @@ serve(async (req) => {
             recurring: true,
             redirectUrl: 'https://soulchoice.app/premium?sub=ok',
             failRedirectUrl: 'https://soulchoice.app/premium?sub=fail',
+            Client: { email },
+            Items: [{ name: purpose, amount: amount.toFixed(2), quantity: 1 }],
           },
         }),
       })

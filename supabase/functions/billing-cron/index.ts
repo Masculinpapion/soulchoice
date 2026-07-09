@@ -62,14 +62,11 @@ function fmtAmount(rub: number): string {
   return rub.toLocaleString('ru-RU') + ' ₽'
 }
 
-function jwtDaysLeft(): number | null {
-  try {
-    const payload = JSON.parse(atob(TOCHKA_JWT.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-    if (!payload?.exp) return null
-    return Math.floor((payload.exp * 1000 - Date.now()) / 86400000)
-  } catch {
-    return null
-  }
+// Точка JWT'sinde exp claim'i YOK (canlıda doğrulandı 09.07.2026) — bitiş tarihi
+// banka tarafında tutuluyor; bilinen tarih billing_config.tochka_jwt_expires_at'ta.
+function jwtDaysLeft(expiresAt: Date | string | null): number | null {
+  if (!expiresAt) return null
+  return Math.floor((new Date(expiresAt).getTime() - Date.now()) / 86400000)
 }
 
 async function sendPush(userId: string, title: string, body: string): Promise<boolean> {
@@ -171,7 +168,7 @@ serve(async (req) => {
     expired_bindings: 0,
     would_notify: [] as string[],
     would_charge: [] as string[],
-    jwt_days_left: jwtDaysLeft(),
+    jwt_days_left: null as number | null,
     errors: [] as string[],
   }
   let heartbeatStatus = 'ok'
@@ -183,6 +180,7 @@ serve(async (req) => {
     const cfg = cfgRes.rows[0]
     if (!cfg) throw new Error('billing_config yok')
     summary.dry_run = cfg.dry_run
+    summary.jwt_days_left = jwtDaysLeft((cfg as unknown as { tochka_jwt_expires_at?: Date }).tochka_jwt_expires_at ?? null)
 
     // ================= FAZ A — BİLDİRİM (F2-1 kapısı) =================
     const notifyCands = await db.queryObject<Candidate>(

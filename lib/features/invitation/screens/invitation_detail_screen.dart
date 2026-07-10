@@ -251,176 +251,6 @@ class _InvitationDetailScreenState
                             ),
                           ),
 
-                          // d. Top bar
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: SafeArea(
-                              bottom: false,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
-                                child: Row(
-                                  children: [
-                                    _GlassPill(
-                                      onTap: () => context.pop(),
-                                      child: const Icon(
-                                          Icons.arrow_back_ios_new,
-                                          size: 16,
-                                          color: Colors.white),
-                                    ),
-                                    const Spacer(),
-                                    _GlassPill(
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          category == InvitationCategory.bar
-                                              ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
-                                              : category == InvitationCategory.concert
-                                                  ? Image.asset('assets/icons/music.png',
-                                                      width: 11, height: 11,
-                                                      color: AuroraTheme.auroraRed)
-                                                  : Text(category.emoji,
-                                                      style: const TextStyle(fontSize: 13)),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            category.labelFor(AppLocalizations.of(context)!),
-                                            style: TextStyle(
-                                              fontFamily: 'JetBrainsMono',
-                                              fontSize: 10,
-                                              color: Colors.white
-                                                  .withOpacity(0.85),
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    if (isOwner) ...[
-                                      const SizedBox(width: 8),
-                                      _GlassPill(
-                                        onTap: () => context.push(
-                                            '/invitation/$invitationId/applicants'),
-                                        child: const Icon(
-                                            Icons.people_outline,
-                                            size: 18,
-                                            color: Colors.white),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      _GlassPill(
-                                        onTap: () => context.push(
-                                          '/invitation/create',
-                                          extra: {
-                                            'id': invitationId,
-                                            'flow_type': inv['flow_type'] as String?,
-                                            'category': inv['category'] as String?,
-                                            'title': inv['title'] as String? ?? '',
-                                            'description': inv['description'] as String?,
-                                            'venue_name': inv['venue_name'] as String?,
-                                            'event_date': inv['event_date'] as String?,
-                                          },
-                                        ),
-                                        child: const Icon(
-                                            Icons.edit_outlined,
-                                            size: 18,
-                                            color: Colors.white),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      _GlassPill(
-                                        onTap: () async {
-                                          final confirm =
-                                              await showDialog<bool>(
-                                            context: context,
-                                            builder: (ctx) {
-                                              final l = AppLocalizations.of(ctx)!;
-                                              return AlertDialog(
-                                              backgroundColor:
-                                                  AuroraTheme.bgDeep,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              title: Text(
-                                                  l.inv_detail_delete_title,
-                                                  style: const TextStyle(
-                                                      fontFamily: 'Fraunces',
-                                                      fontStyle:
-                                                          FontStyle.italic,
-                                                      color: Colors.white,
-                                                      fontSize: 20)),
-                                              content: Text(
-                                                  l.inv_detail_delete_body(_currentUserGender()),
-                                                  style: TextStyle(
-                                                      fontFamily: 'Manrope',
-                                                      color: AuroraTheme
-                                                          .textSecondary,
-                                                      fontSize: 14)),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.of(ctx)
-                                                          .pop(false),
-                                                  child: Text(l.inv_detail_delete_cancel,
-                                                      style: TextStyle(
-                                                          fontFamily:
-                                                              'JetBrainsMono',
-                                                          color: AuroraTheme
-                                                              .textMuted)),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.of(ctx)
-                                                          .pop(true),
-                                                  child: Text(l.inv_detail_delete_confirm,
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'JetBrainsMono',
-                                                          color: AuroraTheme
-                                                              .auroraRed,
-                                                          fontWeight:
-                                                              FontWeight.w700)),
-                                                ),
-                                              ],
-                                            );},
-                                          );
-                                          if (confirm == true &&
-                                              context.mounted) {
-                                            try {
-                                              await Supabase.instance.client
-                                                  .from('invitations')
-                                                  .delete()
-                                                  .eq('id', invitationId);
-                                              ref.invalidate(
-                                                  invitationDetailProvider);
-                                              ref.invalidate(
-                                                  invitationsProvider);
-                                              if (context.mounted) {
-                                                context.pop();
-                                              }
-                                            } catch (e) {
-                                              if (context.mounted) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(
-                                                  content: Text('$e'),
-                                                  backgroundColor:
-                                                      AuroraTheme.auroraRed,
-                                                ));
-                                              }
-                                            }
-                                          }
-                                        },
-                                        child: const Icon(
-                                            Icons.delete_outline,
-                                            size: 18,
-                                            color: AuroraTheme.auroraRed),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
 
                           // e. Başlık bloğu
                           Positioned(
@@ -654,6 +484,176 @@ class _InvitationDetailScreenState
                                     myApplicationProvider(invitationId)),
                               ),
                             ),
+                    ),
+                  ),
+                ),
+              ),
+              // ── Pinned top bar (scroll ile kaybolmaz) ──────────
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    child: Row(
+                      children: [
+                        _GlassPill(
+                          onTap: () => context.pop(),
+                          child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 16,
+                              color: Colors.white),
+                        ),
+                        const Spacer(),
+                        _GlassPill(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              category == InvitationCategory.bar
+                                  ? Image.asset('assets/icons/bar.png', width: 14, height: 14)
+                                  : category == InvitationCategory.concert
+                                      ? Image.asset('assets/icons/music.png',
+                                          width: 11, height: 11,
+                                          color: AuroraTheme.auroraRed)
+                                      : Text(category.emoji,
+                                          style: const TextStyle(fontSize: 13)),
+                              const SizedBox(width: 4),
+                              Text(
+                                category.labelFor(AppLocalizations.of(context)!),
+                                style: TextStyle(
+                                  fontFamily: 'JetBrainsMono',
+                                  fontSize: 10,
+                                  color: Colors.white
+                                      .withOpacity(0.85),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isOwner) ...[
+                          const SizedBox(width: 8),
+                          _GlassPill(
+                            onTap: () => context.push(
+                                '/invitation/$invitationId/applicants'),
+                            child: const Icon(
+                                Icons.people_outline,
+                                size: 18,
+                                color: Colors.white),
+                          ),
+                          const SizedBox(width: 8),
+                          _GlassPill(
+                            onTap: () => context.push(
+                              '/invitation/create',
+                              extra: {
+                                'id': invitationId,
+                                'flow_type': inv['flow_type'] as String?,
+                                'category': inv['category'] as String?,
+                                'title': inv['title'] as String? ?? '',
+                                'description': inv['description'] as String?,
+                                'venue_name': inv['venue_name'] as String?,
+                                'event_date': inv['event_date'] as String?,
+                              },
+                            ),
+                            child: const Icon(
+                                Icons.edit_outlined,
+                                size: 18,
+                                color: Colors.white),
+                          ),
+                          const SizedBox(width: 8),
+                          _GlassPill(
+                            onTap: () async {
+                              final confirm =
+                                  await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) {
+                                  final l = AppLocalizations.of(ctx)!;
+                                  return AlertDialog(
+                                  backgroundColor:
+                                      AuroraTheme.bgDeep,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                              20)),
+                                  title: Text(
+                                      l.inv_detail_delete_title,
+                                      style: const TextStyle(
+                                          fontFamily: 'Fraunces',
+                                          fontStyle:
+                                              FontStyle.italic,
+                                          color: Colors.white,
+                                          fontSize: 20)),
+                                  content: Text(
+                                      l.inv_detail_delete_body(_currentUserGender()),
+                                      style: TextStyle(
+                                          fontFamily: 'Manrope',
+                                          color: AuroraTheme
+                                              .textSecondary,
+                                          fontSize: 14)),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx)
+                                              .pop(false),
+                                      child: Text(l.inv_detail_delete_cancel,
+                                          style: TextStyle(
+                                              fontFamily:
+                                                  'JetBrainsMono',
+                                              color: AuroraTheme
+                                                  .textMuted)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx)
+                                              .pop(true),
+                                      child: Text(l.inv_detail_delete_confirm,
+                                          style: const TextStyle(
+                                              fontFamily:
+                                                  'JetBrainsMono',
+                                              color: AuroraTheme
+                                                  .auroraRed,
+                                              fontWeight:
+                                                  FontWeight.w700)),
+                                    ),
+                                  ],
+                                );},
+                              );
+                              if (confirm == true &&
+                                  context.mounted) {
+                                try {
+                                  await Supabase.instance.client
+                                      .from('invitations')
+                                      .delete()
+                                      .eq('id', invitationId);
+                                  ref.invalidate(
+                                      invitationDetailProvider);
+                                  ref.invalidate(
+                                      invitationsProvider);
+                                  if (context.mounted) {
+                                    context.pop();
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text('$e'),
+                                      backgroundColor:
+                                          AuroraTheme.auroraRed,
+                                    ));
+                                  }
+                                }
+                              }
+                            },
+                            child: const Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: AuroraTheme.auroraRed),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),

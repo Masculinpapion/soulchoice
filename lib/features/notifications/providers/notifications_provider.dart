@@ -14,6 +14,10 @@ class NotificationItem {
   final String? actorName;
   final String? actorPhotoUrl;
 
+  /// Aynı sohbete ait gruplanmış mesaj bildirimlerinin tüm id'leri (kendisi dahil).
+  final List<String> groupIds;
+  final int groupCount;
+
   const NotificationItem({
     required this.id,
     required this.type,
@@ -24,7 +28,11 @@ class NotificationItem {
     required this.createdAt,
     this.actorName,
     this.actorPhotoUrl,
+    this.groupIds = const [],
+    this.groupCount = 1,
   });
+
+  List<String> get allIds => groupIds.isEmpty ? [id] : groupIds;
 
   factory NotificationItem.fromJson(Map<String, dynamic> json) =>
       NotificationItem(
@@ -48,6 +56,27 @@ class NotificationItem {
         createdAt: createdAt,
         actorName: actorName,
         actorPhotoUrl: actorPhotoUrl,
+        groupIds: groupIds,
+        groupCount: groupCount,
+      );
+
+  NotificationItem copyGrouped({
+    required List<String> groupIds,
+    required int groupCount,
+    required bool isRead,
+  }) =>
+      NotificationItem(
+        id: id,
+        type: type,
+        title: title,
+        body: body,
+        payload: payload,
+        isRead: isRead,
+        createdAt: createdAt,
+        actorName: actorName,
+        actorPhotoUrl: actorPhotoUrl,
+        groupIds: groupIds,
+        groupCount: groupCount,
       );
 
   String get routePath {
@@ -132,13 +161,46 @@ final notificationsProvider =
     );
   }
 
-  return items.map((item) {
+  final mapped = items.map((item) {
     final actorId = item.payload['actor_id'] as String?;
     final actor = actorId != null ? actors[actorId] : null;
     if (actor == null) return item;
     return item.copyWithActor(actorName: actor.name, actorPhotoUrl: actor.photoUrl);
   }).toList();
+
+  return _groupMessages(mapped);
 });
+
+/// Aynı sohbetin (match) mesaj bildirimlerini tek satırda toplar: temsilci
+/// en yenisi, groupCount toplam, biri bile okunmadıysa grup okunmamış sayılır.
+/// Diğer bildirim türleri olduğu gibi geçer.
+List<NotificationItem> _groupMessages(List<NotificationItem> items) {
+  final result = <NotificationItem>[];
+  final msgIndex = <String, int>{};
+  for (final item in items) {
+    if (item.type != 'new_message') {
+      result.add(item);
+      continue;
+    }
+    final key = (item.payload['match_id'] ??
+            item.payload['actor_id'] ??
+            item.id)
+        .toString();
+    final at = msgIndex[key];
+    if (at == null) {
+      msgIndex[key] = result.length;
+      result.add(item);
+    } else {
+      final rep = result[at];
+      result[at] = rep.copyGrouped(
+        groupIds: [...rep.allIds, item.id],
+        groupCount: rep.groupCount + 1,
+        isRead: rep.isRead && item.isRead,
+      );
+    }
+  }
+  return result;
+}
 
 final unreadNotificationCountProvider = Provider.autoDispose<int>((ref) {
   return ref.watch(notificationsProvider).maybeWhen(

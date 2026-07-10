@@ -92,12 +92,12 @@ class _NotificationsScreenState
     }
   }
 
-  Future<void> _markRead(String id) async {
+  Future<void> _markRead(List<String> ids) async {
     try {
       await Supabase.instance.client
           .from('notifications')
           .update({'read_at': DateTime.now().toIso8601String()})
-          .eq('id', id)
+          .inFilter('id', ids)
           .isFilter('read_at', null);
       setState(() => _localItems = null);
       ref.invalidate(notificationsProvider);
@@ -110,12 +110,12 @@ class _NotificationsScreenState
     }
   }
 
-  Future<void> _delete(String id) async {
+  Future<void> _delete(List<String> ids) async {
     try {
       await Supabase.instance.client
           .from('notifications')
           .delete()
-          .eq('id', id);
+          .inFilter('id', ids);
       ref.invalidate(notificationsProvider);
       setState(() => _localItems = null);
     } catch (e) {
@@ -214,12 +214,12 @@ class _NotificationsScreenState
                           item: n,
                           locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
                           onTap: () async {
-                            await _markRead(n.id);
+                            await _markRead(n.allIds);
                             if (ctx.mounted) ctx.push(n.routePath);
                           },
                           onDismiss: n.isRead ? () {
                             setState(() => _localItems!.removeWhere((x) => x.id == n.id));
-                            _delete(n.id);
+                            _delete(n.allIds);
                           } : null,
                         );
                       },
@@ -436,10 +436,14 @@ class _NotifTile extends StatelessWidget {
       // Yeni mesajlarda ikinci satır olarak mesaj önizlemesi anlamlı
       // (isim+aksiyon zaten "mesaj gönderdi" dediği için tekrar olmaz).
       if (item.type == 'new_message' && item.body.isNotEmpty) {
+        // Gruplanmışsa: "5 новых сообщений · <son mesaj>" (temsilci en yenisi)
+        final preview = item.groupCount > 1
+            ? '${l10n.notif_grouped_messages(item.groupCount)} · ${item.body}'
+            : item.body;
         children.addAll([
           const SizedBox(height: 3),
           Text(
-            item.body,
+            preview,
             style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 12,

@@ -134,8 +134,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         initialIndex: 0,
                         onPageChanged: (i) =>
                             setState(() => _photoIndex = i),
-                        onBack: isOwnProfile ? null : () => context.pop(),
-                        trailing: trailing,
                         name: name,
                         age: age,
                         cityName: cityName,
@@ -269,6 +267,32 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                // ── Pinned top bar (scroll ile kaybolmaz) ──────────────
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (!isOwnProfile)
+                            _GlassIconButton(
+                              icon: Icons.arrow_back_ios_new,
+                              onTap: () => context.pop(),
+                            )
+                          else
+                            const SizedBox(width: 40),
+                          trailing,
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -487,8 +511,6 @@ class _HeroSection extends StatefulWidget {
   final List<Map<String, dynamic>> photos;
   final int initialIndex;
   final ValueChanged<int> onPageChanged;
-  final VoidCallback? onBack;
-  final Widget trailing;
   final String name;
   final int age;
   final String cityName;
@@ -500,8 +522,6 @@ class _HeroSection extends StatefulWidget {
     required this.photos,
     required this.initialIndex,
     required this.onPageChanged,
-    this.onBack,
-    required this.trailing,
     required this.name,
     required this.age,
     required this.cityName,
@@ -670,38 +690,24 @@ class _HeroSectionState extends State<_HeroSection> {
             ),
           ),
 
-          // ── e. Top bar ────────────────────────────────────────────────
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (widget.onBack != null)
-                      _GlassIconButton(
-                        icon: Icons.arrow_back_ios_new,
-                        onTap: widget.onBack!,
-                      )
-                    else
-                      const SizedBox(width: 40),
-                    if (widget.photos.length > 1)
-                      _DotIndicator(
-                        count: widget.photos.length,
-                        current: _current,
-                      )
-                    else
-                      const SizedBox(width: 40),
-                    widget.trailing,
-                  ],
+          // ── e. Foto nokta göstergesi (back/trailing pinned bara taşındı) ──
+          if (widget.photos.length > 1)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Center(
+                    child: _DotIndicator(
+                      count: widget.photos.length,
+                      current: _current,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
 
           // ── f. Identity overlay ───────────────────────────────────────
           Positioned(

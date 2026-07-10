@@ -1093,6 +1093,28 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
+/// Salt-emoji mesajlar büyük gösterilir. Manrope'ta emoji glifi yok;
+/// iOS'ta fallback emoji 16pt'te minicik kalıyordu — emoji-only balonlarda
+/// fontFamily verilmez (platform emoji fontu) ve boyut büyütülür.
+bool _isEmojiOnly(String s) {
+  final t = s.trim();
+  if (t.isEmpty || t.runes.length > 12) return false;
+  final re = RegExp(
+    r'^(?:\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}\u{1F3FB}-\u{1F3FF}\u{200D}\u{FE0F}\s])+$',
+    unicode: true,
+  );
+  return re.hasMatch(t);
+}
+
+TextStyle _bubbleTextStyle(String content) => _isEmojiOnly(content)
+    ? const TextStyle(fontSize: 34, height: 1.25)
+    : const TextStyle(
+        fontFamily: 'Manrope',
+        fontSize: 16,
+        color: AuroraTheme.textPrimary,
+        height: 1.6,
+      );
+
 class _SentBubble extends StatelessWidget {
   final MessageModel message;
   final String time;
@@ -1121,13 +1143,7 @@ class _SentBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(message.content,
-                style: const TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize: 16,
-                  color: AuroraTheme.textPrimary,
-                  height: 1.6,
-                )),
+            Text(message.content, style: _bubbleTextStyle(message.content)),
             const SizedBox(height: 4),
             Text(
               time,
@@ -1174,13 +1190,7 @@ class _ReceivedBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(message.content,
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 16,
-                      color: AuroraTheme.textPrimary,
-                      height: 1.6,
-                    )),
+                Text(message.content, style: _bubbleTextStyle(message.content)),
                 const SizedBox(height: 4),
                 Text(time,
                     style: TextStyle(

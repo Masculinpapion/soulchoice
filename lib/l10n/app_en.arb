@@ -765,6 +765,14 @@
   "notif_type_feedback_request_title": "How was the meetup?",
   "notif_type_feedback_request_body": "Share your experience",
   "notif_action_new_message": "sent a message",
+  "notif_grouped_messages": "{count, plural, one{{count} new message} other{{count} new messages}}",
+  "@notif_grouped_messages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notif_action_new_application": "applied to your invitation",
   "notif_action_selected": "selected you 🎉",
   "notif_action_not_selected": "responded to your application",

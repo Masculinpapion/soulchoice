@@ -765,6 +765,8 @@
   "notif_type_feedback_request_title": "How was the meetup?",
   "notif_type_feedback_request_body": "Share your experience",
   "notif_action_new_message": "sent a message",
+  "notif_type_new_application_body_noname": "You have a new application",
+  "notif_type_new_message_body_noname": "New message",
   "notif_grouped_messages": "{count, plural, one{{count} new message} other{{count} new messages}}",
   "@notif_grouped_messages": {
     "placeholders": {

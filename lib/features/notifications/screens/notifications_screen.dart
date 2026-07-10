@@ -284,10 +284,18 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
 String _notifBody(NotificationItem item, AppLocalizations l) {
   final name = item.actorName ?? '';
   switch (item.type) {
-    case 'new_application': return l.notif_type_new_application_body(name);
+    // Aktör adı boşsa (silinmiş kullanıcı / eski kayıt) "… от" gibi sarkık
+    // metin kalmasın — isimsiz gövde kullanılır.
+    case 'new_application':
+      return name.isEmpty
+          ? l.notif_type_new_application_body_noname
+          : l.notif_type_new_application_body(name);
     case 'selected':        return l.notif_type_selected_body;
     case 'not_selected':    return l.notif_type_not_selected_body;
-    case 'new_message':     return l.notif_type_new_message_body(name);
+    case 'new_message':
+      return name.isEmpty
+          ? l.notif_type_new_message_body_noname
+          : l.notif_type_new_message_body(name);
     case 'selfie_approved': return l.notif_type_selfie_approved_body;
     case 'selfie_rejected': return l.notif_type_selfie_rejected_body;
     case 'meeting_reminder':return l.notif_type_meeting_reminder_body;

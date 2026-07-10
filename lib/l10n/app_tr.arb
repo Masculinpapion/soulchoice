@@ -765,6 +765,8 @@
   "notif_type_feedback_request_title": "Buluşma nasıldı?",
   "notif_type_feedback_request_body": "Deneyimini paylaş",
   "notif_action_new_message": "mesaj gönderdi",
+  "notif_type_new_application_body_noname": "Yeni bir başvuru geldi",
+  "notif_type_new_message_body_noname": "Yeni mesaj",
   "notif_grouped_messages": "{count, plural, other{{count} yeni mesaj}}",
   "@notif_grouped_messages": {
     "placeholders": {

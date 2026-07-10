@@ -765,6 +765,8 @@
   "notif_type_feedback_request_title": "Как прошла встреча?",
   "notif_type_feedback_request_body": "Расскажи о своём опыте",
   "notif_action_new_message": "отправил(а) сообщение",
+  "notif_type_new_application_body_noname": "Поступила новая заявка",
+  "notif_type_new_message_body_noname": "Новое сообщение",
   "notif_grouped_messages": "{count, plural, one{{count} новое сообщение} few{{count} новых сообщения} many{{count} новых сообщений} other{{count} новых сообщения}}",
   "@notif_grouped_messages": {
     "placeholders": {

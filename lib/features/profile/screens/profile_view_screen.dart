@@ -90,7 +90,11 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
             final cityName = _localizedCity ?? city?['name'] as String? ?? '';
             final interests = ((user['interests'] as List?)?.cast<String>() ?? [])
                 .toSet().toList();
-            final photos = photosAsync.asData?.value ?? [];
+            // Galeri garantisi: yalnız bu kullanıcıya ait fotoğraflar render
+            // edilir — provider/cache ne dönerse dönsün yabancı foto elenir.
+            final photos = (photosAsync.asData?.value ?? [])
+                .where((p) => p['user_id'] == userId)
+                .toList();
 
             Widget trailing;
             if (isOwnProfile) {

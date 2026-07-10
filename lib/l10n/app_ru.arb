@@ -183,6 +183,8 @@
   "create_inv_venue_ph_food": "Название ресторана",
   "create_inv_venue_ph_bar": "Название бара",
   "create_inv_venue_ph_coffee": "Название кафе",
+  "create_inv_venue_ph_sport": "Название корта или клуба",
+  "create_inv_venue_ph_walk": "Парк или место встречи",
   "create_inv_venue_ph_cinema": "Название кинотеатра",
   "create_inv_venue_ph_theater": "Название театра",
   "create_inv_venue_ph_concert": "Название площадки",
@@ -216,6 +218,10 @@
   "create_inv_desc_request_concert": "На какое мероприятие хочешь попасть?",
   "create_inv_desc_request_culture": "Куда хочешь пойти?",
   "create_inv_desc_request_travel": "Куда хочешь поехать?",
+  "create_inv_desc_invite_sport": "Какая активность?",
+  "create_inv_desc_request_sport": "Чем хочешь заняться?",
+  "create_inv_desc_invite_walk": "Где гуляешь?",
+  "create_inv_desc_request_walk": "Где хочешь погулять?",
   "create_inv_desc_request_gift": "Что хочешь получить в подарок?",
   "create_inv_datetime_placeholder": "Выбрать дату и время",
   "decision_selected_title": "Подтверждение выбора",
@@ -705,6 +711,8 @@
   "category_coffee": "Кофе",
   "category_bar": "Бар",
   "category_gift": "Подарок",
+  "category_sport": "Спорт",
+  "category_walk": "Прогулка",
   "@inv_detail_delete_body": {
     "placeholders": {
       "gender": {

@@ -987,6 +987,14 @@ class _StepDescription extends StatelessWidget {
         return isInvite
             ? l10n.create_inv_desc_invite_gift
             : l10n.create_inv_desc_request_gift;
+      case InvitationCategory.sport:
+        return isInvite
+            ? l10n.create_inv_desc_invite_sport
+            : l10n.create_inv_desc_request_sport;
+      case InvitationCategory.walk:
+        return isInvite
+            ? l10n.create_inv_desc_invite_walk
+            : l10n.create_inv_desc_request_walk;
       default:
         return isInvite
             ? l10n.create_inv_desc_invite_hint
@@ -1092,6 +1100,10 @@ class _StepVenue extends StatelessWidget {
         return l10n.create_inv_venue_ph_travel;
       case InvitationCategory.gift:
         return l10n.create_inv_venue_ph_gift;
+      case InvitationCategory.sport:
+        return l10n.create_inv_venue_ph_sport;
+      case InvitationCategory.walk:
+        return l10n.create_inv_venue_ph_walk;
       default:
         return l10n.create_inv_venue_placeholder;
     }

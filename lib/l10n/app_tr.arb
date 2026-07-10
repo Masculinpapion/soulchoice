@@ -183,6 +183,8 @@
   "create_inv_venue_ph_food": "Restoran adı",
   "create_inv_venue_ph_bar": "Bar adı",
   "create_inv_venue_ph_coffee": "Kafe adı",
+  "create_inv_venue_ph_sport": "Kort veya kulüp adı",
+  "create_inv_venue_ph_walk": "Park veya buluşma yeri",
   "create_inv_venue_ph_cinema": "Sinema adı",
   "create_inv_venue_ph_theater": "Tiyatro adı",
   "create_inv_venue_ph_concert": "Mekan adı",
@@ -216,6 +218,10 @@
   "create_inv_desc_request_concert": "Hangi etkinliğe gitmek istiyorsun?",
   "create_inv_desc_request_culture": "Nereye gitmek istiyorsun?",
   "create_inv_desc_request_travel": "Nereye gitmek istiyorsun?",
+  "create_inv_desc_invite_sport": "Hangi aktivite?",
+  "create_inv_desc_request_sport": "Ne yapmak istersin?",
+  "create_inv_desc_invite_walk": "Nerede yürüyorsun?",
+  "create_inv_desc_request_walk": "Nerede yürümek istersin?",
   "create_inv_desc_request_gift": "Ne hediye edilmesini istiyorsun?",
   "create_inv_datetime_placeholder": "Tarih ve saat seç",
   "decision_selected_title": "Eşleşme Onayı",
@@ -705,6 +711,8 @@
   "category_coffee": "Kahve",
   "category_bar": "Bar",
   "category_gift": "Hediye",
+  "category_sport": "Spor",
+  "category_walk": "Yürüyüş",
   "@inv_detail_delete_body": {
     "placeholders": {
       "gender": {

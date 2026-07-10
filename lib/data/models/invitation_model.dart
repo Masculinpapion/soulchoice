@@ -14,6 +14,8 @@ enum InvitationCategory {
   theater,
   coffee,
   gift,
+  sport,
+  walk,
 }
 
 extension InvitationCategoryExt on InvitationCategory {
@@ -37,6 +39,10 @@ extension InvitationCategoryExt on InvitationCategory {
         return l10n.category_coffee;
       case InvitationCategory.gift:
         return l10n.category_gift;
+      case InvitationCategory.sport:
+        return l10n.category_sport;
+      case InvitationCategory.walk:
+        return l10n.category_walk;
     }
   }
 
@@ -60,6 +66,10 @@ extension InvitationCategoryExt on InvitationCategory {
         return '☕';
       case InvitationCategory.gift:
         return '🎁';
+      case InvitationCategory.sport:
+        return '🎾';
+      case InvitationCategory.walk:
+        return '🚶';
     }
   }
 }

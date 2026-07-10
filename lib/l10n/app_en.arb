@@ -839,6 +839,7 @@
   "sub_status_past_due": "Payment issue",
   "sub_none_title": "No subscription yet",
   "sub_none_body": "Get Premium with auto-renewal or a one-time 30-day pass.",
+  "sub_none_body_ios": "A subscription purchased on another platform will appear here.",
   "sub_get_premium": "Get Premium",
   "sub_next_charge": "Next charge",
   "sub_card": "Card",

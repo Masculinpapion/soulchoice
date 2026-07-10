@@ -273,7 +273,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
           const SizedBox(height: 8),
-          Text(l10n.sub_none_body,
+          Text(Platform.isIOS ? l10n.sub_none_body_ios : l10n.sub_none_body,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: 'Manrope',

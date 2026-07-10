@@ -818,6 +818,7 @@
   "sub_status_past_due": "Ödeme sorunu",
   "sub_none_title": "Henüz abonelik yok",
   "sub_none_body": "Otomatik yenilenen Premium'a geç veya 30 günlük tek seferlik erişim al.",
+  "sub_none_body_ios": "Başka bir platformda başlatılan abonelik burada görünecek.",
   "sub_get_premium": "Premium'a geç",
   "sub_next_charge": "Sonraki çekim",
   "sub_card": "Kart",

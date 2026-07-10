@@ -292,6 +292,7 @@
   "inv_detail_apply_sent_title": "Başvuru Gönderildi",
   "inv_detail_apply_sent_body": "Davetiye sahibinin seçim yapmasını bekle",
   "inv_detail_error": "Hata: {error}",
+  "inv_detail_retry": "Tekrar dene",
   "@inv_detail_error": {
     "placeholders": {
       "error": {
@@ -370,7 +371,7 @@
   "messages_empty_hint": "Davetiye aç veya mevcut birine başvur",
   "messages_btn_create": "Davetiye Oluştur",
   "notifications_title": "Bildirimler",
-  "notifications_mark_all_read": "Tümünü okundu işaretle",
+  "notifications_mark_all_read": "Tümünü oku",
   "notifications_error": "Hata: {error}",
   "@notifications_error": {
     "placeholders": {

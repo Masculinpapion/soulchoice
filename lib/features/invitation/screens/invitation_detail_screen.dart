@@ -471,8 +471,13 @@ class _InvitationDetailScreenState
                               loading: () => _AuroraCTA(
                                   label: AppLocalizations.of(context)!.inv_detail_loading,
                                   onPressed: null),
+                              // Geçici hata (ör. o anda süresi dolmuş oturum
+                              // token'ı → 401): ölü "Ошибка" yerine tek
+                              // dokunuşla yeniden dene.
                               error: (_, __) => _AuroraCTA(
-                                  label: AppLocalizations.of(context)!.inv_detail_error_label, onPressed: null),
+                                  label: AppLocalizations.of(context)!.inv_detail_retry,
+                                  onPressed: () => ref.invalidate(
+                                      myApplicationProvider(invitationId))),
                               data: (myApp) => _ApplyButton(
                                 invitationId: invitationId,
                                 existingApp: myApp,

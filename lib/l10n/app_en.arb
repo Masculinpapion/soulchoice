@@ -292,6 +292,7 @@
   "inv_detail_apply_sent_title": "Application Sent",
   "inv_detail_apply_sent_body": "Wait for the invitation owner to make their choice",
   "inv_detail_error": "Error: {error}",
+  "inv_detail_retry": "Retry",
   "@inv_detail_error": {
     "placeholders": {
       "error": {

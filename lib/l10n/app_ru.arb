@@ -292,6 +292,7 @@
   "inv_detail_apply_sent_title": "Заявка отправлена",
   "inv_detail_apply_sent_body": "Жди, пока владелец приглашения сделает выбор",
   "inv_detail_error": "Ошибка: {error}",
+  "inv_detail_retry": "Повторить",
   "@inv_detail_error": {
     "placeholders": {
       "error": {
@@ -370,7 +371,7 @@
   "messages_empty_hint": "Открой приглашение или откликнись на существующее",
   "messages_btn_create": "Создать приглашение",
   "notifications_title": "Уведомления",
-  "notifications_mark_all_read": "Отметить все прочитанными",
+  "notifications_mark_all_read": "Прочитать все",
   "notifications_error": "Ошибка: {error}",
   "@notifications_error": {
     "placeholders": {

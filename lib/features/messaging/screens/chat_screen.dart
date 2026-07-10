@@ -1106,14 +1106,23 @@ bool _isEmojiOnly(String s) {
   return re.hasMatch(t);
 }
 
-TextStyle _bubbleTextStyle(String content) => _isEmojiOnly(content)
-    ? const TextStyle(fontSize: 34, height: 1.25)
-    : const TextStyle(
-        fontFamily: 'Manrope',
-        fontSize: 16,
-        color: AuroraTheme.textPrimary,
-        height: 1.6,
-      );
+TextStyle _bubbleTextStyle(String content) {
+  if (!_isEmojiOnly(content)) {
+    return const TextStyle(
+      fontFamily: 'Manrope',
+      fontSize: 16,
+      color: AuroraTheme.textPrimary,
+      height: 1.6,
+    );
+  }
+  // Emoji sayısına göre kademeli boyut (WhatsApp benzeri): tek emoji en
+  // büyük, kalabalık dizi normale yaklaşır — göze hoş oran.
+  final n = RegExp(r'\p{Extended_Pictographic}', unicode: true)
+      .allMatches(content)
+      .length;
+  final size = n <= 1 ? 30.0 : (n <= 3 ? 26.0 : 20.0);
+  return TextStyle(fontSize: size, height: 1.25);
+}
 
 class _SentBubble extends StatelessWidget {
   final MessageModel message;

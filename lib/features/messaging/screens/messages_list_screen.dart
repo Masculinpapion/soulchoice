@@ -60,7 +60,16 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
-        child: SafeArea(
+        // Üstte durum çubuğu, altta YALNIZ sistem gezinme şeridi kadar pay:
+        // içerik uygulama pill'inin arkasından akar (Profil mantığı) ama
+        // sistem şeridinin arkasına taşmaz.
+        child: Padding(
+          // Ham pencere insets'i (View): Scaffold extendBody gövde
+          // MediaQuery'sini değiştirdiği için oradan okunan pay 0 dönebiliyor.
+          padding: EdgeInsets.only(
+            top: MediaQueryData.fromView(View.of(context)).padding.top,
+            bottom: MediaQueryData.fromView(View.of(context)).padding.bottom,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

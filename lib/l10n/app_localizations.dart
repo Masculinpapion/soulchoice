@@ -2617,7 +2617,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_blocked_users.
   ///
   /// In en, this message translates to:
-  /// **'Blocked users'**
+  /// **'Blocked'**
   String get settings_blocked_users;
 
   /// No description provided for @settings_location_permission.

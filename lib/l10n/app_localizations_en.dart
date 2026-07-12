@@ -1371,7 +1371,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_privacy_section => 'PRIVACY & SECURITY';
 
   @override
-  String get settings_blocked_users => 'Blocked users';
+  String get settings_blocked_users => 'Blocked';
 
   @override
   String get settings_location_permission => 'Location permission';

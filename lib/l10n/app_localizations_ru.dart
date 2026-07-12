@@ -1393,7 +1393,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_privacy_section => 'КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ';
 
   @override
-  String get settings_blocked_users => 'Заблокированные пользователи';
+  String get settings_blocked_users => 'Чёрный список';
 
   @override
   String get settings_location_permission => 'Разрешение геолокации';

@@ -648,7 +648,7 @@
     }
   },
   "settings_privacy_section": "GİZLİLİK VE GÜVENLİK",
-  "settings_blocked_users": "Engellenen kullanıcılar",
+  "settings_blocked_users": "Engellenenler",
   "settings_location_permission": "Konum izni",
   "settings_camera_permission": "Kamera izni",
   "settings_support_section": "DESTEK",

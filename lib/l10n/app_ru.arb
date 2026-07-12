@@ -648,7 +648,7 @@
     }
   },
   "settings_privacy_section": "КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ",
-  "settings_blocked_users": "Заблокированные пользователи",
+  "settings_blocked_users": "Чёрный список",
   "settings_location_permission": "Разрешение геолокации",
   "settings_camera_permission": "Разрешение камеры",
   "settings_support_section": "ПОДДЕРЖКА",

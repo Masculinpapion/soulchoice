@@ -648,7 +648,7 @@
     }
   },
   "settings_privacy_section": "PRIVACY & SECURITY",
-  "settings_blocked_users": "Blocked users",
+  "settings_blocked_users": "Blocked",
   "settings_location_permission": "Location permission",
   "settings_camera_permission": "Camera permission",
   "settings_support_section": "SUPPORT",

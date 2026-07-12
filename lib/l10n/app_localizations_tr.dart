@@ -1366,7 +1366,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_privacy_section => 'GİZLİLİK VE GÜVENLİK';
 
   @override
-  String get settings_blocked_users => 'Engellenen kullanıcılar';
+  String get settings_blocked_users => 'Engellenenler';
 
   @override
   String get settings_location_permission => 'Konum izni';

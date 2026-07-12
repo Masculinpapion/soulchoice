@@ -72,8 +72,8 @@ class _AuroraNavBar extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      const Color(0xFF0A0A0E).withOpacity(0.35),
-                      const Color(0xFF0A0A0E).withOpacity(0.60),
+                      const Color(0xFF0A0A0E).withOpacity(0.15),
+                      const Color(0xFF0A0A0E).withOpacity(0.45),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(100),

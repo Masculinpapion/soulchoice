@@ -754,20 +754,20 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Hale bandı: pill boyu aynen (38); band içi 12px hava — seçili chip
+    // ışıması band içinde söner, sekmelere/kartlara taşmaz (geçişte patlama yok).
     return SizedBox(
-      height: 50,
+      height: 62,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         children: [
           // Tümü chip
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: onClearFilter,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
+              child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
@@ -813,8 +813,7 @@ class _CategoryChips extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: () => onSelected(c),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
+              child: Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 6),
                 alignment: Alignment.center,

@@ -65,11 +65,14 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 ),
               ),
               // Filtre chip'leri
+              // Hale bandı: pill boyu aynen; band içinde 12px üst/alt hava —
+              // seçili chip ışıması bandın içinde söner ve band sınırında
+              // kırpılır: komşu bloklara taşma/geçişte renk patlaması olamaz.
               SizedBox(
-                height: 36,
+                height: 60,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   children: [
                     _FilterChip(
                       label: AppLocalizations.of(context)!.discover_filter_all,
@@ -91,7 +94,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
 
               // İçerik
               Expanded(
@@ -525,8 +528,9 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.only(right: 8),
         child: GestureDetector(
           onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+          // Anlık geçiş: decoration lerp'i (gradient+glow) geçişte çift
+          // kızıl bulut basıyordu — animasyonsuz seçim temiz.
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               gradient: selected

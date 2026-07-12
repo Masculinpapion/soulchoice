@@ -45,9 +45,11 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
         // içerik uygulama pill'inin arkasından akar (Profil mantığı) ama
         // sistem şeridinin arkasına taşmaz.
         child: Padding(
+          // Ham pencere insets'i (View): Scaffold extendBody gövde
+          // MediaQuery'sini değiştirdiği için oradan okunan pay 0 dönebiliyor.
           padding: EdgeInsets.only(
-            top: MediaQuery.of(context).viewPadding.top,
-            bottom: MediaQuery.of(context).viewPadding.bottom,
+            top: MediaQueryData.fromView(View.of(context)).padding.top,
+            bottom: MediaQueryData.fromView(View.of(context)).padding.bottom,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

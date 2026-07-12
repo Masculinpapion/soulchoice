@@ -123,7 +123,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 cityId: _selectedCityId,
               ),
               _TabBar(controller: _tabController),
-              const SizedBox(height: 4), // chip satırı nefes payı (üst)
               _CategoryChips(
                 selected: _selectedCategory,
                 onSelected: (c) => setState(() {
@@ -131,7 +130,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
               ),
-              const SizedBox(height: 12), // chip satırı nefes payı (alt — ışıma sönümü)
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -756,12 +754,13 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Hale bandı: pill boyu aynen (38); band içi 12px hava — seçili chip
+    // ışıması band içinde söner, sekmelere/kartlara taşmaz (geçişte patlama yok).
     return SizedBox(
-      height: 50,
+      height: 62,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         children: [
           // Tümü chip
           Padding(

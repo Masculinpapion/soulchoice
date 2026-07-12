@@ -11,6 +11,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -129,6 +130,7 @@ class _NotificationsScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final notifAsync = ref.watch(notificationsProvider);
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
@@ -371,6 +373,7 @@ class _NotifTile extends StatelessWidget {
               ? CachedNetworkImage(
                   imageUrl: photoUrl,
                   fit: BoxFit.cover,
+                  alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
                   errorWidget: (_, __, ___) => _DefaultActorAvatar(name: item.actorName!),
                 )
               : _DefaultActorAvatar(name: item.actorName!),

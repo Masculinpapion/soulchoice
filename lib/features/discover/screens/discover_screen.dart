@@ -16,6 +16,7 @@ import '../providers/discover_provider.dart';
 import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 // Deterministik aspect ratio — hash bazlı, iki seçenek (yumusak masonry)
 double _cardAspect(String id) =>
@@ -33,6 +34,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final cityId = ref.watch(selectedCityIdProvider);
     final async = ref.watch(discoverProvider(cityId));
 
@@ -183,7 +185,7 @@ class _DiscoverCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: photoUrl,
                         fit: BoxFit.cover,
-                        alignment: Alignment.topCenter,
+                        alignment: PhotoFocus.of(photoUrl),
                         placeholder: (_, __) => Container(
                             color: Colors.white.withOpacity(0.05)),
                         errorWidget: (_, __, ___) => Container(

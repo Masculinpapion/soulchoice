@@ -12,6 +12,7 @@ import '../../feed/providers/invitations_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
   final String invitationId;
@@ -42,6 +43,7 @@ class _InvitationDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final invitationId = widget.invitationId;
     final invAsync = ref.watch(invitationDetailProvider(invitationId));
     final myAppAsync = ref.watch(myApplicationProvider(invitationId));
@@ -166,7 +168,7 @@ class _InvitationDetailScreenState
                                       ? CachedNetworkImage(
                                           imageUrl: url,
                                           fit: BoxFit.cover,
-                                          alignment: Alignment.topCenter,
+                                          alignment: PhotoFocus.of(url),
                                           errorWidget: (_, __, ___) => _FallbackBg(),
                                         )
                                       : _FallbackBg(),
@@ -974,7 +976,7 @@ class _HostCard extends ConsumerWidget {
                         ? CachedNetworkImage(
                             imageUrl: ownerPhotoUrl!,
                             fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
+                            alignment: PhotoFocus.of(ownerPhotoUrl),
                             errorWidget: (_, __, ___) => Container(
                               color: AuroraTheme.glassBg,
                               child: const Icon(Icons.person_outline,
@@ -1149,7 +1151,7 @@ class _HostRow extends StatelessWidget {
                           ? CachedNetworkImage(
                               imageUrl: ownerPhotoUrl!,
                               fit: BoxFit.cover,
-                              alignment: Alignment.topCenter,
+                              alignment: PhotoFocus.of(ownerPhotoUrl),
                               errorWidget: (_, __, ___) => Container(
                                 color: AuroraTheme.glassBg,
                                 child: const Icon(Icons.person_outline,

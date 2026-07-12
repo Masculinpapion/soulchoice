@@ -6,6 +6,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/applications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class ApplicantsScreen extends ConsumerWidget {
   final String invitationId;
@@ -13,6 +14,7 @@ class ApplicantsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final async = ref.watch(applicantsProvider(invitationId));
 
     return Scaffold(
@@ -164,7 +166,7 @@ class _ApplicantTile extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: primaryUrl,
                 fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+                alignment: PhotoFocus.of(primaryUrl),
                 errorWidget: (_, __, ___) => Container(
                   color: AuroraTheme.glassBg,
                   child: Icon(Icons.person_outline, color: AuroraTheme.textSecondary, size: 36),

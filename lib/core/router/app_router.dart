@@ -26,6 +26,7 @@ import '../../features/messaging/screens/chat_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/delete_account_screen.dart';
 import '../../features/settings/screens/blocked_users_screen.dart';
+import '../../features/settings/screens/notification_settings_screen.dart';
 import '../../features/admin/screens/admin_screen.dart';
 import '../../features/paywall/screens/paywall_screen.dart';
 import '../../features/paywall/screens/subscription_screen.dart';
@@ -184,6 +185,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings/blocked-users',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (ctx, _) => const BlockedUsersScreen(),
+      ),
+      GoRoute(
+        path: '/settings/notifications',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, _) => const NotificationSettingsScreen(),
       ),
       GoRoute(
         path: '/admin',

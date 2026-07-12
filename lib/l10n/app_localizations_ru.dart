@@ -120,6 +120,40 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_notification_prefs => 'Настройки уведомлений';
 
   @override
+  String get notif_pref_push_section => 'Push-уведомления';
+
+  @override
+  String get notif_pref_new_application => 'Новые заявки';
+
+  @override
+  String get notif_pref_new_application_sub =>
+      'Кто-то откликнулся на твоё приглашение';
+
+  @override
+  String get notif_pref_selected => 'Тебя выбрали';
+
+  @override
+  String get notif_pref_selected_sub => 'Твою заявку приняли — открывается чат';
+
+  @override
+  String get notif_pref_message => 'Сообщения';
+
+  @override
+  String get notif_pref_message_sub => 'Новые сообщения в чатах';
+
+  @override
+  String get notif_pref_match => 'Совпадения';
+
+  @override
+  String get notif_pref_match_sub => 'Взаимный выбор';
+
+  @override
+  String get notif_pref_saved => 'Настройки сохранены';
+
+  @override
+  String get notif_pref_all_read => 'Все уведомления прочитаны';
+
+  @override
   String get settings_do_not_disturb => 'Не беспокоить';
 
   @override

@@ -47,6 +47,50 @@ serve(async (req) => {
       'SELECT fcm_token FROM users WHERE id = $1 LIMIT 1',
       [user_id]
     )
+
+    // Bildirim tercihleri: tür kapalıysa VEYA sessiz saatler içindeyse push
+    // atlanır. Uygulama-içi notifications kaydı ayrı oluşur (bu fn sadece
+    // push gönderir), o yüzden atlamak listeyi etkilemez. Kayıt yoksa
+    // varsayılan: tüm push açık, sessiz saatler kapalı.
+    const notifType = (data?.type as string | undefined) ?? ''
+    const typeToColumn: Record<string, string> = {
+      new_application: 'push_new_application',
+      selected: 'push_selected',
+      new_message: 'push_message',
+      match: 'push_match',
+    }
+    const col = typeToColumn[notifType]
+    if (col) {
+      const prefRes = await db.queryObject<Record<string, unknown>>(
+        `SELECT ${col} AS enabled, quiet_hours_enabled, quiet_hours_start, quiet_hours_end
+         FROM notification_preferences WHERE user_id = $1 LIMIT 1`,
+        [user_id]
+      )
+      const pref = prefRes.rows[0]
+      if (pref) {
+        // Tür kapalı → atla
+        if (pref.enabled === false) {
+          await db.end()
+          return new Response(JSON.stringify({ success: true, skipped: 'type_disabled' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
+        }
+        // Sessiz saatler içinde → atla (alıcının yerel saati; sunucu Europe/Moscow)
+        if (pref.quiet_hours_enabled === true && pref.quiet_hours_start && pref.quiet_hours_end) {
+          const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Moscow' }))
+          const cur = now.getHours() * 60 + now.getMinutes()
+          const [sh, sm] = String(pref.quiet_hours_start).split(':').map(Number)
+          const [eh, em] = String(pref.quiet_hours_end).split(':').map(Number)
+          const start = sh * 60 + sm
+          const end = eh * 60 + em
+          // Gece aşan aralık (örn. 22:00–08:00) da doğru değerlendirilir
+          const inQuiet = start <= end ? (cur >= start && cur < end) : (cur >= start || cur < end)
+          if (inQuiet) {
+            await db.end()
+            return new Response(JSON.stringify({ success: true, skipped: 'quiet_hours' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
+          }
+        }
+      }
+    }
+
     await db.end()
     const fcmToken = result.rows[0]?.fcm_token
     if (!fcmToken) {

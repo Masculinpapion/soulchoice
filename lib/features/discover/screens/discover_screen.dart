@@ -68,7 +68,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               // Chip boyutu değişmez; satır üst/alt nefes payı + Clip.none
               // (seçili chip ışıması komşu bloklara değmeden serbest yayılır).
               Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 6),
+                padding: const EdgeInsets.only(top: 8, bottom: 10),
                 child: SizedBox(
                 height: 36,
                 child: ListView(

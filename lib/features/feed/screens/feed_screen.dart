@@ -131,7 +131,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
               ),
-              const SizedBox(height: 6), // chip satırı nefes payı (alt)
+              const SizedBox(height: 12), // chip satırı nefes payı (alt — ışıma sönümü)
               Expanded(
                 child: TabBarView(
                   controller: _tabController,

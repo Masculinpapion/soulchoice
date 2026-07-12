@@ -96,10 +96,26 @@ class _NotificationSettingsScreenState
       _messengerKey.currentState
         ?..removeCurrentSnackBar()
         ..showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.notif_pref_saved),
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle_rounded,
+                  color: Color(0xFF34D399), size: 20),
+              const SizedBox(width: 10),
+              Text(AppLocalizations.of(context)!.notif_pref_saved,
+                  style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.white)),
+            ],
+          ),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: AuroraTheme.glassStrong,
-          duration: const Duration(milliseconds: 1400),
+          backgroundColor: const Color(0xFF23232B), // opak — koyu zeminde net okunur
+          elevation: 8,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          duration: const Duration(milliseconds: 1600),
         ));
     }
   }

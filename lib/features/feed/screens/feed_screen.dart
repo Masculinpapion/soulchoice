@@ -123,6 +123,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 cityId: _selectedCityId,
               ),
               _TabBar(controller: _tabController),
+              const SizedBox(height: 4), // chip satırı nefes payı (üst)
               _CategoryChips(
                 selected: _selectedCategory,
                 onSelected: (c) => setState(() {
@@ -130,6 +131,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
               ),
+              const SizedBox(height: 6), // chip satırı nefes payı (alt)
               Expanded(
                 child: TabBarView(
                   controller: _tabController,

@@ -65,9 +65,14 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 ),
               ),
               // Filtre chip'leri
-              SizedBox(
+              // Chip boyutu değişmez; satır üst/alt nefes payı + Clip.none
+              // (seçili chip ışıması komşu bloklara değmeden serbest yayılır).
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 6),
+                child: SizedBox(
                 height: 36,
                 child: ListView(
+                  clipBehavior: Clip.none,
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
@@ -91,7 +96,8 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              ),
+              const SizedBox(height: 6),
 
               // İçerik
               Expanded(

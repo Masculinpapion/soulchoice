@@ -85,13 +85,9 @@ class _NotificationSettingsScreenState
       'quiet_hours_start': '${_fmt(_quietStart)}:00',
       'quiet_hours_end': '${_fmt(_quietEnd)}:00',
     }, onConflict: 'user_id');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context)!.notif_pref_saved),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AuroraTheme.glassStrong,
-      ));
-    }
+    // Otomatik kayıt: toggle'ın kendisi anlık geri bildirim — snackbar YOK.
+    // (Per-toggle snackbar kuyruğa girip ekrandan çıkınca üst ekranda
+    //  "casper" gibi görünüyordu; iOS/Android sistem ayarları da sessiz kaydeder.)
   }
 
   @override

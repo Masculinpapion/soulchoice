@@ -5,6 +5,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class BlockedUsersScreen extends StatefulWidget {
   const BlockedUsersScreen({super.key});
@@ -165,16 +166,23 @@ class _BlockedTile extends StatelessWidget {
             ),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: AuroraTheme.glassStrong,
-                  backgroundImage: user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
-                      : null,
-                  child: user.photoUrl == null
-                      ? Icon(Icons.person_outline,
-                          color: Colors.white54, size: 20)
-                      : null,
+                SizedBox(
+                  width: 44,
+                  height: 44,
+                  child: ClipOval(
+                    child: user.photoUrl != null
+                        ? Image.network(
+                            user.photoUrl!,
+                            fit: BoxFit.cover,
+                            alignment: PhotoFocus.of(user.photoUrl,
+                                fallback: Alignment.center),
+                          )
+                        : ColoredBox(
+                            color: AuroraTheme.glassStrong,
+                            child: Icon(Icons.person_outline,
+                                color: Colors.white54, size: 20),
+                          ),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(

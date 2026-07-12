@@ -279,13 +279,21 @@ class _DiscoverCard extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              CircleAvatar(
-                                radius: 11,
-                                backgroundColor:
-                                    Colors.white.withOpacity(0.1),
-                                backgroundImage: photoUrl != null
-                                    ? CachedNetworkImageProvider(photoUrl)
-                                    : null,
+                              SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: ClipOval(
+                                  child: photoUrl != null
+                                      ? CachedNetworkImage(
+                                          imageUrl: photoUrl,
+                                          fit: BoxFit.cover,
+                                          alignment: PhotoFocus.of(photoUrl,
+                                              fallback: Alignment.center),
+                                        )
+                                      : ColoredBox(
+                                          color:
+                                              Colors.white.withOpacity(0.1)),
+                                ),
                               ),
                               const SizedBox(width: 6),
                               Flexible(

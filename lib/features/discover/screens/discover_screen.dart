@@ -528,8 +528,9 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.only(right: 8),
         child: GestureDetector(
           onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+          // Anlık geçiş: decoration lerp'i (gradient+glow) geçişte çift
+          // kızıl bulut basıyordu — animasyonsuz seçim temiz.
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               gradient: selected

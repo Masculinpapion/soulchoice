@@ -60,7 +60,9 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
+        // bottom:false — liste nav barın arkasından akar (Profil ile aynı).
         child: SafeArea(
+          bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

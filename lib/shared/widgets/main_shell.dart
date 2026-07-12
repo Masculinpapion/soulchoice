@@ -65,17 +65,7 @@ class _AuroraNavBar extends StatelessWidget {
               child: Container(
                 height: 64,
                 decoration: BoxDecoration(
-                  // Düz %75 dolgu koyu içerikte camı boğuyordu (Обзор'da "siyah
-                  // blok" algısı); dikey tint: üstten kartlar süzülür, ikon
-                  // bölgesi (alt yarı) kontrastını korur. Blur maliyeti aynı.
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      const Color(0xFF0A0A0E).withOpacity(0.15),
-                      const Color(0xFF0A0A0E).withOpacity(0.45),
-                    ],
-                  ),
+                  color: const Color(0xFF0A0A0E).withOpacity(0.75),
                   borderRadius: BorderRadius.circular(100),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.12),

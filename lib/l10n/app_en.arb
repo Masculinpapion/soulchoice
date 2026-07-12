@@ -185,6 +185,7 @@
   "create_inv_venue_ph_coffee": "Café name",
   "create_inv_venue_ph_sport": "Court or club name",
   "create_inv_venue_ph_walk": "Park or meeting spot",
+  "create_inv_venue_ph_karaoke": "Karaoke bar name",
   "create_inv_venue_ph_cinema": "Cinema name",
   "create_inv_venue_ph_theater": "Theatre name",
   "create_inv_venue_ph_concert": "Venue name",
@@ -222,6 +223,8 @@
   "create_inv_desc_request_sport": "What would you like to do?",
   "create_inv_desc_invite_walk": "Where are you walking?",
   "create_inv_desc_request_walk": "Where would you like to walk?",
+  "create_inv_desc_invite_karaoke": "Where are you singing?",
+  "create_inv_desc_request_karaoke": "Where would you like to sing?",
   "create_inv_desc_request_gift": "What would you like to receive?",
   "create_inv_datetime_placeholder": "Select date & time",
   "decision_selected_title": "Match Confirmation",
@@ -714,6 +717,7 @@
   "category_gift": "Gift",
   "category_sport": "Sport",
   "category_walk": "Walk",
+  "category_karaoke": "Karaoke",
   "@inv_detail_delete_body": {
     "placeholders": {
       "gender": {

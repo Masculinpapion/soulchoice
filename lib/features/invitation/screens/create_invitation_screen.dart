@@ -995,6 +995,10 @@ class _StepDescription extends StatelessWidget {
         return isInvite
             ? l10n.create_inv_desc_invite_walk
             : l10n.create_inv_desc_request_walk;
+      case InvitationCategory.karaoke:
+        return isInvite
+            ? l10n.create_inv_desc_invite_karaoke
+            : l10n.create_inv_desc_request_karaoke;
       default:
         return isInvite
             ? l10n.create_inv_desc_invite_hint
@@ -1104,6 +1108,8 @@ class _StepVenue extends StatelessWidget {
         return l10n.create_inv_venue_ph_sport;
       case InvitationCategory.walk:
         return l10n.create_inv_venue_ph_walk;
+      case InvitationCategory.karaoke:
+        return l10n.create_inv_venue_ph_karaoke;
       default:
         return l10n.create_inv_venue_placeholder;
     }

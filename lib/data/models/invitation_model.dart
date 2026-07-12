@@ -16,6 +16,7 @@ enum InvitationCategory {
   gift,
   sport,
   walk,
+  karaoke,
 }
 
 extension InvitationCategoryExt on InvitationCategory {
@@ -43,6 +44,8 @@ extension InvitationCategoryExt on InvitationCategory {
         return l10n.category_sport;
       case InvitationCategory.walk:
         return l10n.category_walk;
+      case InvitationCategory.karaoke:
+        return l10n.category_karaoke;
     }
   }
 
@@ -70,6 +73,8 @@ extension InvitationCategoryExt on InvitationCategory {
         return '🎾';
       case InvitationCategory.walk:
         return '🚶';
+      case InvitationCategory.karaoke:
+        return '🎤';
     }
   }
 }

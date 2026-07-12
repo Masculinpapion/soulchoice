@@ -119,6 +119,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_notification_prefs => 'Notification preferences';
 
   @override
+  String get notif_pref_push_section => 'Push notifications';
+
+  @override
+  String get notif_pref_new_application => 'New applications';
+
+  @override
+  String get notif_pref_new_application_sub =>
+      'Someone responded to your invitation';
+
+  @override
+  String get notif_pref_selected => 'You\'re selected';
+
+  @override
+  String get notif_pref_selected_sub =>
+      'Your application was accepted — chat opens';
+
+  @override
+  String get notif_pref_message => 'Messages';
+
+  @override
+  String get notif_pref_message_sub => 'New messages in chats';
+
+  @override
+  String get notif_pref_match => 'Matches';
+
+  @override
+  String get notif_pref_match_sub => 'Mutual selection';
+
+  @override
+  String get notif_pref_saved => 'Settings saved';
+
+  @override
+  String get notif_pref_all_read => 'All notifications read';
+
+  @override
   String get settings_do_not_disturb => 'Do not disturb';
 
   @override

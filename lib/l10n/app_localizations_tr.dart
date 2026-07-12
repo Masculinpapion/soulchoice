@@ -120,6 +120,40 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_notification_prefs => 'Bildirim tercihleri';
 
   @override
+  String get notif_pref_push_section => 'Push bildirimleri';
+
+  @override
+  String get notif_pref_new_application => 'Yeni başvurular';
+
+  @override
+  String get notif_pref_new_application_sub => 'Biri davetine başvurdu';
+
+  @override
+  String get notif_pref_selected => 'Seçildin';
+
+  @override
+  String get notif_pref_selected_sub =>
+      'Başvurun kabul edildi — sohbet açılıyor';
+
+  @override
+  String get notif_pref_message => 'Mesajlar';
+
+  @override
+  String get notif_pref_message_sub => 'Sohbetlerde yeni mesajlar';
+
+  @override
+  String get notif_pref_match => 'Eşleşmeler';
+
+  @override
+  String get notif_pref_match_sub => 'Karşılıklı seçim';
+
+  @override
+  String get notif_pref_saved => 'Ayarlar kaydedildi';
+
+  @override
+  String get notif_pref_all_read => 'Tüm bildirimler okundu';
+
+  @override
   String get settings_do_not_disturb => 'Gece sessizliği';
 
   @override

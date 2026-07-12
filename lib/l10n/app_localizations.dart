@@ -310,6 +310,72 @@ abstract class AppLocalizations {
   /// **'Notification preferences'**
   String get settings_notification_prefs;
 
+  /// No description provided for @notif_pref_push_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get notif_pref_push_section;
+
+  /// No description provided for @notif_pref_new_application.
+  ///
+  /// In en, this message translates to:
+  /// **'New applications'**
+  String get notif_pref_new_application;
+
+  /// No description provided for @notif_pref_new_application_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone responded to your invitation'**
+  String get notif_pref_new_application_sub;
+
+  /// No description provided for @notif_pref_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re selected'**
+  String get notif_pref_selected;
+
+  /// No description provided for @notif_pref_selected_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your application was accepted — chat opens'**
+  String get notif_pref_selected_sub;
+
+  /// No description provided for @notif_pref_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notif_pref_message;
+
+  /// No description provided for @notif_pref_message_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages in chats'**
+  String get notif_pref_message_sub;
+
+  /// No description provided for @notif_pref_match.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches'**
+  String get notif_pref_match;
+
+  /// No description provided for @notif_pref_match_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Mutual selection'**
+  String get notif_pref_match_sub;
+
+  /// No description provided for @notif_pref_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get notif_pref_saved;
+
+  /// No description provided for @notif_pref_all_read.
+  ///
+  /// In en, this message translates to:
+  /// **'All notifications read'**
+  String get notif_pref_all_read;
+
   /// No description provided for @settings_do_not_disturb.
   ///
   /// In en, this message translates to:

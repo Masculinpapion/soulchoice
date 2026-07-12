@@ -82,6 +82,14 @@ class _NotificationsScreenState
           .eq('user_id', uid)
           .isFilter('read_at', null);
       ref.invalidate(notificationsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.notif_pref_all_read),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AuroraTheme.glassStrong,
+          duration: const Duration(seconds: 2),
+        ));
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -506,7 +514,11 @@ class _NotifTile extends StatelessWidget {
     final colors = _iconGradient();
     final accentColor = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.5);
     final actionText = _notifActionText(item, AppLocalizations.of(context)!);
-    final tile = Padding(
+    // Okunmuş bildirim belirgin şekilde soluk — "prochitat vse" sonrası
+    // listenin okundu hâli net görünsün (his: bir şey oldu).
+    final tile = Opacity(
+      opacity: item.isRead ? 0.55 : 1.0,
+      child: Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GestureDetector(
         onTap: onTap,
@@ -544,6 +556,7 @@ class _NotifTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
 

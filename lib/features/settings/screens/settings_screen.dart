@@ -36,7 +36,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void initState() {
     super.initState();
     _loadUserData();
-    _loadQuietHours();
   }
 
   Future<void> _loadUserData() async {
@@ -520,15 +519,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.notifications_active_outlined,
                           label: l10n.settings_notification_prefs,
-                          onTap: () => _showComingSoon(context, l10n.settings_notification_prefs),
-                        ),
-                        _SettingsTile(
-                          icon: Icons.do_not_disturb_on_outlined,
-                          label: l10n.settings_do_not_disturb,
-                          value: _quietEnabled
-                              ? '${_quietStart.hour.toString().padLeft(2, '0')}:${_quietStart.minute.toString().padLeft(2, '0')} – ${_quietEnd.hour.toString().padLeft(2, '0')}:${_quietEnd.minute.toString().padLeft(2, '0')}'
-                              : null,
-                          onTap: () => _showQuietHoursPicker(context),
+                          onTap: () => context.push('/settings/notifications'),
                         ),
                       ],
                     ),

@@ -457,7 +457,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const SizedBox(width: 14),
                     Expanded(
                       child:
-                          GradientItalicTitle(l10n.settings_title, fontSize: 26),
+                          GradientItalicTitle(l10n.settings_title, fontSize: 23),
                     ),
                   ],
                 ),

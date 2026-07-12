@@ -79,7 +79,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
                 child: Builder(
                   builder: (ctx) => GradientItalicTitle(
                     AppLocalizations.of(ctx)!.messages_title,
-                    fontSize: MediaQuery.of(ctx).size.width < 360 ? 23.8 : 28,
+                    fontSize: MediaQuery.of(ctx).size.width < 360 ? 20 : 23,
                   ),
                 ),
               ),

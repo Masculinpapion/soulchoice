@@ -458,6 +458,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_venue_ph_coffee => 'Kafe adı';
 
   @override
+  String get create_inv_venue_ph_sport => 'Kort veya kulüp adı';
+
+  @override
+  String get create_inv_venue_ph_walk => 'Park veya buluşma yeri';
+
+  @override
+  String get create_inv_venue_ph_karaoke => 'Karaoke bar adı';
+
+  @override
   String get create_inv_venue_ph_cinema => 'Sinema adı';
 
   @override
@@ -562,6 +571,25 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_desc_request_travel => 'Nereye gitmek istiyorsun?';
+
+  @override
+  String get create_inv_desc_invite_sport => 'Hangi aktivite?';
+
+  @override
+  String get create_inv_desc_request_sport => 'Ne yapmak istersin?';
+
+  @override
+  String get create_inv_desc_invite_walk => 'Nerede yürüyorsun?';
+
+  @override
+  String get create_inv_desc_request_walk => 'Nerede yürümek istersin?';
+
+  @override
+  String get create_inv_desc_invite_karaoke => 'Nerede şarkı söylüyorsun?';
+
+  @override
+  String get create_inv_desc_request_karaoke =>
+      'Nerede şarkı söylemek istersin?';
 
   @override
   String get create_inv_desc_request_gift => 'Ne hediye edilmesini istiyorsun?';
@@ -734,6 +762,9 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get inv_detail_retry => 'Tekrar dene';
+
+  @override
   String inv_detail_duration_days_hours(int days, int hours) {
     return '${days}g ${hours}s';
   }
@@ -834,7 +865,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notifications_title => 'Bildirimler';
 
   @override
-  String get notifications_mark_all_read => 'Tümünü okundu işaretle';
+  String get notifications_mark_all_read => 'Tümünü oku';
 
   @override
   String notifications_error(String error) {
@@ -915,6 +946,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_setup_step_age_range => 'Yaş aralığı';
+
+  @override
+  String get profile_setup_step_consent => 'Onaylar';
+
+  @override
+  String get profile_setup_consent_subtitle =>
+      'Devam etmeden önce aşağıdaki üç maddeyi onayla.';
+
+  @override
+  String get profile_setup_consent_age => '18 yaşımı doldurdum';
+
+  @override
+  String get profile_setup_consent_data =>
+      'Kişisel verilerimin aşağıdaki metne uygun şekilde işlenmesine onay veriyorum:';
+
+  @override
+  String get profile_setup_consent_data_link => 'Gizlilik Politikası';
+
+  @override
+  String get profile_setup_consent_visibility =>
+      'Profilimin (fotoğraf, isim, yaş, şehir) servisin diğer kullanıcılarına gösterilmesine izin veriyorum';
 
   @override
   String get profile_setup_validation_gender => 'Cinsiyet seçimi zorunludur';
@@ -1223,7 +1275,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selfie_submit_btn => 'Gönder';
 
   @override
-  String get blocked_users_title => 'Engellenen Kullanıcılar';
+  String get blocked_users_title => 'Engellenenler';
 
   @override
   String get blocked_users_empty => 'Engellenen kullanıcı yok';
@@ -1459,6 +1511,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get category_gift => 'Hediye';
 
   @override
+  String get category_sport => 'Spor';
+
+  @override
+  String get category_walk => 'Yürüyüş';
+
+  @override
+  String get category_karaoke => 'Karaoke';
+
+  @override
   String get notif_type_new_application_title => 'Yeni Başvuru';
 
   @override
@@ -1513,6 +1574,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notif_action_new_message => 'mesaj gönderdi';
+
+  @override
+  String get notif_type_new_application_body_noname => 'Yeni bir başvuru geldi';
+
+  @override
+  String get notif_type_new_message_body_noname => 'Yeni mesaj';
+
+  @override
+  String notif_grouped_messages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count yeni mesaj',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get notif_action_new_application => 'davetinize başvurdu';
@@ -1661,4 +1738,142 @@ class AppLocalizationsTr extends AppLocalizations {
   String profile_inv_minutes_left(int m) {
     return '${m}dk';
   }
+
+  @override
+  String get sub_title => 'Abonelik';
+
+  @override
+  String get sub_status_active => 'Aktif';
+
+  @override
+  String get sub_status_cancelled => 'İptal edildi';
+
+  @override
+  String get sub_status_past_due => 'Ödeme sorunu';
+
+  @override
+  String get sub_none_title => 'Henüz abonelik yok';
+
+  @override
+  String get sub_none_body =>
+      'Otomatik yenilenen Premium\'a geç veya 30 günlük tek seferlik erişim al.';
+
+  @override
+  String get sub_none_body_ios =>
+      'Başka bir platformda başlatılan abonelik burada görünecek.';
+
+  @override
+  String get sub_get_premium => 'Premium\'a geç';
+
+  @override
+  String get sub_next_charge => 'Sonraki çekim';
+
+  @override
+  String get sub_card => 'Kart';
+
+  @override
+  String get sub_price_label => 'Tarife';
+
+  @override
+  String sub_premium_until(String date) {
+    return 'Premium $date tarihine kadar aktif';
+  }
+
+  @override
+  String get sub_cancel_button => 'Aboneliği iptal et';
+
+  @override
+  String get sub_cancel_confirm_title => 'Abonelik iptal edilsin mi?';
+
+  @override
+  String sub_cancel_confirm_body(String date) {
+    return 'Otomatik yenileme kapatılacak. Premium $date tarihine kadar aktif kalacak.';
+  }
+
+  @override
+  String get sub_cancel_confirm_yes => 'Aboneliği iptal et';
+
+  @override
+  String get sub_cancel_confirm_no => 'Vazgeç';
+
+  @override
+  String sub_cancelled_note(String date) {
+    return 'Abonelik iptal edildi. Premium $date tarihine kadar aktif.';
+  }
+
+  @override
+  String sub_resume_button(String last4) {
+    return '•••• $last4 ile devam et';
+  }
+
+  @override
+  String get sub_history_title => 'Ödemeler';
+
+  @override
+  String get sub_email_label => 'Çek ve bildirimler için e-posta';
+
+  @override
+  String get sub_consent =>
+      'Oferta koşullarını kabul ediyor, abonelik iptal edilene kadar her 30 günde bir 1 000 ₽ otomatik çekilmesine onay veriyorum';
+
+  @override
+  String get sub_subscribe_cta => 'Abone ol — 1000 ₽/ay';
+
+  @override
+  String get sub_onetime_cta => 'Tek seferlik 30 gün — 1000 ₽';
+
+  @override
+  String get sub_auto_renews =>
+      'Her 30 günde bir otomatik yenilenir. İstediğin zaman iptal.';
+
+  @override
+  String get sub_already_active => 'Zaten aktif bir aboneliğin var.';
+
+  @override
+  String get sub_use_resume_hint =>
+      'Aboneliğin iptal edilmiş ama dönem hâlâ aktif — Profil → Abonelik\'ten devam ettirebilirsin.';
+
+  @override
+  String get sub_email_invalid => 'Geçerli bir e-posta gir.';
+
+  @override
+  String get sub_consent_required => 'Devam etmek için koşulları kabul et.';
+
+  @override
+  String get sub_continue => 'Devam';
+
+  @override
+  String get sub_retry_button => 'Ödemeyi tekrar dene';
+
+  @override
+  String get sub_retry_failed =>
+      'Çekim başarısız. Kartını kontrol edip daha sonra tekrar dene.';
+
+  @override
+  String get sub_retry_limit =>
+      'Bugün için deneme sınırına ulaşıldı — yarın tekrar dene.';
+
+  @override
+  String sub_resumed_note(String date) {
+    return 'Otomatik yenileme açıldı. Sonraki çekim — $date.';
+  }
+
+  @override
+  String sub_price_month(String price) {
+    return '$price ₽ / ay';
+  }
+
+  @override
+  String get profile_setup_email_label =>
+      'E-posta (isteğe bağlı) — çek ve haberler için';
+
+  @override
+  String get profile_setup_email_hint => 'you@example.com';
+
+  @override
+  String get profile_setup_marketing_consent =>
+      'SoulChoice haber ve özel tekliflerini (tanıtım dahil) e-posta ile almayı kabul ediyorum. Onayı istediğin zaman ayarlardan veya support@soulchoice.app adresine yazarak geri çekebilirsin.';
+
+  @override
+  String get paywall_subtitle_ios => 'Premium sınırsızı açar.';
 }

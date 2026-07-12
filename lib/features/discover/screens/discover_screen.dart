@@ -60,7 +60,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 child: Builder(
                   builder: (ctx) => GradientItalicTitle(
                     AppLocalizations.of(ctx)!.discover_title,
-                    fontSize: MediaQuery.of(ctx).size.width < 360 ? 25.5 : 30,
+                    fontSize: MediaQuery.of(ctx).size.width < 360 ? 20 : 23,
                   ),
                 ),
               ),

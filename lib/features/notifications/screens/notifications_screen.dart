@@ -155,7 +155,7 @@ class _NotificationsScreenState
                       child: Builder(
                         builder: (ctx) => GradientItalicTitle(
                           AppLocalizations.of(ctx)!.notifications_title,
-                          fontSize: 26,
+                          fontSize: 23,
                         ),
                       ),
                     ),

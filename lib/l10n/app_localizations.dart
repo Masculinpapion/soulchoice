@@ -946,6 +946,24 @@ abstract class AppLocalizations {
   /// **'Café name'**
   String get create_inv_venue_ph_coffee;
 
+  /// No description provided for @create_inv_venue_ph_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'Court or club name'**
+  String get create_inv_venue_ph_sport;
+
+  /// No description provided for @create_inv_venue_ph_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'Park or meeting spot'**
+  String get create_inv_venue_ph_walk;
+
+  /// No description provided for @create_inv_venue_ph_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Karaoke bar name'**
+  String get create_inv_venue_ph_karaoke;
+
   /// No description provided for @create_inv_venue_ph_cinema.
   ///
   /// In en, this message translates to:
@@ -1143,6 +1161,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Where do you want to go?'**
   String get create_inv_desc_request_travel;
+
+  /// No description provided for @create_inv_desc_invite_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s the activity?'**
+  String get create_inv_desc_invite_sport;
+
+  /// No description provided for @create_inv_desc_request_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do?'**
+  String get create_inv_desc_request_sport;
+
+  /// No description provided for @create_inv_desc_invite_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you walking?'**
+  String get create_inv_desc_invite_walk;
+
+  /// No description provided for @create_inv_desc_request_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'Where would you like to walk?'**
+  String get create_inv_desc_request_walk;
+
+  /// No description provided for @create_inv_desc_invite_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you singing?'**
+  String get create_inv_desc_invite_karaoke;
+
+  /// No description provided for @create_inv_desc_request_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Where would you like to sing?'**
+  String get create_inv_desc_request_karaoke;
 
   /// No description provided for @create_inv_desc_request_gift.
   ///
@@ -1461,6 +1515,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error: {error}'**
   String inv_detail_error(String error);
+
+  /// No description provided for @inv_detail_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get inv_detail_retry;
 
   /// No description provided for @inv_detail_duration_days_hours.
   ///
@@ -1785,6 +1845,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Age range'**
   String get profile_setup_step_age_range;
+
+  /// No description provided for @profile_setup_step_consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent'**
+  String get profile_setup_step_consent;
+
+  /// No description provided for @profile_setup_consent_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before continuing, please confirm the three items below.'**
+  String get profile_setup_consent_subtitle;
+
+  /// No description provided for @profile_setup_consent_age.
+  ///
+  /// In en, this message translates to:
+  /// **'I am 18 years of age or older'**
+  String get profile_setup_consent_age;
+
+  /// No description provided for @profile_setup_consent_data.
+  ///
+  /// In en, this message translates to:
+  /// **'I consent to the processing of my personal data in accordance with the'**
+  String get profile_setup_consent_data;
+
+  /// No description provided for @profile_setup_consent_data_link.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get profile_setup_consent_data_link;
+
+  /// No description provided for @profile_setup_consent_visibility.
+  ///
+  /// In en, this message translates to:
+  /// **'I allow my profile (photo, name, age, city) to be shown to other users of the service'**
+  String get profile_setup_consent_visibility;
 
   /// No description provided for @profile_setup_validation_gender.
   ///
@@ -2359,7 +2455,7 @@ abstract class AppLocalizations {
   /// No description provided for @blocked_users_title.
   ///
   /// In en, this message translates to:
-  /// **'Blocked Users'**
+  /// **'Blocked'**
   String get blocked_users_title;
 
   /// No description provided for @blocked_users_empty.
@@ -2794,6 +2890,24 @@ abstract class AppLocalizations {
   /// **'Gift'**
   String get category_gift;
 
+  /// No description provided for @category_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'Sport'**
+  String get category_sport;
+
+  /// No description provided for @category_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get category_walk;
+
+  /// No description provided for @category_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'Karaoke'**
+  String get category_karaoke;
+
   /// No description provided for @notif_type_new_application_title.
   ///
   /// In en, this message translates to:
@@ -2895,6 +3009,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'sent a message'**
   String get notif_action_new_message;
+
+  /// No description provided for @notif_type_new_application_body_noname.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a new application'**
+  String get notif_type_new_application_body_noname;
+
+  /// No description provided for @notif_type_new_message_body_noname.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get notif_type_new_message_body_noname;
+
+  /// No description provided for @notif_grouped_messages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} new message} other{{count} new messages}}'**
+  String notif_grouped_messages(int count);
 
   /// No description provided for @notif_action_new_application.
   ///
@@ -3141,6 +3273,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{m}m'**
   String profile_inv_minutes_left(int m);
+
+  /// No description provided for @sub_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get sub_title;
+
+  /// No description provided for @sub_status_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get sub_status_active;
+
+  /// No description provided for @sub_status_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get sub_status_cancelled;
+
+  /// No description provided for @sub_status_past_due.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment issue'**
+  String get sub_status_past_due;
+
+  /// No description provided for @sub_none_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No subscription yet'**
+  String get sub_none_title;
+
+  /// No description provided for @sub_none_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium with auto-renewal or a one-time 30-day pass.'**
+  String get sub_none_body;
+
+  /// No description provided for @sub_none_body_ios.
+  ///
+  /// In en, this message translates to:
+  /// **'A subscription purchased on another platform will appear here.'**
+  String get sub_none_body_ios;
+
+  /// No description provided for @sub_get_premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium'**
+  String get sub_get_premium;
+
+  /// No description provided for @sub_next_charge.
+  ///
+  /// In en, this message translates to:
+  /// **'Next charge'**
+  String get sub_next_charge;
+
+  /// No description provided for @sub_card.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get sub_card;
+
+  /// No description provided for @sub_price_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get sub_price_label;
+
+  /// No description provided for @sub_premium_until.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is active until {date}'**
+  String sub_premium_until(String date);
+
+  /// No description provided for @sub_cancel_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription'**
+  String get sub_cancel_button;
+
+  /// No description provided for @sub_cancel_confirm_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription?'**
+  String get sub_cancel_confirm_title;
+
+  /// No description provided for @sub_cancel_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-renewal will be turned off. Premium stays active until {date}.'**
+  String sub_cancel_confirm_body(String date);
+
+  /// No description provided for @sub_cancel_confirm_yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription'**
+  String get sub_cancel_confirm_yes;
+
+  /// No description provided for @sub_cancel_confirm_no.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get sub_cancel_confirm_no;
+
+  /// No description provided for @sub_cancelled_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription cancelled. Premium is active until {date}.'**
+  String sub_cancelled_note(String date);
+
+  /// No description provided for @sub_resume_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with card •••• {last4}'**
+  String sub_resume_button(String last4);
+
+  /// No description provided for @sub_history_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get sub_history_title;
+
+  /// No description provided for @sub_email_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email for receipts and notices'**
+  String get sub_email_label;
+
+  /// No description provided for @sub_consent.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel'**
+  String get sub_consent;
+
+  /// No description provided for @sub_subscribe_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe — 1000 ₽/month'**
+  String get sub_subscribe_cta;
+
+  /// No description provided for @sub_onetime_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time 30 days — 1000 ₽'**
+  String get sub_onetime_cta;
+
+  /// No description provided for @sub_auto_renews.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews automatically every 30 days. Cancel anytime.'**
+  String get sub_auto_renews;
+
+  /// No description provided for @sub_already_active.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active subscription.'**
+  String get sub_already_active;
+
+  /// No description provided for @sub_use_resume_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription is cancelled but the period is still active — resume it in Profile → Subscription.'**
+  String get sub_use_resume_hint;
+
+  /// No description provided for @sub_email_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email.'**
+  String get sub_email_invalid;
+
+  /// No description provided for @sub_consent_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the terms to continue.'**
+  String get sub_consent_required;
+
+  /// No description provided for @sub_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get sub_continue;
+
+  /// No description provided for @sub_retry_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry payment'**
+  String get sub_retry_button;
+
+  /// No description provided for @sub_retry_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The charge failed. Check your card and try again later.'**
+  String get sub_retry_failed;
+
+  /// No description provided for @sub_retry_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts today — try again tomorrow.'**
+  String get sub_retry_limit;
+
+  /// No description provided for @sub_resumed_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-renewal is on. Next charge — {date}.'**
+  String sub_resumed_note(String date);
+
+  /// No description provided for @sub_price_month.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} ₽ / month'**
+  String sub_price_month(String price);
+
+  /// No description provided for @profile_setup_email_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (optional) — for receipts and news'**
+  String get profile_setup_email_label;
+
+  /// No description provided for @profile_setup_email_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'you@example.com'**
+  String get profile_setup_email_hint;
+
+  /// No description provided for @profile_setup_marketing_consent.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.'**
+  String get profile_setup_marketing_consent;
+
+  /// No description provided for @paywall_subtitle_ios.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium unlocks unlimited access.'**
+  String get paywall_subtitle_ios;
 }
 
 class _AppLocalizationsDelegate

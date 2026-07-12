@@ -458,6 +458,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_venue_ph_coffee => 'Café name';
 
   @override
+  String get create_inv_venue_ph_sport => 'Court or club name';
+
+  @override
+  String get create_inv_venue_ph_walk => 'Park or meeting spot';
+
+  @override
+  String get create_inv_venue_ph_karaoke => 'Karaoke bar name';
+
+  @override
   String get create_inv_venue_ph_cinema => 'Cinema name';
 
   @override
@@ -563,6 +572,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_inv_desc_request_travel => 'Where do you want to go?';
+
+  @override
+  String get create_inv_desc_invite_sport => 'What\'s the activity?';
+
+  @override
+  String get create_inv_desc_request_sport => 'What would you like to do?';
+
+  @override
+  String get create_inv_desc_invite_walk => 'Where are you walking?';
+
+  @override
+  String get create_inv_desc_request_walk => 'Where would you like to walk?';
+
+  @override
+  String get create_inv_desc_invite_karaoke => 'Where are you singing?';
+
+  @override
+  String get create_inv_desc_request_karaoke => 'Where would you like to sing?';
 
   @override
   String get create_inv_desc_request_gift => 'What would you like to receive?';
@@ -733,6 +760,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String inv_detail_error(String error) {
     return 'Error: $error';
   }
+
+  @override
+  String get inv_detail_retry => 'Retry';
 
   @override
   String inv_detail_duration_days_hours(int days, int hours) {
@@ -917,6 +947,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_setup_step_age_range => 'Age range';
+
+  @override
+  String get profile_setup_step_consent => 'Consent';
+
+  @override
+  String get profile_setup_consent_subtitle =>
+      'Before continuing, please confirm the three items below.';
+
+  @override
+  String get profile_setup_consent_age => 'I am 18 years of age or older';
+
+  @override
+  String get profile_setup_consent_data =>
+      'I consent to the processing of my personal data in accordance with the';
+
+  @override
+  String get profile_setup_consent_data_link => 'Privacy Policy';
+
+  @override
+  String get profile_setup_consent_visibility =>
+      'I allow my profile (photo, name, age, city) to be shown to other users of the service';
 
   @override
   String get profile_setup_validation_gender => 'Please select a gender';
@@ -1228,7 +1279,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selfie_submit_btn => 'Submit';
 
   @override
-  String get blocked_users_title => 'Blocked Users';
+  String get blocked_users_title => 'Blocked';
 
   @override
   String get blocked_users_empty => 'No blocked users';
@@ -1465,6 +1516,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get category_gift => 'Gift';
 
   @override
+  String get category_sport => 'Sport';
+
+  @override
+  String get category_walk => 'Walk';
+
+  @override
+  String get category_karaoke => 'Karaoke';
+
+  @override
   String get notif_type_new_application_title => 'New Application';
 
   @override
@@ -1518,6 +1578,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notif_action_new_message => 'sent a message';
+
+  @override
+  String get notif_type_new_application_body_noname =>
+      'You have a new application';
+
+  @override
+  String get notif_type_new_message_body_noname => 'New message';
+
+  @override
+  String notif_grouped_messages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new messages',
+      one: '$count new message',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get notif_action_new_application => 'applied to your invitation';
@@ -1666,4 +1744,141 @@ class AppLocalizationsEn extends AppLocalizations {
   String profile_inv_minutes_left(int m) {
     return '${m}m';
   }
+
+  @override
+  String get sub_title => 'Subscription';
+
+  @override
+  String get sub_status_active => 'Active';
+
+  @override
+  String get sub_status_cancelled => 'Cancelled';
+
+  @override
+  String get sub_status_past_due => 'Payment issue';
+
+  @override
+  String get sub_none_title => 'No subscription yet';
+
+  @override
+  String get sub_none_body =>
+      'Get Premium with auto-renewal or a one-time 30-day pass.';
+
+  @override
+  String get sub_none_body_ios =>
+      'A subscription purchased on another platform will appear here.';
+
+  @override
+  String get sub_get_premium => 'Get Premium';
+
+  @override
+  String get sub_next_charge => 'Next charge';
+
+  @override
+  String get sub_card => 'Card';
+
+  @override
+  String get sub_price_label => 'Plan';
+
+  @override
+  String sub_premium_until(String date) {
+    return 'Premium is active until $date';
+  }
+
+  @override
+  String get sub_cancel_button => 'Cancel subscription';
+
+  @override
+  String get sub_cancel_confirm_title => 'Cancel subscription?';
+
+  @override
+  String sub_cancel_confirm_body(String date) {
+    return 'Auto-renewal will be turned off. Premium stays active until $date.';
+  }
+
+  @override
+  String get sub_cancel_confirm_yes => 'Cancel subscription';
+
+  @override
+  String get sub_cancel_confirm_no => 'Keep it';
+
+  @override
+  String sub_cancelled_note(String date) {
+    return 'Subscription cancelled. Premium is active until $date.';
+  }
+
+  @override
+  String sub_resume_button(String last4) {
+    return 'Continue with card •••• $last4';
+  }
+
+  @override
+  String get sub_history_title => 'Payments';
+
+  @override
+  String get sub_email_label => 'Email for receipts and notices';
+
+  @override
+  String get sub_consent =>
+      'I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel';
+
+  @override
+  String get sub_subscribe_cta => 'Subscribe — 1000 ₽/month';
+
+  @override
+  String get sub_onetime_cta => 'One-time 30 days — 1000 ₽';
+
+  @override
+  String get sub_auto_renews =>
+      'Renews automatically every 30 days. Cancel anytime.';
+
+  @override
+  String get sub_already_active => 'You already have an active subscription.';
+
+  @override
+  String get sub_use_resume_hint =>
+      'Your subscription is cancelled but the period is still active — resume it in Profile → Subscription.';
+
+  @override
+  String get sub_email_invalid => 'Enter a valid email.';
+
+  @override
+  String get sub_consent_required => 'Please accept the terms to continue.';
+
+  @override
+  String get sub_continue => 'Continue';
+
+  @override
+  String get sub_retry_button => 'Retry payment';
+
+  @override
+  String get sub_retry_failed =>
+      'The charge failed. Check your card and try again later.';
+
+  @override
+  String get sub_retry_limit => 'Too many attempts today — try again tomorrow.';
+
+  @override
+  String sub_resumed_note(String date) {
+    return 'Auto-renewal is on. Next charge — $date.';
+  }
+
+  @override
+  String sub_price_month(String price) {
+    return '$price ₽ / month';
+  }
+
+  @override
+  String get profile_setup_email_label =>
+      'Email (optional) — for receipts and news';
+
+  @override
+  String get profile_setup_email_hint => 'you@example.com';
+
+  @override
+  String get profile_setup_marketing_consent =>
+      'I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.';
+
+  @override
+  String get paywall_subtitle_ios => 'Premium unlocks unlimited access.';
 }

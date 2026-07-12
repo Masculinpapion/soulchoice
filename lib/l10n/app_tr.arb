@@ -604,7 +604,7 @@
   "selfie_tip_face": "Yüzün açıkça görünmeli",
   "selfie_tip_approval": "Yönetici 24 saat içinde onaylar",
   "selfie_submit_btn": "Gönder",
-  "blocked_users_title": "Engellenen Kullanıcılar",
+  "blocked_users_title": "Engellenenler",
   "blocked_users_empty": "Engellenen kullanıcı yok",
   "blocked_users_unblock_btn": "Engeli kaldır",
   "delete_account_title": "Hesabı Sil",

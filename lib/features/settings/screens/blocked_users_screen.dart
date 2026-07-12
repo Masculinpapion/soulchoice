@@ -98,7 +98,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
                     Expanded(
                       child: GradientItalicTitle(
                         AppLocalizations.of(context)!.blocked_users_title,
-                        fontSize: 22,
+                        fontSize: 23,
                       ),
                     ),
                   ],

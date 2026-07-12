@@ -459,6 +459,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_venue_ph_coffee => 'Название кафе';
 
   @override
+  String get create_inv_venue_ph_sport => 'Название корта или клуба';
+
+  @override
+  String get create_inv_venue_ph_walk => 'Парк или место встречи';
+
+  @override
+  String get create_inv_venue_ph_karaoke => 'Название караоке-бара';
+
+  @override
   String get create_inv_venue_ph_cinema => 'Название кинотеатра';
 
   @override
@@ -564,6 +573,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_desc_request_travel => 'Куда хочешь поехать?';
+
+  @override
+  String get create_inv_desc_invite_sport => 'Какая активность?';
+
+  @override
+  String get create_inv_desc_request_sport => 'Чем хочешь заняться?';
+
+  @override
+  String get create_inv_desc_invite_walk => 'Где гуляешь?';
+
+  @override
+  String get create_inv_desc_request_walk => 'Где хочешь погулять?';
+
+  @override
+  String get create_inv_desc_invite_karaoke => 'Где поёшь?';
+
+  @override
+  String get create_inv_desc_request_karaoke => 'Где хочешь спеть?';
 
   @override
   String get create_inv_desc_request_gift => 'Что хочешь получить в подарок?';
@@ -746,6 +773,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get inv_detail_retry => 'Повторить';
+
+  @override
   String inv_detail_duration_days_hours(int days, int hours) {
     return '$daysд $hoursч';
   }
@@ -847,7 +877,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notifications_title => 'Уведомления';
 
   @override
-  String get notifications_mark_all_read => 'Отметить все прочитанными';
+  String get notifications_mark_all_read => 'Прочитать все';
 
   @override
   String notifications_error(String error) {
@@ -928,6 +958,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_step_age_range => 'Возрастной диапазон';
+
+  @override
+  String get profile_setup_step_consent => 'Согласия';
+
+  @override
+  String get profile_setup_consent_subtitle =>
+      'Прежде чем продолжить, подтвердите три пункта ниже.';
+
+  @override
+  String get profile_setup_consent_age => 'Мне исполнилось 18 лет';
+
+  @override
+  String get profile_setup_consent_data =>
+      'Я даю согласие на обработку моих персональных данных в соответствии с';
+
+  @override
+  String get profile_setup_consent_data_link => 'Политикой конфиденциальности';
+
+  @override
+  String get profile_setup_consent_visibility =>
+      'Я разрешаю показывать мой профиль (фото, имя, возраст, город) другим пользователям сервиса';
 
   @override
   String get profile_setup_validation_gender => 'Пожалуйста, выберите пол';
@@ -1248,7 +1299,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selfie_submit_btn => 'Отправить';
 
   @override
-  String get blocked_users_title => 'Заблокированные пользователи';
+  String get blocked_users_title => 'Чёрный список';
 
   @override
   String get blocked_users_empty => 'Нет заблокированных пользователей';
@@ -1488,6 +1539,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get category_gift => 'Подарок';
 
   @override
+  String get category_sport => 'Спорт';
+
+  @override
+  String get category_walk => 'Прогулка';
+
+  @override
+  String get category_karaoke => 'Караоке';
+
+  @override
   String get notif_type_new_application_title => 'Новая заявка';
 
   @override
@@ -1543,6 +1603,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notif_action_new_message => 'отправил(а) сообщение';
+
+  @override
+  String get notif_type_new_application_body_noname => 'Поступила новая заявка';
+
+  @override
+  String get notif_type_new_message_body_noname => 'Новое сообщение';
+
+  @override
+  String notif_grouped_messages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count новых сообщения',
+      many: '$count новых сообщений',
+      few: '$count новых сообщения',
+      one: '$count новое сообщение',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get notif_action_new_application =>
@@ -1700,4 +1779,142 @@ class AppLocalizationsRu extends AppLocalizations {
   String profile_inv_minutes_left(int m) {
     return '$mмин';
   }
+
+  @override
+  String get sub_title => 'Подписка';
+
+  @override
+  String get sub_status_active => 'Активна';
+
+  @override
+  String get sub_status_cancelled => 'Отменена';
+
+  @override
+  String get sub_status_past_due => 'Проблема с оплатой';
+
+  @override
+  String get sub_none_title => 'Подписки пока нет';
+
+  @override
+  String get sub_none_body =>
+      'Оформите Premium с автопродлением или разовый доступ на 30 дней.';
+
+  @override
+  String get sub_none_body_ios =>
+      'Подписка, оформленная на другой платформе, появится здесь.';
+
+  @override
+  String get sub_get_premium => 'Оформить Premium';
+
+  @override
+  String get sub_next_charge => 'Следующее списание';
+
+  @override
+  String get sub_card => 'Карта';
+
+  @override
+  String get sub_price_label => 'Тариф';
+
+  @override
+  String sub_premium_until(String date) {
+    return 'Premium активен до $date';
+  }
+
+  @override
+  String get sub_cancel_button => 'Отменить подписку';
+
+  @override
+  String get sub_cancel_confirm_title => 'Отменить подписку?';
+
+  @override
+  String sub_cancel_confirm_body(String date) {
+    return 'Автопродление будет отключено. Premium останется активным до $date.';
+  }
+
+  @override
+  String get sub_cancel_confirm_yes => 'Отменить подписку';
+
+  @override
+  String get sub_cancel_confirm_no => 'Оставить';
+
+  @override
+  String sub_cancelled_note(String date) {
+    return 'Подписка отменена. Premium активен до $date.';
+  }
+
+  @override
+  String sub_resume_button(String last4) {
+    return 'Продолжить с картой •••• $last4';
+  }
+
+  @override
+  String get sub_history_title => 'Платежи';
+
+  @override
+  String get sub_email_label => 'E-mail для чеков и уведомлений';
+
+  @override
+  String get sub_consent =>
+      'Соглашаюсь с условиями Оферты и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки';
+
+  @override
+  String get sub_subscribe_cta => 'Оформить подписку — 1000 ₽/мес';
+
+  @override
+  String get sub_onetime_cta => 'Разовый доступ на 30 дней — 1000 ₽';
+
+  @override
+  String get sub_auto_renews =>
+      'Продлевается автоматически каждые 30 дней. Отмена в любой момент.';
+
+  @override
+  String get sub_already_active => 'У вас уже есть активная подписка.';
+
+  @override
+  String get sub_use_resume_hint =>
+      'Подписка отменена, но период ещё активен — возобновите её в Профиль → Подписка.';
+
+  @override
+  String get sub_email_invalid => 'Введите корректный e-mail.';
+
+  @override
+  String get sub_consent_required => 'Чтобы продолжить, примите условия.';
+
+  @override
+  String get sub_continue => 'Продолжить';
+
+  @override
+  String get sub_retry_button => 'Повторить оплату';
+
+  @override
+  String get sub_retry_failed =>
+      'Списание не удалось. Проверьте карту и попробуйте позже.';
+
+  @override
+  String get sub_retry_limit =>
+      'Слишком много попыток за сегодня — попробуйте завтра.';
+
+  @override
+  String sub_resumed_note(String date) {
+    return 'Автопродление включено. Следующее списание — $date.';
+  }
+
+  @override
+  String sub_price_month(String price) {
+    return '$price ₽ / месяц';
+  }
+
+  @override
+  String get profile_setup_email_label =>
+      'E-mail (необязательно) — для чеков и новостей';
+
+  @override
+  String get profile_setup_email_hint => 'you@example.com';
+
+  @override
+  String get profile_setup_marketing_consent =>
+      'Согласен(на) получать новости и специальные предложения SoulChoice, в том числе рекламные, по e-mail. Отозвать согласие можно в любой момент — в настройках или письмом на support@soulchoice.app.';
+
+  @override
+  String get paywall_subtitle_ios => 'Premium открывает безлимит.';
 }

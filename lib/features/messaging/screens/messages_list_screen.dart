@@ -12,6 +12,7 @@ import '../../../shared/widgets/sc_button.dart';
 import '../providers/matches_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class MessagesListScreen extends ConsumerStatefulWidget {
   const MessagesListScreen({super.key});
@@ -55,6 +56,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
@@ -286,6 +288,7 @@ class _Avatar extends StatelessWidget {
           width: 52,
           height: 52,
           fit: BoxFit.cover,
+          alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
           errorWidget: (_, __, ___) => _InitialsAvatar(name: name),
         ),
       );

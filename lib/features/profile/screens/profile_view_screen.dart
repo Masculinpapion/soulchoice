@@ -11,6 +11,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../../../core/services/photo_focus.dart';
 
 class ProfileViewScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -25,6 +26,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final userId = widget.userId;
     final profileAsync = ref.watch(userProfileProvider(userId));
     final photosAsync = ref.watch(userPhotosProvider(userId));
@@ -611,7 +613,7 @@ class _HeroSectionState extends State<_HeroSection> {
                 child: CachedNetworkImage(
                   imageUrl: widget.photos[i]['url'] as String,
                   fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
+                  alignment: PhotoFocus.of(widget.photos[i]['url'] as String),
                   errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
                 ),
               ),
@@ -1692,7 +1694,7 @@ class _MyInvitationSection extends ConsumerWidget {
                               ? CachedNetworkImage(
                                   imageUrl: photoUrl,
                                   fit: BoxFit.cover,
-                                  alignment: Alignment.topCenter,
+                                  alignment: PhotoFocus.of(photoUrl),
                                   errorWidget: (_, __, ___) => Container(
                                     color: Colors.white.withOpacity(0.05),
                                     child: const Icon(Icons.image_outlined,

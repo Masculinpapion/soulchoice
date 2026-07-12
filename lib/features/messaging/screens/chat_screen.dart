@@ -10,6 +10,7 @@ import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../features/profile/providers/profile_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String matchId;
@@ -454,6 +455,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
     final otherUser = _matchInfo?['other'] as Map<String, dynamic>?;
     final otherName = otherUser?['name'] as String? ?? '—';
@@ -772,6 +774,7 @@ class _ChatAppBar extends StatelessWidget {
                                     ? CachedNetworkImage(
                                         imageUrl: photoUrl!,
                                         fit: BoxFit.cover,
+                                        alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
                                         errorWidget: (_, __, ___) => _DefaultAvatar(name: otherName),
                                       )
                                     : _DefaultAvatar(name: otherName),

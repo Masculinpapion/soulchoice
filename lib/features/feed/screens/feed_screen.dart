@@ -14,6 +14,7 @@ import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/invitations_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/photo_focus.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -98,6 +99,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     ref.listen(localeProvider, (prev, next) {
       if (prev?.languageCode != next?.languageCode) {
         setState(() => _selectedCityName = null);
@@ -442,7 +444,7 @@ class _StoryAvatar extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: photoUrl!,
                           fit: BoxFit.cover,
-                          alignment: Alignment.topCenter,
+                          alignment: PhotoFocus.of(photoUrl),
                           errorWidget: (_, __, ___) =>
                               _AvatarFallback(name: label),
                         )
@@ -1242,7 +1244,7 @@ class InvitationCard extends StatelessWidget {
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
+                  alignment: PhotoFocus.of(ownerPhotoUrl),
                   placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
                   errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
                 )
@@ -1295,7 +1297,7 @@ class InvitationCard extends StatelessWidget {
                             ),
                             child: ClipOval(
                               child: ownerPhotoUrl != null
-                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: Alignment.topCenter, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
+                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: PhotoFocus.of(ownerPhotoUrl), errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
                                   : _AvatarFallback(name: ownerName),
                             ),
                           ),
@@ -1965,6 +1967,7 @@ class _ApplicantAvatarStack extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: shown[i],
                       fit: BoxFit.cover,
+                      alignment: PhotoFocus.of(shown[i], fallback: Alignment.center),
                       placeholder: (_, __) => Container(color: Colors.white12),
                       errorWidget: (_, __, ___) => Container(
                         color: Colors.white12,

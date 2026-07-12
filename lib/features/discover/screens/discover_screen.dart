@@ -139,6 +139,45 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   }
 }
 
+// ── Keşfet kart fotoğrafı: odak hizalı + gerekirse hafif zoom ────────────────
+// Yüzü karenin çok üstünde olan fotoğraf (fy<0.24), kısa keşfet kartında üst
+// pill'in arkasında kalır ve cover dikey kaydırma payı bırakmaz; sınırlı zoom
+// (≤1.4x, üst-merkez çıpalı) yüzü pill bandının altına indirir.
+class _FocusZoomPhoto extends StatelessWidget {
+  final String url;
+  const _FocusZoomPhoto({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    final align = PhotoFocus.of(url);
+    final fy = (align.y + 1) / 2; // yüz merkezi (0-1); fallback'te 0 (topCenter)
+    final hasFocus = PhotoFocus.of(url, fallback: const Alignment(9, 9)) !=
+        const Alignment(9, 9);
+    final zoom = (hasFocus && fy > 0 && fy < 0.24)
+        ? (0.26 / fy).clamp(1.0, 1.4)
+        : 1.0;
+
+    final img = CachedNetworkImage(
+      imageUrl: url,
+      fit: BoxFit.cover,
+      alignment: align,
+      placeholder: (_, __) => Container(color: Colors.white.withOpacity(0.05)),
+      errorWidget: (_, __, ___) => Container(
+        color: Colors.white.withOpacity(0.05),
+        child: const Icon(Icons.image_not_supported, color: Colors.white24),
+      ),
+    );
+    if (zoom == 1.0) return img;
+    return ClipRect(
+      child: Transform.scale(
+        scale: zoom.toDouble(),
+        alignment: Alignment.topCenter,
+        child: img,
+      ),
+    );
+  }
+}
+
 // ── Kart ─────────────────────────────────────────────────────────────────────
 class _DiscoverCard extends StatelessWidget {
   final InvitationModel invitation;
@@ -182,18 +221,7 @@ class _DiscoverCard extends StatelessWidget {
               children: [
                 // Fotoğraf
                 photoUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: photoUrl,
-                        fit: BoxFit.cover,
-                        alignment: PhotoFocus.of(photoUrl),
-                        placeholder: (_, __) => Container(
-                            color: Colors.white.withOpacity(0.05)),
-                        errorWidget: (_, __, ___) => Container(
-                          color: Colors.white.withOpacity(0.05),
-                          child: const Icon(Icons.image_not_supported,
-                              color: Colors.white24),
-                        ),
-                      )
+                    ? _FocusZoomPhoto(url: photoUrl)
                     : Container(color: Colors.white.withOpacity(0.05)),
 
                 // Alt gradient

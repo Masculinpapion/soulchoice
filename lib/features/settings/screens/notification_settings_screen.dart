@@ -27,6 +27,11 @@ class _NotificationSettingsScreenState
   TimeOfDay _quietStart = const TimeOfDay(hour: 22, minute: 0);
   TimeOfDay _quietEnd = const TimeOfDay(hour: 8, minute: 0);
 
+  // Bu ekrana AİT yerel messenger. Snackbar buraya bağlanır; ekran ağaçtan
+  // çıkınca (geri) snackbar da compositing dahil onunla gider — root'a
+  // (Настройки) taşamaz, casper imkansız.
+  final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+
   @override
   void initState() {
     super.initState();
@@ -85,15 +90,26 @@ class _NotificationSettingsScreenState
       'quiet_hours_start': '${_fmt(_quietStart)}:00',
       'quiet_hours_end': '${_fmt(_quietEnd)}:00',
     }, onConflict: 'user_id');
-    // Otomatik kayıt: toggle'ın kendisi anlık geri bildirim — snackbar YOK.
-    // (Per-toggle snackbar kuyruğa girip ekrandan çıkınca üst ekranda
-    //  "casper" gibi görünüyordu; iOS/Android sistem ayarları da sessiz kaydeder.)
+    // Anlık "kaydedildi" onayı — ama casper yok: önceki snackbar silinir
+    // (kuyruk birikmez), kısa süre, ekran kapanınca dispose temizler.
+    if (mounted) {
+      _messengerKey.currentState
+        ?..removeCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.notif_pref_saved),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AuroraTheme.glassStrong,
+          duration: const Duration(milliseconds: 1400),
+        ));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
+    return ScaffoldMessenger(
+      key: _messengerKey,
+      child: Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: Padding(
@@ -194,6 +210,7 @@ class _NotificationSettingsScreenState
             ],
           ),
         ),
+      ),
       ),
     );
   }

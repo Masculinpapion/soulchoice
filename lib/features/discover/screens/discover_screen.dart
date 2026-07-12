@@ -65,9 +65,13 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                 ),
               ),
               // Filtre chip'leri
+              // Feed'in kanıtlanmış chip satırı kalıbı (feedback 15.06):
+              // 50px + Clip.none — seçili chip'in ışıması kesilmez, chip'ler
+              // feed ile aynı dolgunlukta.
               SizedBox(
-                height: 36,
+                height: 50,
                 child: ListView(
+                  clipBehavior: Clip.none,
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [

@@ -1,8 +1,11 @@
 -- ============================================================================
--- Test Canlılık Simülasyonu — v1 TASLAK (tasarım onayı: 09.07.2026)
+-- Test Canlılık Simülasyonu — v2 (12.07.2026, Mustafa kararı)
+-- v2: persona penceresi + açlık sigortası KALDIRILDI — test kartı hiç "ölü"
+--     beklemez; dolan/süresi geçen kart bir sonraki cron diliminde (max 15 dk)
+--     taze karta döner. Bypass hesabı (Mustafa) motorun TAMAMEN dışında.
 -- Tüm yazmalar TEK fonksiyonda; her sorgu is_test_user=true guard'lı.
 -- Uygulama/feed kodu DEĞİŞMEZ. Sıfır yeni tablo.
--- Deploy: Mustafa onayı sonrası. Teardown: teardown-test-data.sql
+-- Teardown: teardown-test-data.sql
 -- ============================================================================
 
 create or replace function public.simulate_test_liveliness()
@@ -13,20 +16,18 @@ set search_path = public
 as $$
 declare
   v_now       timestamptz := now();
-  v_msk_min   int := extract(hour   from v_now at time zone 'Europe/Moscow')::int * 60
-                   + extract(minute from v_now at time zone 'Europe/Moscow')::int;
-  v_msk_hour  int := v_msk_min / 60;
+  v_msk_hour  int := extract(hour from v_now at time zone 'Europe/Moscow')::int;
+  -- Bypass/Mustafa hesabı: motor hiçbir yazmada bu kullanıcıya dokunmaz
+  v_bypass    uuid := '279e44e0-f09e-4b31-ad20-94966aa6f6bb';
   r           record;
   v_created   timestamptz;
   v_expires   timestamptz;
-  v_activation int;
-  v_gap       interval;
   n_apps      int;
   v_refreshed int := 0;
   v_apps      int := 0;
   v_touched   int := 0;
 begin
-  -- ── 1) Davet rebirth: kişi bazlı persona saati + açlık sigortası ──────────
+  -- ── 1) Davet rebirth: dolan kart ANINDA yenilenir (v2 — ölü bekleme yok) ──
   for r in
     select u.id as user_id, u.gender, u.city_id,
            i.id as inv_id, i.status as inv_status, i.expires_at, i.event_date
@@ -39,6 +40,7 @@ begin
       limit 1
     ) i on true
     where u.is_test_user = true
+      and u.id <> v_bypass
       and u.is_deleted = false
       and u.banned = false
       and i.id is not null                -- davetsiz test kullanıcısını fonksiyon YARATMAZ
@@ -47,19 +49,6 @@ begin
     -- Aktif ve süresi dolmamış davet varsa dokunma.
     -- Expiry-race fix: 2 dk tolerans — cron koşarken dolmak üzere olanlar da yenilenir.
     if r.inv_status = 'active' and r.expires_at > v_now + interval '2 minutes' then
-      continue;
-    end if;
-
-    -- Persona: deterministik aktivasyon dakikası (08:00–22:00 MSK) + koşu başına ±40 dk jitter
-    v_activation := 8*60
-                  + abs(hashtext(r.user_id::text)) % (14*60 + 1)
-                  + (random()*80 - 40)::int;
-    v_gap := coalesce(v_now - r.expires_at, interval '99 hours');
-
-    if not (
-         (abs(v_msk_min - v_activation) <= 8 and v_msk_hour between 8 and 22)  -- aktivasyon penceresi (15dk cron dilimini örter)
-      or (v_gap >= interval '10 hours' and v_msk_hour between 9 and 23)        -- açlık sigortası
-    ) then
       continue;
     end if;
 
@@ -102,6 +91,7 @@ begin
       from public.users tu
       where tu.is_test_user = true
         and tu.id <> r.user_id
+        and tu.id <> v_bypass
         and tu.city_id = r.city_id
         and tu.gender is distinct from r.gender
         and tu.is_deleted = false
@@ -133,7 +123,8 @@ begin
     set last_active_at = v_now - (random() * interval '30 minutes')
     from (
       select id from public.users
-      where is_test_user = true and is_deleted = false and banned = false
+      where is_test_user = true and id <> v_bypass
+        and is_deleted = false and banned = false
       order by random()
       limit 2 + floor(random()*3)::int
     ) pick

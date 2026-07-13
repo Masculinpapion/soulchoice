@@ -12,14 +12,14 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 |---|----------|--------|------|-------|---------------|
 | 1 | Kod kalitesi | 85% | 85% | ✅ eşikte | Build sağlam; kozmetik borç bloklamaz |
 | 2 | **Güvenlik** | 87% | **92%** | 🔴 -5 | Hacker affetmez; kullanıcı+yasal risk |
-| 3 | **Para yolu** | 78% | **92%** | 🔴 -14 | Para hatası = itibar + iade felaketi |
+| 3 | **Para yolu** | 88% | **92%** | 🟡 -4 | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 55% | 72% | 🔴 -17 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
 | 5 | UX dayanıklılık | 70% | 85% | 🟡 -15 | İlk izlenim; beyaz ekran = silme |
 | 6 | **Store hazırlık** | 83% | **90%** | 🟡 -7 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %77** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **0/7 hazır değil** (2 kritik + 2 altyapı/ux eşik altında)
+**GENEL LAUNCH-READINESS: %80** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -5, Para -4, Altyapı -17, UX -15, Store -7, Ürün -3
 
 ---
 
@@ -31,10 +31,10 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [ ] Edge fn'lerin auth yüzeyi tam denetimi (+3): açık çağrılabilen hassas endpoint kalmadığını doğrula
 - [ ] Moderasyon: reports/blocks var ama admin moderasyon paneli yok (+2)
 
-### 🔴 Para yolu (78% → hedef 92%, açık -14)
-- [ ] Ödeme çifte-tıklama / ödeme-ortası ağ kopması koruması denetlenmedi (+6)
-- [ ] Webhook gecikmesi/tekrar (idempotency) uç durumu (+4)
-- [ ] iOS premium ALMA yolu belirsiz (steering yasağı) — kullanıcı özelliği görür, alamaz (+4)
+### 🟡 Para yolu (88% → hedef 92%, açık -4)
+- [x] Ödeme çifte-tıklama / ağ kopması (+6) — **DENETLENDİ SAĞLAM 13.07** (_isLoading+sheetBusy guard; webhook Точка'dan bağımsız)
+- [x] Webhook idempotency (+4) — **DENETLENDİ SAĞLAM 13.07** (on conflict do nothing + zaten-işlenmiş guard)
+- [ ] iOS premium ALMA yolu (+4) — **ÜRÜN KARARI (Mustafa)**, teknik borç değil: iOS'ta web'e yönlendirme UX'i netleşmeli; Android+web ödeme launch-hazır
 
 ### 🔴 Ölçeklenme/Altyapı (55% → hedef 72%, açık -17)
 - [ ] Off-site yedek yok — tüm yedekler tek sunucuda, disk ölürse veri kaybı (+9)
@@ -60,3 +60,4 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ## KAPANIŞ GÜNLÜĞÜ
 - 13.07.2026 — OTP brute-force kapandı → Güvenlik %72→%80, genel %72→%75
 - 13.07.2026 — SMS bombing kapandı → Güvenlik %80→%87, genel %75→%77
+- 13.07.2026 — Para yolu denetlendi (çifte-tıklama+idempotency sağlam) → Para %78→%88, genel %77→%80

@@ -483,7 +483,8 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                // Üst 12px: klavye açıkken buton içeriğe yapışmasın (13.07).
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
                 child: ScButton(
                   label: l10n.btn_save,
                   onPressed: _isSaving ? null : _save,

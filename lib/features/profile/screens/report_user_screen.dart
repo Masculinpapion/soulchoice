@@ -300,15 +300,19 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    _ReportSubmitButton(
-                      label: _sending
-                          ? l10n.report_btn_sending
-                          : l10n.report_btn_submit,
-                      isLoading: _sending,
-                      onTap: _sending ? null : _submit,
-                    ),
                   ],
+                ),
+              ),
+              // CTA scroll'un DIŞINDA alta sabit — klavye açıkken de görünür
+              // (13.07 standardı: phone/otp/sihirbaz/edit ekranlarıyla aynı desen).
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                child: _ReportSubmitButton(
+                  label: _sending
+                      ? l10n.report_btn_sending
+                      : l10n.report_btn_submit,
+                  isLoading: _sending,
+                  onTap: _sending ? null : _submit,
                 ),
               ),
             ],

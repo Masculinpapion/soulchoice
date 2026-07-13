@@ -171,7 +171,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/chat/:matchId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (_, state) =>
-            ChatScreen(matchId: state.pathParameters['matchId'] ?? ''),
+            ChatScreen(
+              matchId: state.pathParameters['matchId'] ?? '',
+              initialPartner: state.extra as Map<String, dynamic>?,
+            ),
       ),
 
       // ── Profile detail (root navigator, shown over shell) ───────────────

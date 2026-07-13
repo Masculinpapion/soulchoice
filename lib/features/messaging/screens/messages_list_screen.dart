@@ -172,7 +172,14 @@ class _MatchTile extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => context.push('/chat/${match.matchId}'),
+            onTap: () => context.push(
+              '/chat/${match.matchId}',
+              extra: {
+                'name': match.otherName,
+                'age': match.otherAge,
+                'photoUrl': match.otherPhotoUrl,
+              },
+            ),
             borderRadius:
                 BorderRadius.circular(AuroraTheme.radiusInfoCard),
             child: Container(

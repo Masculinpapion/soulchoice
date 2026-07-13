@@ -105,16 +105,9 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                 onTap: () => context.push('/settings'),
               );
             } else if (currentUid != null) {
-              trailing = Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _FavoriteButton(targetUserId: userId),
-                  const SizedBox(width: 4),
-                  _GlassIconButton(
-                    icon: Icons.more_horiz,
-                    onTap: () => _showActionSheet(context, userId),
-                  ),
-                ],
+              trailing = _GlassIconButton(
+                icon: Icons.more_horiz,
+                onTap: () => _showActionSheet(context, userId),
               );
             } else {
               trailing = const SizedBox(width: 40);
@@ -1163,117 +1156,6 @@ class _GlassIconButton extends StatelessWidget {
         ),
       );
 }
-
-class _FavoriteButton extends StatefulWidget {
-  final String targetUserId;
-  const _FavoriteButton({required this.targetUserId});
-
-  @override
-  State<_FavoriteButton> createState() => _FavoriteButtonState();
-}
-
-class _FavoriteButtonState extends State<_FavoriteButton>
-    with SingleTickerProviderStateMixin {
-  bool? _isFavorite;
-  late final AnimationController _scaleCtrl;
-  late final Animation<double> _scaleAnim;
-
-  @override
-  void initState() {
-    super.initState();
-    _scaleCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 180));
-    _scaleAnim = Tween(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleCtrl, curve: Curves.elasticOut),
-    );
-    _scaleCtrl.value = 1.0;
-    _loadState();
-  }
-
-  @override
-  void dispose() {
-    _scaleCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadState() async {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    final result = await Supabase.instance.client
-        .from('favorites')
-        .select('id')
-        .eq('user_id', uid)
-        .eq('favorited_user_id', widget.targetUserId)
-        .maybeSingle();
-    if (mounted) setState(() => _isFavorite = result != null);
-  }
-
-  Future<void> _toggle() async {
-    if (_isFavorite == null) return;
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    HapticFeedback.lightImpact();
-    _scaleCtrl.reverse().then((_) => _scaleCtrl.forward());
-    final next = !_isFavorite!;
-    setState(() => _isFavorite = next);
-    if (next) {
-      await Supabase.instance.client.from('favorites').insert({
-        'user_id': uid,
-        'favorited_user_id': widget.targetUserId,
-      });
-    } else {
-      await Supabase.instance.client
-          .from('favorites')
-          .delete()
-          .eq('user_id', uid)
-          .eq('favorited_user_id', widget.targetUserId);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isFavorite == null) {
-      return const SizedBox(width: 40, height: 40);
-    }
-    return ScaleTransition(
-      scale: _scaleAnim,
-      child: GestureDetector(
-        onTap: _toggle,
-        child: ClipOval(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _isFavorite!
-                    ? AuroraTheme.auroraRed.withOpacity(0.20)
-                    : Colors.black.withOpacity(0.35),
-                border: Border.all(
-                  color: _isFavorite!
-                      ? AuroraTheme.auroraRed.withOpacity(0.6)
-                      : Colors.white.withOpacity(0.12),
-                ),
-              ),
-              child: Icon(
-                _isFavorite!
-                    ? Icons.star_rounded
-                    : Icons.star_outline_rounded,
-                color: _isFavorite!
-                    ? AuroraTheme.auroraRed
-                    : Colors.white.withOpacity(0.7),
-                size: 20,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ActionSheet extends StatelessWidget {
   final String targetUserId;
   final String? targetName;
@@ -1505,7 +1387,12 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
       // Başvuru sahibine "seçildin" bildirimi gönder
       _sendSelectedNotification(widget.applicantId, widget.applicantName);
 
-      if (mounted) context.push('/chat/$matchId');
+      if (mounted) {
+        context.push(
+          '/chat/$matchId',
+          extra: {'name': widget.applicantName},
+        );
+      }
     } catch (e) {
       if (mounted) setState(() => _loading = false);
     }

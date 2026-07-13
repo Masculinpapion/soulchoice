@@ -80,12 +80,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title, style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
-        content: Text(l10n.settings_coming_soon, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 14)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontFamily: 'Fraunces',
+            fontStyle: FontStyle.italic,
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+        content: Text(
+          l10n.settings_coming_soon,
+          style: const TextStyle(
+            fontFamily: 'Manrope',
+            color: Colors.white54,
+            fontSize: 14,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.settings_ok, style: const TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+            child: Text(
+              l10n.settings_ok,
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: AuroraTheme.auroraRed,
+              ),
+            ),
           ),
         ],
       ),
@@ -101,26 +122,49 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: AuroraTheme.bgDeep,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Image.asset('assets/branding/soulchoice_wordmark.png', height: 28, fit: BoxFit.contain),
+        title: Image.asset(
+          'assets/branding/soulchoice_wordmark.png',
+          height: 28,
+          fit: BoxFit.contain,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('v${info.version} (${info.buildNumber})', style: const TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white38, fontSize: 12)),
+            Text(
+              'v${info.version} (${info.buildNumber})',
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: Colors.white38,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(l10n.settings_about_subtitle, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white54, fontSize: 13)),
+            Text(
+              l10n.settings_about_subtitle,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                color: Colors.white54,
+                fontSize: 13,
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.settings_ok, style: const TextStyle(fontFamily: 'JetBrainsMono', color: AuroraTheme.auroraRed)),
+            child: Text(
+              l10n.settings_ok,
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: AuroraTheme.auroraRed,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
-
 
   Future<void> _showQuietHoursPicker(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -140,7 +184,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF0D0D12).withOpacity(0.92),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
                 border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
               ),
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
@@ -148,18 +194,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(width: 36, height: 4, decoration: BoxDecoration(color: AuroraTheme.glassBorder, borderRadius: BorderRadius.circular(2))),
+                    Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AuroraTheme.glassBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     const SizedBox(height: 20),
-                    Text(l10n.settings_quiet_hours_title, style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white)),
+                    Text(
+                      l10n.settings_quiet_hours_title,
+                      style: const TextStyle(
+                        fontFamily: 'Fraunces',
+                        fontStyle: FontStyle.italic,
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(l10n.settings_quiet_active, style: const TextStyle(fontFamily: 'Manrope', color: Colors.white, fontSize: 14)),
+                        Text(
+                          l10n.settings_quiet_active,
+                          style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
                         Switch(
                           value: localEnabled,
                           activeColor: AuroraTheme.auroraRed,
-                          onChanged: (v) => setModalState(() => localEnabled = v),
+                          onChanged: (v) =>
+                              setModalState(() => localEnabled = v),
                         ),
                       ],
                     ),
@@ -172,8 +241,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               label: l10n.settings_quiet_start,
                               time: localStart,
                               onTap: () async {
-                                final t = await showTimePicker(context: ctx, initialTime: localStart);
-                                if (t != null) setModalState(() => localStart = t);
+                                final t = await showTimePicker(
+                                  context: ctx,
+                                  initialTime: localStart,
+                                );
+                                if (t != null)
+                                  setModalState(() => localStart = t);
                               },
                             ),
                           ),
@@ -183,8 +256,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               label: l10n.settings_quiet_end,
                               time: localEnd,
                               onTap: () async {
-                                final t = await showTimePicker(context: ctx, initialTime: localEnd);
-                                if (t != null) setModalState(() => localEnd = t);
+                                final t = await showTimePicker(
+                                  context: ctx,
+                                  initialTime: localEnd,
+                                );
+                                if (t != null)
+                                  setModalState(() => localEnd = t);
                               },
                             ),
                           ),
@@ -200,21 +277,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           final prefs = await SharedPreferences.getInstance();
                           await prefs.setBool('quiet_enabled', localEnabled);
                           await prefs.setInt('quiet_start_h', localStart.hour);
-                          await prefs.setInt('quiet_start_m', localStart.minute);
+                          await prefs.setInt(
+                            'quiet_start_m',
+                            localStart.minute,
+                          );
                           await prefs.setInt('quiet_end_h', localEnd.hour);
                           await prefs.setInt('quiet_end_m', localEnd.minute);
-                          if (mounted) setState(() {
-                            _quietEnabled = localEnabled;
-                            _quietStart = localStart;
-                            _quietEnd = localEnd;
-                          });
+                          if (mounted)
+                            setState(() {
+                              _quietEnabled = localEnabled;
+                              _quietStart = localStart;
+                              _quietEnd = localEnd;
+                            });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AuroraTheme.auroraRed,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
-                        child: Text(l10n.btn_save, style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                        child: Text(
+                          l10n.btn_save,
+                          style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -243,7 +334,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF0D0D12).withOpacity(0.92),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
                 border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
               ),
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
@@ -252,7 +345,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 36, height: 4,
+                      width: 36,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: AuroraTheme.glassBorder,
                         borderRadius: BorderRadius.circular(2),
@@ -280,7 +374,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     const SizedBox(height: 16),
                     RangeSlider(
-                      values: RangeValues(localMin.toDouble(), localMax.toDouble()),
+                      values: RangeValues(
+                        localMin.toDouble(),
+                        localMax.toDouble(),
+                      ),
                       min: 21,
                       max: 60,
                       divisions: 39,
@@ -298,14 +395,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           Navigator.of(ctx).pop();
-                          final uid = Supabase.instance.client.auth.currentUser?.id;
+                          final uid =
+                              Supabase.instance.client.auth.currentUser?.id;
                           if (uid == null) return;
                           await Supabase.instance.client
                               .from('users')
-                              .update({'min_age': localMin, 'max_age': localMax})
+                              .update({
+                                'min_age': localMin,
+                                'max_age': localMax,
+                              })
                               .eq('id', uid);
                           if (mounted) {
-                            setState(() { _minAge = localMin; _maxAge = localMax; });
+                            setState(() {
+                              _minAge = localMin;
+                              _maxAge = localMax;
+                            });
                             ref.invalidate(invitationsProvider);
                             ref.invalidate(discoverProvider);
                           }
@@ -313,9 +417,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AuroraTheme.auroraRed,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
-                        child: Text(l10n.btn_save, style: const TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w700, fontSize: 15, color: Colors.white)),
+                        child: Text(
+                          l10n.btn_save,
+                          style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -334,9 +448,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return AppLocalizations.of(context)!.settings_language_system;
     }
     switch (locale.languageCode) {
-      case 'ru': return 'Русский';
-      case 'en': return 'English';
-      case 'tr': return 'Türkçe';
+      case 'ru':
+        return 'Русский';
+      case 'en':
+        return 'English';
+      case 'tr':
+        return 'Türkçe';
       default:
         return AppLocalizations.of(context)!.settings_language_system;
     }
@@ -351,18 +468,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       backgroundColor: Colors.transparent,
       builder: (_) {
         return ClipRRect(
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(28)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF0D0D12).withOpacity(0.85),
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(28)),
-                border: Border(
-                  top: BorderSide(color: AuroraTheme.glassBorder),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
                 ),
+                border: Border(top: BorderSide(color: AuroraTheme.glassBorder)),
               ),
               child: SafeArea(
                 child: Column(
@@ -394,16 +509,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ('tr', '🇹🇷', 'Türkçe'),
                     ].map((entry) {
                       final (code, flag, name) = entry;
-                      final isSelected =
-                          currentLocale?.languageCode == code;
+                      final isSelected = currentLocale?.languageCode == code;
                       return _LangTile(
                         flag: flag,
                         name: name,
                         isSelected: isSelected,
                         onTap: () {
-                          ref
-                              .read(localeProvider.notifier)
-                              .setLocale(code);
+                          ref.read(localeProvider.notifier).setLocale(code);
                           Navigator.of(context).pop();
                           setState(() {});
                         },
@@ -414,9 +526,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       name: l10n.settings_language_system,
                       isSelected: currentLocale == null,
                       onTap: () {
-                        ref
-                            .read(localeProvider.notifier)
-                            .useSystemLocale();
+                        ref.read(localeProvider.notifier).useSystemLocale();
                         Navigator.of(context).pop();
                         setState(() {});
                       },
@@ -450,13 +560,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     _GlassPill(
                       onTap: () => context.pop(),
-                      child: const Icon(Icons.arrow_back_ios_new,
-                          size: 16, color: Colors.white),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
-                      child:
-                          GradientItalicTitle(l10n.settings_title, fontSize: 23),
+                      child: GradientItalicTitle(
+                        l10n.settings_title,
+                        fontSize: 23,
+                      ),
                     ),
                   ],
                 ),
@@ -466,15 +581,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
                   children: [
-                    // Doğrulama kartı
+                    // Doğrulama kartı (yalnız pending/rejected/none'da görünür;
+                    // boşluğu kendi içinde taşır ki gizliyken artık kalmasın)
                     _VerificationCard(
                       selfieStatus: _selfieStatus,
                       onRetake: () {
-                        context.push('/profile/selfie').then(
-                            (_) => _loadSelfieStatus());
+                        context
+                            .push('/profile/selfie')
+                            .then((_) => _loadSelfieStatus());
                       },
                     ),
-                    const SizedBox(height: 24),
                     // Profil
                     _Section(
                       title: l10n.settings_profile_section,
@@ -553,7 +669,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _SettingsTile(
                           icon: Icons.help_outline,
                           label: l10n.settings_help,
-                          onTap: () => launchUrl(Uri.parse('mailto:${AppConstants.supportEmail}')),
+                          onTap: () => launchUrl(
+                            Uri.parse('mailto:${AppConstants.supportEmail}'),
+                          ),
                         ),
                         _SettingsTile(
                           icon: Icons.info_outline,
@@ -575,7 +693,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(AppLocalizations.of(context)!.settings_logout_error),
+                                content: Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.settings_logout_error,
+                                ),
                               ),
                             );
                           }
@@ -606,24 +728,23 @@ class _GlassPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AuroraTheme.glassBg,
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: AuroraTheme.glassBorder),
-              ),
-              child: child,
-            ),
+    onTap: onTap,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(100),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: AuroraTheme.glassBorder),
           ),
+          child: child,
         ),
-      );
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -645,36 +766,38 @@ class _LangTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          child: Row(
-            children: [
-              Text(flag, style: const TextStyle(fontSize: 22)),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  name,
-                  style: const TextStyle(
-                    fontFamily: 'Manrope',
-                    fontWeight: FontWeight.w500,
-                    fontSize: 15,
-                    color: Colors.white,
-                  ),
-                ),
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      child: Row(
+        children: [
+          Text(flag, style: const TextStyle(fontSize: 22)),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w500,
+                fontSize: 15,
+                color: Colors.white,
               ),
-              if (isSelected)
-                ShaderMask(
-                  shaderCallback: (b) =>
-                      AuroraTheme.redBlueGradient.createShader(b),
-                  child: const Icon(Icons.check_rounded,
-                      color: Colors.white, size: 20),
-                ),
-            ],
+            ),
           ),
-        ),
-      );
+          if (isSelected)
+            ShaderMask(
+              shaderCallback: (b) =>
+                  AuroraTheme.redBlueGradient.createShader(b),
+              child: const Icon(
+                Icons.check_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -693,10 +816,7 @@ class _Section extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            title,
-            style: AuroraTheme.monoLabel,
-          ),
+          child: Text(title, style: AuroraTheme.monoLabel),
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(18),
@@ -751,62 +871,63 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 13),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AuroraTheme.auroraRed.withOpacity(0.20),
-                        AuroraTheme.auroraBlue.withOpacity(0.20),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, color: Colors.white70, size: 17),
+    color: Colors.transparent,
+    child: InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AuroraTheme.auroraRed.withOpacity(0.20),
+                    AuroraTheme.auroraBlue.withOpacity(0.20),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                if (value != null) ...[
-                  Text(
-                    value!,
-                    style: TextStyle(
-                      fontFamily: 'JetBrainsMono',
-                      fontSize: 11,
-                      color: AuroraTheme.textMuted,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                Icon(Icons.arrow_forward_ios,
-                    size: 13,
-                    color: Colors.white.withOpacity(0.25)),
-              ],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: Colors.white70, size: 17),
             ),
-          ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            if (value != null) ...[
+              Text(
+                value!,
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 11,
+                  color: AuroraTheme.textMuted,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 13,
+              color: Colors.white.withOpacity(0.25),
+            ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -817,45 +938,45 @@ class _DangerButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _DangerButton(
-      {required this.icon, required this.label, required this.onTap});
+  const _DangerButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 18, vertical: 15),
-              decoration: BoxDecoration(
-                color: AuroraTheme.auroraRed.withOpacity(0.07),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: AuroraTheme.auroraRed.withOpacity(0.25)),
+    onTap: onTap,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+          decoration: BoxDecoration(
+            color: AuroraTheme.auroraRed.withOpacity(0.07),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AuroraTheme.auroraRed.withOpacity(0.25)),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: AuroraTheme.auroraRed, size: 20),
+              const SizedBox(width: 14),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: AuroraTheme.auroraRed,
+                ),
               ),
-              child: Row(
-                children: [
-                  Icon(icon,
-                      color: AuroraTheme.auroraRed, size: 20),
-                  const SizedBox(width: 14),
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: AuroraTheme.auroraRed,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -865,12 +986,16 @@ class _DangerButton extends StatelessWidget {
 class _VerificationCard extends StatelessWidget {
   final String selfieStatus;
   final VoidCallback onRetake;
-  const _VerificationCard(
-      {required this.selfieStatus, required this.onRetake});
+  const _VerificationCard({required this.selfieStatus, required this.onRetake});
 
   @override
   Widget build(BuildContext context) {
-    String emoji;
+    // Onaylıysa kart HİÇ görünmez (13.07 kararı): selfie zorunlu olduğundan
+    // herkes doğrulanmış — "onaylandın" kutusu bilgi taşımıyor. Kart yalnız
+    // aksiyon/bilgi gereken durumlarda (pending/rejected/none) çıkar.
+    if (selfieStatus == 'approved') return const SizedBox.shrink();
+
+    IconData icon;
     String label;
     Color color;
     bool showRetake = false;
@@ -878,79 +1003,77 @@ class _VerificationCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     switch (selfieStatus) {
       case 'pending':
-        emoji = '⏳';
+        icon = Icons.hourglass_top_rounded;
         label = l10n.settings_selfie_pending;
         color = const Color(0xFFF59E0B);
-      case 'approved':
-        emoji = '✅';
-        label = l10n.settings_selfie_approved;
-        color = AuroraTheme.auroraBlue;
       case 'rejected':
-        emoji = '❌';
+        icon = Icons.error_outline_rounded;
         label = l10n.settings_selfie_rejected;
         color = AuroraTheme.auroraRed;
         showRetake = true;
       default:
-        emoji = '🔲';
+        icon = Icons.photo_camera_front_outlined;
         label = l10n.settings_selfie_none;
-        color = Colors.white.withOpacity(0.35);
+        color = Colors.white.withValues(alpha: 0.55);
         showRetake = true;
     }
 
-    return GlassCard(
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: GlassCard(
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: color.withValues(alpha: 0.35)),
+              ),
+              child: Center(child: Icon(icon, size: 22, color: color)),
             ),
-            child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 22)),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.settings_verification_status,
-                  style: const TextStyle(
-                    fontFamily: 'Manrope',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                    color: Colors.white,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.settings_verification_status,
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'Manrope',
-                    fontSize: 12,
-                    color: color,
+                  const SizedBox(height: 2),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 12,
+                      color: color,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          if (showRetake)
-            GestureDetector(
-              onTap: onRetake,
-              child: Text(
-                l10n.settings_reupload,
-                style: TextStyle(
-                  fontFamily: 'JetBrainsMono',
-                  fontSize: 10,
-                  color: AuroraTheme.auroraRed,
-                  letterSpacing: 0.5,
-                ),
+                ],
               ),
             ),
-        ],
+            if (showRetake)
+              GestureDetector(
+                onTap: onRetake,
+                child: Text(
+                  l10n.settings_reupload,
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 10,
+                    color: AuroraTheme.auroraRed,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -960,28 +1083,46 @@ class _TimeButton extends StatelessWidget {
   final String label;
   final TimeOfDay time;
   final VoidCallback onTap;
-  const _TimeButton({required this.label, required this.time, required this.onTap});
+  const _TimeButton({
+    required this.label,
+    required this.time,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: AuroraTheme.glassBg,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AuroraTheme.glassBorder),
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: AuroraTheme.glassBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AuroraTheme.glassBorder),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'JetBrainsMono',
+              fontSize: 9,
+              color: Colors.white38,
+              letterSpacing: 0.5,
+            ),
           ),
-          child: Column(
-            children: [
-              Text(label, style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, color: Colors.white38, letterSpacing: 0.5)),
-              const SizedBox(height: 4),
-              Text(
-                '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
-                style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, color: Colors.white, fontWeight: FontWeight.w600),
-              ),
-            ],
+          const SizedBox(height: 4),
+          Text(
+            '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+            style: const TextStyle(
+              fontFamily: 'Fraunces',
+              fontStyle: FontStyle.italic,
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }

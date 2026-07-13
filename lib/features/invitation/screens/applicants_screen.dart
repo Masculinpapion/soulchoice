@@ -147,7 +147,14 @@ class _ApplicantTile extends StatelessWidget {
       child: InkWell(
         onTap: () {
           if (isAccepted && matchId != null) {
-            context.push('/chat/$matchId');
+            context.push(
+              '/chat/$matchId',
+              extra: {
+                'name': name,
+                'age': age,
+                'photoUrl': primaryUrl.isNotEmpty ? primaryUrl : null,
+              },
+            );
           } else {
             context.push(
               '/profile/$applicantId',

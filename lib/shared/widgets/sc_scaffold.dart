@@ -37,25 +37,8 @@ class ScScaffold extends StatelessWidget {
   }
 }
 
-/// Gövdeyi "sığarsa ekranı doldur, sığmazsa kaydır" desenine sokar.
-///
-/// [Spacer]/sabit yükseklik kullanan ekranlarda ([ScScaffold] ile birlikte),
-/// klavye açılıp gövde küçülünce içeriğin taşmasını (overflow) önler: içerik
-/// sığdığı sürece tam ekranı doldurur, sığmazsa kaydırılabilir olur.
-class ScKeyboardFill extends StatelessWidget {
-  final Widget child;
-
-  const ScKeyboardFill({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(child: child),
-        ),
-      ),
-    );
-  }
-}
+// NOT (13.07.2026): ScKeyboardFill kaldırıldı. "İçeriği IntrinsicHeight ile
+// doldur, sığmazsa kaydır" deseni CTA'yı da scroll'un içine aldığından klavye
+// açılınca buton katlama çizgisinin altında kalıyordu. Doğru desen: Column +
+// Expanded(SingleChildScrollView(içerik)) + scroll DIŞINDA alta sabit CTA
+// (bkz. phone_screen / otp_screen / edit_*_screen).

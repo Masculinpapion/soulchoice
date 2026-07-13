@@ -73,195 +73,207 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
-          child: ScKeyboardFill(
-            child: Padding(
-              padding: const EdgeInsets.all(28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 32),
-                  // Brand mark
-                  ShaderMask(
-                    shaderCallback: (b) =>
-                        AuroraTheme.redBlueGradient.createShader(b),
-                    child: const Icon(
-                      Icons.phone_iphone,
-                      color: Colors.white,
-                      size: 36,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    AppLocalizations.of(context)!.phone_title,
-                    style: const TextStyle(
-                      fontFamily: 'Fraunces',
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 32,
-                      color: AuroraTheme.textPrimary,
-                      letterSpacing: -0.4,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    AppLocalizations.of(context)!.phone_subtitle,
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 14,
-                      color: AuroraTheme.textSecondary,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  // Phone input field
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AuroraTheme.glassStrong,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: AuroraTheme.glassBorder),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              _countryCode,
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                fontSize: 16,
-                                color: AuroraTheme.textPrimary,
-                                height: 1.6,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Container(
-                              width: 1,
-                              height: 28,
-                              color: AuroraTheme.glassBorder,
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: TextField(
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                                style: TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 16,
-                                  color: AuroraTheme.textPrimary,
-                                  height: 1.6,
-                                ),
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.transparent,
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  hintText: '999 123 45 67',
-                                  hintStyle: TextStyle(
-                                    fontFamily: 'Manrope',
-                                    fontSize: 16,
-                                    height: 1.6,
-                                    color: AuroraTheme.textMuted,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Error message
-                  if (_error != null) ...[
-                    const SizedBox(height: 12),
-                    Row(
+          // CTA + onay metni scroll'un DIŞINDA alta sabit: klavye açılınca
+          // daima klavyenin üstünde kalır, içerik üstte kayar (13.07 fix).
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 14,
-                          color: AuroraTheme.auroraRed,
+                        const SizedBox(height: 60),
+                        // Brand mark
+                        ShaderMask(
+                          shaderCallback: (b) =>
+                              AuroraTheme.redBlueGradient.createShader(b),
+                          child: const Icon(
+                            Icons.phone_iphone,
+                            color: Colors.white,
+                            size: 36,
+                          ),
                         ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            _error!,
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 14,
-                              height: 1.5,
-                              color: AuroraTheme.auroraRed,
+                        const SizedBox(height: 24),
+                        Text(
+                          AppLocalizations.of(context)!.phone_title,
+                          style: const TextStyle(
+                            fontFamily: 'Fraunces',
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 32,
+                            color: AuroraTheme.textPrimary,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          AppLocalizations.of(context)!.phone_subtitle,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 14,
+                            color: AuroraTheme.textSecondary,
+                            height: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Phone input field
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AuroraTheme.glassStrong,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: AuroraTheme.glassBorder,
+                                ),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _countryCode,
+                                    style: TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontSize: 16,
+                                      color: AuroraTheme.textPrimary,
+                                      height: 1.6,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Container(
+                                    width: 1,
+                                    height: 28,
+                                    color: AuroraTheme.glassBorder,
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      style: TextStyle(
+                                        fontFamily: 'Manrope',
+                                        fontSize: 16,
+                                        color: AuroraTheme.textPrimary,
+                                        height: 1.6,
+                                      ),
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.transparent,
+                                        border: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        hintText: '999 123 45 67',
+                                        hintStyle: TextStyle(
+                                          fontFamily: 'Manrope',
+                                          fontSize: 16,
+                                          height: 1.6,
+                                          color: AuroraTheme.textMuted,
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              vertical: 16,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                        ),
+                        // Error message
+                        if (_error != null) ...[
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 14,
+                                color: AuroraTheme.auroraRed,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  _error!,
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 14,
+                                    height: 1.5,
+                                    color: AuroraTheme.auroraRed,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ),
+                ScButton(
+                  label: AppLocalizations.of(context)!.btn_continue,
+                  onPressed: _sendOtp,
+                  isLoading: _isLoading,
+                ),
+                const SizedBox(height: 18),
+                Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 12,
+                        color: AuroraTheme.textSecondary,
+                        height: 1.5,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: AppLocalizations.of(context)!.phone_terms + ' ',
+                        ),
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.phone_terms_link_privacy,
+                          style: const TextStyle(
+                            color: AuroraTheme.auroraRed,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => launchUrl(
+                              Uri.parse('https://soulchoice.app/privacy'),
+                            ),
+                        ),
+                        const TextSpan(text: ' & '),
+                        TextSpan(
+                          text: AppLocalizations.of(
+                            context,
+                          )!.phone_terms_link_terms,
+                          style: const TextStyle(
+                            color: AuroraTheme.auroraRed,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => launchUrl(
+                              Uri.parse('https://soulchoice.app/terms'),
+                            ),
                         ),
                       ],
                     ),
-                  ],
-                  const Spacer(),
-                  ScButton(
-                    label: AppLocalizations.of(context)!.btn_continue,
-                    onPressed: _sendOtp,
-                    isLoading: _isLoading,
                   ),
-                  const SizedBox(height: 18),
-                  Center(
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 12,
-                          color: AuroraTheme.textSecondary,
-                          height: 1.5,
-                        ),
-                        children: [
-                          TextSpan(
-                            text:
-                                AppLocalizations.of(context)!.phone_terms + ' ',
-                          ),
-                          TextSpan(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.phone_terms_link_privacy,
-                            style: const TextStyle(
-                              color: AuroraTheme.auroraRed,
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => launchUrl(
-                                Uri.parse('https://soulchoice.app/privacy'),
-                              ),
-                          ),
-                          const TextSpan(text: ' & '),
-                          TextSpan(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.phone_terms_link_terms,
-                            style: const TextStyle(
-                              color: AuroraTheme.auroraRed,
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => launchUrl(
-                                Uri.parse('https://soulchoice.app/terms'),
-                              ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
           ),
         ),

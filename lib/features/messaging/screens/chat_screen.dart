@@ -14,7 +14,12 @@ import '../../../core/services/photo_focus.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String matchId;
-  const ChatScreen({super.key, required this.matchId});
+
+  // initialPartner: mesaj listesinin ZATEN bildiği isim/yaş/foto — başlık
+  // sunucu cevabını beklemeden anında dolu açılsın diye elden geçirilir
+  // (13.07 fix: boş daire + iskelet flaşı).
+  final Map<String, dynamic>? initialPartner;
+  const ChatScreen({super.key, required this.matchId, this.initialPartner});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -458,8 +463,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
     final otherUser = _matchInfo?['other'] as Map<String, dynamic>?;
-    final otherName = otherUser?['name'] as String? ?? '—';
-    final otherAge = (otherUser?['age'] as int?) ?? 0;
+    final initial = widget.initialPartner;
+    final otherName =
+        otherUser?['name'] as String? ?? initial?['name'] as String? ?? '—';
+    final otherAge =
+        (otherUser?['age'] as int?) ?? (initial?['age'] as int?) ?? 0;
     final invTitle = inv?['title'] as String? ?? '';
     final invVenue = inv?['venue_name'] as String? ?? '';
     final rawDate = inv?['event_date'] as String?;
@@ -477,9 +485,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             _ChatAppBar(
               otherName: otherName,
               otherAge: otherAge,
-              photoUrl: _matchInfo?['photoUrl'] as String?,
+              photoUrl: _matchInfo?['photoUrl'] as String? ??
+                  initial?['photoUrl'] as String?,
               otherUserId: _matchInfo?['otherUserId'] as String?,
-              isLoading: _matchInfo == null,
+              isLoading: _matchInfo == null && initial == null,
               onBack: () => context.pop(),
               onBlock: _block,
               onDelete: _deleteChat,

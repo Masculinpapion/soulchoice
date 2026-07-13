@@ -21,17 +21,41 @@ serve(async (req) => {
     }
 
     const phoneNorm = phone.replace(/^\+/, '')
+    const MAX_ATTEMPTS = 5
 
     const now = new Date().toISOString()
-    const checkRes = await fetch(
-      SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone) + '&code=eq.' + encodeURIComponent(code) + '&expires_at=gt.' + now + '&limit=1',
+    // Brute-force koruması: kodu SORGUYA katma; önce telefonun geçerli OTP
+    // kaydını çek, deneme sayısını kontrol et, sonra kodu KODDA karşılaştır.
+    const otpRes = await fetch(
+      SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone) + '&expires_at=gt.' + now + '&order=created_at.desc&limit=1',
       { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } }
     )
-    const rows = await checkRes.json()
-    if (!Array.isArray(rows) || rows.length === 0) {
+    const otpRows = await otpRes.json()
+    if (!Array.isArray(otpRows) || otpRows.length === 0) {
+      return new Response(JSON.stringify({ error: 'invalid_code' }), { status: 401, headers: CORS })
+    }
+    const otp = otpRows[0]
+
+    // 5 yanlış denemeden sonra kod iptal — yeni kod istemek zorunlu
+    if ((otp.attempts ?? 0) >= MAX_ATTEMPTS) {
+      await fetch(SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone), {
+        method: 'DELETE',
+        headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },
+      })
+      return new Response(JSON.stringify({ error: 'too_many_attempts' }), { status: 429, headers: CORS })
+    }
+
+    // Kod yanlış → deneme sayacını artır, kaydı SİLME (kullanıcı tekrar denesin)
+    if (String(otp.code) !== String(code)) {
+      await fetch(SUPABASE_URL + '/rest/v1/call_otps?id=eq.' + otp.id, {
+        method: 'PATCH',
+        headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ attempts: (otp.attempts ?? 0) + 1 }),
+      })
       return new Response(JSON.stringify({ error: 'invalid_code' }), { status: 401, headers: CORS })
     }
 
+    // Kod doğru → tüm OTP kayıtlarını sil (mevcut akış)
     await fetch(SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone), {
       method: 'DELETE',
       headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },

@@ -22,6 +22,27 @@ serve(async (req) => {
     const { phone } = await req.json()
     if (!phone) return new Response(JSON.stringify({ error: 'phone required' }), { status: 400, headers: CORS })
 
+    // SMS bombing koruması: aynı numaraya 60 sn içinde yeni kod YOK. Kontrol
+    // SMS.ru çağrısından ÖNCE — hem bakiyeyi hem kurbanı (art arda çağrı) korur.
+    // Test bypass muaf (dev). App'te zaten 60 sn resend timer var; backend zorlar.
+    const isTestBypass = ALLOW_TEST_OTP && phone === TEST_PHONE
+    if (!isTestBypass) {
+      const lastRes = await fetch(
+        SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone) + '&select=created_at&order=created_at.desc&limit=1',
+        { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } }
+      )
+      const last = await lastRes.json()
+      if (Array.isArray(last) && last[0]) {
+        const ageMs = Date.now() - new Date(last[0].created_at).getTime()
+        if (ageMs < 60_000) {
+          return new Response(
+            JSON.stringify({ error: 'too_soon', retry_after: Math.ceil((60_000 - ageMs) / 1000) }),
+            { status: 429, headers: CORS }
+          )
+        }
+      }
+    }
+
     let code: string
 
     if (ALLOW_TEST_OTP && phone === TEST_PHONE) {

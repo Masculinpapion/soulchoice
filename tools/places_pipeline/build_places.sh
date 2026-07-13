@@ -44,10 +44,13 @@ for c in ${CITIES//,/ }; do
   echo "== $c: bina adresleri (POI'lere en yakın adres eşlemesi için)"
   osmium tags-filter "tmp_$c.pbf" nwr/addr:housenumber -o "addr_$c.pbf" --overwrite
   osmium export "addr_$c.pbf" -f geojsonseq -o "addr_$c.geojsonseq" --overwrite
+  echo "== $c: bağlam (metro istasyonları + semtler)"
+  osmium tags-filter "tmp_$c.pbf" nwr/railway=station nwr/station=subway n/place=suburb,neighbourhood,quarter -o "ctx_$c.pbf" --overwrite
+  osmium export "ctx_$c.pbf" -f geojsonseq -o "ctx_$c.geojsonseq" --overwrite
   echo "== $c: export + CSV"
   osmium export "poi_$c.pbf" -f geojsonseq --add-unique-id=type_id -o "poi_$c.geojsonseq" --overwrite
-  python3 "$DIR/geojson_to_csv.py" "$c" "poi_$c.geojsonseq" "addr_$c.geojsonseq" > "out/places_$c.csv"
-  rm -f "tmp_$c.pbf" "poi_$c.pbf" "poi_$c.geojsonseq" "addr_$c.pbf" "addr_$c.geojsonseq"
+  python3 "$DIR/geojson_to_csv.py" "$c" "poi_$c.geojsonseq" "addr_$c.geojsonseq" "ctx_$c.geojsonseq" > "out/places_$c.csv"
+  rm -f "tmp_$c.pbf" "poi_$c.pbf" "poi_$c.geojsonseq" "addr_$c.pbf" "addr_$c.geojsonseq" "ctx_$c.pbf" "ctx_$c.geojsonseq"
 done
 
 echo ""

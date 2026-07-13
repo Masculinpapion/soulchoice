@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """OSM geojsonseq → places CSV. stdout: CSV, stderr: özet istatistik.
 
-Kullanım: geojson_to_csv.py <city> <poi.geojsonseq> [addr.geojsonseq]
-addr dosyası verilirse, adressiz POI'lere en yakın bina adresi (≤50m) atanır
-(RU şehirlerinde adresler POI'de değil bina poligonlarında durur).
+Kullanım: geojson_to_csv.py <city> <poi.geojsonseq> [addr.geojsonseq] [ctx.geojsonseq]
+- addr: bina adres noktaları — adressiz POI'ye en yakın adres (≤50m) atanır
+  (RU şehirlerinde adresler POI'de değil bina poligonlarında durur).
+- ctx: metro istasyonları + semt merkezleri — "м. Тверская" / semt etiketi.
 
-Kolonlar: osm_ref,name,name_ru,name_en,category,lat,lng,street,housenumber,city_key
+Kolonlar: osm_ref,name,name_ru,name_en,category,lat,lng,street,housenumber,
+          metro,district,brand,website,city_key
 """
 import csv
 import json
@@ -15,8 +17,9 @@ import sys
 city = sys.argv[1]
 poi_path = sys.argv[2]
 addr_path = sys.argv[3] if len(sys.argv) > 3 else None
+ctx_path = sys.argv[4] if len(sys.argv) > 4 else None
 
-CELL = 0.0005  # ~50m grid hücresi
+CELL = 0.0005  # ~50m grid hücresi (adres eşlemesi)
 
 
 def features(path):
@@ -109,11 +112,52 @@ def nearest_addr(lat, lon, max_m=50.0):
     return best
 
 
+# --- Bağlam: metro istasyonları + semtler ---
+metros, suburbs = [], []
+if ctx_path:
+    seen_ctx = set()
+    for f in features(ctx_path):
+        t = f.get("properties") or {}
+        nm = t.get("name")
+        if not nm:
+            continue
+        try:
+            lat, lon = centroid(f["geometry"])
+        except (KeyError, ZeroDivisionError, IndexError, TypeError):
+            continue
+        is_metro = t.get("railway") == "station" and (
+            t.get("station") in ("subway", "light_rail") or t.get("subway") == "yes"
+        )
+        is_suburb = t.get("place") in ("suburb", "neighbourhood", "quarter")
+        key = (nm, is_metro, round(lat, 3), round(lon, 3))
+        if key in seen_ctx:
+            continue
+        seen_ctx.add(key)
+        if is_metro:
+            metros.append((lat, lon, nm))
+        elif is_suburb:
+            suburbs.append((lat, lon, nm))
+
+
+def nearest_ctx(items, lat, lon, max_m):
+    best, best_d = "", max_m
+    klon = 111320.0 * math.cos(math.radians(lat))
+    for alat, alon, nm in items:
+        dy = (alat - lat) * 111320.0
+        if abs(dy) > best_d:
+            continue
+        d = math.hypot(dy, (alon - lon) * klon)
+        if d < best_d:
+            best, best_d = nm, d
+    return best
+
+
 # --- POI'ler ---
 w = csv.writer(sys.stdout)
 stats = {}
 addr_ok = 0
 addr_joined = 0
+ctx_ok = 0
 seen = set()
 
 for f in features(poi_path):
@@ -140,17 +184,24 @@ for f in features(poi_path):
             addr_joined += 1
     if street:
         addr_ok += 1
+    metro = nearest_ctx(metros, lat, lon, 1200.0) if metros else ""
+    district = nearest_ctx(suburbs, lat, lon, 2500.0) if suburbs else ""
+    if metro or district:
+        ctx_ok += 1
+    website = t.get("website") or t.get("contact:website") or ""
     w.writerow([
         f.get("id", ""), name, t.get("name:ru", ""), t.get("name:en", ""),
-        cat, f"{lat:.6f}", f"{lon:.6f}", street, hnr, city,
+        cat, f"{lat:.6f}", f"{lon:.6f}", street, hnr,
+        metro, district, t.get("brand", ""), website[:200], city,
     ])
     stats[cat] = stats.get(cat, 0) + 1
 
 total = sum(stats.values())
-pct = (100 * addr_ok // total) if total else 0
+pa = (100 * addr_ok // total) if total else 0
+pc = (100 * ctx_ok // total) if total else 0
 cats = ", ".join(f"{k}:{v}" for k, v in sorted(stats.items(), key=lambda x: -x[1]))
 print(
-    f"[özet] {city}: {total} kayıt, adres kapsamı %{pct} "
-    f"(bina eşlemesinden +{addr_joined}) — {cats}",
+    f"[özet] {city}: {total} kayıt, adres %{pa} (bina eşlemesi +{addr_joined}), "
+    f"metro/semt %{pc}, istasyon:{len(metros)} semt:{len(suburbs)} — {cats}",
     file=sys.stderr,
 )

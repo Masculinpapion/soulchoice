@@ -10,15 +10,15 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 
 | # | Kategori | Mevcut | Eşik | Durum | Neden bu eşik |
 |---|----------|--------|------|-------|---------------|
-| 1 | Kod kalitesi | 85% | 85% | ✅ eşikte | Build sağlam; kozmetik borç bloklamaz |
+| 1 | Kod kalitesi | 86% | 85% | ✅ | Build sağlam; paywall leak kapandı |
 | 2 | **Güvenlik** | 90% | **92%** | 🟡 -2 | Hacker affetmez; kullanıcı+yasal risk |
 | 3 | **Para yolu** | 88% | **92%** | 🟡 -4 | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 55% | 72% | 🔴 -17 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
-| 5 | UX dayanıklılık | 70% | 85% | 🟡 -15 | İlk izlenim; beyaz ekran = silme |
+| 5 | UX dayanıklılık | 76% | 85% | 🟡 -9 | İlk izlenim; beyaz ekran = silme |
 | 6 | **Store hazırlık** | 83% | **90%** | 🟡 -7 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %81** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**GENEL LAUNCH-READINESS: %83** (ağırlıklı: güvenlik+para+store çift ağırlık)
 **LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -5, Para -4, Altyapı -17, UX -15, Store -7, Ürün -3
 
 ---
@@ -41,8 +41,9 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [ ] İzleme/alarm yok — CPU/disk/DB kritikleşince haber yok (+6)
 - [ ] Restore provası yapılmadı — yedek gerçekten dönüyor mu bilinmiyor (+2)
 
-### 🟡 UX dayanıklılık (70% → hedef 85%, açık -15)
-- [ ] Kötü koşul (kopuk internet/boş cevap) her ekranda hata/boş/yükleniyor durumu — derin test yapılmadı (+8)
+### 🟡 UX dayanıklılık (76% → hedef 85%, açık -9)
+- [x] Offline soğuk açılış — splash sonsuz takılıyordu (+6) — **KAPANDI 13.07** (timeout+fallback, offline'da feed'e geçiyor, online regresyon temiz)
+- [ ] Yavaş-ağ her ekran + boş cevap durumu — derin test sürüyor (+2)
 - [ ] Uç durumlar (silinmiş kullanıcının eski mesajı, premium bitmiş, dolmuş davet) — derin test (+5)
 - [ ] Geri-dönüşsüz anlar (silme/iptal/engelleme) onay yeterliliği (+2)
 
@@ -58,6 +59,8 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 13.07.2026 — paywall controller leak kapandı → Kod %85→%86
+- 13.07.2026 — Offline splash takılması kapandı → UX %70→%76, genel %81→%83
 - 13.07.2026 — Edge auth denetlendi temiz (IDOR yok) → Güvenlik %87→%90, genel %80→%81
 - 13.07.2026 — OTP brute-force kapandı → Güvenlik %72→%80, genel %72→%75
 - 13.07.2026 — SMS bombing kapandı → Güvenlik %80→%87, genel %75→%77

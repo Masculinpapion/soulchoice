@@ -47,17 +47,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       return;
     }
 
-    final existing = await Supabase.instance.client
-        .from('users')
-        .select('id')
-        .eq('id', session.user.id)
-        .maybeSingle();
-    if (!mounted) return;
-
-    if (existing == null) {
-      context.go('/profile/setup');
-    } else {
-      context.go('/feed');
+    try {
+      final existing = await Supabase.instance.client
+          .from('users')
+          .select('id')
+          .eq('id', session.user.id)
+          .maybeSingle()
+          .timeout(const Duration(seconds: 8));
+      if (!mounted) return;
+      context.go(existing == null ? '/profile/setup' : '/feed');
+    } catch (_) {
+      // Ağ yok/yavaş: session var demek kullanıcı daha önce giriş yapmış →
+      // feed'e geç (feed kendi offline/hata durumunu gösterir). Sonsuz splash
+      // YASAK — kullanıcı "bozuk app" sanmasın.
+      if (mounted) context.go('/feed');
     }
   }
 

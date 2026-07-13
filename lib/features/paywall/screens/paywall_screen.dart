@@ -233,6 +233,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
       ),
     );
+    emailCtrl.dispose(); // modal kapandı — controller sızmasın
   }
 
   Future<bool> _startSubscription(String email) async {

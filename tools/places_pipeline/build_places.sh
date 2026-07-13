@@ -41,10 +41,13 @@ for c in ${CITIES//,/ }; do
   osmium extract -b "${BBOX[$c]}" "$f" -o "tmp_$c.pbf" --overwrite
   echo "== $c: tag filtresi"
   osmium tags-filter "tmp_$c.pbf" "${FILTERS[@]}" -o "poi_$c.pbf" --overwrite
+  echo "== $c: bina adresleri (POI'lere en yakın adres eşlemesi için)"
+  osmium tags-filter "tmp_$c.pbf" nwr/addr:housenumber -o "addr_$c.pbf" --overwrite
+  osmium export "addr_$c.pbf" -f geojsonseq -o "addr_$c.geojsonseq" --overwrite
   echo "== $c: export + CSV"
   osmium export "poi_$c.pbf" -f geojsonseq --add-unique-id=type_id -o "poi_$c.geojsonseq" --overwrite
-  python3 "$DIR/geojson_to_csv.py" "$c" < "poi_$c.geojsonseq" > "out/places_$c.csv"
-  rm -f "tmp_$c.pbf" "poi_$c.pbf" "poi_$c.geojsonseq"
+  python3 "$DIR/geojson_to_csv.py" "$c" "poi_$c.geojsonseq" "addr_$c.geojsonseq" > "out/places_$c.csv"
+  rm -f "tmp_$c.pbf" "poi_$c.pbf" "poi_$c.geojsonseq" "addr_$c.pbf" "addr_$c.geojsonseq"
 done
 
 echo ""

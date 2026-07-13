@@ -8,6 +8,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
+import '../providers/my_active_invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../../core/providers/locale_provider.dart';
@@ -554,7 +555,7 @@ class _InvitationDetailScreenState
                           const SizedBox(width: 8),
                           _GlassPill(
                             onTap: () => context.push(
-                              '/invitation/create',
+                              '/invitation/edit',
                               extra: {
                                 'id': invitationId,
                                 'flow_type': inv['flow_type'] as String?,
@@ -639,6 +640,8 @@ class _InvitationDetailScreenState
                                       invitationDetailProvider);
                                   ref.invalidate(
                                       invitationsProvider);
+                                  ref.invalidate(
+                                      myActiveInvitationsProvider);
                                   if (context.mounted) {
                                     context.pop();
                                   }

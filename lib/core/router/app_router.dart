@@ -12,6 +12,7 @@ import '../../features/auth/screens/otp_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/onboarding/screens/permissions_screen.dart';
 import '../../features/profile/screens/profile_setup_screen.dart';
+import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/profile/screens/photo_upload_screen.dart';
 import '../../features/profile/screens/selfie_screen.dart';
 import '../../features/profile/screens/profile_view_screen.dart';
@@ -20,6 +21,7 @@ import '../../features/discover/screens/discover_screen.dart';
 import '../../features/messaging/screens/messages_list_screen.dart';
 import '../../features/invitation/screens/invitation_detail_screen.dart';
 import '../../features/invitation/screens/create_invitation_screen.dart';
+import '../../features/invitation/screens/edit_invitation_screen.dart';
 import '../../features/invitation/screens/applicants_screen.dart';
 import '../../features/invitation/screens/decision_screen.dart';
 import '../../features/messaging/screens/chat_screen.dart';
@@ -105,7 +107,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile/setup',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, state) => ProfileSetupScreen(isEditing: state.extra == 'edit'),
+        builder: (ctx, _) => const ProfileSetupScreen(),
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, _) => const EditProfileScreen(),
       ),
       GoRoute(
         path: '/profile/photos',
@@ -128,8 +135,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/invitation/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, state) => CreateInvitationScreen(
-          editData: state.extra as Map<String, dynamic>?,
+        builder: (ctx, _) => const CreateInvitationScreen(),
+      ),
+      GoRoute(
+        path: '/invitation/edit',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (ctx, state) => EditInvitationScreen(
+          data: state.extra as Map<String, dynamic>? ?? const {},
         ),
       ),
       GoRoute(

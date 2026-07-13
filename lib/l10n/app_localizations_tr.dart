@@ -398,6 +398,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_btn_update => 'Güncelle';
 
   @override
+  String get edit_inv_title => 'Davetiyeyi düzenle';
+
+  @override
   String get create_inv_flow_invite_title => 'Davet ediyorum';
 
   @override
@@ -1742,7 +1745,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywall_close => 'Kapat';
 
   @override
-  String get profile_inv_section => 'DAVETİYEM';
+  String get profile_inv_section => 'KARTLARIM';
 
   @override
   String get profile_inv_empty_title => 'Henüz aktif davetin yok';

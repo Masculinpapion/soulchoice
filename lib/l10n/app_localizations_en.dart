@@ -399,6 +399,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_btn_update => 'Update';
 
   @override
+  String get edit_inv_title => 'Edit invitation';
+
+  @override
   String get create_inv_flow_invite_title => 'I\'m Hosting';
 
   @override
@@ -1748,7 +1751,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywall_close => 'Close';
 
   @override
-  String get profile_inv_section => 'MY INVITATION';
+  String get profile_inv_section => 'MY CARDS';
 
   @override
   String get profile_inv_empty_title => 'No active invitation';

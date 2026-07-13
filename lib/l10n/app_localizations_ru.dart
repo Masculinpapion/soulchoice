@@ -400,6 +400,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_btn_update => 'Обновить';
 
   @override
+  String get edit_inv_title => 'Редактировать приглашение';
+
+  @override
   String get create_inv_flow_invite_title => 'Приглашаю';
 
   @override
@@ -1780,7 +1783,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywall_close => 'Закрыть';
 
   @override
-  String get profile_inv_section => 'МОЯ ЗАЯВКА';
+  String get profile_inv_section => 'МОИ ЗАЯВКИ';
 
   @override
   String get profile_inv_empty_title => 'Активной заявки нет';

@@ -832,6 +832,12 @@ abstract class AppLocalizations {
   /// **'Update'**
   String get create_inv_btn_update;
 
+  /// No description provided for @edit_inv_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit invitation'**
+  String get edit_inv_title;
+
   /// No description provided for @create_inv_flow_invite_title.
   ///
   /// In en, this message translates to:
@@ -3301,7 +3307,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_inv_section.
   ///
   /// In en, this message translates to:
-  /// **'MY INVITATION'**
+  /// **'MY CARDS'**
   String get profile_inv_section;
 
   /// No description provided for @profile_inv_empty_title.

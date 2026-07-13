@@ -260,7 +260,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                       ? l10n.profile_view_cta_edit
                                       : l10n.profile_view_cta_come,
                                   onTap: isOwnProfile
-                                      ? () => context.push('/profile/setup', extra: 'edit')
+                                      ? () => context.push('/profile/edit')
                                       : () => context.pop(),
                                 );
                               }),
@@ -326,7 +326,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       score += 20;
     } else {
       hint ??= l10n.profile_view_hint_name_age;
-      route ??= '/profile/setup';
+      route ??= '/profile/edit';
     }
 
     // Photo: 20 pts
@@ -342,7 +342,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       score += 15;
     } else {
       hint ??= l10n.profile_view_hint_bio;
-      route ??= '/profile/setup';
+      route ??= '/profile/edit';
     }
 
     // Interests: 15 pts
@@ -350,7 +350,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       score += 15;
     } else {
       hint ??= l10n.profile_view_hint_interests;
-      route ??= '/profile/setup';
+      route ??= '/profile/edit';
     }
 
     // Selfie approved: 20 pts
@@ -370,7 +370,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       score += 10;
     } else {
       hint ??= l10n.profile_view_hint_prompt;
-      route ??= '/profile/setup';
+      route ??= '/profile/edit';
     }
 
     return _ProfileCompletionCard(
@@ -1617,7 +1617,7 @@ class _MyInvitationSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final asyncInv = ref.watch(myActiveInvitationProvider);
+    final asyncInv = ref.watch(myActiveInvitationsProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1645,14 +1645,34 @@ class _MyInvitationSection extends ConsumerWidget {
           error: (e, _) => Text('$e',
               style: TextStyle(
                   color: AuroraTheme.textSecondary, fontFamily: 'Manrope')),
-          data: (inv) {
-            if (inv == null) {
+          data: (invs) {
+            if (invs.isEmpty) {
               return _CreateInvitationCta(
                 label: l10n.profile_inv_create_cta,
                 emptyTitle: l10n.profile_inv_empty_title,
               );
             }
-            final id = inv['id'] as String;
+            return Column(
+              children: [
+                for (var i = 0; i < invs.length; i++) ...[
+                  if (i > 0) const SizedBox(height: 10),
+                  _buildCard(context, l10n, invs[i]),
+                ],
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    Map<String, dynamic> inv,
+  ) {
+    final id = inv['id'] as String;
+            final isRequest = (inv['flow_type'] as String?) == 'request';
             final count = inv['application_count'] as int? ?? 0;
             final photoUrl = inv['owner_photo_url'] as String?;
             final categoryKey = inv['category'] as String?;
@@ -1734,6 +1754,16 @@ class _MyInvitationSection extends ConsumerWidget {
                                     letterSpacing: 1,
                                   ),
                                 ),
+                                const SizedBox(width: 6),
+                                Icon(
+                                  isRequest
+                                      ? Icons.explore_rounded
+                                      : Icons.wine_bar_rounded,
+                                  size: 13,
+                                  color: isRequest
+                                      ? const Color(0xFF2D7FFF)
+                                      : const Color(0xFFFF2D55),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 6),
@@ -1769,10 +1799,6 @@ class _MyInvitationSection extends ConsumerWidget {
                 ),
               ),
             );
-          },
-        ),
-      ],
-    );
   }
 }
 

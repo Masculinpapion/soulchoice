@@ -530,8 +530,10 @@ class _CreateInvitationScreenState
                 ),
               ),
               // ── Footer CTA ────────────────────────────────────────────
+              // Üst 12px: klavye açılıp içerik daralınca buton metin alanına
+              // yapışmasın (13.07 bulgusu — Açıklama adımında sıfır temas).
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 28),
                 child: ScButton(
                   label: _step < _stepCount - 1
                       ? l10n.create_inv_btn_next
@@ -769,7 +771,7 @@ class _StepCategory extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)!.create_inv_step_category,
             style: _displayMediumStyle,
@@ -779,14 +781,16 @@ class _StepCategory extends StatelessWidget {
             AppLocalizations.of(context)!.create_inv_category_question,
             style: _bodyMediumStyle,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 3,
             mainAxisSpacing: 10,
             crossAxisSpacing: 10,
-            childAspectRatio: 1.0,
+            // 1.15: 12 kategori (4 satır) tek ekrana sığsın, son satır
+            // İleri butonunun altında kesilmesin (13.07 bulgusu).
+            childAspectRatio: 1.15,
             children: InvitationCategory.values.map((c) {
               final isSelected = selected == c;
               return GestureDetector(
@@ -972,19 +976,23 @@ class _StepDescription extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24),
+          // Sıkı boşluklar + sayaç gizli: klavye açıkken alan BÜTÜNÜYLE
+          // görünür kalsın, alt kenarı kesilmesin (13.07 bulgusu).
+          const SizedBox(height: 8),
           Text(l10n.create_inv_step_description, style: _displayMediumStyle),
           const SizedBox(height: 8),
           Text(subtitle, style: _bodyMediumStyle),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
           TextField(
             controller: controller,
             maxLines: 4,
             maxLength: 300,
             style: _bodyLargeStyle,
+            scrollPadding: const EdgeInsets.only(bottom: 120),
             decoration: InputDecoration(
               hintText: l10n.create_inv_desc_input_hint,
               alignLabelWithHint: true,
+              counterText: '',
             ),
           ),
         ],

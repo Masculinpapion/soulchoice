@@ -1,0 +1,136 @@
+Стамбул,Istanbul,Турция,Turkey
+Анталья,Antalya,Турция,Turkey
+Бодрум,Bodrum,Турция,Turkey
+Мармарис,Marmaris,Турция,Turkey
+Аланья,Alanya,Турция,Turkey
+Фетхие,Fethiye,Турция,Turkey
+Измир,Izmir,Турция,Turkey
+Каппадокия,Cappadocia,Турция,Turkey
+Дубай,Dubai,ОАЭ,UAE
+Абу-Даби,Abu Dhabi,ОАЭ,UAE
+Сочи,Sochi,Россия,Russia
+Красная Поляна,Krasnaya Polyana,Россия,Russia
+Санкт-Петербург,Saint Petersburg,Россия,Russia
+Москва,Moscow,Россия,Russia
+Калининград,Kaliningrad,Россия,Russia
+Казань,Kazan,Россия,Russia
+Нижний Новгород,Nizhny Novgorod,Россия,Russia
+Екатеринбург,Yekaterinburg,Россия,Russia
+Байкал,Lake Baikal,Россия,Russia
+Алтай,Altai,Россия,Russia
+Карелия,Karelia,Россия,Russia
+Мурманск,Murmansk,Россия,Russia
+Камчатка,Kamchatka,Россия,Russia
+Владивосток,Vladivostok,Россия,Russia
+Дербент,Derbent,Россия,Russia
+Кисловодск,Kislovodsk,Россия,Russia
+Ялта,Yalta,Крым,Crimea
+Минск,Minsk,Беларусь,Belarus
+Тбилиси,Tbilisi,Грузия,Georgia
+Батуми,Batumi,Грузия,Georgia
+Ереван,Yerevan,Армения,Armenia
+Баку,Baku,Азербайджан,Azerbaijan
+Ташкент,Tashkent,Узбекистан,Uzbekistan
+Самарканд,Samarkand,Узбекистан,Uzbekistan
+Бухара,Bukhara,Узбекистан,Uzbekistan
+Алматы,Almaty,Казахстан,Kazakhstan
+Астана,Astana,Казахстан,Kazakhstan
+Бишкек,Bishkek,Кыргызстан,Kyrgyzstan
+Иссык-Куль,Issyk-Kul,Кыргызстан,Kyrgyzstan
+Париж,Paris,Франция,France
+Ницца,Nice,Франция,France
+Рим,Rome,Италия,Italy
+Венеция,Venice,Италия,Italy
+Милан,Milan,Италия,Italy
+Флоренция,Florence,Италия,Italy
+Неаполь,Naples,Италия,Italy
+Барселона,Barcelona,Испания,Spain
+Мадрид,Madrid,Испания,Spain
+Тенерифе,Tenerife,Испания,Spain
+Лиссабон,Lisbon,Португалия,Portugal
+Порту,Porto,Португалия,Portugal
+Лондон,London,Великобритания,United Kingdom
+Эдинбург,Edinburgh,Великобритания,United Kingdom
+Берлин,Berlin,Германия,Germany
+Мюнхен,Munich,Германия,Germany
+Гамбург,Hamburg,Германия,Germany
+Прага,Prague,Чехия,Czechia
+Вена,Vienna,Австрия,Austria
+Будапешт,Budapest,Венгрия,Hungary
+Амстердам,Amsterdam,Нидерланды,Netherlands
+Брюссель,Brussels,Бельгия,Belgium
+Копенгаген,Copenhagen,Дания,Denmark
+Стокгольм,Stockholm,Швеция,Sweden
+Осло,Oslo,Норвегия,Norway
+Хельсинки,Helsinki,Финляндия,Finland
+Варшава,Warsaw,Польша,Poland
+Краков,Krakow,Польша,Poland
+Белград,Belgrade,Сербия,Serbia
+Афины,Athens,Греция,Greece
+Санторини,Santorini,Греция,Greece
+Крит,Crete,Греция,Greece
+Родос,Rhodes,Греция,Greece
+Лимассол,Limassol,Кипр,Cyprus
+Пафос,Paphos,Кипр,Cyprus
+Тель-Авив,Tel Aviv,Израиль,Israel
+Иерусалим,Jerusalem,Израиль,Israel
+Каир,Cairo,Египет,Egypt
+Шарм-эль-Шейх,Sharm El Sheikh,Египет,Egypt
+Хургада,Hurghada,Египет,Egypt
+Марракеш,Marrakech,Марокко,Morocco
+Кейптаун,Cape Town,ЮАР,South Africa
+Занзибар,Zanzibar,Танзания,Tanzania
+Маврикий,Mauritius,Маврикий,Mauritius
+Сейшелы,Seychelles,Сейшелы,Seychelles
+Мальдивы,Maldives,Мальдивы,Maldives
+Доха,Doha,Катар,Qatar
+Маскат,Muscat,Оман,Oman
+Эр-Рияд,Riyadh,Саудовская Аравия,Saudi Arabia
+Дели,Delhi,Индия,India
+Гоа,Goa,Индия,India
+Мумбаи,Mumbai,Индия,India
+Коломбо,Colombo,Шри-Ланка,Sri Lanka
+Катманду,Kathmandu,Непал,Nepal
+Бангкок,Bangkok,Таиланд,Thailand
+Пхукет,Phuket,Таиланд,Thailand
+Паттайя,Pattaya,Таиланд,Thailand
+Самуи,Koh Samui,Таиланд,Thailand
+Ханой,Hanoi,Вьетнам,Vietnam
+Хошимин,Ho Chi Minh City,Вьетнам,Vietnam
+Дананг,Da Nang,Вьетнам,Vietnam
+Нячанг,Nha Trang,Вьетнам,Vietnam
+Куала-Лумпур,Kuala Lumpur,Малайзия,Malaysia
+Сингапур,Singapore,Сингапур,Singapore
+Бали,Bali,Индонезия,Indonesia
+Джакарта,Jakarta,Индонезия,Indonesia
+Гонконг,Hong Kong,Гонконг,Hong Kong
+Макао,Macau,Макао,Macau
+Пекин,Beijing,Китай,China
+Шанхай,Shanghai,Китай,China
+Токио,Tokyo,Япония,Japan
+Киото,Kyoto,Япония,Japan
+Осака,Osaka,Япония,Japan
+Сеул,Seoul,Южная Корея,South Korea
+Тайбэй,Taipei,Тайвань,Taiwan
+Манила,Manila,Филиппины,Philippines
+Сидней,Sydney,Австралия,Australia
+Мельбурн,Melbourne,Австралия,Australia
+Окленд,Auckland,Новая Зеландия,New Zealand
+Нью-Йорк,New York,США,USA
+Лос-Анджелес,Los Angeles,США,USA
+Сан-Франциско,San Francisco,США,USA
+Майами,Miami,США,USA
+Лас-Вегас,Las Vegas,США,USA
+Гавана,Havana,Куба,Cuba
+Канкун,Cancun,Мексика,Mexico
+Мехико,Mexico City,Мексика,Mexico
+Пунта-Кана,Punta Cana,Доминикана,Dominican Republic
+Рио-де-Жанейро,Rio de Janeiro,Бразилия,Brazil
+Буэнос-Айрес,Buenos Aires,Аргентина,Argentina
+Лима,Lima,Перу,Peru
+Сантьяго,Santiago,Чили,Chile
+Богота,Bogota,Колумбия,Colombia
+Рейкьявик,Reykjavik,Исландия,Iceland
+Дублин,Dublin,Ирландия,Ireland
+Цюрих,Zurich,Швейцария,Switzerland
+Женева,Geneva,Швейцария,Switzerland

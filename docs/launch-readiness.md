@@ -65,3 +65,23 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - 13.07.2026 — OTP brute-force kapandı → Güvenlik %72→%80, genel %72→%75
 - 13.07.2026 — SMS bombing kapandı → Güvenlik %80→%87, genel %75→%77
 - 13.07.2026 — Para yolu denetlendi (çifte-tıklama+idempotency sağlam) → Para %78→%88, genel %77→%80
+
+---
+
+## ⏸️ GECE DURDU (13.07.2026 ~03:30) — YARIN SIFIR BAĞLAMLA DEVAM
+
+**Genel: %83.** Kapananlar (hepsi canlı+kanıtlı, main'de): OTP brute-force, SMS bombing, edge-auth denetimi, para-yolu denetimi, offline-splash takılması, paywall leak.
+
+**Kategori durumu:** Kod %86✅ · Güvenlik %90 (-2 moderasyon) · Para %88 (-4 iOS premium) · Altyapı %55 (-17) · UX %76 (-9) · Store %83 (-7) · Ürün %72 (-3). Launch kapısı: 1/7 eşikte (Kod). Altyapı en büyük açık.
+
+**Benim tek başıma ilerletebileceklerim (kaynak gerektirmez, yarın devam):**
+- UX: yavaş-ağ her ekran testi + uç durumlar (silinmiş kullanıcı eski mesajı, premium bitmiş, dolmuş davet) → +9
+- Store: iOS/Android son kontrol, C(screenshot cihazda), D(metin onayı)
+- Ürün: onboarding fark-anlatımı + retention nudge kod işi
+- Altyapı: off-site yükleme + alarm SCRIPT'lerini kredensiyelsiz yazıp hazır bırak (aktivasyon kredensiyelle)
+
+## ⚖️ BEKLEYEN 4 KARAR (Mustafa) — bunlar gelmeden ilgili kategoriler tavana ulaşamaz
+1. **Off-site yedek hedefi** (Altyapı +9): Backblaze B2 (önerim, ucuz/S3-uyumlu) / Timeweb S3 / başka. Seçim + application key + bucket adı gerekli. Tek disk ölürse TÜM veri gider — en yüksek gerçek risk.
+2. **Alarm kanalı** (Altyapı +6): Telegram bot (önerim, anlık/ücretsiz — BotFather token + chat_id) / e-posta (SMTP hazır). Şu an sunucuda kör uçuyoruz.
+3. **Moderasyon eşiği** (Güvenlik +2): panel launch-blocker mı, yoksa launch günü manuel SQL+engelleme/rapor yeterli mi (önerim: manuel yeterli, panel ilk 2 hafta).
+4. **iOS premium alma yolu** (Para +4): kayıt sonrası e-posta/SMS→web yönlendirme (önerim, steering-uyumlu) / iOS'ta premium tamamen gizle v1 / launch sonrası. Apple steering yasağı nedeniyle uygulama İÇİNDE fiyat/link gösterilemiyor.

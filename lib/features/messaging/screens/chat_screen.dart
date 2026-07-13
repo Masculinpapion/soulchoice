@@ -783,6 +783,11 @@ class _ChatAppBar extends StatelessWidget {
                                     ? CachedNetworkImage(
                                         imageUrl: photoUrl!,
                                         fit: BoxFit.cover,
+                                        // Liste avatarıyla aynı memCacheWidth → aynı
+                                        // decode cache'i, başlık girişte hazır.
+                                        memCacheWidth: 156,
+                                        fadeInDuration: const Duration(milliseconds: 150),
+                                        placeholder: (_, __) => _DefaultAvatar(name: otherName),
                                         alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
                                         errorWidget: (_, __, ___) => _DefaultAvatar(name: otherName),
                                       )

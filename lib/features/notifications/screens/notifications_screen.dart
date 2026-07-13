@@ -108,6 +108,7 @@ class _NotificationsScreenState
           .update({'read_at': DateTime.now().toIso8601String()})
           .inFilter('id', ids)
           .isFilter('read_at', null);
+      if (!mounted) return; // fire-and-forget: ekran kapanmış olabilir
       setState(() => _localItems = null);
       ref.invalidate(notificationsProvider);
     } catch (e) {
@@ -223,9 +224,21 @@ class _NotificationsScreenState
                         return _NotifTile(
                           item: n,
                           locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
-                          onTap: () async {
-                            await _markRead(n.allIds);
-                            if (ctx.mounted) ctx.push(n.routePath);
+                          onTap: () {
+                            // Okundu işareti arka planda — geçişi ağ turu bekletmesin.
+                            _markRead(n.allIds);
+                            final path = n.routePath;
+                            // Chat'e giderken bildirimin zaten bildiği isim+foto
+                            // elden geçir — başlık sunucu cevabını beklemeden dolu
+                            // açılır (mesaj listesiyle aynı desen, yaş sonradan gelir).
+                            if (path.startsWith('/chat/') && n.actorName != null) {
+                              ctx.push(path, extra: {
+                                'name': n.actorName,
+                                'photoUrl': n.actorPhotoUrl,
+                              });
+                            } else {
+                              ctx.push(path);
+                            }
                           },
                           onDismiss: n.isRead ? () {
                             setState(() => _localItems!.removeWhere((x) => x.id == n.id));
@@ -369,8 +382,8 @@ class _NotifTile extends StatelessWidget {
       final ring = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.7);
       final photoUrl = item.actorPhotoUrl;
       return Container(
-        width: 46,
-        height: 46,
+        width: 38,
+        height: 38,
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -381,6 +394,9 @@ class _NotifTile extends StatelessWidget {
               ? CachedNetworkImage(
                   imageUrl: photoUrl,
                   fit: BoxFit.cover,
+                  memCacheWidth: 156,
+                  fadeInDuration: const Duration(milliseconds: 150),
+                  placeholder: (_, __) => _DefaultActorAvatar(name: item.actorName!),
                   alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
                   errorWidget: (_, __, ___) => _DefaultActorAvatar(name: item.actorName!),
                 )
@@ -390,8 +406,8 @@ class _NotifTile extends StatelessWidget {
     }
     // Sistem bildirimi (actor yok) — Aurora glow icon
     return Container(
-      width: 46,
-      height: 46,
+      width: 38,
+      height: 38,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: colors[0].withOpacity(0.12),
@@ -412,7 +428,7 @@ class _NotifTile extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(b),
-          child: Icon(item.iconData, color: Colors.white, size: 22),
+          child: Icon(item.iconData, color: Colors.white, size: 19),
         ),
       ),
     );
@@ -514,10 +530,10 @@ class _NotifTile extends StatelessWidget {
     final colors = _iconGradient();
     final accentColor = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.5);
     final actionText = _notifActionText(item, AppLocalizations.of(context)!);
-    // Okunmuş bildirim belirgin şekilde soluk — "prochitat vse" sonrası
-    // listenin okundu hâli net görünsün (his: bir şey oldu).
+    // Okunmuş bildirim hafif soluk — okundu hissi kalsın ama liste komple
+    // "sönük" görünmesin (13.07: 0.55 tüm ekranı ölü gösteriyordu → 0.78).
     final tile = Opacity(
-      opacity: item.isRead ? 0.55 : 1.0,
+      opacity: item.isRead ? 0.78 : 1.0,
       child: Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GestureDetector(
@@ -527,7 +543,7 @@ class _NotifTile extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: item.isRead
                     ? AuroraTheme.glassBg

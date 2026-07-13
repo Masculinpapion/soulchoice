@@ -304,6 +304,11 @@ class _Avatar extends StatelessWidget {
           width: 52,
           height: 52,
           fit: BoxFit.cover,
+          // Küçük decode: tam boy foto avatar için çözülmesin — hem hızlı
+          // hem bellek cache'inden düşmez (chat başlığıyla aynı key: 156).
+          memCacheWidth: 156,
+          fadeInDuration: const Duration(milliseconds: 150),
+          placeholder: (_, __) => _InitialsAvatar(name: name),
           alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
           errorWidget: (_, __, ___) => _InitialsAvatar(name: name),
         ),

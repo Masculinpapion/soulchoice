@@ -15,11 +15,11 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 | 3 | **Para yolu** | 88% | **92%** | 🟡 -4 | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 55% | 72% | 🔴 -17 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
 | 5 | UX dayanıklılık | 76% | 85% | 🟡 -9 | İlk izlenim; beyaz ekran = silme |
-| 6 | **Store hazırlık** | 83% | **90%** | 🟡 -7 | Apple/Google reddi = launch yok |
+| 6 | **Store hazırlık** | 85% | **90%** | 🟡 -5 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %83** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -5, Para -4, Altyapı -17, UX -15, Store -7, Ürün -3
+**GENEL LAUNCH-READINESS: %84** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -2, Para -4, Altyapı -17, UX -9, Store -5, Ürün -3
 
 ---
 
@@ -47,8 +47,8 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [ ] Uç durumlar (silinmiş kullanıcının eski mesajı, premium bitmiş, dolmuş davet) — derin test (+5)
 - [ ] Geri-dönüşsüz anlar (silme/iptal/engelleme) onay yeterliliği (+2)
 
-### 🟡 Store hazırlık (83% → hedef 90%, açık -7)
-- [ ] Android WRITE_EXTERNAL_STORAGE gereksiz izin (+2)
+### 🟡 Store hazırlık (85% → hedef 90%, açık -5)
+- [x] Android WRITE_EXTERNAL_STORAGE gereksiz izin (+2) — **KAPANDI 14.07** (manifest'ten kaldırıldı, commit b1fc88188, iki CI yeşil; hiçbir paket kullanmıyordu)
 - [ ] Store ekran görüntüleri (C) — cihazda çekilecek (+3)
 - [ ] Store metinleri (D) onayı (+2)
 
@@ -59,6 +59,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 14.07.2026 — WRITE_EXTERNAL_STORAGE izni kaldırıldı → Store %83→%85, genel %83→%84
 - 13.07.2026 — paywall controller leak kapandı → Kod %85→%86
 - 13.07.2026 — Offline splash takılması kapandı → UX %70→%76, genel %81→%83
 - 13.07.2026 — Edge auth denetlendi temiz (IDOR yok) → Güvenlik %87→%90, genel %80→%81

@@ -367,25 +367,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_step_venue => 'Venue';
 
   @override
-  String get create_inv_step_destination => 'Destination';
-
-  @override
-  String get create_inv_step_brand => 'Brand';
-
-  @override
-  String get create_inv_venue_question_travel => 'Where do you dream of going?';
-
-  @override
-  String get create_inv_venue_subtitle_travel =>
-      'Pick a city or country — or type your own';
-
-  @override
-  String get inv_detail_open_map => 'Open in Maps';
-
-  @override
-  String get inv_detail_visit_store => 'Visit store';
-
-  @override
   String get create_inv_step_datetime => 'Date & Time';
 
   @override

@@ -112,7 +112,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     if (_isTravel && _descriptionController.text.trim().isEmpty) {
       return l10n.create_inv_validation_description_travel;
     }
-    if (_venueController.text.trim().isEmpty) {
+    if (!_isTravel && _venueController.text.trim().isEmpty) {
       return l10n.create_inv_validation_venue;
     }
     if (_eventDate == null) return l10n.create_inv_validation_date;
@@ -177,19 +177,14 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     setState(() => _isSaving = true);
     try {
       final client = Supabase.instance.client;
-      final rawVenue = _venueController.text.trim();
-      final originalVenue = widget.data['venue_name'] as String?;
-      // Değişmediyse olduğu gibi bırak (seçilmiş yer adını bozma);
-      // değiştiyse serbest metin gibi biçimle.
-      final venueFormatted = rawVenue.isEmpty
+      final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
           ? null
-          : rawVenue == originalVenue
-              ? originalVenue
-              : rawVenue
-                    .split(' ')
-                    .where((w) => w.isNotEmpty)
-                    .map((w) => w[0].toUpperCase() + w.substring(1))
-                    .join(' ');
+          : _venueController.text
+                .trim()
+                .split(' ')
+                .where((w) => w.isNotEmpty)
+                .map((w) => w[0].toUpperCase() + w.substring(1))
+                .join(' ');
 
       final editId = widget.data['id'] as String;
       await client
@@ -202,15 +197,6 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                 ? null
                 : _fixCase(_descriptionController.text),
             'venue_name': venueFormatted,
-            // Yer metni elle değişti — eski yer bağlantısı/koordinat artık
-            // geçersiz, snapshot'ı temizle.
-            if (venueFormatted != originalVenue) ...{
-              'place_id': null,
-              'place_kind': null,
-              'venue_address': null,
-              'venue_lat': null,
-              'venue_lng': null,
-            },
             'event_date': _eventDate?.toIso8601String(),
           })
           .eq('id', editId);
@@ -439,24 +425,22 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // ── Yer (mekân / destinasyon / marka) ──
-                      _sectionLabel(_isTravel
-                          ? l10n.create_inv_step_destination
-                          : _category == InvitationCategory.gift
-                              ? l10n.create_inv_step_brand
-                              : l10n.create_inv_step_venue),
-                      TextField(
-                        controller: _venueController,
-                        style: _bodyLargeStyle,
-                        decoration: InputDecoration(
-                          labelText: l10n.create_inv_venue_label,
-                          prefixIcon: Icon(
-                            Icons.location_on_outlined,
-                            color: AuroraTheme.textMuted,
+                      // ── Mekân (travel'da yok) ──
+                      if (!_isTravel) ...[
+                        _sectionLabel(l10n.create_inv_step_venue),
+                        TextField(
+                          controller: _venueController,
+                          style: _bodyLargeStyle,
+                          decoration: InputDecoration(
+                            labelText: l10n.create_inv_venue_label,
+                            prefixIcon: Icon(
+                              Icons.location_on_outlined,
+                              color: AuroraTheme.textMuted,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 28),
+                        const SizedBox(height: 28),
+                      ],
 
                       // ── Tarih & saat ──
                       _sectionLabel(l10n.create_inv_step_datetime),

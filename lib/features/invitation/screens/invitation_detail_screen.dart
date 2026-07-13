@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
@@ -118,13 +117,6 @@ class _InvitationDetailScreenState
           final appStatus =
               myAppAsync.asData?.value?['status'] as String?;
           final venueName = inv['venue_name'] as String?;
-          final venueAddress = inv['venue_address'] as String?;
-          final venueLat = (inv['venue_lat'] as num?)?.toDouble();
-          final venueLng = (inv['venue_lng'] as num?)?.toDouble();
-          final placeRow = inv['place'] as Map<String, dynamic>?;
-          final storeWebsite = inv['place_kind'] == 'brand'
-              ? (placeRow?['website'] as String?)
-              : null;
           final eventDate = inv['event_date'] != null
               ? DateTime.parse(inv['event_date'] as String)
               : null;
@@ -407,63 +399,6 @@ class _InvitationDetailScreenState
                                           icon: Icons.location_on_outlined,
                                           label: venueName,
                                         ),
-                                      if (venueAddress != null) ...[
-                                        if (venueName != null)
-                                          Divider(
-                                              height: 1,
-                                              color: AuroraTheme
-                                                  .glassBorder),
-                                        _DetailRow(
-                                          icon: Icons.near_me_outlined,
-                                          label: venueAddress,
-                                        ),
-                                      ],
-                                      if (venueLat != null &&
-                                          venueLng != null) ...[
-                                        Divider(
-                                            height: 1,
-                                            color:
-                                                AuroraTheme.glassBorder),
-                                        InkWell(
-                                          onTap: () => _openMap(venueLat,
-                                              venueLng, venueName),
-                                          child: _DetailRow(
-                                            icon: Icons.map_outlined,
-                                            label: AppLocalizations.of(
-                                                    context)!
-                                                .inv_detail_open_map,
-                                            trailing: Icon(
-                                              Icons.chevron_right,
-                                              size: 16,
-                                              color:
-                                                  AuroraTheme.textMuted,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                      if (storeWebsite != null) ...[
-                                        Divider(
-                                            height: 1,
-                                            color:
-                                                AuroraTheme.glassBorder),
-                                        InkWell(
-                                          onTap: () =>
-                                              _openWebsite(storeWebsite),
-                                          child: _DetailRow(
-                                            icon:
-                                                Icons.storefront_outlined,
-                                            label: AppLocalizations.of(
-                                                    context)!
-                                                .inv_detail_visit_store,
-                                            trailing: Icon(
-                                              Icons.chevron_right,
-                                              size: 16,
-                                              color:
-                                                  AuroraTheme.textMuted,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
                                       if (venueName != null &&
                                           eventDate != null)
                                         Divider(
@@ -738,24 +673,6 @@ class _InvitationDetailScreenState
         },
       ),
     );
-  }
-
-  Future<void> _openMap(double lat, double lng, String? label) async {
-    final q = Uri.encodeComponent(label ?? '');
-    final uri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($q)');
-    try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      // Harita uygulaması yoksa sessizce geç — adres metni zaten görünür.
-    }
-  }
-
-  Future<void> _openWebsite(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {}
   }
 
   String _formatDate(BuildContext context, DateTime dt) {

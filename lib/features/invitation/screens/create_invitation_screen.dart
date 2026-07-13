@@ -12,7 +12,6 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
-import '../widgets/place_picker.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
@@ -94,30 +93,17 @@ class _CreateInvitationScreenState
   DateTime? _eventDate;
   int _expiryHours = 24;
   bool _isPublishing = false;
-  PlaceSuggestion? _selectedPlace;
-  String? _cityId;
 
   bool get _isTravel => _category == InvitationCategory.travel;
 
-  int get _stepCount => 7;
-
-  // 12 kategori tek çatı: kategori sadece PlacePicker modunu seçer.
-  PlacePickerMode get _pickerMode => _isTravel
-      ? PlacePickerMode.destination
-      : (_category == InvitationCategory.gift
-          ? PlacePickerMode.brand
-          : PlacePickerMode.venue);
+  int get _stepCount => _isTravel ? 6 : 7;
 
   List<String> _getSteps(AppLocalizations l10n) => [
     l10n.create_inv_step_flow_type,
     l10n.create_inv_step_category,
     l10n.create_inv_step_title,
     l10n.create_inv_step_description,
-    switch (_pickerMode) {
-      PlacePickerMode.destination => l10n.create_inv_step_destination,
-      PlacePickerMode.brand => l10n.create_inv_step_brand,
-      PlacePickerMode.venue => l10n.create_inv_step_venue,
-    },
+    if (!_isTravel) l10n.create_inv_step_venue,
     l10n.create_inv_step_datetime,
     l10n.create_inv_step_duration,
   ];
@@ -129,14 +115,7 @@ class _CreateInvitationScreenState
     ),
     _StepCategory(
       selected: _category,
-      onSelected: (v) => setState(() {
-        if (v != _category) {
-          // Kategori değişti — eski mod/kategoriye ait yer seçimi geçersiz.
-          _venueController.clear();
-          _selectedPlace = null;
-        }
-        _category = v;
-      }),
+      onSelected: (v) => setState(() => _category = v),
     ),
     _StepTitle(controller: _titleController),
     _StepDescription(
@@ -144,14 +123,12 @@ class _CreateInvitationScreenState
       flowType: _flowType,
       category: _category,
     ),
-    _StepVenue(
-      controller: _venueController,
-      category: _category,
-      flowType: _flowType,
-      mode: _pickerMode,
-      cityId: _cityId,
-      onPlaceSelected: (s) => _selectedPlace = s,
-    ),
+    if (!_isTravel)
+      _StepVenue(
+        controller: _venueController,
+        category: _category,
+        flowType: _flowType,
+      ),
     _StepDateTime(
       date: _eventDate,
       onSelected: (d) => setState(() => _eventDate = d),
@@ -165,7 +142,6 @@ class _CreateInvitationScreenState
   @override
   void initState() {
     super.initState();
-    _loadCityId();
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkSelfieGate());
   }
 
@@ -291,21 +267,6 @@ class _CreateInvitationScreenState
     super.dispose();
   }
 
-  Future<void> _loadCityId() async {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    try {
-      final row = await Supabase.instance.client
-          .from('users')
-          .select('city_id')
-          .eq('id', uid)
-          .maybeSingle();
-      if (mounted) setState(() => _cityId = row?['city_id'] as String?);
-    } catch (_) {
-      // Şehir gelmezse öneriler kısıtlanır; serbest metin yolu açık kalır.
-    }
-  }
-
   String? _validateCurrentStep(AppLocalizations l10n) {
     switch (_step) {
       case 1:
@@ -318,11 +279,14 @@ class _CreateInvitationScreenState
           return l10n.create_inv_validation_description_travel;
         }
       case 4:
-        if (_venueController.text.trim().isEmpty) {
+        if (_isTravel) {
+          if (_eventDate == null) return l10n.create_inv_validation_date;
+        } else if (_venueController.text.trim().isEmpty) {
           return l10n.create_inv_validation_venue;
         }
       case 5:
-        if (_eventDate == null) return l10n.create_inv_validation_date;
+        if (!_isTravel && _eventDate == null)
+          return l10n.create_inv_validation_date;
     }
     return null;
   }
@@ -416,20 +380,14 @@ class _CreateInvitationScreenState
     setState(() => _isPublishing = true);
     try {
       final client = Supabase.instance.client;
-      final place = _selectedPlace;
-      final venueText = _venueController.text.trim();
-      // Seçilmiş yer adını olduğu gibi taşı; serbest metni eski usul biçimle.
-      final venueFormatted = venueText.isEmpty
+      final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
           ? null
-          : place != null
-              ? place.name
-              : venueText
-                    .split(' ')
-                    .where((w) => w.isNotEmpty)
-                    .map((w) => w[0].toUpperCase() + w.substring(1))
-                    .join(' ');
-      final venueAddress =
-          (place != null && place.subtitle.isNotEmpty) ? place.subtitle : null;
+          : _venueController.text
+                .trim()
+                .split(' ')
+                .where((w) => w.isNotEmpty)
+                .map((w) => w[0].toUpperCase() + w.substring(1))
+                .join(' ');
 
       final user = client.auth.currentUser;
       if (user == null) {
@@ -453,11 +411,6 @@ class _CreateInvitationScreenState
             ? null
             : _fixCase(_descriptionController.text),
         'venue_name': venueFormatted,
-        'venue_address': venueAddress,
-        'venue_lat': place?.lat,
-        'venue_lng': place?.lng,
-        'place_id': place?.id,
-        'place_kind': venueFormatted == null ? null : _pickerMode.name,
         'event_date': _eventDate?.toIso8601String(),
         'expires_at': DateTime.now()
             .toUtc()
@@ -467,12 +420,6 @@ class _CreateInvitationScreenState
         'slots_total': 1,
         'status': 'active',
       });
-
-      if (place != null) {
-        // Flywheel: seçilen yerin popülerliği artar (fire-and-forget).
-        // ignore: unawaited_futures
-        client.rpc('touch_place', params: {'p_place_id': place.id});
-      }
 
       if (mounted) {
         ref.invalidate(invitationsProvider);
@@ -1062,16 +1009,10 @@ class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
   final InvitationFlowType flowType;
-  final PlacePickerMode mode;
-  final String? cityId;
-  final ValueChanged<PlaceSuggestion?> onPlaceSelected;
   const _StepVenue({
     required this.controller,
     this.category,
     required this.flowType,
-    required this.mode,
-    required this.cityId,
-    required this.onPlaceSelected,
   });
 
   String _question(AppLocalizations l10n) {
@@ -1084,8 +1025,6 @@ class _StepVenue extends StatelessWidget {
         return l10n.create_inv_venue_question_theater;
       case InvitationCategory.concert:
         return l10n.create_inv_venue_question_concert;
-      case InvitationCategory.travel:
-        return l10n.create_inv_venue_question_travel;
       default:
         return l10n.create_inv_venue_question;
     }
@@ -1104,8 +1043,6 @@ class _StepVenue extends StatelessWidget {
         return l10n.create_inv_venue_subtitle_theater;
       case InvitationCategory.concert:
         return l10n.create_inv_venue_subtitle_concert;
-      case InvitationCategory.travel:
-        return l10n.create_inv_venue_subtitle_travel;
       default:
         return l10n.create_inv_venue_subtitle;
     }
@@ -1155,17 +1092,18 @@ class _StepVenue extends StatelessWidget {
           const SizedBox(height: 8),
           Text(_subtitle(l10n), style: _bodyMediumStyle),
           const SizedBox(height: 32),
-          PlacePicker(
+          TextField(
             controller: controller,
-            mode: mode,
-            cityId: cityId,
-            category: category?.name,
-            labelText: l10n.create_inv_venue_label,
-            hintText: _placeholder(l10n),
-            onSelected: onPlaceSelected,
+            style: _bodyLargeStyle,
+            decoration: InputDecoration(
+              labelText: l10n.create_inv_venue_label,
+              hintText: _placeholder(l10n),
+              prefixIcon: Icon(
+                Icons.location_on_outlined,
+                color: AuroraTheme.textMuted,
+              ),
+            ),
           ),
-          // Öneri listesi sabit CTA'nın üstüne kaydırılabilsin diye pay.
-          const SizedBox(height: 220),
         ],
       ),
     );

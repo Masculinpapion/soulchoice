@@ -366,6 +366,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_step_venue => 'Mekan';
 
   @override
+  String get create_inv_step_destination => 'Rota';
+
+  @override
+  String get create_inv_step_brand => 'Marka';
+
+  @override
+  String get create_inv_venue_question_travel =>
+      'Nereye gitmeyi hayal ediyorsun?';
+
+  @override
+  String get create_inv_venue_subtitle_travel =>
+      'Listeden şehir veya ülke seç — ya da kendin yaz';
+
+  @override
+  String get inv_detail_open_map => 'Haritada aç';
+
+  @override
+  String get inv_detail_visit_store => 'Mağazaya git';
+
+  @override
   String get create_inv_step_datetime => 'Tarih ve Saat';
 
   @override

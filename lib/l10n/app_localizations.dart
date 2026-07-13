@@ -772,6 +772,42 @@ abstract class AppLocalizations {
   /// **'Venue'**
   String get create_inv_step_venue;
 
+  /// No description provided for @create_inv_step_destination.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get create_inv_step_destination;
+
+  /// No description provided for @create_inv_step_brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get create_inv_step_brand;
+
+  /// No description provided for @create_inv_venue_question_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you dream of going?'**
+  String get create_inv_venue_question_travel;
+
+  /// No description provided for @create_inv_venue_subtitle_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a city or country — or type your own'**
+  String get create_inv_venue_subtitle_travel;
+
+  /// No description provided for @inv_detail_open_map.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get inv_detail_open_map;
+
+  /// No description provided for @inv_detail_visit_store.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit store'**
+  String get inv_detail_visit_store;
+
   /// No description provided for @create_inv_step_datetime.
   ///
   /// In en, this message translates to:

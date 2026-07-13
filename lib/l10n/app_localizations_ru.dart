@@ -367,6 +367,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_step_venue => 'Место';
 
   @override
+  String get create_inv_step_destination => 'Направление';
+
+  @override
+  String get create_inv_step_brand => 'Марка';
+
+  @override
+  String get create_inv_venue_question_travel => 'Куда мечтаете поехать?';
+
+  @override
+  String get create_inv_venue_subtitle_travel =>
+      'Выберите город или страну — или напишите своё';
+
+  @override
+  String get inv_detail_open_map => 'Открыть на карте';
+
+  @override
+  String get inv_detail_visit_store => 'Перейти в магазин';
+
+  @override
   String get create_inv_step_datetime => 'Дата и время';
 
   @override

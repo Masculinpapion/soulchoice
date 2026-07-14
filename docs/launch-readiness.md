@@ -1,7 +1,7 @@
 # SoulChoice — LAUNCH READINESS TABLOSU
 
 > Tek kaynak. Her düzeltme sonrası güncellenir. Skorlar denetim kanıtına dayanır, pohpohlama yok.
-> **Son güncelleme: 13.07.2026 — Büyük Denetim 1. dalga**
+> **Son güncelleme: 14.07.2026 — izleme/alarm canlı (Telegram + dış-uptime)**
 
 ## LAUNCH ONAY KURALI
 Genel yüzde bilgi amaçlıdır. **Asıl kapı: HER kategori kendi eşiğini geçmeli (AND).**
@@ -13,13 +13,13 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 | 1 | Kod kalitesi | 86% | 85% | ✅ | Build sağlam; paywall leak kapandı |
 | 2 | **Güvenlik** | 90% | **92%** | 🟡 -2 | Hacker affetmez; kullanıcı+yasal risk |
 | 3 | **Para yolu** | 88% | **92%** | 🟡 -4 | Para hatası = itibar + iade felaketi |
-| 4 | Ölçeklenme/Altyapı | 55% | 72% | 🔴 -17 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
+| 4 | Ölçeklenme/Altyapı | 61% | 72% | 🔴 -11 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
 | 5 | UX dayanıklılık | 76% | 85% | 🟡 -9 | İlk izlenim; beyaz ekran = silme |
 | 6 | **Store hazırlık** | 85% | **90%** | 🟡 -5 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %84** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -2, Para -4, Altyapı -17, UX -9, Store -5, Ürün -3
+**GENEL LAUNCH-READINESS: %85** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -2, Para -4, Altyapı -11, UX -9, Store -5, Ürün -3
 
 ---
 
@@ -36,9 +36,9 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] Webhook idempotency (+4) — **DENETLENDİ SAĞLAM 13.07** (on conflict do nothing + zaten-işlenmiş guard)
 - [ ] iOS premium ALMA yolu (+4) — **ÜRÜN KARARI (Mustafa)**, teknik borç değil: iOS'ta web'e yönlendirme UX'i netleşmeli; Android+web ödeme launch-hazır
 
-### 🔴 Ölçeklenme/Altyapı (55% → hedef 72%, açık -17)
-- [ ] Off-site yedek yok — tüm yedekler tek sunucuda, disk ölürse veri kaybı (+9)
-- [ ] İzleme/alarm yok — CPU/disk/DB kritikleşince haber yok (+6)
+### 🔴 Ölçeklenme/Altyapı (61% → hedef 72%, açık -11)
+- [ ] Off-site yedek yok — tüm yedekler tek sunucuda, disk ölürse veri kaybı (+9) — **KARAR 14.07: Yandex Object Storage**; ИП hesap aktivasyonu bekleniyor (ЕГРИП resmi verifikasyon formundan gönderildi 14.07, ≤3 iş günü)
+- [x] İzleme/alarm (+6) — **KAPANDI 14.07** (Telegram bot `soulchoice_alerts_bot`: sunucu-içi 15dk disk/yedek/web/functions/container + 08:05 UTC billing denetimi, `/root/monitoring/`; dış-uptime GitHub Actions 10dk `soulchoice-ops/uptime.yml`; token GPG'li `soulchoice-secrets` + GHA secrets, git'te düz metin yok; test alarmı cihazda kanıtlı)
 - [ ] Restore provası yapılmadı — yedek gerçekten dönüyor mu bilinmiyor (+2)
 
 ### 🟡 UX dayanıklılık (76% → hedef 85%, açık -9)
@@ -59,6 +59,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 14.07.2026 — İzleme/alarm kapandı (Telegram bot + GHA dış-uptime, test alarmı cihazda) → Altyapı %55→%61, genel %84→%85
 - 14.07.2026 — WRITE_EXTERNAL_STORAGE izni kaldırıldı → Store %83→%85, genel %83→%84
 - 13.07.2026 — paywall controller leak kapandı → Kod %85→%86
 - 13.07.2026 — Offline splash takılması kapandı → UX %70→%76, genel %81→%83
@@ -81,8 +82,8 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - Ürün: onboarding fark-anlatımı + retention nudge kod işi
 - Altyapı: off-site yükleme + alarm SCRIPT'lerini kredensiyelsiz yazıp hazır bırak (aktivasyon kredensiyelle)
 
-## ⚖️ BEKLEYEN 4 KARAR (Mustafa) — bunlar gelmeden ilgili kategoriler tavana ulaşamaz
-1. **Off-site yedek hedefi** (Altyapı +9): Backblaze B2 (önerim, ucuz/S3-uyumlu) / Timeweb S3 / başka. Seçim + application key + bucket adı gerekli. Tek disk ölürse TÜM veri gider — en yüksek gerçek risk.
-2. **Alarm kanalı** (Altyapı +6): Telegram bot (önerim, anlık/ücretsiz — BotFather token + chat_id) / e-posta (SMTP hazır). Şu an sunucuda kör uçuyoruz.
+## ⚖️ BEKLEYEN KARARLAR (Mustafa) — bunlar gelmeden ilgili kategoriler tavana ulaşamaz
+1. **Off-site yedek hedefi** (Altyapı +9): ~~Backblaze~~ **KARAR 14.07: Yandex Object Storage** (152-ФЗ + yaptırım riski + Object Lock gerekçesiyle; Backblaze ABD riski nedeniyle elendi). Hesap aktivasyonu bekleniyor (ЕГРИП formdan gönderildi); anahtar+bucket gelince script'ler hazır.
+2. ~~**Alarm kanalı** (Altyapı +6)~~ — **KARAR VERİLDİ + KURULDU 14.07** (Telegram bot canlı, bkz. Altyapı maddesi).
 3. **Moderasyon eşiği** (Güvenlik +2): panel launch-blocker mı, yoksa launch günü manuel SQL+engelleme/rapor yeterli mi (önerim: manuel yeterli, panel ilk 2 hafta).
 4. **iOS premium alma yolu** (Para +4): kayıt sonrası e-posta/SMS→web yönlendirme (önerim, steering-uyumlu) / iOS'ta premium tamamen gizle v1 / launch sonrası. Apple steering yasağı nedeniyle uygulama İÇİNDE fiyat/link gösterilemiyor.

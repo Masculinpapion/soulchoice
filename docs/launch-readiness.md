@@ -1,7 +1,7 @@
 # SoulChoice — LAUNCH READINESS TABLOSU
 
 > Tek kaynak. Her düzeltme sonrası güncellenir. Skorlar denetim kanıtına dayanır, pohpohlama yok.
-> **Son güncelleme: 14.07.2026 — izleme/alarm canlı (Telegram + dış-uptime)**
+> **Son güncelleme: 14.07.2026 — Para yolu eşiği GEÇİLDİ (iOS consumption-only kararı + retry kapısı)**
 
 ## LAUNCH ONAY KURALI
 Genel yüzde bilgi amaçlıdır. **Asıl kapı: HER kategori kendi eşiğini geçmeli (AND).**
@@ -12,14 +12,14 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 |---|----------|--------|------|-------|---------------|
 | 1 | Kod kalitesi | 86% | 85% | ✅ | Build sağlam; paywall leak kapandı |
 | 2 | **Güvenlik** | 90% | **92%** | 🟡 -2 | Hacker affetmez; kullanıcı+yasal risk |
-| 3 | **Para yolu** | 88% | **92%** | 🟡 -4 | Para hatası = itibar + iade felaketi |
+| 3 | **Para yolu** | 92% | **92%** | ✅ | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 61% | 72% | 🔴 -11 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
 | 5 | UX dayanıklılık | 76% | 85% | 🟡 -9 | İlk izlenim; beyaz ekran = silme |
 | 6 | **Store hazırlık** | 85% | **90%** | 🟡 -5 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %85** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **1/7 hazır** (Kod). Kalan: Güvenlik -2, Para -4, Altyapı -11, UX -9, Store -5, Ürün -3
+**GENEL LAUNCH-READINESS: %86** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **2/7 hazır** (Kod, Para). Kalan: Güvenlik -2, Altyapı -11, UX -9, Store -5, Ürün -3
 
 ---
 
@@ -31,10 +31,10 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] Edge fn auth yüzeyi (+3) — **DENETLENDİ TEMİZ 13.07** (delete-account getUser-JWT; diğerleri user-token forward+RLS; IDOR yok)
 - [ ] Moderasyon paneli (+2) — reports/blocks çalışıyor, manuel SQL yönetilebilir; launch-blocker DEĞİL ama launch günü manuel moderasyon prosedürü hazır olmalı (KARAR: eşik %90 kabul mü, panel şart mı?)
 
-### 🟡 Para yolu (88% → hedef 92%, açık -4)
+### ✅ Para yolu (92% → hedef 92% — EŞİK GEÇİLDİ 14.07)
 - [x] Ödeme çifte-tıklama / ağ kopması (+6) — **DENETLENDİ SAĞLAM 13.07** (_isLoading+sheetBusy guard; webhook Точка'dan bağımsız)
 - [x] Webhook idempotency (+4) — **DENETLENDİ SAĞLAM 13.07** (on conflict do nothing + zaten-işlenmiş guard)
-- [ ] iOS premium ALMA yolu (+4) — **ÜRÜN KARARI (Mustafa)**, teknik borç değil: iOS'ta web'e yönlendirme UX'i netleşmeli; Android+web ödeme launch-hazır
+- [x] iOS premium ALMA yolu (+4) — **KAPANDI 14.07 (KARAR Mustafa: consumption-only, ödeme SADECE web portalı).** Kod denetimi: paywall Seçenek B zaten canlıydı (36fe92b1e — iOS'ta fiyat/CTA/web-linki yok, 3.1.1-uyumlu); tek kalıntı `past_due` retry butonuydu → `_mode=='link'` kapısına alındı (bu commit). Dart kodunda web ödeme URL'i sızıntısı yok (tarandı). Dış yönlendirme kanalı (F2 e-posta digest) canlı. İptal butonu iOS'ta görünür kalır (F2-2 uyumlu).
 
 ### 🔴 Ölçeklenme/Altyapı (61% → hedef 72%, açık -11)
 - [ ] Off-site yedek yok — tüm yedekler tek sunucuda, disk ölürse veri kaybı (+9) — **KARAR 14.07: Yandex Object Storage**; ИП hesap aktivasyonu bekleniyor (ЕГРИП resmi verifikasyon formundan gönderildi 14.07, ≤3 iş günü)
@@ -59,6 +59,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 14.07.2026 — iOS premium yolu kapandı (KARAR: consumption-only + web-only ödeme; retry kapısı) → Para %88→%92 ✅ EŞİK, genel %85→%86
 - 14.07.2026 — İzleme/alarm kapandı (Telegram bot + GHA dış-uptime, test alarmı cihazda) → Altyapı %55→%61, genel %84→%85
 - 14.07.2026 — WRITE_EXTERNAL_STORAGE izni kaldırıldı → Store %83→%85, genel %83→%84
 - 13.07.2026 — paywall controller leak kapandı → Kod %85→%86
@@ -86,4 +87,4 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 1. **Off-site yedek hedefi** (Altyapı +9): ~~Backblaze~~ **KARAR 14.07: Yandex Object Storage** (152-ФЗ + yaptırım riski + Object Lock gerekçesiyle; Backblaze ABD riski nedeniyle elendi). Hesap aktivasyonu bekleniyor (ЕГРИП formdan gönderildi); anahtar+bucket gelince script'ler hazır.
 2. ~~**Alarm kanalı** (Altyapı +6)~~ — **KARAR VERİLDİ + KURULDU 14.07** (Telegram bot canlı, bkz. Altyapı maddesi).
 3. **Moderasyon eşiği** (Güvenlik +2): panel launch-blocker mı, yoksa launch günü manuel SQL+engelleme/rapor yeterli mi (önerim: manuel yeterli, panel ilk 2 hafta).
-4. **iOS premium alma yolu** (Para +4): kayıt sonrası e-posta/SMS→web yönlendirme (önerim, steering-uyumlu) / iOS'ta premium tamamen gizle v1 / launch sonrası. Apple steering yasağı nedeniyle uygulama İÇİNDE fiyat/link gösterilemiyor.
+4. ~~**iOS premium alma yolu** (Para +4)~~ — **KARAR VERİLDİ + UYGULANDI 14.07** (consumption-only, ödeme sadece web; bkz. Para maddesi).

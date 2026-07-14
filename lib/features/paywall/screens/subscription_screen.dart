@@ -357,8 +357,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               _infoRow('', l10n.sub_premium_until(until)),
           ],
           const SizedBox(height: 18),
-          if (isPastDue) ...[
-            // P8: kurtarma eylemi — tek eylem iptal olmasın
+          // KARAR 14.07.2026: iOS consumption-only — ödeme başlatan her eylem
+          // (past_due retry dahil) yalnız satış açık modda; iOS'ta ödeme web'de.
+          // P8 (tek eylem iptal olmasın) link modunda geçerli kalır.
+          if (isPastDue && _mode == 'link') ...[
             _GradientButton(
               label: l10n.sub_retry_button,
               isLoading: _busy,

@@ -125,13 +125,13 @@ class _CreateInvitationScreenState
       controller: _descriptionController,
       flowType: _flowType,
       category: _category,
+      giftUrlController: _giftUrlController,
     ),
     if (!_isTravel)
       _StepVenue(
         controller: _venueController,
         category: _category,
         flowType: _flowType,
-        giftUrlController: _giftUrlController,
       ),
     _StepDateTime(
       date: _eventDate,
@@ -296,18 +296,20 @@ class _CreateInvitationScreenState
         if (_isTravel && _descriptionController.text.trim().isEmpty) {
           return l10n.create_inv_validation_description_travel;
         }
+        // Hediye ürün alanı açıklama adımında: link ise beyaz liste zorunlu,
+        // düz metin (ürün adı) serbest
+        if (_isGift) {
+          final g = _giftUrlController.text.trim();
+          final isLink = RegExp(r'^https?://', caseSensitive: false).hasMatch(g);
+          if (g.isNotEmpty && isLink && !_isWhitelistedGiftUrl(g)) {
+            return l10n.create_inv_gift_url_invalid;
+          }
+        }
       case 4:
         if (_isTravel) {
           if (_eventDate == null) return l10n.create_inv_validation_date;
         } else if (_venueController.text.trim().isEmpty) {
           return l10n.create_inv_validation_venue;
-        } else if (_category == InvitationCategory.gift) {
-          final g = _giftUrlController.text.trim();
-          // Link ise beyaz liste zorunlu; düz metin (ürün adı) serbest
-          final isLink = RegExp(r'^https?://', caseSensitive: false).hasMatch(g);
-          if (g.isNotEmpty && isLink && !_isWhitelistedGiftUrl(g)) {
-            return l10n.create_inv_gift_url_invalid;
-          }
         }
       case 5:
         // Hediye'de tarih opsiyonel (teslim buluşması için sabit saat gerekmez)
@@ -938,10 +940,12 @@ class _StepDescription extends StatelessWidget {
   final TextEditingController controller;
   final InvitationFlowType flowType;
   final InvitationCategory? category;
+  final TextEditingController? giftUrlController;
   const _StepDescription({
     required this.controller,
     required this.flowType,
     this.category,
+    this.giftUrlController,
   });
 
   String _hint(AppLocalizations l10n) {
@@ -1031,6 +1035,38 @@ class _StepDescription extends StatelessWidget {
               counterText: '',
             ),
           ),
+          // Hediye: ürün linki veya adı — açıklama (ürün) ile aynı kavram olduğu
+          // için burada; yalnız seçilen kişi görür, onaya tabi.
+          if (category == InvitationCategory.gift && giftUrlController != null) ...[
+            const SizedBox(height: 20),
+            TextField(
+              controller: giftUrlController,
+              style: _bodyLargeStyle,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              scrollPadding: const EdgeInsets.only(bottom: 120),
+              decoration: InputDecoration(
+                labelText: l10n.create_inv_gift_url_label,
+                hintText: l10n.create_inv_gift_url_hint,
+                prefixIcon: Icon(Icons.link_rounded, color: AuroraTheme.textMuted),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.lock_outline_rounded,
+                    size: 14, color: AuroraTheme.textMuted),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.create_inv_gift_url_helper,
+                    style: _bodyMediumStyle.copyWith(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -1045,12 +1081,10 @@ class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
   final InvitationFlowType flowType;
-  final TextEditingController? giftUrlController;
   const _StepVenue({
     required this.controller,
     this.category,
     required this.flowType,
-    this.giftUrlController,
   });
 
   String _question(AppLocalizations l10n) {
@@ -1146,39 +1180,6 @@ class _StepVenue extends StatelessWidget {
               ),
             ),
           ),
-          // Hediye: opsiyonel ürün linki. Yalnız seçtiğin kişi görür (onaya tabi).
-          if (category == InvitationCategory.gift && giftUrlController != null) ...[
-            const SizedBox(height: 24),
-            TextField(
-              controller: giftUrlController,
-              style: _bodyLargeStyle,
-              keyboardType: TextInputType.url,
-              autocorrect: false,
-              decoration: InputDecoration(
-                labelText: l10n.create_inv_gift_url_label,
-                hintText: l10n.create_inv_gift_url_hint,
-                prefixIcon: Icon(
-                  Icons.link_rounded,
-                  color: AuroraTheme.textMuted,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.lock_outline_rounded,
-                    size: 14, color: AuroraTheme.textMuted),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.create_inv_gift_url_helper,
-                    style: _bodyMediumStyle.copyWith(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );

@@ -21,8 +21,7 @@ class NotificationsScreen extends ConsumerStatefulWidget {
       _NotificationsScreenState();
 }
 
-class _NotificationsScreenState
-    extends ConsumerState<NotificationsScreen> {
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   RealtimeChannel? _channel;
   List<NotificationItem>? _localItems; // dismiss için lokal kopya
   bool _isMarkingAll = false;
@@ -30,6 +29,9 @@ class _NotificationsScreenState
   @override
   void initState() {
     super.initState();
+    // Ekran her açılışta taze liste çeker — çan rozeti provider'ı canlı
+    // tuttuğu için cache açılış anına takılı kalıyordu (16.07 fix).
+    ref.invalidate(notificationsProvider);
     _subscribeRealtime();
   }
 
@@ -47,7 +49,10 @@ class _NotificationsScreenState
             column: 'user_id',
             value: uid,
           ),
-          callback: (_) => ref.invalidate(notificationsProvider),
+          callback: (_) {
+            _localItems = null; // lokal kopya taze veriyi maskelemesin
+            ref.invalidate(notificationsProvider);
+          },
         )
         .onPostgresChanges(
           event: PostgresChangeEvent.update,
@@ -58,7 +63,10 @@ class _NotificationsScreenState
             column: 'user_id',
             value: uid,
           ),
-          callback: (_) => ref.invalidate(notificationsProvider),
+          callback: (_) {
+            _localItems = null; // lokal kopya taze veriyi maskelemesin
+            ref.invalidate(notificationsProvider);
+          },
         )
         .subscribe();
   }
@@ -83,17 +91,23 @@ class _NotificationsScreenState
           .isFilter('read_at', null);
       ref.invalidate(notificationsProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.notif_pref_all_read),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AuroraTheme.glassStrong,
-          duration: const Duration(seconds: 2),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.notif_pref_all_read),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AuroraTheme.glassStrong,
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -114,7 +128,11 @@ class _NotificationsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -131,7 +149,11 @@ class _NotificationsScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.error_with_detail(e.toString()))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -155,8 +177,11 @@ class _NotificationsScreenState
                     // Geri butonu
                     _GlassPill(
                       onTap: () => context.pop(),
-                      child: const Icon(Icons.arrow_back_ios_new,
-                          size: 16, color: Colors.white),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     // Başlık
@@ -173,7 +198,9 @@ class _NotificationsScreenState
                     GestureDetector(
                       onTap: _isMarkingAll ? null : _markAllRead,
                       child: Text(
-                        AppLocalizations.of(context)!.notifications_mark_all_read,
+                        AppLocalizations.of(
+                          context,
+                        )!.notifications_mark_all_read,
                         style: TextStyle(
                           fontFamily: 'JetBrainsMono',
                           fontSize: 10,
@@ -198,16 +225,20 @@ class _NotificationsScreenState
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation(
-                            AuroraTheme.auroraRed),
+                          AuroraTheme.auroraRed,
+                        ),
                       ),
                     ),
                   ),
                   error: (e, _) => Center(
                     child: Text(
-                      AppLocalizations.of(context)!.notifications_error(e.toString()),
+                      AppLocalizations.of(
+                        context,
+                      )!.notifications_error(e.toString()),
                       style: TextStyle(
-                          fontFamily: 'Manrope',
-                          color: AuroraTheme.textSecondary),
+                        fontFamily: 'Manrope',
+                        color: AuroraTheme.textSecondary,
+                      ),
                     ),
                   ),
                   data: (notifications) {
@@ -216,40 +247,61 @@ class _NotificationsScreenState
                     _localItems ??= List.of(notifications);
                     final items = _localItems!;
                     if (items.isEmpty) return const _EmptyState();
-                    return ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
-                      itemCount: items.length,
-                      itemBuilder: (ctx, i) {
-                        final n = items[i];
-                        return _NotifTile(
-                          item: n,
-                          locale: ref.watch(localeProvider)?.languageCode ?? 'tr',
-                          onTap: () {
-                            // Okundu işareti arka planda — geçişi ağ turu bekletmesin.
-                            _markRead(n.allIds);
-                            final path = n.routePath;
-                            // Chat'e giderken bildirimin zaten bildiği isim+foto
-                            // elden geçir — başlık sunucu cevabını beklemeden dolu
-                            // açılır (mesaj listesiyle aynı desen, yaş sonradan gelir).
-                            if (path.startsWith('/chat/') && n.actorName != null) {
-                              ctx.push(path, extra: {
-                                'name': n.actorName,
-                                'photoUrl': n.actorPhotoUrl,
-                              });
-                            } else if (path == '/feed') {
-                              // Shell-branch rotası push edilmez (siyah ekran
-                              // bug'ı, 16.07) — sekme geçişiyle gidilir.
-                              ctx.go(path);
-                            } else {
-                              ctx.push(path);
-                            }
-                          },
-                          onDismiss: n.isRead ? () {
-                            setState(() => _localItems!.removeWhere((x) => x.id == n.id));
-                            _delete(n.allIds);
-                          } : null,
-                        );
+                    return RefreshIndicator(
+                      color: AuroraTheme.auroraRed,
+                      backgroundColor: AuroraTheme.bgDeep,
+                      onRefresh: () async {
+                        setState(() => _localItems = null);
+                        ref.invalidate(notificationsProvider);
+                        await ref.read(notificationsProvider.future);
                       },
+                      child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                        itemCount: items.length,
+                        itemBuilder: (ctx, i) {
+                          final n = items[i];
+                          return _NotifTile(
+                            item: n,
+                            locale:
+                                ref.watch(localeProvider)?.languageCode ?? 'tr',
+                            onTap: () {
+                              // Okundu işareti arka planda — geçişi ağ turu bekletmesin.
+                              _markRead(n.allIds);
+                              final path = n.routePath;
+                              // Chat'e giderken bildirimin zaten bildiği isim+foto
+                              // elden geçir — başlık sunucu cevabını beklemeden dolu
+                              // açılır (mesaj listesiyle aynı desen, yaş sonradan gelir).
+                              if (path.startsWith('/chat/') &&
+                                  n.actorName != null) {
+                                ctx.push(
+                                  path,
+                                  extra: {
+                                    'name': n.actorName,
+                                    'photoUrl': n.actorPhotoUrl,
+                                  },
+                                );
+                              } else if (path == '/feed') {
+                                // Shell-branch rotası push edilmez (siyah ekran
+                                // bug'ı, 16.07) — sekme geçişiyle gidilir.
+                                ctx.go(path);
+                              } else {
+                                ctx.push(path);
+                              }
+                            },
+                            onDismiss: n.isRead
+                                ? () {
+                                    setState(
+                                      () => _localItems!.removeWhere(
+                                        (x) => x.id == n.id,
+                                      ),
+                                    );
+                                    _delete(n.allIds);
+                                  }
+                                : null,
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
@@ -269,24 +321,23 @@ class _GlassPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(100),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AuroraTheme.glassBg,
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: AuroraTheme.glassBorder),
-              ),
-              child: child,
-            ),
+    onTap: onTap,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(100),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: AuroraTheme.glassBg,
+            borderRadius: BorderRadius.circular(100),
+            border: Border.all(color: AuroraTheme.glassBorder),
           ),
+          child: child,
         ),
-      );
+      ),
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -296,17 +347,26 @@ class _GlassPill extends StatelessWidget {
 String _notifTitle(NotificationItem item, AppLocalizations l) {
   final name = item.actorName ?? '';
   switch (item.type) {
-    case 'new_application': return l.notif_type_new_application_title;
-    case 'selected':        return l.notif_type_selected_title;
-    case 'not_selected':    return l.notif_type_not_selected_title;
-    case 'new_message':     return l.notif_type_new_message_title;
-    case 'selfie_approved': return l.notif_type_selfie_approved_title;
-    case 'selfie_rejected': return l.notif_type_selfie_rejected_title;
-    case 'meeting_reminder':return l.notif_type_meeting_reminder_title;
-    case 'feedback_request':return l.notif_type_feedback_request_title;
+    case 'new_application':
+      return l.notif_type_new_application_title;
+    case 'selected':
+      return l.notif_type_selected_title;
+    case 'not_selected':
+      return l.notif_type_not_selected_title;
+    case 'new_message':
+      return l.notif_type_new_message_title;
+    case 'selfie_approved':
+      return l.notif_type_selfie_approved_title;
+    case 'selfie_rejected':
+      return l.notif_type_selfie_rejected_title;
+    case 'meeting_reminder':
+      return l.notif_type_meeting_reminder_title;
+    case 'feedback_request':
+      return l.notif_type_feedback_request_title;
     case 'selection_reminder':
       return l.notif_type_selection_reminder_title;
-    default:                return name.isNotEmpty ? name : item.type;
+    default:
+      return name.isNotEmpty ? name : item.type;
   }
 }
 
@@ -319,13 +379,16 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
       return name.isEmpty
           ? l.notif_type_new_application_body_noname
           : l.notif_type_new_application_body(name);
-    case 'selected':        return l.notif_type_selected_body;
-    case 'not_selected':    return l.notif_type_not_selected_body;
+    case 'selected':
+      return l.notif_type_selected_body;
+    case 'not_selected':
+      return l.notif_type_not_selected_body;
     case 'new_message':
       return name.isEmpty
           ? l.notif_type_new_message_body_noname
           : l.notif_type_new_message_body(name);
-    case 'selfie_approved': return l.notif_type_selfie_approved_body;
+    case 'selfie_approved':
+      return l.notif_type_selfie_approved_body;
     case 'selfie_rejected':
       // Preset red sebebi (slug) kullanıcının dilinde gösterilir (16.07)
       final reason = switch (item.payload['reason'] as String?) {
@@ -340,11 +403,14 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
       return reason == null
           ? l.notif_type_selfie_rejected_body
           : '$reason — ${l.notif_type_selfie_rejected_body}';
-    case 'meeting_reminder':return l.notif_type_meeting_reminder_body;
-    case 'feedback_request':return l.notif_type_feedback_request_body;
+    case 'meeting_reminder':
+      return l.notif_type_meeting_reminder_body;
+    case 'feedback_request':
+      return l.notif_type_feedback_request_body;
     case 'selection_reminder':
       return l.notif_type_selection_reminder_body;
-    default:                return item.body;
+    default:
+      return item.body;
   }
 }
 
@@ -353,11 +419,16 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
 /// olan (kişiye özel) türler için tanımlı — sistem bildirimlerinde null döner.
 String? _notifActionText(NotificationItem item, AppLocalizations l) {
   switch (item.type) {
-    case 'new_message':     return l.notif_action_new_message;
-    case 'new_application': return l.notif_action_new_application;
-    case 'selected':        return l.notif_action_selected;
-    case 'not_selected':    return l.notif_action_not_selected;
-    default:                return null;
+    case 'new_message':
+      return l.notif_action_new_message;
+    case 'new_application':
+      return l.notif_action_new_application;
+    case 'selected':
+      return l.notif_action_selected;
+    case 'not_selected':
+      return l.notif_action_not_selected;
+    default:
+      return null;
   }
 }
 
@@ -400,7 +471,9 @@ class _NotifTile extends StatelessWidget {
   Widget _buildLeading(List<Color> colors) {
     final hasActor = item.actorName != null && item.actorName!.isNotEmpty;
     if (hasActor) {
-      final ring = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.7);
+      final ring = item.isRead
+          ? AuroraTheme.glassBorder
+          : colors[0].withOpacity(0.7);
       final photoUrl = item.actorPhotoUrl;
       return Container(
         width: 38,
@@ -417,9 +490,14 @@ class _NotifTile extends StatelessWidget {
                   fit: BoxFit.cover,
                   memCacheWidth: 156,
                   fadeInDuration: const Duration(milliseconds: 150),
-                  placeholder: (_, __) => _DefaultActorAvatar(name: item.actorName!),
-                  alignment: PhotoFocus.of(photoUrl, fallback: Alignment.center),
-                  errorWidget: (_, __, ___) => _DefaultActorAvatar(name: item.actorName!),
+                  placeholder: (_, __) =>
+                      _DefaultActorAvatar(name: item.actorName!),
+                  alignment: PhotoFocus.of(
+                    photoUrl,
+                    fallback: Alignment.center,
+                  ),
+                  errorWidget: (_, __, ___) =>
+                      _DefaultActorAvatar(name: item.actorName!),
                 )
               : _DefaultActorAvatar(name: item.actorName!),
         ),
@@ -457,7 +535,9 @@ class _NotifTile extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, String? actionText) {
     final l10n = AppLocalizations.of(context)!;
-    if (actionText != null && item.actorName != null && item.actorName!.isNotEmpty) {
+    if (actionText != null &&
+        item.actorName != null &&
+        item.actorName!.isNotEmpty) {
       // Instagram tarzı: "İsim aksiyon metni" tek satırda, isim kalın.
       final children = <Widget>[
         Text.rich(
@@ -549,51 +629,58 @@ class _NotifTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _iconGradient();
-    final accentColor = item.isRead ? AuroraTheme.glassBorder : colors[0].withOpacity(0.5);
+    final accentColor = item.isRead
+        ? AuroraTheme.glassBorder
+        : colors[0].withOpacity(0.5);
     final actionText = _notifActionText(item, AppLocalizations.of(context)!);
     // Okunmuş bildirim hafif soluk — okundu hissi kalsın ama liste komple
     // "sönük" görünmesin (13.07: 0.55 tüm ekranı ölü gösteriyordu → 0.78).
     final tile = Opacity(
       opacity: item.isRead ? 0.78 : 1.0,
       child: Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: item.isRead
-                    ? AuroraTheme.glassBg
-                    : colors[0].withOpacity(0.06),
-                borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
-                border: Border.all(color: accentColor),
-              ),
-              child: Row(
-                children: [
-                  _buildLeading(colors),
-                  const SizedBox(width: 12),
-                  Expanded(child: _buildContent(context, actionText)),
-                  const SizedBox(width: 8),
-                  // Zaman
-                  Text(
-                    timeago.format(item.createdAt, locale: locale),
-                    style: TextStyle(
-                      fontFamily: 'JetBrainsMono',
-                      fontSize: 9,
-                      color: AuroraTheme.textMuted,
-                      letterSpacing: 0.5,
-                    ),
+        padding: const EdgeInsets.only(bottom: 8),
+        child: GestureDetector(
+          onTap: onTap,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: item.isRead
+                      ? AuroraTheme.glassBg
+                      : colors[0].withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(
+                    AuroraTheme.radiusInfoCard,
                   ),
-                ],
+                  border: Border.all(color: accentColor),
+                ),
+                child: Row(
+                  children: [
+                    _buildLeading(colors),
+                    const SizedBox(width: 12),
+                    Expanded(child: _buildContent(context, actionText)),
+                    const SizedBox(width: 8),
+                    // Zaman
+                    Text(
+                      timeago.format(item.createdAt, locale: locale),
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 9,
+                        color: AuroraTheme.textMuted,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
 
@@ -607,11 +694,13 @@ class _NotifTile extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           decoration: BoxDecoration(
             color: AuroraTheme.auroraRed.withOpacity(0.15),
-            borderRadius:
-                BorderRadius.circular(AuroraTheme.radiusInfoCard),
+            borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
           ),
-          child: const Icon(Icons.delete_outline,
-              color: AuroraTheme.auroraRed, size: 24),
+          child: const Icon(
+            Icons.delete_outline,
+            color: AuroraTheme.auroraRed,
+            size: 24,
+          ),
         ),
         onDismissed: (_) => onDismiss!(),
         child: tile,
@@ -627,18 +716,20 @@ class _DefaultActorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: AuroraTheme.redBlueGradient,
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      gradient: AuroraTheme.redBlueGradient,
+    ),
+    child: Center(
+      child: Text(
+        name.isNotEmpty ? name[0].toUpperCase() : '?',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
         ),
-        child: Center(
-          child: Text(
-            name.isNotEmpty ? name[0].toUpperCase() : '?',
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 }
 
 // ── Empty State ───────────────────────────────────────────────────────────────
@@ -647,22 +738,21 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🔔', style: TextStyle(fontSize: 56)),
-            const SizedBox(height: 20),
-            Text(
-              AppLocalizations.of(context)!.notifications_empty,
-              style: const TextStyle(
-                fontFamily: 'Fraunces',
-                fontStyle: FontStyle.italic,
-                fontSize: 20,
-                color: Colors.white,
-              ),
-            ),
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('🔔', style: TextStyle(fontSize: 56)),
+        const SizedBox(height: 20),
+        Text(
+          AppLocalizations.of(context)!.notifications_empty,
+          style: const TextStyle(
+            fontFamily: 'Fraunces',
+            fontStyle: FontStyle.italic,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }
-

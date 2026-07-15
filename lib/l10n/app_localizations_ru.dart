@@ -873,6 +873,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_deleted_user => 'Удалённый пользователь';
 
   @override
+  String get chat_gift_link_label => 'Подарок — открыть';
+
+  @override
   String get notif_selected_push_title => 'Вас выбрали! 🎉';
 
   @override

@@ -863,6 +863,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_deleted_user => 'Deleted user';
 
   @override
+  String get chat_gift_link_label => 'Gift item — view';
+
+  @override
   String get notif_selected_push_title => 'You\'re selected! 🎉';
 
   @override

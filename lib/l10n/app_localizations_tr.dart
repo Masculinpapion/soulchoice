@@ -862,6 +862,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_deleted_user => 'Silinmiş kullanıcı';
 
   @override
+  String get chat_gift_link_label => 'Hediye ürünü — görüntüle';
+
+  @override
   String get notif_selected_push_title => 'Seçildin! 🎉';
 
   @override

@@ -359,6 +359,7 @@
   "inv_detail_weekday_sun_full": "Sunday",
   "chat_archived": "This chat is archived",
   "chat_deleted_user": "Deleted user",
+  "chat_gift_link_label": "Gift item — view",
   "notif_selected_push_title": "You're selected! 🎉",
   "notif_selected_push_body": "Chat is open — say hello",
   "chat_deleted_user_info": "This user deleted their account. You can no longer send messages.",

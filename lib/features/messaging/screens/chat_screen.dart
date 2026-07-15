@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -41,6 +42,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _isUser1 = false;
   // Karşı taraf hesabını silmiş (matches.user*_id SET NULL) — yazma kapalı
   bool _otherDeleted = false;
+  // Hediye ürün linki — yalnız seçilen kişiye + moderasyon onaylı (get_gift_link)
+  String? _giftUrl;
 
   // Derived from match
   DateTime? _meetingDate;
@@ -60,6 +63,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _loadMessages();
     _subscribeRealtime();
     _loadMatchInfo();
+    _loadGiftLink();
+  }
+
+  // Hediye linki: yalnız match tarafı + moderasyon onaylı ise döner (RPC).
+  Future<void> _loadGiftLink() async {
+    try {
+      final gl = await Supabase.instance.client
+          .rpc('get_gift_link', params: {'p_match_id': widget.matchId});
+      if (gl is String && gl.isNotEmpty && mounted) {
+        setState(() => _giftUrl = gl);
+      }
+    } catch (_) {}
   }
 
   Future<void> _loadMatchInfo() async {
@@ -508,6 +523,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (invTitle.isNotEmpty)
               _EventBadge(title: invTitle, venue: invVenue, eventDate: invDate),
 
+            // Hediye linki kartı — yalnız seçilen kişide görünür (get_gift_link)
+            if (_giftUrl != null) _GiftLinkCard(url: _giftUrl!),
+
             // Archived banner
             if (isArchived) const _ArchivedBanner(),
 
@@ -650,6 +668,79 @@ class _DeletedUserBanner extends StatelessWidget {
           ],
         ),
       );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Gift Link Card — hediye ürün linki (yalnız seçilen kişide, onaylı)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _GiftLinkCard extends StatelessWidget {
+  final String url;
+  const _GiftLinkCard({required this.url});
+
+  Future<void> _open() async {
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final host = Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? url;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _open,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: AuroraTheme.auroraGold.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(14),
+              border:
+                  Border.all(color: AuroraTheme.auroraGold.withOpacity(0.4)),
+            ),
+            child: Row(
+              children: [
+                const Text('🎁', style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.chat_gift_link_label,
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.5,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        host,
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 11,
+                          color: AuroraTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.open_in_new_rounded,
+                    size: 16, color: AuroraTheme.auroraGold),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

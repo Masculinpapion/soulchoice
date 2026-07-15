@@ -1696,6 +1696,12 @@ abstract class AppLocalizations {
   /// **'Deleted user'**
   String get chat_deleted_user;
 
+  /// No description provided for @chat_gift_link_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift item — view'**
+  String get chat_gift_link_label;
+
   /// No description provided for @notif_selected_push_title.
   ///
   /// In en, this message translates to:

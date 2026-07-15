@@ -40,8 +40,9 @@ Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında ka
 
 ### 3.2 Hediye (gift) ürün linki — güvenli görünürlük modeli (Mustafa kararı 15.07, tasarım onayı bekliyor)
 - Mekan sorusu "**Hediyeni nerede buluşup teslim almak istersin?**" netliğine ayrılır (mağazaya ürün aldırma çağrısı gibi okunmaz).
-- Opsiyonel **ürün linki** alanı: yalnız bilinen marketplace **beyaz listesi** (goldapple/wildberries/ozon/market.yandex/lamoda/letoile), DB trigger doğrular; **moderasyona** düşer (`gift_url_status` pending→approved).
-- **KRİTİK görünürlük:** link ilan kartında/feed'de **HİÇ görünmez** (query'ler `gift_product_url`'ü çekmez). Yalnız **seçim (match) sonrası sohbette**, seçilen kişiye `get_gift_link(match_id)` SECURITY DEFINER RPC ile gösterilir (yalnız match tarafı + approved). Seçilmeyenlerin match'i olmadığından linki hiç göremez → ürünü alıp mağdur olmaz. Yapısal garanti (feed'de gizleme değil, erişim yokluğu).
+- Opsiyonel **ürün linki** alanı: yalnız bilinen marketplace **beyaz listesi** (goldapple/wildberries/ozon/market.yandex/lamoda/letoile), DB trigger doğrular; **moderasyona** düşer (`status` pending→approved).
+- **KRİTİK görünürlük — yapısal garanti (ayrı tablo):** link, feed'de select edilen `invitations` tablosunda **TUTULMAZ** — ayrı `invitation_gift_links` tablosunda (invitation_id, url, status). RLS'te doğrudan SELECT policy'si **yok** → hiç kimse tabloyu okuyamaz. Erişim yalnız iki SECURITY DEFINER RPC'den: `get_gift_link(match_id)` (seçilen kişi = match tarafı + approved) + `get_own_gift_link(invitation_id)` (ilan sahibi, edit için). Seçilmeyenlerin match'i olmadığından linki hiç göremez. _(Not: kolon olarak `invitations`'a koymak DENENDİ ve E2E'de yabancıya sızdığı görüldü — RLS aktif-ilan satırının tüm kolonlarını açıyor + table-level GRANT column REVOKE'u eziyor; bu yüzden ayrı tablo. "Feed'de gizleme değil, erişim yokluğu.")_
+- **Uygulama fazları:** ①DB çekirdek ✅ 15.07 (tablo+trigger+2 RPC, E2E kanıtlı) · ②create UI (owner link alanı + mekan metni) 🔧 · ③chat kartı (seçilene link) 🔧 · ④ops moderasyon (approve/reject) 🔧.
 
 ## 4. İlan yaşam döngüsü ve süreler
 

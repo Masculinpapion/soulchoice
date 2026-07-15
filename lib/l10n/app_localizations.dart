@@ -1081,8 +1081,32 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_venue_question_gift.
   ///
   /// In en, this message translates to:
-  /// **'Where shall we meet?'**
+  /// **'Where would you like to meet and receive the gift?'**
   String get create_inv_venue_question_gift;
+
+  /// No description provided for @create_inv_gift_url_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Product link (optional)'**
+  String get create_inv_gift_url_label;
+
+  /// No description provided for @create_inv_gift_url_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'goldapple, wildberries, ozon…'**
+  String get create_inv_gift_url_hint;
+
+  /// No description provided for @create_inv_gift_url_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the person you pick sees it · after moderation'**
+  String get create_inv_gift_url_helper;
+
+  /// No description provided for @create_inv_gift_url_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Known stores only: goldapple, wildberries, ozon, market.yandex, lamoda, letoile'**
+  String get create_inv_gift_url_invalid;
 
   /// No description provided for @create_inv_venue_subtitle_gift.
   ///

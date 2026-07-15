@@ -90,6 +90,7 @@ class _CreateInvitationScreenState
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _venueController = TextEditingController();
+  final _giftUrlController = TextEditingController(); // yalnız hediye kategorisi
   DateTime? _eventDate;
   int _expiryHours = 24;
   bool _isPublishing = false;
@@ -128,6 +129,7 @@ class _CreateInvitationScreenState
         controller: _venueController,
         category: _category,
         flowType: _flowType,
+        giftUrlController: _giftUrlController,
       ),
     _StepDateTime(
       date: _eventDate,
@@ -263,8 +265,22 @@ class _CreateInvitationScreenState
     _titleController.dispose();
     _descriptionController.dispose();
     _venueController.dispose();
+    _giftUrlController.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  // Hediye ürün linki beyaz listesi (DB trigger ile aynı liste — bu istemci
+  // tarafı yalnız erken/nazik UX; asıl zorlama enforce_gift_link trigger'ında).
+  static const _giftUrlWhitelist = {
+    'goldapple.ru', 'wildberries.ru', 'ozon.ru',
+    'market.yandex.ru', 'lamoda.ru', 'letoile.ru',
+  };
+  bool _isWhitelistedGiftUrl(String url) {
+    final m = RegExp(r'^https?://([^/?#]+)').firstMatch(url.toLowerCase());
+    if (m == null) return false;
+    final host = m.group(1)!.replaceFirst(RegExp(r'^www\.'), '');
+    return _giftUrlWhitelist.contains(host);
   }
 
   String? _validateCurrentStep(AppLocalizations l10n) {
@@ -283,6 +299,11 @@ class _CreateInvitationScreenState
           if (_eventDate == null) return l10n.create_inv_validation_date;
         } else if (_venueController.text.trim().isEmpty) {
           return l10n.create_inv_validation_venue;
+        } else if (_category == InvitationCategory.gift) {
+          final g = _giftUrlController.text.trim();
+          if (g.isNotEmpty && !_isWhitelistedGiftUrl(g)) {
+            return l10n.create_inv_gift_url_invalid;
+          }
         }
       case 5:
         if (!_isTravel && _eventDate == null)
@@ -402,7 +423,7 @@ class _CreateInvitationScreenState
           .maybeSingle();
       final cityId = userRow?['city_id'] as String?;
 
-      await client.from('invitations').insert({
+      final inserted = await client.from('invitations').insert({
         'owner_id': uid,
         'flow_type': _flowType.name,
         'category': _category?.name ?? InvitationCategory.food.name,
@@ -419,7 +440,17 @@ class _CreateInvitationScreenState
         'city_id': cityId,
         'slots_total': 1,
         'status': 'active',
-      });
+      }).select('id').single();
+
+      // Hediye ürün linki (opsiyonel) — ayrı tabloya; beyaz liste + moderasyon
+      // DB trigger'ında zorlanır, link seçilene kadar hiç kimseye görünmez.
+      final giftUrl = _giftUrlController.text.trim();
+      if (_category == InvitationCategory.gift && giftUrl.isNotEmpty) {
+        await client.from('invitation_gift_links').insert({
+          'invitation_id': inserted['id'],
+          'url': giftUrl,
+        });
+      }
 
       if (mounted) {
         ref.invalidate(invitationsProvider);
@@ -1009,10 +1040,12 @@ class _StepVenue extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
   final InvitationFlowType flowType;
+  final TextEditingController? giftUrlController;
   const _StepVenue({
     required this.controller,
     this.category,
     required this.flowType,
+    this.giftUrlController,
   });
 
   String _question(AppLocalizations l10n) {
@@ -1104,6 +1137,39 @@ class _StepVenue extends StatelessWidget {
               ),
             ),
           ),
+          // Hediye: opsiyonel ürün linki. Yalnız seçtiğin kişi görür (onaya tabi).
+          if (category == InvitationCategory.gift && giftUrlController != null) ...[
+            const SizedBox(height: 24),
+            TextField(
+              controller: giftUrlController,
+              style: _bodyLargeStyle,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              decoration: InputDecoration(
+                labelText: l10n.create_inv_gift_url_label,
+                hintText: l10n.create_inv_gift_url_hint,
+                prefixIcon: Icon(
+                  Icons.link_rounded,
+                  color: AuroraTheme.textMuted,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.lock_outline_rounded,
+                    size: 14, color: AuroraTheme.textMuted),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    l10n.create_inv_gift_url_helper,
+                    style: _bodyMediumStyle.copyWith(fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

@@ -526,7 +526,22 @@ class AppLocalizationsTr extends AppLocalizations {
       'Nereye gitmek istediğini yazmalısın';
 
   @override
-  String get create_inv_venue_question_gift => 'Nerede buluşalım?';
+  String get create_inv_venue_question_gift =>
+      'Hediyeni nerede buluşup teslim almak istersin?';
+
+  @override
+  String get create_inv_gift_url_label => 'Ürün linki (isteğe bağlı)';
+
+  @override
+  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+
+  @override
+  String get create_inv_gift_url_helper =>
+      'Yalnızca seçtiğin kişi görür · moderasyon onayından sonra';
+
+  @override
+  String get create_inv_gift_url_invalid =>
+      'Yalnız tanınan mağaza linkleri: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
 
   @override
   String get create_inv_venue_subtitle_gift =>

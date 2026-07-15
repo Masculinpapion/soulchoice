@@ -527,7 +527,22 @@ class AppLocalizationsRu extends AppLocalizations {
       'Напишите, куда хотите поехать';
 
   @override
-  String get create_inv_venue_question_gift => 'Где встретимся?';
+  String get create_inv_venue_question_gift =>
+      'Где хочешь встретиться и получить подарок?';
+
+  @override
+  String get create_inv_gift_url_label => 'Ссылка на товар (необязательно)';
+
+  @override
+  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+
+  @override
+  String get create_inv_gift_url_helper =>
+      'Увидит только выбранный тобой человек · после модерации';
+
+  @override
+  String get create_inv_gift_url_invalid =>
+      'Только известные магазины: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
 
   @override
   String get create_inv_venue_subtitle_gift =>

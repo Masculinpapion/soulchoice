@@ -527,7 +527,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please write where you want to go';
 
   @override
-  String get create_inv_venue_question_gift => 'Where shall we meet?';
+  String get create_inv_venue_question_gift =>
+      'Where would you like to meet and receive the gift?';
+
+  @override
+  String get create_inv_gift_url_label => 'Product link (optional)';
+
+  @override
+  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+
+  @override
+  String get create_inv_gift_url_helper =>
+      'Only the person you pick sees it · after moderation';
+
+  @override
+  String get create_inv_gift_url_invalid =>
+      'Known stores only: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
 
   @override
   String get create_inv_venue_subtitle_gift =>

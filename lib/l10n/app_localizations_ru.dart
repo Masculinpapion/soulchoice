@@ -876,6 +876,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_gift_link_label => 'Подарок — открыть';
 
   @override
+  String get chat_gift_disclaimer =>
+      'Покупка происходит вне SoulChoice, в стороннем магазине; ответственность несут пользователи.';
+
+  @override
   String get notif_selected_push_title => 'Вас выбрали! 🎉';
 
   @override

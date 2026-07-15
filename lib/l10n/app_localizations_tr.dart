@@ -865,6 +865,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_gift_link_label => 'Hediye ürünü — görüntüle';
 
   @override
+  String get chat_gift_disclaimer =>
+      'Bu alışveriş SoulChoice dışında, üçüncü taraf mağazada gerçekleşir; sorumluluk kullanıcılara aittir.';
+
+  @override
   String get notif_selected_push_title => 'Seçildin! 🎉';
 
   @override

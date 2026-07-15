@@ -360,6 +360,7 @@
   "chat_archived": "Этот чат в архиве",
   "chat_deleted_user": "Удалённый пользователь",
   "chat_gift_link_label": "Подарок — открыть",
+  "chat_gift_disclaimer": "Покупка происходит вне SoulChoice, в стороннем магазине; ответственность несут пользователи.",
   "notif_selected_push_title": "Вас выбрали! 🎉",
   "notif_selected_push_body": "Чат открыт — поздоровайтесь",
   "chat_deleted_user_info": "Этот пользователь удалил свой аккаунт. Отправка сообщений больше недоступна.",

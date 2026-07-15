@@ -1702,6 +1702,12 @@ abstract class AppLocalizations {
   /// **'Gift item — view'**
   String get chat_gift_link_label;
 
+  /// No description provided for @chat_gift_disclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'This purchase happens outside SoulChoice, in a third-party store; users are responsible.'**
+  String get chat_gift_disclaimer;
+
   /// No description provided for @notif_selected_push_title.
   ///
   /// In en, this message translates to:

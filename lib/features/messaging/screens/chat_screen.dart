@@ -690,54 +690,73 @@ class _GiftLinkCard extends StatelessWidget {
     final host = Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? url;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _open,
-          borderRadius: BorderRadius.circular(14),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: AuroraTheme.auroraGold.withOpacity(0.10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _open,
               borderRadius: BorderRadius.circular(14),
-              border:
-                  Border.all(color: AuroraTheme.auroraGold.withOpacity(0.4)),
-            ),
-            child: Row(
-              children: [
-                const Text('🎁', style: TextStyle(fontSize: 18)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.chat_gift_link_label,
-                        style: const TextStyle(
-                          fontFamily: 'Manrope',
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        host,
-                        style: TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontSize: 11,
-                          color: AuroraTheme.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AuroraTheme.auroraGold.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                      color: AuroraTheme.auroraGold.withOpacity(0.4)),
                 ),
-                Icon(Icons.open_in_new_rounded,
-                    size: 16, color: AuroraTheme.auroraGold),
-              ],
+                child: Row(
+                  children: [
+                    const Text('🎁', style: TextStyle(fontSize: 18)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.chat_gift_link_label,
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            host,
+                            style: TextStyle(
+                              fontFamily: 'JetBrainsMono',
+                              fontSize: 11,
+                              color: AuroraTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.open_in_new_rounded,
+                        size: 16, color: AuroraTheme.auroraGold),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+          // Hukuki + güven: satın alma app dışında, sorumluluk kullanıcılarda
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
+            child: Text(
+              AppLocalizations.of(context)!.chat_gift_disclaimer,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 10.5,
+                height: 1.4,
+                color: AuroraTheme.textMuted,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

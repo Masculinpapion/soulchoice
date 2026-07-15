@@ -360,6 +360,7 @@
   "chat_archived": "This chat is archived",
   "chat_deleted_user": "Deleted user",
   "chat_gift_link_label": "Gift item — view",
+  "chat_gift_disclaimer": "This purchase happens outside SoulChoice, in a third-party store; users are responsible.",
   "notif_selected_push_title": "You're selected! 🎉",
   "notif_selected_push_body": "Chat is open — say hello",
   "chat_deleted_user_info": "This user deleted their account. You can no longer send messages.",

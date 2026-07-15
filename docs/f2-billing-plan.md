@@ -349,6 +349,20 @@ tetikleyebildiğimiz için risk yok; destek cevabına göre kapatılacak.
 | Dialog butonları | Отменить подписку · Оставить | Cancel subscription · Keep it |
 | İptal sonrası durum (SADE — KARAR 4) | Подписка отменена. Premium активен до {дата}. | Subscription cancelled. Premium is active until {date}. |
 | Geri dönüş butonu | Продолжить с картой •••• {XXXX} | Continue with card •••• {XXXX} |
-| Çekim öncesi push/mail (F2-1) | Подписка SoulChoice Premium продлится завтра — спишется 1 000 ₽. Управление — в профиле. | Your SoulChoice Premium renews tomorrow — 1,000 ₽ will be charged. Manage it in your profile. |
+| Çekim öncesi push/mail (F2-1) — 15.07: "завтра"→{дата} (notify 72h olunca) | Подписка SoulChoice Premium продлится {дата} — спишется 1 000 ₽. Управление — в профиле. | Your SoulChoice Premium renews on {date} — 1,000 ₽ will be charged. Manage it in your profile. |
 | Çekim başarılı | Подписка продлена. Premium активен до {дата}. | Subscription renewed. Premium is active until {date}. |
 | Çekim başarısız | Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку. | We couldn't renew your subscription — please check your card. Premium is still active; we'll retry. |
+
+## 8. Yenileme bildirimi — 15.07.2026 kararları
+
+Mustafa kararı (15.07): kullanıcı habersiz çekim görmesin, itiraz riski minimize.
+
+- ✅ **UYGULANDI:** `notify_before_hours` 36→**72** (3 gün önce bildirim). Cron'daki bildirim
+  tazelik penceresi 72h→96h genişletildi (sınır durumunda çift bildirim/kaçırma riski yoktu
+  ama marj sıfırdı). Reminder metni "завтра"→tarihli ({дата}) — push + e-posta.
+- 🕐 **POST-LAUNCH #1 — İki kademeli hatırlatma:** tek bildirim kaçırılırsa ikinci şans yok.
+  Öneri: 72h önce + 24h önce iki kademe (ikinci kademe için `renewal_notified_2_at` kolonu
+  + FAZ A'ya ikinci sorgu). Karar Mustafa'da.
+- 🕐 **POST-LAUNCH #2 — SMS kanalı:** push+e-posta ikisi de kaçabilir; SMS.ru altyapısı hazır.
+  Öneri: yalnız "yenileme yaklaşıyor" bildirimi SMS ile de gitsin (yenileme başına 1 SMS
+  maliyeti). ФЗ-38 değerlendirmesi: işlem bildirimi, reklam değil — yine de karar Mustafa'da.

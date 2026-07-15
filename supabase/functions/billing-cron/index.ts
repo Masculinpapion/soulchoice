@@ -116,7 +116,7 @@ serve(async (req) => {
         where s.status = 'active' and s.auto_renew and s.tochka_subscription_id is not null
           and s.next_billing_at <= now() + make_interval(hours => $1)
           and (s.renewal_notified_at is null
-               or s.renewal_notified_at < s.next_billing_at - interval '72 hours')`,
+               or s.renewal_notified_at < s.next_billing_at - interval '96 hours')`,
       [cfg.notify_before_hours],
     )
     for (const sub of notifyCands.rows) {
@@ -126,10 +126,11 @@ serve(async (req) => {
         continue
       }
       const amount = fmtAmount(sub.price_paid)
+      const dateStr = fmtDate(sub.next_billing_at)
       const pushOk = await sendPush(sub.user_id, 'SoulChoice Premium',
-        `Подписка продлится завтра — спишется ${amount}. Управление — в профиле.`)
+        `Подписка продлится ${dateStr} — спишется ${amount}. Управление — в профиле.`)
       const mail = sub.billing_email
-        ? await sendBillingEmail(sub.billing_email, 'renewal_reminder', { amount })
+        ? await sendBillingEmail(sub.billing_email, 'renewal_reminder', { amount, date: dateStr })
         : { ok: false, error: 'no_billing_email' }
       const channels = [...(pushOk ? ['push'] : []), ...(mail.ok ? ['email'] : [])]
       if (channels.length > 0) {
@@ -157,7 +158,7 @@ serve(async (req) => {
           and s.retry_count < 3
           -- F2-1 kapısı: bu döngü için bildirim var VE en az min_notify_gap saat önce
           and s.renewal_notified_at is not null
-          and s.renewal_notified_at > s.next_billing_at - interval '72 hours'
+          and s.renewal_notified_at > s.next_billing_at - interval '96 hours'
           and s.renewal_notified_at <= now() - make_interval(hours => $1)
           -- S3 banka limiti: son 20 saatteki deneme sayısı max_daily_attempts altında
           and (select count(*) from billing_events be

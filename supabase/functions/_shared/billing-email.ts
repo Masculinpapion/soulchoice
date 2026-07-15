@@ -28,10 +28,13 @@ const FOOTER =
 function template(kind: BillingEmailKind, p: BillingEmailParams): { subject: string; body: string } {
   switch (kind) {
     case 'renewal_reminder':
+      // notify_before_hours artık 72 saat — "завтра" yanlış olur, tarih yazılır
       return {
-        subject: 'Завтра продление подписки SoulChoice Premium',
+        subject: p.date
+          ? `Продление подписки SoulChoice Premium — ${p.date}`
+          : 'Скоро продление подписки SoulChoice Premium',
         body:
-          `Подписка SoulChoice Premium продлится завтра — спишется ${p.amount ?? '1 000 ₽'}. Управление — в профиле.` +
+          `Подписка SoulChoice Premium продлится ${p.date ?? 'в ближайшие дни'} — спишется ${p.amount ?? '1 000 ₽'}. Управление — в профиле.` +
           FOOTER,
       }
     case 'renewal_success':

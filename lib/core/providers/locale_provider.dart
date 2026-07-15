@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, Locale?>((ref) {
   return LocaleNotifier();
@@ -35,11 +36,26 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     state = Locale(languageCode);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, languageCode);
+    _syncToDb(languageCode);
   }
 
   Future<void> useSystemLocale() async {
     state = _fromSystem();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, 'system');
+    _syncToDb(state!.languageCode);
+  }
+
+  // Push'lar alıcının dilinde gitsin — dil değişince sunucuya da yaz
+  void _syncToDb(String code) {
+    try {
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      if (uid == null) return;
+      Supabase.instance.client
+          .from('users')
+          .update({'locale': code})
+          .eq('id', uid)
+          .then((_) {}, onError: (_) {});
+    } catch (_) {}
   }
 }

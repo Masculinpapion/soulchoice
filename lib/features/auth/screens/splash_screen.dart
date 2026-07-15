@@ -50,11 +50,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     try {
       final existing = await Supabase.instance.client
           .from('users')
-          .select('id')
+          .select('id, suspended_at, banned')
           .eq('id', session.user.id)
           .maybeSingle()
           .timeout(const Duration(seconds: 8));
       if (!mounted) return;
+      // Askıya alınmış/banlı hesap: aksiyonlar zaten sunucuda kilitli —
+      // kullanıcıya nedenini ve destek yolunu gösteren tam ekran durum
+      if (existing != null &&
+          (existing['suspended_at'] != null || existing['banned'] == true)) {
+        context.go('/suspended');
+        return;
+      }
       context.go(existing == null ? '/profile/setup' : '/feed');
     } catch (_) {
       // Ağ yok/yavaş: session var demek kullanıcı daha önce giriş yapmış →

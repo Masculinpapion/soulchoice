@@ -15,7 +15,8 @@ class PaywallScreen extends StatefulWidget {
   State<PaywallScreen> createState() => _PaywallScreenState();
 }
 
-class _PaywallScreenState extends State<PaywallScreen> {
+class _PaywallScreenState extends State<PaywallScreen>
+    with WidgetsBindingObserver {
   // Sunucu bayrağı gelene kadar platform varsayılanı: iOS'ta CTA gizli
   // (App Store External Purchase entitlement onayına kadar), Android'de açık.
   late String _mode = Platform.isIOS ? 'hidden' : 'link';
@@ -28,8 +29,49 @@ class _PaywallScreenState extends State<PaywallScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPaywallMode();
     _loadBillingContext();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // 🟡6 (15.07): tarayıcıda ödeyip dönen kullanıcı paywall'ı hâlâ kilitli
+  // sanmasın — resume'da premium kontrol edilir, aktifse ekran kapanır.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkPremiumAfterReturn();
+  }
+
+  Future<void> _checkPremiumAfterReturn() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    // Webhook redirect'ten birkaç saniye sonra işleyebilir → 2 deneme
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        final row = await Supabase.instance.client
+            .from('users')
+            .select('premium_until, subscription_status')
+            .eq('id', uid)
+            .maybeSingle();
+        final until = row?['premium_until'] as String?;
+        final active = row?['subscription_status'] == 'active' ||
+            (until != null &&
+                (DateTime.tryParse(until)?.isAfter(DateTime.now()) ?? false));
+        if (active) {
+          if (!mounted) return;
+          _snack(AppLocalizations.of(context)!.paywall_premium_active);
+          if (context.canPop()) context.pop();
+          return;
+        }
+      } catch (_) {}
+      await Future.delayed(const Duration(seconds: 4));
+      if (!mounted) return;
+    }
   }
 
   Future<void> _loadBillingContext() async {

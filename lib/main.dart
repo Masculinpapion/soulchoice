@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -23,6 +24,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
+// Kullanıcının etkin dili (ayar > sistem) — push'lar alıcının dilinde gitsin
+// diye users.locale'e yazılır; send-notification şablon seçiminde okur.
+Future<String> _effectiveLocaleCode() async {
+  final prefs = await SharedPreferences.getInstance();
+  final saved = prefs.getString('selected_locale');
+  if (saved != null && saved != 'system') return saved;
+  final sys = PlatformDispatcher.instance.locale.languageCode;
+  return (sys == 'ru' || sys == 'tr') ? sys : 'en';
+}
+
 Future<void> _saveFcmToken() async {
   try {
     final uid = Supabase.instance.client.auth.currentUser?.id;
@@ -34,6 +45,7 @@ Future<void> _saveFcmToken() async {
         .update({
           'fcm_token': token,
           'last_platform': Platform.isIOS ? 'ios' : 'android',
+          'locale': await _effectiveLocaleCode(),
         })
         .eq('id', uid);
   } catch (_) {}

@@ -300,6 +300,8 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
     case 'selfie_rejected': return l.notif_type_selfie_rejected_title;
     case 'meeting_reminder':return l.notif_type_meeting_reminder_title;
     case 'feedback_request':return l.notif_type_feedback_request_title;
+    case 'selection_reminder':
+      return l.notif_type_selection_reminder_title;
     default:                return name.isNotEmpty ? name : item.type;
   }
 }
@@ -323,6 +325,8 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
     case 'selfie_rejected': return l.notif_type_selfie_rejected_body;
     case 'meeting_reminder':return l.notif_type_meeting_reminder_body;
     case 'feedback_request':return l.notif_type_feedback_request_body;
+    case 'selection_reminder':
+      return l.notif_type_selection_reminder_body;
     default:                return item.body;
   }
 }

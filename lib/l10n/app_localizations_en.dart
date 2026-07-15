@@ -945,6 +945,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_view_cta_message => 'Send a message';
 
   @override
+  String get phone_session_expired =>
+      'Your session has expired — please sign in again.';
+
+  @override
+  String get suspended_title => 'Account suspended';
+
+  @override
+  String get suspended_body =>
+      'Your account has been suspended due to repeated no-shows or a rule violation. If you believe this is a mistake, contact us.';
+
+  @override
+  String get suspended_contact => 'Contact support';
+
+  @override
+  String get suspended_logout => 'Sign out';
+
+  @override
+  String get err_selfie_required =>
+      'Verify your profile with a selfie first — opening the camera screen.';
+
+  @override
+  String get err_apply_limit =>
+      'Your free application is used — Premium unlocks unlimited applications.';
+
+  @override
+  String get err_invitation_closed =>
+      'This invitation is no longer accepting applications.';
+
+  @override
+  String get err_active_invitation_limit =>
+      'You already have an active invitation of this type.';
+
+  @override
+  String get err_account_suspended => 'Your account is suspended.';
+
+  @override
+  String get profile_my_applications => 'My applications';
+
+  @override
+  String get app_status_pending => 'PENDING';
+
+  @override
+  String get app_status_accepted => 'ACCEPTED';
+
+  @override
+  String get app_status_rejected => 'NOT SELECTED';
+
+  @override
+  String get app_status_expired => 'NO SELECTION';
+
+  @override
+  String get paywall_premium_active => 'Premium is active — enjoy! 🎉';
+
+  @override
+  String get notif_type_selection_reminder_title =>
+      'Applications are waiting ✨';
+
+  @override
+  String get notif_type_selection_reminder_body =>
+      'Your selection window closes soon — take a look at your applicants.';
+
+  @override
   String get messages_empty_past => 'No past chats';
 
   @override

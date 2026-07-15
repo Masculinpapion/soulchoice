@@ -6,8 +6,10 @@ import '../theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../auth/session_expiry.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/phone_screen.dart';
+import '../../features/auth/screens/suspended_screen.dart';
 import '../../features/auth/screens/otp_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/onboarding/screens/permissions_screen.dart';
@@ -40,7 +42,13 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 class _AuthNotifier extends ChangeNotifier {
   _AuthNotifier() {
-    _sub = Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+    _sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      // Oturum kendiliğinden düştüyse (manuel çıkış değil) telefon ekranında
+      // "oturum süresi doldu" bilgisi gösterilir (madde S).
+      if (data.event == AuthChangeEvent.signedOut) {
+        if (!SessionExpiry.manualLogout) SessionExpiry.expired = true;
+        SessionExpiry.manualLogout = false;
+      }
       notifyListeners();
     });
   }
@@ -76,7 +84,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           Supabase.instance.client.auth.currentUser != null;
 
       if (isAuthenticated && loc == '/auth/phone') return '/feed';
-      if (!isAuthenticated) return '/splash';
+      // Oturum kendiliğinden düştü → sessizce splash/onboarding'e atma,
+      // doğrudan girişe götür (telefon ekranı açıklama banner'ı gösterir)
+      if (!isAuthenticated) {
+        return SessionExpiry.expired ? '/auth/phone' : '/splash';
+      }
 
       if (loc == '/admin') {
         final uid = Supabase.instance.client.auth.currentUser?.id;
@@ -94,6 +106,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       // ── Auth / Onboarding (root navigator) ─────────────────────────────
       GoRoute(path: '/splash', builder: (ctx, _) => const SplashScreen()),
+      GoRoute(
+          path: '/suspended', builder: (ctx, _) => const SuspendedScreen()),
       GoRoute(
           path: '/onboarding', builder: (ctx, _) => const OnboardingScreen()),
       GoRoute(

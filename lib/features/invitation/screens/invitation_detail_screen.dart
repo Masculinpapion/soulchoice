@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:ui';
+import '../../../core/utils/guard_errors.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -1339,11 +1340,13 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
           .eq('id', applicantId)
           .maybeSingle();
       final applicantName = applicant?['name'] as String? ?? '';
+      // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki RU fallback.
       await client.functions.invoke('send-notification', body: {
         'user_id': ownerId,
         'title': '🔔 Новая заявка',
         'body': '$applicantName хочет присоединиться',
         'data': {'type': 'new_application', 'invitation_id': widget.invitationId},
+        'template': {'name': applicantName},
       });
     } catch (_) {}
   }
@@ -1472,9 +1475,17 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       }
     } catch (e) {
       if (mounted) {
+        // Bilinen guard hataları (selfie/limit/askı/kapalı ilan) lokalize
+        // mesaj + doğru CTA; ham e.toString() yalnız bilinmeyen hatada.
+        final guard = GuardError.from(context, e);
+        if (guard != null) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => guard.navigate(context));
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(AppLocalizations.of(context)!.inv_detail_error(e.toString())),
+              content: Text(guard?.message ??
+                  AppLocalizations.of(context)!.inv_detail_error(e.toString())),
               backgroundColor: AuroraTheme.auroraRed),
         );
       }

@@ -1840,6 +1840,114 @@ abstract class AppLocalizations {
   /// **'Send a message'**
   String get profile_view_cta_message;
 
+  /// No description provided for @phone_session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired — please sign in again.'**
+  String get phone_session_expired;
+
+  /// No description provided for @suspended_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Account suspended'**
+  String get suspended_title;
+
+  /// No description provided for @suspended_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been suspended due to repeated no-shows or a rule violation. If you believe this is a mistake, contact us.'**
+  String get suspended_body;
+
+  /// No description provided for @suspended_contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get suspended_contact;
+
+  /// No description provided for @suspended_logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get suspended_logout;
+
+  /// No description provided for @err_selfie_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your profile with a selfie first — opening the camera screen.'**
+  String get err_selfie_required;
+
+  /// No description provided for @err_apply_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free application is used — Premium unlocks unlimited applications.'**
+  String get err_apply_limit;
+
+  /// No description provided for @err_invitation_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is no longer accepting applications.'**
+  String get err_invitation_closed;
+
+  /// No description provided for @err_active_invitation_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an active invitation of this type.'**
+  String get err_active_invitation_limit;
+
+  /// No description provided for @err_account_suspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is suspended.'**
+  String get err_account_suspended;
+
+  /// No description provided for @profile_my_applications.
+  ///
+  /// In en, this message translates to:
+  /// **'My applications'**
+  String get profile_my_applications;
+
+  /// No description provided for @app_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'PENDING'**
+  String get app_status_pending;
+
+  /// No description provided for @app_status_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'ACCEPTED'**
+  String get app_status_accepted;
+
+  /// No description provided for @app_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'NOT SELECTED'**
+  String get app_status_rejected;
+
+  /// No description provided for @app_status_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'NO SELECTION'**
+  String get app_status_expired;
+
+  /// No description provided for @paywall_premium_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is active — enjoy! 🎉'**
+  String get paywall_premium_active;
+
+  /// No description provided for @notif_type_selection_reminder_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications are waiting ✨'**
+  String get notif_type_selection_reminder_title;
+
+  /// No description provided for @notif_type_selection_reminder_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selection window closes soon — take a look at your applicants.'**
+  String get notif_type_selection_reminder_body;
+
   /// No description provided for @messages_empty_past.
   ///
   /// In en, this message translates to:

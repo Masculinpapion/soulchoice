@@ -956,6 +956,66 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_view_cta_message => 'Написать сообщение';
 
   @override
+  String get phone_session_expired => 'Сессия истекла — войдите снова.';
+
+  @override
+  String get suspended_title => 'Аккаунт приостановлен';
+
+  @override
+  String get suspended_body =>
+      'Аккаунт приостановлен из-за повторных неявок на встречи или нарушения правил. Если это ошибка — напишите нам.';
+
+  @override
+  String get suspended_contact => 'Написать в поддержку';
+
+  @override
+  String get suspended_logout => 'Выйти';
+
+  @override
+  String get err_selfie_required =>
+      'Сначала подтвердите профиль селфи — открываем камеру.';
+
+  @override
+  String get err_apply_limit =>
+      'Бесплатная заявка использована — безлимит открывает Premium.';
+
+  @override
+  String get err_invitation_closed =>
+      'Это приглашение больше не принимает заявки.';
+
+  @override
+  String get err_active_invitation_limit =>
+      'У вас уже есть активное приглашение этого типа.';
+
+  @override
+  String get err_account_suspended => 'Ваш аккаунт приостановлен.';
+
+  @override
+  String get profile_my_applications => 'Мои заявки';
+
+  @override
+  String get app_status_pending => 'ОЖИДАЕТ';
+
+  @override
+  String get app_status_accepted => 'ПРИНЯТА';
+
+  @override
+  String get app_status_rejected => 'НЕ ВЫБРАНА';
+
+  @override
+  String get app_status_expired => 'ВЫБОР НЕ СДЕЛАН';
+
+  @override
+  String get paywall_premium_active => 'Premium активен — пользуйтесь! 🎉';
+
+  @override
+  String get notif_type_selection_reminder_title => 'Заявки ждут ✨';
+
+  @override
+  String get notif_type_selection_reminder_body =>
+      'Окно выбора скоро закроется — взгляните на заявки.';
+
+  @override
   String get messages_empty_past => 'Прошлых чатов нет';
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../features/feed/providers/invitations_provider.dart';
@@ -466,6 +467,12 @@ class _CreateInvitationScreenState
       }
     } catch (e) {
       if (mounted) {
+        // Bilinen guard hataları lokalize + doğru yönlendirme (selfie/askı)
+        final guard = GuardError.from(context, e);
+        if (guard != null) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => guard.navigate(context));
+        }
         final isLimitError =
             e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
         ScaffoldMessenger.of(context).showSnackBar(
@@ -487,13 +494,14 @@ class _CreateInvitationScreenState
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    isLimitError
-                        ? AppLocalizations.of(
-                            context,
-                          )!.create_inv_error_active_limit
-                        : AppLocalizations.of(
-                            context,
-                          )!.create_inv_error_publish(e.toString()),
+                    guard?.message ??
+                        (isLimitError
+                            ? AppLocalizations.of(
+                                context,
+                              )!.create_inv_error_active_limit
+                            : AppLocalizations.of(
+                                context,
+                              )!.create_inv_error_publish(e.toString())),
                     style: const TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 13,

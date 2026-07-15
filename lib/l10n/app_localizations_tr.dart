@@ -944,6 +944,66 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_view_cta_message => 'Mesaj yaz';
 
   @override
+  String get phone_session_expired =>
+      'Oturumunun süresi doldu — lütfen tekrar giriş yap.';
+
+  @override
+  String get suspended_title => 'Hesap askıya alındı';
+
+  @override
+  String get suspended_body =>
+      'Hesabın, tekrarlanan buluşmaya gelmeme bildirimleri veya kural ihlali nedeniyle askıya alındı. Bir hata olduğunu düşünüyorsan bize ulaş.';
+
+  @override
+  String get suspended_contact => 'Destekle iletişime geç';
+
+  @override
+  String get suspended_logout => 'Çıkış yap';
+
+  @override
+  String get err_selfie_required =>
+      'Önce selfie ile profilini doğrula — kamera ekranı açılıyor.';
+
+  @override
+  String get err_apply_limit =>
+      'Ücretsiz başvuru hakkın kullanıldı — sınırsız başvuru Premium ile.';
+
+  @override
+  String get err_invitation_closed => 'Bu ilan artık başvuru kabul etmiyor.';
+
+  @override
+  String get err_active_invitation_limit =>
+      'Bu türde zaten aktif bir ilanın var.';
+
+  @override
+  String get err_account_suspended => 'Hesabın askıya alınmış durumda.';
+
+  @override
+  String get profile_my_applications => 'Başvurularım';
+
+  @override
+  String get app_status_pending => 'BEKLİYOR';
+
+  @override
+  String get app_status_accepted => 'KABUL';
+
+  @override
+  String get app_status_rejected => 'SEÇİLMEDİ';
+
+  @override
+  String get app_status_expired => 'SEÇİM YAPILMADI';
+
+  @override
+  String get paywall_premium_active => 'Premium aktif — keyfini çıkar! 🎉';
+
+  @override
+  String get notif_type_selection_reminder_title => 'Başvurular bekliyor ✨';
+
+  @override
+  String get notif_type_selection_reminder_body =>
+      'Seçim penceren yakında kapanıyor — başvuranlara bir göz at.';
+
+  @override
   String get messages_empty_past => 'Geçmiş sohbet yok';
 
   @override

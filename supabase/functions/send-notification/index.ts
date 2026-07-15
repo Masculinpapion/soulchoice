@@ -34,17 +34,45 @@ async function getFcmAccessToken(): Promise<string> {
   return data.access_token
 }
 
+// Alıcının DİLİNDE şablonlar (users.locale; yoksa ru). Şablonu olan tür için
+// istemcinin gönderdiği title/body her zaman EZİLİR — böylece:
+//  1) push alıcının dilinde gider (gönderenin değil),
+//  2) new_message İÇERİK TAŞIMAZ (kilit ekranı gizliliği, Mustafa kararı 15.07)
+//     — eski APK içerik gönderse bile sunuca takılır.
+const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
+  selected: {
+    ru: { t: 'Тебя выбрали! 🎉', b: '{name} выбрал(а) тебя — чат открыт' },
+    tr: { t: 'Seçildin! 🎉', b: '{name} seni seçti — sohbet açıldı' },
+    en: { t: "You're selected! 🎉", b: '{name} chose you — chat is open' },
+  },
+  new_application: {
+    ru: { t: 'Новая заявка 🔔', b: '{name} хочет присоединиться' },
+    tr: { t: 'Yeni başvuru 🔔', b: '{name} katılmak istiyor' },
+    en: { t: 'New application 🔔', b: '{name} wants to join' },
+  },
+  new_message: {
+    ru: { t: '💬 {name}', b: 'Новое сообщение' },
+    tr: { t: '💬 {name}', b: 'Yeni mesaj' },
+    en: { t: '💬 {name}', b: 'New message' },
+  },
+  selection_reminder: {
+    ru: { t: 'Заявки ждут ✨', b: 'Заявок: {count} — окно выбора скоро закроется' },
+    tr: { t: 'Başvurular bekliyor ✨', b: '{count} başvuran seçimini bekliyor — pencere yakında kapanıyor' },
+    en: { t: 'Applications waiting ✨', b: '{count} applicants await your choice — window closes soon' },
+  },
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   try {
-    const { user_id, title, body, data } = await req.json()
+    const { user_id, title, body, data, template } = await req.json()
     if (!user_id || !title || !body) {
       return new Response(JSON.stringify({ error: 'user_id, title, body required' }), { status: 400, headers: CORS })
     }
     const db = new Client(DB_URL)
     await db.connect()
-    const result = await db.queryObject<{ fcm_token: string }>(
-      'SELECT fcm_token FROM users WHERE id = $1 LIMIT 1',
+    const result = await db.queryObject<{ fcm_token: string; locale: string | null }>(
+      'SELECT fcm_token, locale FROM users WHERE id = $1 LIMIT 1',
       [user_id]
     )
 
@@ -58,6 +86,8 @@ serve(async (req) => {
       selected: 'push_selected',
       new_message: 'push_message',
       match: 'push_match',
+      // Owner'a seçim hatırlatması — başvuru push tercihine bağlı
+      selection_reminder: 'push_new_application',
     }
     const col = typeToColumn[notifType]
     if (col) {
@@ -96,6 +126,21 @@ serve(async (req) => {
     if (!fcmToken) {
       return new Response(JSON.stringify({ error: 'no fcm_token' }), { status: 404, headers: CORS })
     }
+
+    // Şablon: alıcının dilinde metin üret; istemci title/body yalnız fallback
+    let finalTitle = title
+    let finalBody = body
+    const locale = result.rows[0]?.locale ?? 'ru'
+    const tpl = TEMPLATES[notifType]?.[locale] ?? TEMPLATES[notifType]?.['ru']
+    if (tpl) {
+      const args = (template && typeof template === 'object') ? template : {}
+      const fill = (s: string) => s
+        .replace('{name}', String(args.name ?? ''))
+        .replace('{count}', String(args.count ?? ''))
+      finalTitle = fill(tpl.t).trim()
+      finalBody = fill(tpl.b).trim()
+    }
+
     const accessToken = await getFcmAccessToken()
     const fcmRes = await fetch(
       `https://fcm.googleapis.com/v1/projects/${PROJECT_ID}/messages:send`,
@@ -108,7 +153,7 @@ serve(async (req) => {
         body: JSON.stringify({
           message: {
             token: fcmToken,
-            notification: { title, body },
+            notification: { title: finalTitle, body: finalBody },
             data: data ?? {},
             android: { priority: 'high' },
             apns: { payload: { aps: { sound: 'default' } } },

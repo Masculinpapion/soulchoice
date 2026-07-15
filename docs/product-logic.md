@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.7 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.8 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -95,7 +95,8 @@ active (6/12/24/48 saat — sahibi seçer)
 - **Sohbet menüsündeki "sil" → tek-taraflı "gizle" (WhatsApp standardı):** gizleyen kullanıcının listesinden sohbet kalkar; karşı tarafta aynen durur; mesaj geçmişi korunur (gizleme yalnız liste seviyesindedir). Gizlenen sohbete karşı taraftan **yeni mesaj gelince sohbet listeye geri döner**. Match **SİLİNMEZ** — yukarıdaki ilkeye uygun (otomatik/tek-taraflı süreç sohbeti yok etmez, yalnız listeden gizler). 🔧
 - **Engelleme** bundan ayrıdır ve mevcut haliyle kalır: match tamamen silinir, sohbet iki taraftan da gider (bu, kullanıcının bilinçli "tam kesme" aksiyonudur). ✅
 - **Buluşma mekaniği:** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır (tarih varsa); buluşma saatinden sonra (tarihsiz gift'te eşleşme+24s sonra) iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet **arşive** iner. ✅ 15.07
-- **No-show (gerçek kurulum ✅ 15.07):** anket "hayır" → `confirm_meeting` SECURITY DEFINER RPC karşı tarafın `no_show_count`'unu artırır (**RLS `auth.uid()=id` yüzünden app-side fallback hiç çalışmıyordu — kırıktı, RPC ile düzeltildi**), eşik **2 → hesap askıya alınır**. **Gift no-show maddi kayıp içerdiğinden ağırlıklı: +2 (tek gift no-show'u suspend eder)** + `no_show_reported_by` işareti + `suspension_reason='gift no-show (maddi kayıp)'`. _(not: `matches.meeting_status` kolonu hâlâ güncellenmiyor; §11 legacy)_
+- **No-show (gerçek kurulum ✅ 15.07):** anket "hayır" → `confirm_meeting` SECURITY DEFINER RPC karşı tarafın `no_show_count`'unu artırır (**RLS `auth.uid()=id` yüzünden app-side fallback hiç çalışmıyordu — kırıktı, RPC ile düzeltildi**), eşik **2 → hesap askıya alınır**. **Gift no-show maddi kayıp içerdiğinden ağırlıklı: +2 (tek gift no-show'u suspend eder)** + `no_show_reported_by` işareti + `suspension_reason='gift no-show (maddi kayıp)'`. _(not: `matches.meeting_status` kolonu hâlâ güncelleniyor değil; §11 legacy)_
+- **Askı/ban artık FİİLEN zorlanır (✅ 15.07 akşam):** askıdaki/banlı kullanıcı yeni ilan/başvuru/mesaj üretemez (`enforce_not_suspended` trigger, `ACCOUNT_SUSPENDED`), profili/ilanı feed-keşfette görünmez (`hidden_from_feed`), app açılışta tam ekran "hesap askıda" durumu + destek yolu gösterir (iç not olan `suspension_reason` EKRANDA GÖSTERİLMEZ). Ops banı GoTrue oturumunu da keser (banned_until + refresh token silme). Ayrıca istemcinin kendi `premium_until`/`free_application_used`/`no_show_count`/`suspended_at` kolonlarını değiştirmesi kapatıldı (bedava-premium açığıydı).
 
 ## 8. Hesap silme — "Silinen kullanıcı" modeli (15.07 kararı, canlı)
 
@@ -115,8 +116,10 @@ active (6/12/24/48 saat — sahibi seçer)
 | Yeni mesaj | karşı taraf | ✅ | ✅ | |
 | Selfie onaylandı | kullanıcı | ✅ | ❌ | 🔧 metin nötrleştirilecek: "mavi tik" değil, "profilin doğrulandı" |
 | Selfie reddedildi | kullanıcı | ✅ | ❌ | |
+| **Seçim penceresi kapanıyor** | ilan sahibi | ✅ | ✅ | ✅ 15.07: `selecting` + bekleyen başvuru + ≤12h kala, TEK sefer (`owner_reminded_at`); saatlik selection-reminder cron |
 
-- Push l10n çağıran tarafın (gönderenin) dilinde üretilir — mevcut kalıp; tüm push'lar böyle.
+- **Push l10n ALICININ dilinde (✅ 15.07):** `users.locale` (app dil ayarından senkron) + send-notification sunucu şablonları (selected/new_application/new_message/selection_reminder); istemcinin gönderdiği metin yalnız fallback. Eski "gönderenin dili" kalıbı kapandı.
+- **Yeni mesaj push'u İÇERİK TAŞIMAZ (✅ 15.07, Mustafa kararı):** kilit ekranı gizliliği — başlık gönderen adı, gövde sabit "Yeni mesaj/Новое сообщение"; sunucu şablonu eski istemcilerin gönderdiği içeriği de ezer.
 - **In-app bildirim metinleri `type`'a göre render-time l10n üretilir (RU/EN/TR).** DB'deki title/body yalnız fallback/kayıttır. ✅ _(ADIM 1'de "sabit TR" sanılmıştı — ekran zaten lokalize)_
 - Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅
 

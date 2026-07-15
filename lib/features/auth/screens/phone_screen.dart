@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -23,6 +24,15 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   String _countryCode = '+7';
   bool _isLoading = false;
   String? _error;
+  // Oturum kendiliğinden düştüyse tek seferlik açıklama banner'ı (madde S)
+  bool _sessionExpired = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sessionExpired = SessionExpiry.expired;
+    SessionExpiry.expired = false;
+  }
 
   static const _commonCountries = [('+7', '🇷🇺 Россия')];
 
@@ -86,6 +96,38 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (_sessionExpired)
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: AuroraTheme.auroraRed.withOpacity(0.10),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                  color:
+                                      AuroraTheme.auroraRed.withOpacity(0.4)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline_rounded,
+                                    color: AuroraTheme.auroraRed, size: 18),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    AppLocalizations.of(context)!
+                                        .phone_session_expired,
+                                    style: const TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontSize: 13,
+                                      color: Colors.white,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         const SizedBox(height: 60),
                         // Brand mark
                         ShaderMask(

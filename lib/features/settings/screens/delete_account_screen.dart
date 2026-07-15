@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -29,6 +30,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
           (response.data as Map<String, dynamic>?)?['error'] ?? 'delete failed',
         );
       }
+      SessionExpiry.manualLogout = true;
       await client.auth.signOut();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

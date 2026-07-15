@@ -11,6 +11,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../messaging/providers/matches_provider.dart';
+import '../../invitation/providers/my_applications_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/photo_focus.dart';
 
@@ -158,6 +159,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                               const SizedBox(height: 28),
                               _MyInvitationSection(),
                               const SizedBox(height: 28),
+                              const _MyApplicationsSection(),
                               const _SubscriptionEntryCard(),
                               const SizedBox(height: 28),
                             ],
@@ -1424,7 +1426,15 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
 
   Future<void> _sendSelectedNotification(String applicantId, String matchId) async {
     try {
-      await Supabase.instance.client.functions.invoke('send-notification', body: {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      final myName = uid == null
+          ? ''
+          : (await client.from('users').select('name').eq('id', uid).maybeSingle())?['name']
+                  as String? ??
+              '';
+      // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki RU fallback.
+      await client.functions.invoke('send-notification', body: {
         'user_id': applicantId,
         'title': '🎉 Тебя выбрали!',
         'body': 'Твоя заявка принята. Открой чат!',
@@ -1434,6 +1444,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
           // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
           'match_id': matchId,
         },
+        'template': {'name': myName},
       });
     } catch (_) {}
   }
@@ -1847,6 +1858,121 @@ class _SubscriptionEntryCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Başvurularım — başvuranın akıbet takibi (🟠2, 15.07). Boşsa hiç görünmez.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _MyApplicationsSection extends ConsumerWidget {
+  const _MyApplicationsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final appsAsync = ref.watch(myApplicationsListProvider);
+    final apps = appsAsync.asData?.value ?? [];
+    if (apps.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _EditSectionHeader(label: l10n.profile_my_applications),
+        const SizedBox(height: 16),
+        ...apps.map((a) {
+          final inv = a['invitation'] as Map<String, dynamic>?;
+          final ownerName =
+              (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
+          final title = inv?['title'] as String? ?? '—';
+          final status = a['status'] as String? ?? 'pending';
+          final invStatus = inv?['status'] as String?;
+          // pending + ilan kapandıysa fiilen "seçim yapılmadı"
+          final effective = (status == 'pending' && invStatus == 'closed')
+              ? 'expired'
+              : status;
+          final (chipText, chipColor) = switch (effective) {
+            'accepted' => (l10n.app_status_accepted, const Color(0xFF34C759)),
+            'rejected' => (l10n.app_status_rejected, AuroraTheme.textMuted),
+            'expired' => (l10n.app_status_expired, AuroraTheme.textMuted),
+            _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
+          };
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: InkWell(
+              onTap: inv == null
+                  ? null
+                  : () => context.push('/invitation/${inv['id']}'),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AuroraTheme.glassBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AuroraTheme.glassBorder),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                          if (ownerName != null) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              ownerName,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 12,
+                                color: AuroraTheme.textMuted,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: chipColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(100),
+                        border:
+                            Border.all(color: chipColor.withOpacity(0.45)),
+                      ),
+                      child: Text(
+                        chipText,
+                        style: TextStyle(
+                          fontFamily: 'JetBrainsMono',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: chipColor,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 18),
+      ],
     );
   }
 }

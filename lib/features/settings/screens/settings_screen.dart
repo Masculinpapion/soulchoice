@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/auth/session_expiry.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/providers/locale_provider.dart';
@@ -687,6 +688,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       label: l10n.settings_logout,
                       onTap: () async {
                         try {
+                          SessionExpiry.manualLogout = true;
                           await Supabase.instance.client.auth.signOut();
                           if (context.mounted) context.go('/splash');
                         } catch (_) {

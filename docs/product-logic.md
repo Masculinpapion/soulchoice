@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.4 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.5 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -28,7 +28,20 @@ Mekanik olarak iki mod birebir aynıdır; fark anlam ve ekran metinleridir. Feed
 
 restoran · konser · seyahat · kültür · sinema · tiyatro · kahve · bar · hediye · spor · yürüyüş · karaoke
 
-Kategori yalnızca sunumu etkiler (ikon, filtre). **Kategoriye özgü kural yoktur.** ✅
+Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında kategoriye göre soru metinleri/placeholder özelleşir (mekan, açıklama). **Davranışsal (süre/limit/seçim) kural farkı yoktur.** ✅
+
+### 3.1 Kategori-akış iyileştirmeleri (15.07 denetimi — Mustafa kararları, launch-blocker DEĞİL, uygun boşlukta)
+- **Hediye (gift):** Tarih/Saat adımı **opsiyonel** olacak (hediye teslimi için "etkinlik saati" doğaya aykırıydı, zorunluydu). 🔧
+- **Seyahat (travel):** Tarih adımı **"Başlangıç tarihi"** olarak etiketlenecek (tek `event_date` çok-günlü seyahati temsil edemiyor). 🔧
+- **Kültür (culture):** Mekan placeholder'ı "Mekan adı" → **"müze / sergi / galeri"** yönlendirmeli olacak (food'un "Restoran adı" netliği gibi). 🔧
+- **Eser/sanatçı alanı (sinema/tiyatro/konser):** İPTAL — eklenmeyecek (başlık/açıklama yeterli). ✅ karar
+- **Yürüyüş (walk):** Dokunulmayacak — akış doğasına uygun. ✅
+- **Hediye link akışı (gerçek vaka: Liliya / Золотое Яблоко):** bkz. §3.2. 🔧
+
+### 3.2 Hediye (gift) ürün linki — güvenli görünürlük modeli (Mustafa kararı 15.07, tasarım onayı bekliyor)
+- Mekan sorusu "**Hediyeni nerede buluşup teslim almak istersin?**" netliğine ayrılır (mağazaya ürün aldırma çağrısı gibi okunmaz).
+- Opsiyonel **ürün linki** alanı: yalnız bilinen marketplace **beyaz listesi** (goldapple/wildberries/ozon/market.yandex/lamoda/letoile), DB trigger doğrular; **moderasyona** düşer (`gift_url_status` pending→approved).
+- **KRİTİK görünürlük:** link ilan kartında/feed'de **HİÇ görünmez** (query'ler `gift_product_url`'ü çekmez). Yalnız **seçim (match) sonrası sohbette**, seçilen kişiye `get_gift_link(match_id)` SECURITY DEFINER RPC ile gösterilir (yalnız match tarafı + approved). Seçilmeyenlerin match'i olmadığından linki hiç göremez → ürünü alıp mağdur olmaz. Yapısal garanti (feed'de gizleme değil, erişim yokluğu).
 
 ## 4. İlan yaşam döngüsü ve süreler
 
@@ -126,6 +139,8 @@ active (6/12/24/48 saat — sahibi seçer)
 | In-app bildirim metinleri RU/EN/TR | launch öncesi | ✅ (zaten render-time l10n'dı) |
 | pending→expired cron adımı + "seçim yapılmadı" gösterimi | launch öncesi | ✅ 15.07 |
 | Selfie onay metni nötrleştirme ("mavi tik" → nötr) | launch öncesi | ✅ 15.07 |
-| Sohbet "sil" → tek-taraflı "gizle" (WhatsApp standardı, §7) | 🔧 launch öncesi | planlandı |
+| Sohbet "sil" → tek-taraflı "gizle" (WhatsApp standardı, §7) | launch öncesi | ✅ 15.07 |
 | Buluşma/arşiv mekaniğinin canlandırılması | — | ✅ 15.07 |
+| Kategori-akış iyileştirmeleri (§3.1: gift tarih opsiyonel, travel başlangıç tarihi, culture placeholder) | 🕐 uygun boşluk | açık |
+| Hediye ürün linki — güvenli görünürlük (§3.2: kolon+beyaz liste+moderasyon+get_gift_link RPC+sohbet kartı) | 🔧 tasarım onayı bekliyor | açık |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |

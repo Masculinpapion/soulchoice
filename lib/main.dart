@@ -81,11 +81,39 @@ Future<void> main() async {
   runApp(const ProviderScope(child: SoulChoiceApp()));
 }
 
-class SoulChoiceApp extends ConsumerWidget {
+class SoulChoiceApp extends ConsumerStatefulWidget {
   const SoulChoiceApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SoulChoiceApp> createState() => _SoulChoiceAppState();
+}
+
+class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Push'a dokunma → deep link. match_id taşıyan her bildirim (seçildin,
+    // yeni mesaj) doğrudan ilgili sohbeti açar.
+    FirebaseMessaging.onMessageOpenedApp.listen(_openFromPush);
+    // Uygulama kapalıyken push'a dokunulup açıldıysa: splash/auth
+    // yönlendirmesi otursun diye kısa gecikmeyle gir.
+    FirebaseMessaging.instance.getInitialMessage().then((m) {
+      if (m == null) return;
+      Future.delayed(const Duration(milliseconds: 900), () => _openFromPush(m));
+    });
+  }
+
+  void _openFromPush(RemoteMessage m) {
+    final matchId = m.data['match_id'];
+    if (matchId is! String || matchId.isEmpty) return;
+    // Oturum yoksa yönlendirme yapılmaz — giriş sonrası Mesajlar'da
+    // "Yeni eşleşme" rozeti zaten en üstte gösterir.
+    if (Supabase.instance.client.auth.currentUser == null) return;
+    ref.read(routerProvider).push('/chat/$matchId');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.read(routerProvider);
     final locale = ref.watch(localeProvider);
 

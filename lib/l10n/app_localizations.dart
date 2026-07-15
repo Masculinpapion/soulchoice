@@ -1822,6 +1822,24 @@ abstract class AppLocalizations {
   /// **'No messages yet'**
   String get messages_no_preview;
 
+  /// No description provided for @messages_new_match.
+  ///
+  /// In en, this message translates to:
+  /// **'New match ✨'**
+  String get messages_new_match;
+
+  /// No description provided for @chat_selected_welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} chose you — you can now chat 🎉'**
+  String chat_selected_welcome(String name);
+
+  /// No description provided for @profile_view_cta_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a message'**
+  String get profile_view_cta_message;
+
   /// No description provided for @messages_empty_past.
   ///
   /// In en, this message translates to:

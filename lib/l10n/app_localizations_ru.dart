@@ -945,6 +945,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messages_no_preview => 'Пока нет сообщений';
 
   @override
+  String get messages_new_match => 'Новое совпадение ✨';
+
+  @override
+  String chat_selected_welcome(String name) {
+    return '$name выбрал(а) вас — теперь можно общаться 🎉';
+  }
+
+  @override
+  String get profile_view_cta_message => 'Написать сообщение';
+
+  @override
   String get messages_empty_past => 'Прошлых чатов нет';
 
   @override

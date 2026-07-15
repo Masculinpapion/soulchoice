@@ -163,15 +163,19 @@ class _MatchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNew = match.isNewMatch;
     final timeStr = match.lastMessageTime != null
         ? timeago.format(match.lastMessageTime!, locale: locale)
-        : '';
+        : (isNew ? timeago.format(match.createdAt, locale: locale) : '');
     final preview = match.lastMessage != null
         ? (match.lastMessage!.length > 35
             ? '${match.lastMessage!.substring(0, 35)}…'
             : match.lastMessage!)
-        : AppLocalizations.of(context)!.messages_no_preview;
-    final hasUnread = match.unreadCount > 0;
+        : (isNew
+            ? AppLocalizations.of(context)!.messages_new_match
+            : AppLocalizations.of(context)!.messages_no_preview);
+    // Yeni eşleşme, okunmamış mesaj gibi vurgulanır — seçildiğini kaçırmasın
+    final hasUnread = match.unreadCount > 0 || isNew;
     final displayName = match.isDeleted
         ? AppLocalizations.of(context)!.chat_deleted_user
         : '${match.otherName}, ${match.otherAge}';
@@ -237,9 +241,13 @@ class _MatchTile extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 13,
-                            color: hasUnread
-                                ? Colors.white.withOpacity(0.80)
-                                : AuroraTheme.textMuted,
+                            fontWeight:
+                                isNew ? FontWeight.w700 : FontWeight.w400,
+                            color: isNew
+                                ? AuroraTheme.auroraRed
+                                : hasUnread
+                                    ? Colors.white.withOpacity(0.80)
+                                    : AuroraTheme.textMuted,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -278,9 +286,11 @@ class _MatchTile extends StatelessWidget {
                             ],
                           ),
                           child: Text(
-                            match.unreadCount > 99
-                                ? '99+'
-                                : '${match.unreadCount}',
+                            match.unreadCount == 0
+                                ? '✨'
+                                : match.unreadCount > 99
+                                    ? '99+'
+                                    : '${match.unreadCount}',
                             style: const TextStyle(
                               fontFamily: 'JetBrainsMono',
                               color: Colors.white,

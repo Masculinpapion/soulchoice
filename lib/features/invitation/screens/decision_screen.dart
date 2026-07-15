@@ -148,7 +148,12 @@ class _DecisionScreenState extends State<DecisionScreen>
         'user_id': _applicantId,
         'title': l10n.notif_selected_push_title,
         'body': l10n.notif_selected_push_body,
-        'data': {'type': 'selected', 'invitation_id': widget.invitationId},
+        'data': {
+          'type': 'selected',
+          'invitation_id': widget.invitationId,
+          // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
+          'match_id': matchRes['id'],
+        },
       });
 
       if (mounted) context.go('/chat/${matchRes['id']}');

@@ -14,6 +14,7 @@ class MatchPreview {
   final int unreadCount;
   final DateTime? meetingDate;
   final DateTime? archivedAt;
+  final DateTime createdAt;
 
   const MatchPreview({
     required this.matchId,
@@ -26,9 +27,13 @@ class MatchPreview {
     required this.unreadCount,
     this.meetingDate,
     this.archivedAt,
+    required this.createdAt,
   });
 
   bool get isDeleted => otherUserId == null;
+
+  /// Henüz hiç mesajlaşılmamış eşleşme — listede en üstte, rozetle gösterilir
+  bool get isNewMatch => lastMessage == null && !isDeleted;
 
   bool get isArchived {
     if (archivedAt != null) return true;
@@ -46,7 +51,7 @@ final matchesProvider =
 
   final data = await client
       .from('matches')
-      .select('id, user1_id, user2_id, meeting_date, archived_at, '
+      .select('id, user1_id, user2_id, meeting_date, archived_at, created_at, '
           'user1_hidden_at, user2_hidden_at')
       .or('user1_id.eq.$uid,user2_id.eq.$uid')
       // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
@@ -144,20 +149,42 @@ final matchesProvider =
       archivedAt: m['archived_at'] != null
           ? DateTime.parse(m['archived_at'] as String)
           : null,
+      createdAt: DateTime.parse(m['created_at'] as String),
     );
   }
   final result = seen.values.toList();
 
+  // Mesajsız (yeni) eşleşmeler EN ÜSTTE — kullanıcı seçildiğini kaçırmasın.
+  // Kendi aralarında en yeni match önce; mesajlı sohbetler son mesaja göre.
   result.sort((a, b) {
     final at = a.lastMessageTime;
     final bt = b.lastMessageTime;
-    if (at == null && bt == null) return 0;
-    if (at == null) return 1;
-    if (bt == null) return -1;
+    if (at == null && bt == null) return b.createdAt.compareTo(a.createdAt);
+    if (at == null) return -1;
+    if (bt == null) return 1;
     return bt.compareTo(at);
   });
 
   return result;
+});
+
+/// Bu kullanıcıyla mevcut match id'si (aktif öncelikli) — profildeki
+/// "Mesaj yaz" girişi için. Match yoksa null.
+final matchWithUserProvider =
+    FutureProvider.autoDispose.family<String?, String>((ref, otherUserId) async {
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return null;
+  final rows = await Supabase.instance.client
+      .from('matches')
+      .select('id')
+      .or('and(user1_id.eq.$uid,user2_id.eq.$otherUserId),'
+          'and(user1_id.eq.$otherUserId,user2_id.eq.$uid)')
+      .order('archived_at', ascending: true, nullsFirst: true)
+      .order('created_at', ascending: false)
+      .limit(1);
+  final list = rows as List;
+  if (list.isEmpty) return null;
+  return (list.first as Map<String, dynamic>)['id'] as String;
 });
 
 final activeMatchesProvider =

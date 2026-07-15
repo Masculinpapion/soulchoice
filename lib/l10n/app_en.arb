@@ -394,6 +394,16 @@
   "messages_tab_past": "Past",
   "messages_connection_error": "Connection error",
   "messages_no_preview": "No messages yet",
+  "messages_new_match": "New match ✨",
+  "chat_selected_welcome": "{name} chose you — you can now chat 🎉",
+  "@chat_selected_welcome": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profile_view_cta_message": "Send a message",
   "messages_empty_past": "No past chats",
   "messages_empty_active": "No active chats yet",
   "messages_empty_hint": "Open an invitation or apply to an existing one",

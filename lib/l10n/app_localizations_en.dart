@@ -934,6 +934,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messages_no_preview => 'No messages yet';
 
   @override
+  String get messages_new_match => 'New match ✨';
+
+  @override
+  String chat_selected_welcome(String name) {
+    return '$name chose you — you can now chat 🎉';
+  }
+
+  @override
+  String get profile_view_cta_message => 'Send a message';
+
+  @override
   String get messages_empty_past => 'No past chats';
 
   @override

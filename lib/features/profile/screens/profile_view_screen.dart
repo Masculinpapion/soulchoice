@@ -10,6 +10,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
+import '../../messaging/providers/matches_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/photo_focus.dart';
 
@@ -246,6 +247,29 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                     applicantId: userId,
                                     applicantName: applicantName ?? '',
                                   );
+                                }
+
+                                // Eşleşilen kişinin profilinden sohbete net giriş
+                                if (!isOwnProfile && currentUid != null) {
+                                  final existingMatchId = ref
+                                      .watch(matchWithUserProvider(userId))
+                                      .asData
+                                      ?.value;
+                                  if (existingMatchId != null) {
+                                    return _EditorialCTA(
+                                      label: l10n.profile_view_cta_message,
+                                      onTap: () => context.push(
+                                        '/chat/$existingMatchId',
+                                        extra: {
+                                          'name': name,
+                                          'age': age,
+                                          'photoUrl': photos.isNotEmpty
+                                              ? photos[0]['url'] as String?
+                                              : null,
+                                        },
+                                      ),
+                                    );
+                                  }
                                 }
 
                                 return _EditorialCTA(
@@ -1385,7 +1409,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
       }) as String;
 
       // Başvuru sahibine "seçildin" bildirimi gönder
-      _sendSelectedNotification(widget.applicantId, widget.applicantName);
+      _sendSelectedNotification(widget.applicantId, matchId);
 
       if (mounted) {
         context.push(
@@ -1398,13 +1422,18 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
     }
   }
 
-  Future<void> _sendSelectedNotification(String applicantId, String applicantName) async {
+  Future<void> _sendSelectedNotification(String applicantId, String matchId) async {
     try {
       await Supabase.instance.client.functions.invoke('send-notification', body: {
         'user_id': applicantId,
         'title': '🎉 Тебя выбрали!',
         'body': 'Твоя заявка принята. Открой чат!',
-        'data': {'type': 'selected', 'invitation_id': widget.invitationId},
+        'data': {
+          'type': 'selected',
+          'invitation_id': widget.invitationId,
+          // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
+          'match_id': matchId,
+        },
       });
     } catch (_) {}
   }

@@ -933,6 +933,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get messages_no_preview => 'Henüz mesaj yok';
 
   @override
+  String get messages_new_match => 'Yeni eşleşme ✨';
+
+  @override
+  String chat_selected_welcome(String name) {
+    return '$name seni seçti — artık mesajlaşabilirsiniz 🎉';
+  }
+
+  @override
+  String get profile_view_cta_message => 'Mesaj yaz';
+
+  @override
   String get messages_empty_past => 'Geçmiş sohbet yok';
 
   @override

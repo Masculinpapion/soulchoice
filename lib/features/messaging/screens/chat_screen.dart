@@ -543,7 +543,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                     )
                   : _messages.isEmpty
-                      ? _EmptyState()
+                      ? _EmptyState(
+                          welcomeText: (_matchInfo != null &&
+                                  !_isUser1 &&
+                                  !_otherDeleted)
+                              ? AppLocalizations.of(context)!
+                                  .chat_selected_welcome(otherName)
+                              : null,
+                        )
                       : ListView.builder(
                           controller: _scrollController,
                           reverse: true,
@@ -1215,26 +1222,51 @@ class _EventBadge extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
+  // Seçilen taraf (user2) için karşılama: "{isim} seni seçti — ..."
+  // Seçen taraf ve bilinmeyen durumda genel ipucu gösterilir.
+  final String? welcomeText;
+  const _EmptyState({this.welcomeText});
+
   @override
   Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ShaderMask(
-              shaderCallback: (b) =>
-                  AuroraTheme.redBlueGradient.createShader(b),
-              child: const Icon(Icons.chat_bubble_outline,
-                  color: Colors.white, size: 44),
-            ),
-            const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.chat_empty_hint,
-                style: TextStyle(
-                  fontFamily: 'Manrope',
-                  fontSize: 14,
-                  color: AuroraTheme.textSecondary,
-                  height: 1.5,
-                )),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ShaderMask(
+                shaderCallback: (b) =>
+                    AuroraTheme.redBlueGradient.createShader(b),
+                child: Icon(
+                    welcomeText != null
+                        ? Icons.celebration_outlined
+                        : Icons.chat_bubble_outline,
+                    color: Colors.white,
+                    size: 44),
+              ),
+              const SizedBox(height: 16),
+              if (welcomeText != null) ...[
+                Text(welcomeText!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.5,
+                    )),
+                const SizedBox(height: 8),
+              ],
+              Text(AppLocalizations.of(context)!.chat_empty_hint,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontSize: 14,
+                    color: AuroraTheme.textSecondary,
+                    height: 1.5,
+                  )),
+            ],
+          ),
         ),
       );
 }

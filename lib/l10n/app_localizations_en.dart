@@ -845,6 +845,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_deleted_user => 'Deleted user';
 
   @override
+  String get notif_selected_push_title => 'You\'re selected! 🎉';
+
+  @override
+  String get notif_selected_push_body => 'Chat is open — say hello';
+
+  @override
   String get chat_deleted_user_info =>
       'This user deleted their account. You can no longer send messages.';
 

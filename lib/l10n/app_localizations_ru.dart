@@ -855,6 +855,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_deleted_user => 'Удалённый пользователь';
 
   @override
+  String get notif_selected_push_title => 'Вас выбрали! 🎉';
+
+  @override
+  String get notif_selected_push_body => 'Чат открыт — поздоровайтесь';
+
+  @override
   String get chat_deleted_user_info =>
       'Этот пользователь удалил свой аккаунт. Отправка сообщений больше недоступна.';
 

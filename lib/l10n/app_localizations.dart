@@ -1666,6 +1666,18 @@ abstract class AppLocalizations {
   /// **'Deleted user'**
   String get chat_deleted_user;
 
+  /// No description provided for @notif_selected_push_title.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re selected! 🎉'**
+  String get notif_selected_push_title;
+
+  /// No description provided for @notif_selected_push_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat is open — say hello'**
+  String get notif_selected_push_body;
+
   /// No description provided for @chat_deleted_user_info.
   ///
   /// In en, this message translates to:

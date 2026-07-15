@@ -844,6 +844,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_deleted_user => 'Silinmiş kullanıcı';
 
   @override
+  String get notif_selected_push_title => 'Seçildin! 🎉';
+
+  @override
+  String get notif_selected_push_body => 'Sohbet açıldı — tanışmaya başla';
+
+  @override
   String get chat_deleted_user_info =>
       'Bu kullanıcı hesabını sildi. Artık mesaj gönderemezsin.';
 

@@ -1,16 +1,18 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.0 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.1 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
 Durum işaretleri: ✅ kodda böyle · 🔧 karar verildi, uygulanacak (launch öncesi) · 🕐 karar verildi, post-launch/uygun boşluk.
 
+_v1.1 değişiklikleri: başvuru/kabul kuralları artık sunucuda zorlanıyor (§5, §6, §10 ✅); kabul bildirimi eklendi (§9 ✅); yaş filtresi, sohbet silme, çift yönlü engelleme kararları işlendi (§5, §7 🔧)._
+
 ---
 
 ## 1. Temel kavram
 
-Bir kullanıcı bir buluşma ilanı açar; karşı cinsten kullanıcılar başvurur; ilan sahibi seçer; kabul anında ikili sohbet açılır. Ürünün özü budur — gerisi bu akışın etrafındaki kurallardır. Feed ve keşfet her zaman yalnızca **karşı cinsi** gösterir (kullanıcı seçimi yok; bilinçli, RF mevzuat uyumu).
+Bir kullanıcı bir buluşma ilanı açar; karşı cinsten kullanıcılar başvurur; ilan sahibi seçer; kabul anında ikili sohbet açılır. Ürünün özü budur. Feed ve keşfet her zaman yalnızca **karşı cinsi** gösterir (kullanıcı seçimi yok; bilinçli, RF mevzuat uyumu). ✅
 
 ## 2. İki mod
 
@@ -20,13 +22,13 @@ Bir kullanıcı bir buluşma ilanı açar; karşı cinsten kullanıcılar başvu
 | Başvuran | plana katılmaya talip olur | davet etmeye talip olur |
 | Seçen | **her zaman ilan sahibi** | **her zaman ilan sahibi** |
 
-Mekanik olarak iki mod birebir aynıdır (aynı tablolar, aynı akış); fark anlam ve ekran metinleridir. Feed'de ayrı sekmeler. ✅
+Mekanik olarak iki mod birebir aynıdır; fark anlam ve ekran metinleridir. Feed'de ayrı sekmeler. ✅
 
 ## 3. Kategoriler (12)
 
 restoran · konser · seyahat · kültür · sinema · tiyatro · kahve · bar · hediye · spor · yürüyüş · karaoke
 
-Kategori yalnızca sunumu etkiler (ikon, filtre). **Kategoriye özgü kural yoktur ve eklenmeyecekse bu tablo değişmez.** ✅
+Kategori yalnızca sunumu etkiler (ikon, filtre). **Kategoriye özgü kural yoktur.** ✅
 
 ## 4. İlan yaşam döngüsü ve süreler
 
@@ -38,26 +40,30 @@ active (6/12/24/48 saat — sahibi seçer)
               └─ match'i VARSA silinmez (sohbet başlığı verisi yaşar)
 ```
 
-- Geçişler saatlik cron'larla olur; dakikası dakikasına değildir, saate yuvarlanır. ✅
-- İlan `active` kaldığı sürece başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
-- **Süresi dolan bekleyen başvurular `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). 🔧 (cron'a pending→expired adımı + detay metni)
+- Geçişler saatlik cron'la olur; saate yuvarlanır. ✅
+- `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
+- **Süresi dolan bekleyen başvurular `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). 🔧
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
-## 5. Limitler ve Premium
+## 5. Limitler, filtreler ve Premium
 
 - Kişi başına aynı anda **1 aktif Davet + 1 aktif İstek** (DB zorlar). ✅
 - İlan açmak herkese ücretsiz ve (aktif-1 kuralı dışında) sınırsız. ✅
 - **Başvuru: ömür boyu 1 ücretsiz; ilk başvuruda hak yakılır; sonrası premium.** ✅
-- **Premium = sınırsız başvuru. Başka hiçbir şey açmaz.** Tek paket 1000₽/ay, kayıtlı karttan iptale kadar otomatik yenileme (Точка). Ödeme gecikmesinde grace-period boyunca premium düşürülmez. ✅
-- Eşleşmiş çiftin yeni başvurusu da paywall'a takılır — **bilinçli tasarım**, istisna eklenmez (12.07 kararı). ✅
+- **Premium = sınırsız başvuru. Başka hiçbir şey açmaz.** Tek paket 1000₽/ay, kayıtlı karttan iptale kadar otomatik yenileme (Точка), ödeme gecikmesinde grace-period korumalı. ✅
+- Eşleşmiş çiftin yeni başvurusu da paywall'a takılır — bilinçli, istisna yok (12.07). ✅
+- **Bu kuralların TAMAMI artık sunucuda (DB trigger + RLS) zorlanır** — modifiye istemci bedava/sınırsız başvuramaz, kendi ilanına başvuramaz, doğrudan `accepted` insert edemez. ✅ (15.07 sertleştirme)
+- **Yaş aralığı filtresi:** Kullanıcının Ayarlar'daki min/max yaş tercihi feed ve keşfette uygulanır (yalnız bu aralıktaki karşı-cins ilanları görünür). Tercih kalıcıdır ve UI'da kalır. 🔧 _(bugün ayar kaydediliyor ama sorgular okumuyor — bağlanacak)_
 
 ## 6. Seçim: "Serbest Seçim" modeli
 
-**Her kabul ayrı sohbet açar; üst sınır YOKTUR — bilinçli tasarım** (15.07 kararı). Sahibi başvuranları tek tek değerlendirir; kabul → match + sohbet, ilan aktifse akış devam eder. Kötüye kullanım gözlenirse sınır eklenir; o gün bu bölüm güncellenir. ✅
+**Her kabul ayrı sohbet açar; üst sınır YOKTUR — bilinçli tasarım** (15.07). Sahibi başvuranları tek tek değerlendirir; kabul → match + sohbet, ilan aktifse akış devam eder. Kötüye kullanım gözlenirse sınır eklenir; o gün bu bölüm güncellenir.
+- Kabul kalıcı yazılır ve seçilen başvurana bildirim gider (§9). ✅ (15.07'de düzeltildi — önceden RLS sessizce yutuyordu)
 - Kabul idempotenttir (aynı kişiye ikinci kabul yeni sohbet açmaz). ✅
-- Red → başvurana bildirim (bölüm 9). ✅
+- Red → başvurana bildirim (§9). ✅
 - Başvuran istediği an geri çekebilir (`withdrawn`). ✅
-- `slots_total` kolonu legacy'dir, uygulanmaz (bölüm 11).
+- Başvuran yalnız kendi başvurusunu `withdrawn`, sahibi yalnız `accepted`/`rejected` yapabilir (RLS). ✅
+- `slots_total` kolonu legacy'dir, uygulanmaz (§11).
 
 ## 7. Sohbet yaşam döngüsü
 
@@ -65,13 +71,14 @@ active (6/12/24/48 saat — sahibi seçer)
 
 - Sohbet **yalnızca kabul anında** açılır; başka yolu yoktur. ✅
 - İlandan bağımsız yaşar: ilan silinse de sohbet ve mesajlar korunur. ✅ (17.06 CASCADE vakasının dersi — bağ SET NULL)
-- Okundu bilgisi: karşı taraf mesajı görünce işaretlenir; rozet buna göre söner. ✅ (15.07'de düzeltildi)
+- Okundu bilgisi: karşı taraf mesajı görünce işaretlenir; rozet buna göre söner. ✅ (15.07 fix)
 - **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. ✅
-- **Buluşma mekaniği (canlandırılacak 🕐):** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır; buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet arşive iner (arşiv sekmesinde durur, silinmez). Launch-kritik değil.
+- **Sohbet menüsündeki "sil" seçeneği kaldırılacak** — engelleme yeterli tek-taraflı çıkış yoludur; "sil" bugün match'i silip karşı tarafın sohbetini de yok ediyor (ilkeye aykırı). Listeyi sadeleştirme (kendi tarafında gizleme/arşiv) post-launch. 🔧
+- **Buluşma mekaniği (canlandırılacak 🕐):** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır; buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet **arşive** iner (silinmez, arşiv sekmesinde durur). Launch-kritik değil.
 
 ## 8. Hesap silme — "Silinen kullanıcı" modeli (15.07 kararı, canlı)
 
-- Silinen kullanıcının: aboneliği iptal edilir (mali iz anonim kalır — yasal gereklilik), fotoğrafları depodan silinir, hesabı ve kişisel verisi tamamen gider. ✅
+- Silinen kullanıcının: aboneliği iptal edilir (mali iz anonim kalır — yasal), fotoğrafları depodan silinir, hesabı ve kişisel verisi tamamen gider. ✅
 - **Karşı tarafların sohbetleri ve eski mesajları KORUNUR**; silinen taraf "Удалённый пользователь" görünür; o sohbete yeni mesaj yazılamaz (arayüz + DB çift kilit). ✅
 - Şikâyet kayıtları moderasyon amaçlı anonim kalır. ✅
 - İki taraf da silinirse sohbet saatlik temizlikte yok olur. ✅
@@ -81,36 +88,42 @@ active (6/12/24/48 saat — sahibi seçer)
 | Olay | Kime | In-app | Push | Not |
 |---|---|---|---|---|
 | Yeni başvuru | ilan sahibi | ✅ | ✅ | |
-| **Kabul: "Seçildin! Sohbet açıldı"** | başvuran | 🔧 | 🔧 | **launch öncesi, öncelikli** (bugün hiçbir kanal yok — kırık) |
+| **Kabul: "Seçildin! Sohbet açıldı"** | başvuran | ✅ | ✅ | 15.07'de eklendi (in-app trigger + app push, l10n) |
 | Reddedildin | başvuran | ✅ | ❌ push bilinçli yok | |
-| Süre doldu / seçilmedin | başvuran | **❌ bilinçli sessizlik** | ❌ | 15.07 kararı |
+| Süre doldu / seçilmedin | başvuran | ❌ **bilinçli sessizlik** | ❌ | 15.07 kararı |
 | Yeni mesaj | karşı taraf | ✅ | ✅ | |
-| Selfie onaylandı | kullanıcı | ✅ | ❌ | 🔧 metin düzeltilecek: "mavi tik" değil, nötr "profilin doğrulandı" |
+| Selfie onaylandı | kullanıcı | ✅ | ❌ | 🔧 metin nötrleştirilecek: "mavi tik" değil, "profilin doğrulandı" |
 | Selfie reddedildi | kullanıcı | ✅ | ❌ | |
 
-- **Tüm in-app bildirim metinleri RU/EN/TR lokalize edilecek** — bugün DB'de sabit Türkçe. 🔧 launch öncesi.
+- Push l10n çağıran tarafın (gönderenin) dilinde üretilir — mevcut kalıp; tüm push'lar böyle.
+- **In-app bildirim metinleri bugün DB'de sabit Türkçe** — RU/EN/TR'ye taşınacak (render-time l10n). 🔧 launch öncesi.
 - Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅
 
 ## 10. Kayıt ve doğrulama
 
-- Giriş yalnızca telefon + çağrı-OTP'dir (arama gelir, son 4 hane girilir); OTP yalnız kullanıcı butona basınca tetiklenir. ✅
-- Selfie zorunludur; onaysız selfie ile ilan açılamaz. Herkes doğrulanmış olduğu için ayrıca "tik" rozeti yoktur (özellik 19.06'da kaldırıldı). ✅
+- Giriş yalnızca telefon + çağrı-OTP (arama gelir, son 4 hane); OTP yalnız kullanıcı butona basınca tetiklenir. ✅
+- **Selfie zorunludur:** onaysız selfie ile ne ilan açılabilir ne başvuru yapılabilir (ikisi de DB'de zorlanır). Herkes doğrulanmış olduğu için ayrı "tik" rozeti yoktur (özellik 19.06'da kaldırıldı). ✅
 - Store inceleme/demo girişi: `docs/store-review-demo.md`.
 
 ## 11. Legacy notları (post-launch temizlik 🕐)
 
-- `applications.status`: `selected` hiç kullanılmıyor (kabul doğrudan `accepted` yazar) — `expired` ise 4. bölüm kararıyla KULLANIMA GİRİYOR.
-- `invitations.status`: `matched` ve `cancelled` hiçbir kod tarafından set edilmiyor; yalnız bazı gösterim yerlerinde bekleniyor.
-- `invitations.slots_total`: hep 1 yazılır, hiçbir yerde uygulanmaz ("Serbest Seçim" kararıyla anlamsızlaştı).
-- İlan düzenleme: kapsam metin/mekan/kategori; status ve süre DB trigger'ıyla korunur — davranışsal risk düşük, böyle kalacak.
+- `applications.status`: `selected` hiç kullanılmıyor (kabul doğrudan `accepted` yazar) — `expired` ise §4 kararıyla kullanıma giriyor.
+- `invitations.status`: `matched` ve `cancelled` hiçbir kod tarafından set edilmiyor.
+- `invitations.slots_total`: hep 1 yazılır, uygulanmaz ("Serbest Seçim" ile anlamsız).
+- İlan düzenleme: kapsam metin/mekan/kategori; status ve süre DB trigger'ıyla korunur — böyle kalacak.
 
 ## 12. Açık iş listesi (bu belgeden doğan)
 
-| İş | Öncelik |
-|---|---|
-| Kabul bildirimi (in-app + push, l10n) | 🔧 launch öncesi, öncelikli |
-| In-app bildirim metinleri RU/EN/TR | 🔧 launch öncesi |
-| Selfie onay metni nötrleştirme | 🔧 launch öncesi (bildirim l10n işiyle birlikte) |
-| pending→expired cron adımı + "seçim yapılmadı" gösterimi | 🔧 launch öncesi |
-| Buluşma/arşiv mekaniğinin canlandırılması | 🕐 uygun boşlukta |
-| Legacy statü/kolon temizliği | 🕐 post-launch |
+| İş | Öncelik | Durum |
+|---|---|---|
+| Başvuru/kabul kurallarını sunucuda zorlama (guard trigger + RLS) | launch-kritik | ✅ 15.07 |
+| Kabul bildirimi (in-app + push, l10n) | launch-kritik | ✅ 15.07 |
+| Selfie kapısını başvuruya da koyma | launch-kritik | ✅ 15.07 (guard trigger'a dahil) |
+| Yaş aralığı filtresini feed/keşfete bağlama | 🔧 launch öncesi | açık |
+| Engellemeyi çift yönlü süzme (beni engelleyeni ben de görmeyeyim) | 🔧 launch öncesi | açık |
+| Sohbet menüsünden "sil" seçeneğini kaldırma | 🔧 launch öncesi | açık |
+| In-app bildirim metinleri RU/EN/TR | 🔧 launch öncesi | açık |
+| pending→expired cron adımı + "seçim yapılmadı" gösterimi | 🔧 launch öncesi | açık |
+| Selfie onay metni nötrleştirme ("mavi tik" → "profilin doğrulandı") | 🔧 launch öncesi | açık |
+| Buluşma/arşiv mekaniğinin canlandırılması | 🕐 uygun boşlukta | açık |
+| Legacy statü/kolon temizliği | 🕐 post-launch | açık |

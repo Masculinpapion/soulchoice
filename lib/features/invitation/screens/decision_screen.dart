@@ -118,13 +118,28 @@ class _DecisionScreenState extends State<DecisionScreen>
             .single();
       }
 
-      await client
+      // .select() ile etkilenen satırı doğrula — RLS/policy sessizce 0 satır
+      // güncellerse (eski kabul-akışı hatası) kabul başarısız sayılmalı.
+      final updated = await client
           .from('applications')
           .update({
             'status': 'accepted',
             'responded_at': DateTime.now().toIso8601String(),
           })
-          .eq('id', _applicationId!);
+          .eq('id', _applicationId!)
+          .select('id');
+      if ((updated as List).isEmpty) {
+        throw Exception('accept_not_persisted');
+      }
+
+      // Seçilen başvurana push bildirim (in-app kaydı DB trigger'ından gelir).
+      final l10n = AppLocalizations.of(context)!;
+      client.functions.invoke('send-notification', body: {
+        'user_id': _applicantId,
+        'title': l10n.notif_selected_push_title,
+        'body': l10n.notif_selected_push_body,
+        'data': {'type': 'selected', 'invitation_id': widget.invitationId},
+      });
 
       if (mounted) context.go('/chat/${matchRes['id']}');
     } catch (e) {

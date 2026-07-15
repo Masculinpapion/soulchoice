@@ -31,6 +31,9 @@ class _DecisionScreenState extends State<DecisionScreen>
   String? _applicantId;
   String? _applicantName;
   String? _invitationTitle;
+  // Kabul anında match.meeting_date'e kopyalanır — buluşma anketi + arşiv
+  // mekaniğini besler (product-logic §7).
+  DateTime? _eventDate;
 
   @override
   void initState() {
@@ -62,11 +65,15 @@ class _DecisionScreenState extends State<DecisionScreen>
   Future<void> _loadInvitationTitle() async {
     final data = await Supabase.instance.client
         .from('invitations')
-        .select('title')
+        .select('title, event_date')
         .eq('id', widget.invitationId)
         .maybeSingle();
     if (mounted && data != null) {
-      setState(() => _invitationTitle = data['title'] as String?);
+      final rawEvent = data['event_date'] as String?;
+      setState(() {
+        _invitationTitle = data['title'] as String?;
+        _eventDate = rawEvent != null ? DateTime.tryParse(rawEvent) : null;
+      });
     }
   }
 
@@ -113,6 +120,9 @@ class _DecisionScreenState extends State<DecisionScreen>
               'invitation_id': widget.invitationId,
               'user1_id': uid,
               'user2_id': _applicantId!,
+              // Buluşma tarihi belirtilmişse anket + arşiv mekaniğini besle
+              if (_eventDate != null)
+                'meeting_date': _eventDate!.toIso8601String(),
             })
             .select('id')
             .single();

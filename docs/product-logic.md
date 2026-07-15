@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.3 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.4 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -75,7 +75,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. Engelleme **çift yönlü süzülür**: engellediğim + beni engelleyen kişilerin ilanları feed/keşfette görünmez (`hidden_from_feed` RPC). ✅ 15.07
 - **Sohbet menüsündeki "sil" → tek-taraflı "gizle" (WhatsApp standardı):** gizleyen kullanıcının listesinden sohbet kalkar; karşı tarafta aynen durur; mesaj geçmişi korunur (gizleme yalnız liste seviyesindedir). Gizlenen sohbete karşı taraftan **yeni mesaj gelince sohbet listeye geri döner**. Match **SİLİNMEZ** — yukarıdaki ilkeye uygun (otomatik/tek-taraflı süreç sohbeti yok etmez, yalnız listeden gizler). 🔧
 - **Engelleme** bundan ayrıdır ve mevcut haliyle kalır: match tamamen silinir, sohbet iki taraftan da gider (bu, kullanıcının bilinçli "tam kesme" aksiyonudur). ✅
-- **Buluşma mekaniği (canlandırılacak 🕐):** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır; buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet **arşive** iner (silinmez, arşiv sekmesinde durur). Launch-kritik değil.
+- **Buluşma mekaniği:** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır (ilanda buluşma tarihi varsa); buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; "hayır" → karşı tarafın no-show sayacı artar (2x → hesap askıya alınır); buluşmadan 24 saat sonra sohbet **arşive** iner (silinmez, arşiv sekmesinde durur). ✅ 15.07 _(not: `matches.meeting_status` scheduled/happened/no_show kolonu anket sonucundan güncellenmiyor — yalnız `meeting_confirmed_user1/2` yazılıyor; §11 legacy)_
 
 ## 8. Hesap silme — "Silinen kullanıcı" modeli (15.07 kararı, canlı)
 
@@ -110,6 +110,7 @@ active (6/12/24/48 saat — sahibi seçer)
 
 - `applications.status`: `selected` hiç kullanılmıyor (kabul doğrudan `accepted` yazar) — `expired` ise §4 kararıyla kullanıma giriyor.
 - `invitations.status`: `matched` ve `cancelled` hiçbir kod tarafından set edilmiyor.
+- `matches.meeting_status` (scheduled/happened/no_show): anket sonucundan güncellenmiyor; yalnız `meeting_confirmed_user1/2` boolean'ları yazılıyor. `no_show_reported_by uuid[]` de doldurulmuyor (no-show sayacı `users.no_show_count` üzerinden işliyor). İkisi de gösterim/analitik için bağlanabilir.
 - `invitations.slots_total`: hep 1 yazılır, uygulanmaz ("Serbest Seçim" ile anlamsız).
 - İlan düzenleme: kapsam metin/mekan/kategori; status ve süre DB trigger'ıyla korunur — böyle kalacak.
 
@@ -126,5 +127,5 @@ active (6/12/24/48 saat — sahibi seçer)
 | pending→expired cron adımı + "seçim yapılmadı" gösterimi | launch öncesi | ✅ 15.07 |
 | Selfie onay metni nötrleştirme ("mavi tik" → nötr) | launch öncesi | ✅ 15.07 |
 | Sohbet "sil" → tek-taraflı "gizle" (WhatsApp standardı, §7) | 🔧 launch öncesi | planlandı |
-| Buluşma/arşiv mekaniğinin canlandırılması | 🕐 uygun boşlukta | açık |
+| Buluşma/arşiv mekaniğinin canlandırılması | — | ✅ 15.07 |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |

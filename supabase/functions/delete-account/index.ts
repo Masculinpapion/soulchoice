@@ -64,7 +64,43 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    await adminClient.from('users').delete().eq('id', user.id)
+    // GDPR: storage'daki fotoğraflar da silinir (user_photos satırı CASCADE ile
+    // gider ama dosyalar API üzerinden ayrıca silinmeli). Hata olursa 500 dön —
+    // henüz hesap silinmedi, kullanıcı yeniden deneyebilir.
+    for (const bucket of ['profile-photos', 'selfies']) {
+      const { data: files, error: listError } = await adminClient.storage
+        .from(bucket)
+        .list(user.id, { limit: 100 })
+      if (listError) {
+        return new Response(
+          JSON.stringify({ error: `storage list failed (${bucket}): ${listError.message}` }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } },
+        )
+      }
+      if (files && files.length > 0) {
+        const paths = files.map((f) => `${user.id}/${f.name}`)
+        const { error: removeError } = await adminClient.storage.from(bucket).remove(paths)
+        if (removeError) {
+          return new Response(
+            JSON.stringify({ error: `storage remove failed (${bucket}): ${removeError.message}` }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
+          )
+        }
+      }
+    }
+
+    // Silme hatası yutulmaz: 15.07 denetiminde matches FK'sı silmeyi bloklarken
+    // buradaki hata görmezden gelinip auth silmeye geçiliyordu.
+    const { error: usersDeleteError } = await adminClient
+      .from('users')
+      .delete()
+      .eq('id', user.id)
+    if (usersDeleteError) {
+      return new Response(JSON.stringify({ error: usersDeleteError.message }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)
     if (deleteError) {

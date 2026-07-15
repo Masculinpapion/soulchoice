@@ -96,6 +96,8 @@ class _CreateInvitationScreenState
   bool _isPublishing = false;
 
   bool get _isTravel => _category == InvitationCategory.travel;
+  // Hediye teslimi için sabit "etkinlik saati" doğaya aykırı → tarih opsiyonel
+  bool get _isGift => _category == InvitationCategory.gift;
 
   int get _stepCount => _isTravel ? 6 : 7;
 
@@ -306,7 +308,8 @@ class _CreateInvitationScreenState
           }
         }
       case 5:
-        if (!_isTravel && _eventDate == null)
+        // Hediye'de tarih opsiyonel (teslim buluşması için sabit saat gerekmez)
+        if (!_isTravel && !_isGift && _eventDate == null)
           return l10n.create_inv_validation_date;
     }
     return null;

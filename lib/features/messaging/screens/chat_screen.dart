@@ -44,6 +44,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _otherDeleted = false;
   // Hediye ürün linki — yalnız seçilen kişiye + moderasyon onaylı (get_gift_link)
   String? _giftUrl;
+  // Tarihsiz gift buluşma anketi için: gift match'te meeting_date null olabilir
+  bool _isGiftMatch = false;
+  DateTime? _matchCreatedAt;
 
   // Derived from match
   DateTime? _meetingDate;
@@ -81,9 +84,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final client = Supabase.instance.client;
     try {
       final matchRow = await client.from('matches').select(
-            'user1_id, user2_id, meeting_date, archived_at, '
+            'user1_id, user2_id, meeting_date, archived_at, created_at, '
             'meeting_confirmed_user1, meeting_confirmed_user2, '
-            'invitation:invitations(id, title, venue_name, event_date)',
+            'invitation:invitations(id, title, venue_name, event_date, category)',
           ).eq('id', widget.matchId).maybeSingle();
       if (matchRow == null || !mounted) {
         if (mounted) setState(() => _matchInfo = {});
@@ -128,12 +131,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
       final meetDate = matchRow['meeting_date'];
       final archDate = matchRow['archived_at'];
+      final matchCreated = matchRow['created_at'];
+      final invMap = matchRow['invitation'] as Map<String, dynamic>?;
+      final isGift = invMap?['category'] == 'gift';
 
       final otherCity = otherUser?['city'] as Map<String, dynamic>?;
       final myCity = myUser?['city'] as Map<String, dynamic>?;
 
       setState(() {
         _otherDeleted = otherUserId == null;
+        _isGiftMatch = isGift;
+        _matchCreatedAt =
+            matchCreated != null ? DateTime.tryParse(matchCreated) : null;
         _matchInfo = {
           'invitation': matchRow['invitation'],
           'other': otherUser,
@@ -388,46 +397,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   // ── Attendance confirmation ────────────────────────────────────────────────
 
   bool get _showAttendanceBanner {
-    if (_meetingDate == null) return false;
     if (_myConfirmation != null) return false;
-    return DateTime.now().isAfter(_meetingDate!);
+    // Tarihli buluşma: saatinden sonra
+    if (_meetingDate != null) return DateTime.now().isAfter(_meetingDate!);
+    // Tarihsiz hediye buluşması: eşleşmeden (kabul) 24 saat sonra anket çıkar —
+    // gift ilanında tarih opsiyonel olduğundan meeting_date olmayabilir, ama
+    // no-show yine izlenebilmeli.
+    if (_isGiftMatch && _matchCreatedAt != null) {
+      return DateTime.now()
+          .isAfter(_matchCreatedAt!.add(const Duration(hours: 24)));
+    }
+    return false;
   }
 
   Future<void> _confirmAttendance(bool attended) async {
-    final col = _isUser1
-        ? 'meeting_confirmed_user1'
-        : 'meeting_confirmed_user2';
-
-    await Supabase.instance.client
-        .from('matches')
-        .update({col: attended})
-        .eq('id', widget.matchId);
-
-    if (!attended) {
-      // Increment no-show count for the other user
-      final otherUid = _matchInfo?['otherUserId'] as String?;
-      if (otherUid != null) {
-        await Supabase.instance.client.rpc('increment_no_show', params: {
-          'target_user_id': otherUid,
-        }).catchError((_) async {
-          // Fallback: manual increment
-          final row = await Supabase.instance.client
-              .from('users')
-              .select('no_show_count')
-              .eq('id', otherUid)
-              .maybeSingle();
-          final cur = (row?['no_show_count'] as int?) ?? 0;
-          final newCount = cur + 1;
-          await Supabase.instance.client.from('users').update({
-            'no_show_count': newCount,
-            if (newCount >= 2) ...{
-              'suspended_at': DateTime.now().toIso8601String(),
-              'suspension_reason': '2x no-show',
-            },
-          }).eq('id', otherUid);
-        });
-      }
-    }
+    // Tek RPC: kendi teyidini yazar + "gelmedi" ise karşı tarafın no-show'unu
+    // güvenle artırır (gift ağırlıklı, 2x-suspend). Eski app-side fallback users
+    // RLS'ine takılıyordu — hiç çalışmıyordu.
+    try {
+      await Supabase.instance.client.rpc('confirm_meeting', params: {
+        'p_match_id': widget.matchId,
+        'p_attended': attended,
+      });
+    } catch (_) {}
 
     if (mounted) {
       setState(() => _myConfirmation = attended);

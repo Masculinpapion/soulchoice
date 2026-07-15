@@ -202,3 +202,10 @@ Feed tasarımı:
 ## F2 — OTOMATİK YENİLEMELİ ABONELİK
 
 - Plan + kararlar + Faz 0 checklist: docs/f2-billing-plan.md (session'lar arası TEK KAYNAK)
+
+## ÜRÜN MANTIĞI KAPISI — ZORUNLU (15.07.2026)
+
+Davranış değiştiren HER commit'ten önce docs/product-logic.md **§13 "Kullanıcı Kapısı"**
+checklist'i uygulanır (belge çelişkisi · kullanıcı haberi · bekleyen kullanıcı · para
+mağduriyeti · ölü mekanik · hata dili · l10n · cihaz kanıtı). Kapıyı geçemeyen bulgu
+Mustafa'ya 🔴/🟠/🟡 öncelikle raporlanır. Detay ve gerekçe: product-logic.md §13 (TEK KAYNAK).

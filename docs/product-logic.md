@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.6 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.7 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -151,3 +151,40 @@ active (6/12/24/48 saat — sahibi seçer)
 | Kategori-akış iyileştirmeleri (§3.1: gift tarih opsiyonel, travel başlangıç tarihi, culture placeholder) | 🕐 uygun boşluk | açık |
 | Hediye ürün linki — güvenli görünürlük (§3.2: kolon+beyaz liste+moderasyon+get_gift_link RPC+sohbet kartı) | 🔧 tasarım onayı bekliyor | açık |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |
+
+## 13. Kalıcı ürün-mantığı denetimi — "Kullanıcı Kapısı" (15.07.2026, Mustafa talebi)
+
+**Amaç:** "Kod doğru ama kullanıcı için kırık" sınıfı hataları Mustafa'nın değil, geliştirme
+sürecinin kendisinin yakalaması. Bu bölüm tek kaynak; repo `CLAUDE.md` buraya işaret eder.
+
+### 13.1 Kapı: davranış değiştiren HER commit'ten önce cevaplanır
+
+1. **Belge çelişkisi:** Bu değişiklik bu belgenin hangi bölümünü etkiliyor? Çelişiyorsa ya
+   kod hatalıdır ya belge güncellenir (Mustafa kararıyla) — ikisi birden sessiz kalamaz.
+2. **Kullanıcı haberi:** Kullanıcı bu değişikliği hangi ekranda/anda yaşayacak? Kaçırırsa
+   ne görüyor? (Deep link / rozet / karşılama / boş-durum metni gerekiyor mu?)
+3. **Bekleyen kullanıcı:** Yeni bir "sonsuz/habersiz bekleme" durumu doğuyor mu? (Başvuran,
+   seçilen, ödeme yapan — kimse cevapsız sırada unutulmaz.)
+4. **Para mağduriyeti:** Kullanıcının ödediği hâlde değer alamadığı bir an oluşuyor mu?
+   (habersiz çekim, ödedi-ama-kilitli, çifte order…)
+5. **Ölü mekanik:** Yazılan her flag/kolon/durumun bir OKUYANI var mı? Okuyansız yazı =
+   çalışmayan özellik. _(Ders: `suspended_at` yazılıyordu ama hiçbir RLS/ekran okumuyordu —
+   askıya alma fiilen yoktu, 15.07 taramasında yakalandı.)_
+6. **Hata dili:** Sunucu reddi kullanıcıya anlaşılır ve lokalize metinle mi düşüyor, ham
+   exception mı? (`e.toString()` snackbar'ı = kırık deneyim.)
+7. **l10n:** Yeni her metin RU/TR/EN üçünde de var mı? (Çift-dil senkron kuralı.)
+8. **Cihaz kanıtı:** Davranış değişikliği gerçek cihazda görüldü mü? ("Kod doğru, geçtim" yasak.)
+
+### 13.2 Yolculuk taraması: yeni akış/ekran eklendiğinde
+
+Akışa giren kullanıcı **nereden geliyor**, çıkınca **nereye gidiyor**, akışı **kaçıran** ne
+görüyor? — üç cevap da netleşmeden iş "bitti" sayılmaz. Ayrıca büyük dönüm noktalarında
+(launch öncesi, büyük özellik sonrası) uçtan uca tam yolculuk taraması tekrarlanır ve
+bulgular 🔴 launch-blocker / 🟠 ciddi / 🟡 iyileştirme öncelikleriyle raporlanır.
+
+### 13.3 İşleyiş
+
+- Kapıyı geçemeyen bulgu **önce Mustafa'ya raporlanır** (öncelik etiketiyle); ürün kararı
+  gerektirmeyen objektif kusurlar teknik inisiyatifle düzeltilip raporlanabilir.
+- Bu belge her ürün kararında güncellenir; commit mesajında ilgili § anılır.
+- Kapı, PR/commit hazırlanırken uygulanır — sonradan değil.

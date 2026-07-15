@@ -42,7 +42,7 @@ Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında ka
 - Mekan sorusu "**Hediyeni nerede buluşup teslim almak istersin?**" netliğine ayrılır (mağazaya ürün aldırma çağrısı gibi okunmaz).
 - Opsiyonel **ürün linki** alanı: yalnız bilinen marketplace **beyaz listesi** (goldapple/wildberries/ozon/market.yandex/lamoda/letoile), DB trigger doğrular; **moderasyona** düşer (`status` pending→approved).
 - **KRİTİK görünürlük — yapısal garanti (ayrı tablo):** link, feed'de select edilen `invitations` tablosunda **TUTULMAZ** — ayrı `invitation_gift_links` tablosunda (invitation_id, url, status). RLS'te doğrudan SELECT policy'si **yok** → hiç kimse tabloyu okuyamaz. Erişim yalnız iki SECURITY DEFINER RPC'den: `get_gift_link(match_id)` (seçilen kişi = match tarafı + approved) + `get_own_gift_link(invitation_id)` (ilan sahibi, edit için). Seçilmeyenlerin match'i olmadığından linki hiç göremez. _(Not: kolon olarak `invitations`'a koymak DENENDİ ve E2E'de yabancıya sızdığı görüldü — RLS aktif-ilan satırının tüm kolonlarını açıyor + table-level GRANT column REVOKE'u eziyor; bu yüzden ayrı tablo. "Feed'de gizleme değil, erişim yokluğu.")_
-- **Uygulama fazları:** ①DB çekirdek ✅ 15.07 (tablo+trigger+2 RPC, E2E kanıtlı) · ②create UI (owner link alanı + mekan metni) 🔧 · ③chat kartı (seçilene link) 🔧 · ④ops moderasyon (approve/reject) 🔧.
+- **Uygulama fazları:** ①DB çekirdek ✅ 15.07 (tablo+trigger+2 RPC, E2E) · ②create UI ✅ (owner link alanı + beyaz liste + mekan metni) · ③chat kartı ✅ (seçilene get_gift_link + url_launcher) · ④ops moderasyon: DB view+RPC (ops_approve/reject_gift_link, audit) + agent endpoint ✅; panel UI (moderasyon sekmesi gift kuyruğu) + deploy + cihaz E2E 🔧 kaldı.
 
 ## 4. İlan yaşam döngüsü ve süreler
 

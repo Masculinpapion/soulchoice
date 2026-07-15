@@ -8,11 +8,15 @@ const CORS = {
 const SMS_RU_API_KEY = Deno.env.get('SMS_RU_API_KEY') ?? ''
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-const TEST_PHONE = '+79295774238'
-const TEST_CODE = '1234'
-// Test bypass yalnızca ALLOW_TEST_OTP=true ortamında (dev) çalışır. Production
-// edge function ortamında bu değişken TANIMSIZ olduğundan bypass asla açılmaz —
-// gerçek SMS.ru call-OTP akışı devreye girer. Dev'de test için env'e ekle.
+// Test/demo bypass yalnızca ALLOW_TEST_OTP=true iken çalışır.
+// KURAL: Bu listeye SADECE gerçekte tahsis edilemeyen +7000-blok numaraları
+// girer; gerçek (aranabilir) numara ASLA eklenmez. Flag, store-review demo
+// girişi için prod'da AÇIK durur — gerçek numara bypass'ı hesap ele geçirme
+// kapısı olurdu (+79295774238 bypass'ı bu gerekçeyle 15.07.2026'da kaldırıldı).
+// Demo hesabı ve inceleme talimatı: docs/store-review-demo.md
+const TEST_PHONES: Record<string, string> = {
+  '+70000000001': '1234', // store-review / demo hesabı
+}
 const ALLOW_TEST_OTP = Deno.env.get('ALLOW_TEST_OTP') === 'true'
 
 serve(async (req) => {
@@ -25,7 +29,8 @@ serve(async (req) => {
     // SMS bombing koruması: aynı numaraya 60 sn içinde yeni kod YOK. Kontrol
     // SMS.ru çağrısından ÖNCE — hem bakiyeyi hem kurbanı (art arda çağrı) korur.
     // Test bypass muaf (dev). App'te zaten 60 sn resend timer var; backend zorlar.
-    const isTestBypass = ALLOW_TEST_OTP && phone === TEST_PHONE
+    const testCode = ALLOW_TEST_OTP ? TEST_PHONES[phone] : undefined
+    const isTestBypass = testCode !== undefined
     if (!isTestBypass) {
       const lastRes = await fetch(
         SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone) + '&select=created_at&order=created_at.desc&limit=1',
@@ -45,8 +50,8 @@ serve(async (req) => {
 
     let code: string
 
-    if (ALLOW_TEST_OTP && phone === TEST_PHONE) {
-      code = TEST_CODE
+    if (isTestBypass) {
+      code = testCode!
     } else {
       const url = 'https://sms.ru/code/call?phone=' + encodeURIComponent(phone) + '&api_id=' + SMS_RU_API_KEY + '&json=1'
       const res = await fetch(url)

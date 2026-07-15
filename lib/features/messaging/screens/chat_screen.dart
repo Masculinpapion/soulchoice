@@ -622,7 +622,9 @@ class _DeletedUserBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        // _InputBar ile aynı sistem-alt-boşluğu kalıbı — nav bar altına taşmasın
+        margin: EdgeInsets.fromLTRB(
+            16, 8, 16, MediaQuery.of(context).padding.bottom + 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.12),

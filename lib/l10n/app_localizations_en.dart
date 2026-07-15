@@ -981,6 +981,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get err_account_suspended => 'Your account is suspended.';
 
   @override
+  String get selfie_reason_face_unclear => 'Face not clearly visible';
+
+  @override
+  String get selfie_reason_too_far => 'Take a closer selfie';
+
+  @override
+  String get selfie_reason_accessories => 'Glasses/hat/mask cover your face';
+
+  @override
+  String get selfie_reason_lighting => 'Poor lighting — retake in good light';
+
+  @override
+  String get selfie_reason_mismatch => 'Doesn\'t match your profile photos';
+
+  @override
+  String get selfie_reason_multiple_people =>
+      'Someone else in frame — take it alone';
+
+  @override
   String get profile_my_applications => 'My applications';
 
   @override

@@ -1900,6 +1900,42 @@ abstract class AppLocalizations {
   /// **'Your account is suspended.'**
   String get err_account_suspended;
 
+  /// No description provided for @selfie_reason_face_unclear.
+  ///
+  /// In en, this message translates to:
+  /// **'Face not clearly visible'**
+  String get selfie_reason_face_unclear;
+
+  /// No description provided for @selfie_reason_too_far.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a closer selfie'**
+  String get selfie_reason_too_far;
+
+  /// No description provided for @selfie_reason_accessories.
+  ///
+  /// In en, this message translates to:
+  /// **'Glasses/hat/mask cover your face'**
+  String get selfie_reason_accessories;
+
+  /// No description provided for @selfie_reason_lighting.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor lighting — retake in good light'**
+  String get selfie_reason_lighting;
+
+  /// No description provided for @selfie_reason_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn\'t match your profile photos'**
+  String get selfie_reason_mismatch;
+
+  /// No description provided for @selfie_reason_multiple_people.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else in frame — take it alone'**
+  String get selfie_reason_multiple_people;
+
   /// No description provided for @profile_my_applications.
   ///
   /// In en, this message translates to:

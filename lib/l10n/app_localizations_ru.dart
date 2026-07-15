@@ -991,6 +991,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get err_account_suspended => 'Ваш аккаунт приостановлен.';
 
   @override
+  String get selfie_reason_face_unclear => 'Лицо видно нечётко';
+
+  @override
+  String get selfie_reason_too_far => 'Сделай селфи ближе';
+
+  @override
+  String get selfie_reason_accessories => 'Очки/шапка/маска закрывают лицо';
+
+  @override
+  String get selfie_reason_lighting =>
+      'Мало света — сними при хорошем освещении';
+
+  @override
+  String get selfie_reason_mismatch => 'Не совпадает с фото профиля';
+
+  @override
+  String get selfie_reason_multiple_people =>
+      'В кадре кто-то ещё — сделай селфи в одиночку';
+
+  @override
   String get profile_my_applications => 'Мои заявки';
 
   @override

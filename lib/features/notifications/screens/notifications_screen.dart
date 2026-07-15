@@ -326,7 +326,20 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
           ? l.notif_type_new_message_body_noname
           : l.notif_type_new_message_body(name);
     case 'selfie_approved': return l.notif_type_selfie_approved_body;
-    case 'selfie_rejected': return l.notif_type_selfie_rejected_body;
+    case 'selfie_rejected':
+      // Preset red sebebi (slug) kullanıcının dilinde gösterilir (16.07)
+      final reason = switch (item.payload['reason'] as String?) {
+        'face_unclear' => l.selfie_reason_face_unclear,
+        'too_far' => l.selfie_reason_too_far,
+        'accessories' => l.selfie_reason_accessories,
+        'lighting' => l.selfie_reason_lighting,
+        'mismatch' => l.selfie_reason_mismatch,
+        'multiple_people' => l.selfie_reason_multiple_people,
+        _ => null,
+      };
+      return reason == null
+          ? l.notif_type_selfie_rejected_body
+          : '$reason — ${l.notif_type_selfie_rejected_body}';
     case 'meeting_reminder':return l.notif_type_meeting_reminder_body;
     case 'feedback_request':return l.notif_type_feedback_request_body;
     case 'selection_reminder':

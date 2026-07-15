@@ -979,6 +979,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get err_account_suspended => 'Hesabın askıya alınmış durumda.';
 
   @override
+  String get selfie_reason_face_unclear => 'Yüz net görünmüyor';
+
+  @override
+  String get selfie_reason_too_far => 'Daha yakından çekmelisin';
+
+  @override
+  String get selfie_reason_accessories => 'Gözlük/şapka/maske yüzü kapatıyor';
+
+  @override
+  String get selfie_reason_lighting => 'Işık yetersiz — aydınlık yerde çek';
+
+  @override
+  String get selfie_reason_mismatch => 'Profil fotoğraflarıyla eşleşmiyor';
+
+  @override
+  String get selfie_reason_multiple_people =>
+      'Kadrajda başka biri var — tek başına çek';
+
+  @override
   String get profile_my_applications => 'Başvurularım';
 
   @override

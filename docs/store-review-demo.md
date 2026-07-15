@@ -30,4 +30,4 @@ Store incelemecisine verilecek metin (EN):
 ## İlgili
 
 - Silinen kullanıcı modeli: `supabase/migrations/20260715_deleted_user_model.sql` + `supabase/functions/delete-account/index.ts`
-- Bilinen ürün notu (AÇIK): uygulama temiz kurulumda SIM numarasını otomatik doldurup **onaysız** çağrı-OTP tetikliyor — her yeni kullanıcıda 1 gereksiz SMS.ru araması; ayrıca incelemeci cihazında RU-dışı SIM ile kafa karıştırabilir. Karar bekliyor.
+- Doğrulandı (15.07.2026): OTP araması YALNIZCA kullanıcı "Devam" / "Tekrar gönder" butonlarına basınca tetiklenir; otomatik SIM doldurma veya otomatik gönderim yoktur (kod: `phone_screen.dart` `_sendOtp`, `otp_screen.dart` resend).

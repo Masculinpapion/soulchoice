@@ -527,14 +527,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please write where you want to go';
 
   @override
-  String get create_inv_venue_question_gift =>
-      'Where would you like to meet and receive the gift?';
+  String get create_inv_venue_question_gift_invite =>
+      'Where would you like to hand over the gift?';
 
   @override
-  String get create_inv_gift_url_label => 'Product link (optional)';
+  String get create_inv_venue_question_gift_request =>
+      'Where would you like to receive the gift?';
 
   @override
-  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+  String get create_inv_gift_url_label => 'Product link or name (optional)';
+
+  @override
+  String get create_inv_gift_url_hint =>
+      'Link (goldapple, ozon…) or product name';
 
   @override
   String get create_inv_gift_url_helper =>
@@ -864,6 +869,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chat_gift_link_label => 'Gift item — view';
+
+  @override
+  String get chat_gift_text_label => 'Gift item';
 
   @override
   String get chat_gift_disclaimer =>

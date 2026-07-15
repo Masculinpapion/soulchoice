@@ -1078,22 +1078,28 @@ abstract class AppLocalizations {
   /// **'Please write where you want to go'**
   String get create_inv_validation_description_travel;
 
-  /// No description provided for @create_inv_venue_question_gift.
+  /// No description provided for @create_inv_venue_question_gift_invite.
   ///
   /// In en, this message translates to:
-  /// **'Where would you like to meet and receive the gift?'**
-  String get create_inv_venue_question_gift;
+  /// **'Where would you like to hand over the gift?'**
+  String get create_inv_venue_question_gift_invite;
+
+  /// No description provided for @create_inv_venue_question_gift_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Where would you like to receive the gift?'**
+  String get create_inv_venue_question_gift_request;
 
   /// No description provided for @create_inv_gift_url_label.
   ///
   /// In en, this message translates to:
-  /// **'Product link (optional)'**
+  /// **'Product link or name (optional)'**
   String get create_inv_gift_url_label;
 
   /// No description provided for @create_inv_gift_url_hint.
   ///
   /// In en, this message translates to:
-  /// **'goldapple, wildberries, ozon…'**
+  /// **'Link (goldapple, ozon…) or product name'**
   String get create_inv_gift_url_hint;
 
   /// No description provided for @create_inv_gift_url_helper.
@@ -1701,6 +1707,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gift item — view'**
   String get chat_gift_link_label;
+
+  /// No description provided for @chat_gift_text_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift item'**
+  String get chat_gift_text_label;
 
   /// No description provided for @chat_gift_disclaimer.
   ///

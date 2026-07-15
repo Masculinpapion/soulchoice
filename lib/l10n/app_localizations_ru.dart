@@ -527,14 +527,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Напишите, куда хотите поехать';
 
   @override
-  String get create_inv_venue_question_gift =>
-      'Где хочешь встретиться и получить подарок?';
+  String get create_inv_venue_question_gift_invite =>
+      'Где хочешь передать подарок?';
 
   @override
-  String get create_inv_gift_url_label => 'Ссылка на товар (необязательно)';
+  String get create_inv_venue_question_gift_request =>
+      'Где хочешь получить подарок?';
 
   @override
-  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+  String get create_inv_gift_url_label =>
+      'Ссылка или название товара (необязательно)';
+
+  @override
+  String get create_inv_gift_url_hint =>
+      'Ссылка (goldapple, ozon…) или название';
 
   @override
   String get create_inv_gift_url_helper =>
@@ -874,6 +880,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chat_gift_link_label => 'Подарок — открыть';
+
+  @override
+  String get chat_gift_text_label => 'Подарок';
 
   @override
   String get chat_gift_disclaimer =>

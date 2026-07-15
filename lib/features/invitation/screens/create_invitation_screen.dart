@@ -303,7 +303,9 @@ class _CreateInvitationScreenState
           return l10n.create_inv_validation_venue;
         } else if (_category == InvitationCategory.gift) {
           final g = _giftUrlController.text.trim();
-          if (g.isNotEmpty && !_isWhitelistedGiftUrl(g)) {
+          // Link ise beyaz liste zorunlu; düz metin (ürün adı) serbest
+          final isLink = RegExp(r'^https?://', caseSensitive: false).hasMatch(g);
+          if (g.isNotEmpty && isLink && !_isWhitelistedGiftUrl(g)) {
             return l10n.create_inv_gift_url_invalid;
           }
         }
@@ -1054,7 +1056,11 @@ class _StepVenue extends StatelessWidget {
   String _question(AppLocalizations l10n) {
     switch (category) {
       case InvitationCategory.gift:
-        return l10n.create_inv_venue_question_gift;
+        // invite = owner veren ("teslim etmek"), request = owner alan
+        // ("teslim almak") — açıklama ipucuyla ve alt-başlıkla tutarlı
+        return flowType == InvitationFlowType.invite
+            ? l10n.create_inv_venue_question_gift_invite
+            : l10n.create_inv_venue_question_gift_request;
       case InvitationCategory.cinema:
         return l10n.create_inv_venue_question_cinema;
       case InvitationCategory.theater:

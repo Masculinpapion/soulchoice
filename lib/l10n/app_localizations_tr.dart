@@ -526,14 +526,19 @@ class AppLocalizationsTr extends AppLocalizations {
       'Nereye gitmek istediğini yazmalısın';
 
   @override
-  String get create_inv_venue_question_gift =>
-      'Hediyeni nerede buluşup teslim almak istersin?';
+  String get create_inv_venue_question_gift_invite =>
+      'Hediyeni nerede teslim etmek istersin?';
 
   @override
-  String get create_inv_gift_url_label => 'Ürün linki (isteğe bağlı)';
+  String get create_inv_venue_question_gift_request =>
+      'Hediyeni nerede teslim almak istersin?';
 
   @override
-  String get create_inv_gift_url_hint => 'goldapple, wildberries, ozon…';
+  String get create_inv_gift_url_label => 'Ürün linki veya adı (isteğe bağlı)';
+
+  @override
+  String get create_inv_gift_url_hint =>
+      'Link (goldapple, ozon…) ya da ürün adı';
 
   @override
   String get create_inv_gift_url_helper =>
@@ -863,6 +868,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get chat_gift_link_label => 'Hediye ürünü — görüntüle';
+
+  @override
+  String get chat_gift_text_label => 'Hediye ürünü';
 
   @override
   String get chat_gift_disclaimer =>

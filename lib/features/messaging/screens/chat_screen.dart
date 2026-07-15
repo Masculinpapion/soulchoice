@@ -670,6 +670,9 @@ class _GiftLinkCard extends StatelessWidget {
   final String url;
   const _GiftLinkCard({required this.url});
 
+  bool get _isLink =>
+      RegExp(r'^https?://', caseSensitive: false).hasMatch(url);
+
   Future<void> _open() async {
     final uri = Uri.tryParse(url);
     if (uri != null) {
@@ -679,62 +682,71 @@ class _GiftLinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final host = Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? url;
+    final l10n = AppLocalizations.of(context)!;
+    // Link ise host + "görüntüle" + tıklanır; düz metin ise ürün adı, tıklanmaz
+    final subtitle =
+        _isLink ? (Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? url) : url;
+    final label =
+        _isLink ? l10n.chat_gift_link_label : l10n.chat_gift_text_label;
+
+    final card = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AuroraTheme.auroraGold.withOpacity(0.10),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AuroraTheme.auroraGold.withOpacity(0.4)),
+      ),
+      child: Row(
+        children: [
+          const Text('🎁', style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.5,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 11,
+                    color: AuroraTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isLink)
+            Icon(Icons.open_in_new_rounded,
+                size: 16, color: AuroraTheme.auroraGold),
+        ],
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: _open,
-              borderRadius: BorderRadius.circular(14),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AuroraTheme.auroraGold.withOpacity(0.10),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: AuroraTheme.auroraGold.withOpacity(0.4)),
-                ),
-                child: Row(
-                  children: [
-                    const Text('🎁', style: TextStyle(fontSize: 18)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.chat_gift_link_label,
-                            style: const TextStyle(
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13.5,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            host,
-                            style: TextStyle(
-                              fontFamily: 'JetBrainsMono',
-                              fontSize: 11,
-                              color: AuroraTheme.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.open_in_new_rounded,
-                        size: 16, color: AuroraTheme.auroraGold),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _isLink
+              ? Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _open,
+                    borderRadius: BorderRadius.circular(14),
+                    child: card,
+                  ),
+                )
+              : card,
           // Hukuki + güven: satın alma app dışında, sorumluluk kullanıcılarda
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),

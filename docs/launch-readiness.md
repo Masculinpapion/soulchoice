@@ -1,7 +1,7 @@
 # SoulChoice — LAUNCH READINESS TABLOSU
 
 > Tek kaynak. Her düzeltme sonrası güncellenir. Skorlar denetim kanıtına dayanır, pohpohlama yok.
-> **Son güncelleme: 14.07.2026 — Güvenlik eşiği de GEÇİLDİ (Moderasyon paneli canlı + E2E kanıtlı)**
+> **Son güncelleme: 15.07.2026 — Ürün eşiği de GEÇİLDİ (ürün-mantığı denetimi + 9 kapanış); 4/7 eşikte**
 
 ## LAUNCH ONAY KURALI
 Genel yüzde bilgi amaçlıdır. **Asıl kapı: HER kategori kendi eşiğini geçmeli (AND).**
@@ -12,14 +12,14 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 |---|----------|--------|------|-------|---------------|
 | 1 | Kod kalitesi | 86% | 85% | ✅ | Build sağlam; paywall leak kapandı |
 | 2 | **Güvenlik** | 92% | **92%** | ✅ | Hacker affetmez; kullanıcı+yasal risk |
-| 3 | **Para yolu** | 92% | **92%** | ✅ | Para hatası = itibar + iade felaketi |
+| 3 | **Para yolu** | 93% | **92%** | ✅ | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 61% | 72% | 🔴 -11 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
-| 5 | UX dayanıklılık | 76% | 85% | 🟡 -9 | İlk izlenim; beyaz ekran = silme |
-| 6 | **Store hazırlık** | 85% | **90%** | 🟡 -5 | Apple/Google reddi = launch yok |
-| 7 | Ürün olgunluk | 72% | 75% | 🟡 -3 | "Yeterince iyi" launch olur; mükemmel şart değil |
+| 5 | UX dayanıklılık | 83% | 85% | 🟡 -2 | İlk izlenim; beyaz ekran = silme |
+| 6 | **Store hazırlık** | 86% | **90%** | 🟡 -4 | Apple/Google reddi = launch yok |
+| 7 | Ürün olgunluk | 75% | 75% | ✅ | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %87** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **3/7 hazır** (Kod, Para, Güvenlik). Kalan: Altyapı -11, UX -9, Store -5, Ürün -3
+**GENEL LAUNCH-READINESS: %89** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **4/7 hazır** (Kod, Para, Güvenlik, Ürün). Kalan: Altyapı -11, UX -2, Store -4
 
 ---
 
@@ -41,24 +41,27 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] İzleme/alarm (+6) — **KAPANDI 14.07** (Telegram bot `soulchoice_alerts_bot`: sunucu-içi 15dk disk/yedek/web/functions/container + 08:05 UTC billing denetimi, `/root/monitoring/`; dış-uptime GitHub Actions 10dk `soulchoice-ops/uptime.yml`; token GPG'li `soulchoice-secrets` + GHA secrets, git'te düz metin yok; test alarmı cihazda kanıtlı)
 - [ ] Restore provası yapılmadı — yedek gerçekten dönüyor mu bilinmiyor (+2)
 
-### 🟡 UX dayanıklılık (76% → hedef 85%, açık -9)
+### 🟡 UX dayanıklılık (83% → hedef 85%, açık -2)
 - [x] Offline soğuk açılış — splash sonsuz takılıyordu (+6) — **KAPANDI 13.07** (timeout+fallback, offline'da feed'e geçiyor, online regresyon temiz)
 - [ ] Yavaş-ağ her ekran + boş cevap durumu — derin test sürüyor (+2)
-- [ ] Uç durumlar (silinmiş kullanıcının eski mesajı, premium bitmiş, dolmuş davet) — derin test (+5)
-- [ ] Geri-dönüşsüz anlar (silme/iptal/engelleme) onay yeterliliği (+2)
+- [x] Uç durumlar (+5) — **KAPANDI 15.07**: 'Silinen kullanıcı' modeli (karşı taraf sohbeti korur, S24 cihaz kanıtlı) + dolmuş davette pending→expired + 'seçim yapılmadı' gösterimi + premium grace-period zaten sağlamdı
+- [x] Geri-dönüşsüz anlar (+2) — **KAPANDI 15.07**: hesap silme (onaylı ekran + artık gerçekten çalışıyor), engelleme (onay dialoglu), sohbet 'sil'→tek-taraflı 'gizle' (WhatsApp standardı, net onay metni, geri-dönüşü var)
 
-### 🟡 Store hazırlık (85% → hedef 90%, açık -5)
+### 🟡 Store hazırlık (86% → hedef 90%, açık -4)
+- [x] Store incelemeci demo girişi (+1) — **KAPANDI 15.07** (+7 000 000-00-01/1234, tahsis-edilemez blok, ALLOW_TEST_OTP kapılı, docs/store-review-demo.md; içinde örnek sohbet fikstürü)
 - [x] Android WRITE_EXTERNAL_STORAGE gereksiz izin (+2) — **KAPANDI 14.07** (manifest'ten kaldırıldı, commit b1fc88188, iki CI yeşil; hiçbir paket kullanmıyordu)
 - [ ] Store ekran görüntüleri (C) — cihazda çekilecek (+3)
 - [ ] Store metinleri (D) onayı (+2)
 
-### 🟡 Ürün olgunluk (72% → hedef 75%, açık -3)
+### ✅ Ürün olgunluk (75% → hedef 75% — EŞİK GEÇİLDİ 15.07)
+- [x] Ürün-mantığı denetimi (+3) — **15.07**: docs/product-logic.md TEK KAYNAK (v1.4); kabul akışı kırığı (RLS sessiz yutma — başvuran seçildiğini HİÇ öğrenemiyordu) + kabul bildirimi + başvuru kurallarının sunucuda zorlanması (premium bypass kapandı) + yaş filtresi bağlandı + çift yönlü engelleme + buluşma anketi/arşiv canlandı + mark-read düzeldi
 - [ ] Onboarding fark-anlatımı + ilk davet sonrası yönlendirme (+2)
 - [ ] Retention nudge (ilk 48s başvuru gelmezse) (+1)
 
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 15.07.2026 — Ürün-mantığı denetimi: kabul akışı kırığı + kabul bildirimi + sunucu-taraflı başvuru kuralları + yaş filtresi + çift yönlü engelleme + hide-chat + buluşma mekaniği + silinen-kullanıcı modeli (GDPR) + mark-read → Ürün %72→%75 ✅ EŞİK, UX %76→%83, Para %92→%93, Store %85→%86, genel %87→%89
 - 14.07.2026 — Moderasyon paneli kapandı (E2E kanıtlı) → Güvenlik %90→%92 ✅ EŞİK, genel %86→%87
 - 14.07.2026 — iOS premium yolu kapandı (KARAR: consumption-only + web-only ödeme; retry kapısı) → Para %88→%92 ✅ EŞİK, genel %85→%86
 - 14.07.2026 — İzleme/alarm kapandı (Telegram bot + GHA dış-uptime, test alarmı cihazda) → Altyapı %55→%61, genel %84→%85
@@ -85,7 +88,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - Altyapı: off-site yükleme + alarm SCRIPT'lerini kredensiyelsiz yazıp hazır bırak (aktivasyon kredensiyelle)
 
 ## ⚖️ BEKLEYEN KARARLAR (Mustafa) — bunlar gelmeden ilgili kategoriler tavana ulaşamaz
-1. **Off-site yedek hedefi** (Altyapı +9): ~~Backblaze~~ **KARAR 14.07: Yandex Object Storage** (152-ФЗ + yaptırım riski + Object Lock gerekçesiyle; Backblaze ABD riski nedeniyle elendi). Hesap aktivasyonu bekleniyor (ЕГРИП formdan gönderildi); anahtar+bucket gelince script'ler hazır.
+1. **Off-site yedek hedefi** (Altyapı +9): ~~Backblaze~~ **KARAR 14.07: Yandex Object Storage** (152-ФЗ + yaptırım riski + Object Lock gerekçesiyle; Backblaze ABD riski nedeniyle elendi). Hesap aktivasyonu bekleniyor (ЕГРИП formdan gönderildi); anahtar+bucket gelince script'ler hazır. **15.07: hesap AKTİF (ödemeli + 10.000₽ grant) — plan sunuldu, Mustafa'nın Yandex yetkilendirmesi bekleniyor (bkz. oturum planı).**
 2. ~~**Alarm kanalı** (Altyapı +6)~~ — **KARAR VERİLDİ + KURULDU 14.07** (Telegram bot canlı, bkz. Altyapı maddesi).
 3. ~~**Moderasyon eşiği** (Güvenlik +2)~~ — **KARAR VERİLDİ + PANEL KURULDU 14.07** (bkz. Güvenlik maddesi).
 4. ~~**iOS premium alma yolu** (Para +4)~~ — **KARAR VERİLDİ + UYGULANDI 14.07** (consumption-only, ödeme sadece web; bkz. Para maddesi).

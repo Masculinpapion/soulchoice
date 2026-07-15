@@ -60,6 +60,31 @@ serve(async (req) => {
       ? 'Тест интеграции SoulChoice Premium'
       : 'Подписка SoulChoice Premium, 1 месяц'
 
+    // Birikme önle (Mustafa kuralı): bir kullanıcının aynı anda EN FAZLA BİR açık
+    // pending one_time order'ı olsun. Ödemeyi yarıda bırakıp tekrar denerse yeni
+    // order açma — mevcut açık (7 gün içi, Точка order ömrü) order'ı ve aynı ödeme
+    // linkini yeniden kullan. Yeni order yalnız: eski ödendi/expired/iptal edildi.
+    // (subscription akışı zaten reuse yapıyor; bu one_time için aynı kuralı getirir.)
+    if (!isTest) {
+      const exRes = await fetch(
+        SUPABASE_URL + '/rest/v1/payments?user_id=eq.' + user.id +
+          '&status=eq.pending&charge_type=eq.one_time' +
+          '&select=payment_link,operation_id,created_at&order=created_at.desc&limit=1',
+        { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } },
+      )
+      const ex = await exRes.json().catch(() => [])
+      const cur = Array.isArray(ex) ? ex[0] : null
+      if (
+        cur?.payment_link &&
+        Date.now() - new Date(cur.created_at).getTime() < 7 * 24 * 3600 * 1000
+      ) {
+        return new Response(
+          JSON.stringify({ paymentLink: cur.payment_link, operationId: cur.operation_id, reused: true }),
+          { headers: { ...CORS, 'Content-Type': 'application/json' } },
+        )
+      }
+    }
+
     const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/payments', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + TOCHKA_JWT, 'Content-Type': 'application/json' },
@@ -99,6 +124,7 @@ serve(async (req) => {
         status: 'pending',
         purpose,
         payment_link: op.paymentLink,
+        charge_type: 'one_time',
       }),
     })
     if (!insertRes.ok) {

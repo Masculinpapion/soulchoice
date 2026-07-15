@@ -1,7 +1,7 @@
 # SoulChoice — LAUNCH READINESS TABLOSU
 
 > Tek kaynak. Her düzeltme sonrası güncellenir. Skorlar denetim kanıtına dayanır, pohpohlama yok.
-> **Son güncelleme: 15.07.2026 — Ürün eşiği de GEÇİLDİ (ürün-mantığı denetimi + 9 kapanış); 4/7 eşikte**
+> **Son güncelleme: 15.07.2026 — Altyapı eşiği de GEÇİLDİ (off-site immutable + restore provası); 5/7 eşikte, genel %92**
 
 ## LAUNCH ONAY KURALI
 Genel yüzde bilgi amaçlıdır. **Asıl kapı: HER kategori kendi eşiğini geçmeli (AND).**
@@ -13,13 +13,13 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 | 1 | Kod kalitesi | 86% | 85% | ✅ | Build sağlam; paywall leak kapandı |
 | 2 | **Güvenlik** | 92% | **92%** | ✅ | Hacker affetmez; kullanıcı+yasal risk |
 | 3 | **Para yolu** | 93% | **92%** | ✅ | Para hatası = itibar + iade felaketi |
-| 4 | Ölçeklenme/Altyapı | 61% | 72% | 🔴 -11 | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
+| 4 | Ölçeklenme/Altyapı | 72% | 72% | ✅ | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
 | 5 | UX dayanıklılık | 83% | 85% | 🟡 -2 | İlk izlenim; beyaz ekran = silme |
 | 6 | **Store hazırlık** | 86% | **90%** | 🟡 -4 | Apple/Google reddi = launch yok |
 | 7 | Ürün olgunluk | 75% | 75% | ✅ | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %89** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **4/7 hazır** (Kod, Para, Güvenlik, Ürün). Kalan: Altyapı -11, UX -2, Store -4
+**GENEL LAUNCH-READINESS: %92** (ağırlıklı: güvenlik+para+store çift ağırlık)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **5/7 hazır** (Kod, Para, Güvenlik, Ürün, Altyapı). Kalan: UX -2, Store -4
 
 ---
 
@@ -36,10 +36,10 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] Webhook idempotency (+4) — **DENETLENDİ SAĞLAM 13.07** (on conflict do nothing + zaten-işlenmiş guard)
 - [x] iOS premium ALMA yolu (+4) — **KAPANDI 14.07 (KARAR Mustafa: consumption-only, ödeme SADECE web portalı).** Kod denetimi: paywall Seçenek B zaten canlıydı (36fe92b1e — iOS'ta fiyat/CTA/web-linki yok, 3.1.1-uyumlu); tek kalıntı `past_due` retry butonuydu → `_mode=='link'` kapısına alındı (bu commit). Dart kodunda web ödeme URL'i sızıntısı yok (tarandı). Dış yönlendirme kanalı (F2 e-posta digest) canlı. İptal butonu iOS'ta görünür kalır (F2-2 uyumlu).
 
-### 🔴 Ölçeklenme/Altyapı (61% → hedef 72%, açık -11)
-- [ ] Off-site yedek yok — tüm yedekler tek sunucuda, disk ölürse veri kaybı (+9) — **KARAR 14.07: Yandex Object Storage**; ИП hesap aktivasyonu bekleniyor (ЕГРИП resmi verifikasyon formundan gönderildi 14.07, ≤3 iş günü)
+### ✅ Ölçeklenme/Altyapı (72% → hedef 72% — EŞİK GEÇİLDİ 15.07)
+- [x] Off-site yedek (+9) — **KAPANDI 15.07**: Yandex Object Storage (soulchoice-backups, Standard sınıf, **Object Lock COMPLIANCE 14 gün immutable**, versioning). Gece 04:00 cron: pg_dump + storage(xattr korumalı tar) → GPG AES256 şifreli → rclone Standard yükleme. İlk yükleme kanıtlı (2 obje 56MB, retention 2026-07-29). Servis hesabı geçici admin ile kuruldu → uploader'a düşürüldü.
 - [x] İzleme/alarm (+6) — **KAPANDI 14.07** (Telegram bot `soulchoice_alerts_bot`: sunucu-içi 15dk disk/yedek/web/functions/container + 08:05 UTC billing denetimi, `/root/monitoring/`; dış-uptime GitHub Actions 10dk `soulchoice-ops/uptime.yml`; token GPG'li `soulchoice-secrets` + GHA secrets, git'te düz metin yok; test alarmı cihazda kanıtlı)
-- [ ] Restore provası yapılmadı — yedek gerçekten dönüyor mu bilinmiyor (+2)
+- [x] Restore provası (+2) — **KAPANDI 15.07**: ayrı test container'da bucket'tan indir→GPG çöz→doğrula. DB dump canlıyla BİREBİR eşleşti (users99/inv65/matches3), storage tar xattr (content-type/cache-control) korundu. Ops panel Veri & Yedek sekmesi gerçek veriyle (agent /api/backup/stats + last-restore-drill damgası) — off-site AKTİF + restore yeşil. Alarm off-site yükleme başarısızlığını kapsıyor (checks.sh offsite kontrolü).
 
 ### 🟡 UX dayanıklılık (83% → hedef 85%, açık -2)
 - [x] Offline soğuk açılış — splash sonsuz takılıyordu (+6) — **KAPANDI 13.07** (timeout+fallback, offline'da feed'e geçiyor, online regresyon temiz)
@@ -61,6 +61,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 15.07.2026 — Off-site immutable yedek (Yandex Object Lock 14g) + restore provası (DB canlıyla eşleşti + xattr korundu) + ops panel Veri&Yedek gerçek veri + alarm off-site kapsama → Altyapı %61→%72 ✅ EŞİK, genel %89→%92
 - 15.07.2026 — Ürün-mantığı denetimi: kabul akışı kırığı + kabul bildirimi + sunucu-taraflı başvuru kuralları + yaş filtresi + çift yönlü engelleme + hide-chat + buluşma mekaniği + silinen-kullanıcı modeli (GDPR) + mark-read → Ürün %72→%75 ✅ EŞİK, UX %76→%83, Para %92→%93, Store %85→%86, genel %87→%89
 - 14.07.2026 — Moderasyon paneli kapandı (E2E kanıtlı) → Güvenlik %90→%92 ✅ EŞİK, genel %86→%87
 - 14.07.2026 — iOS premium yolu kapandı (KARAR: consumption-only + web-only ödeme; retry kapısı) → Para %88→%92 ✅ EŞİK, genel %85→%86

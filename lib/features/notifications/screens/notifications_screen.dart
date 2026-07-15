@@ -236,6 +236,10 @@ class _NotificationsScreenState
                                 'name': n.actorName,
                                 'photoUrl': n.actorPhotoUrl,
                               });
+                            } else if (path == '/feed') {
+                              // Shell-branch rotası push edilmez (siyah ekran
+                              // bug'ı, 16.07) — sekme geçişiyle gidilir.
+                              ctx.go(path);
                             } else {
                               ctx.push(path);
                             }

@@ -80,6 +80,10 @@ class NotificationItem {
       );
 
   String get routePath {
+    // Selfie bildirimleri akışa göre yönlenir: red → yeniden çekim ekranı
+    // (16.07 fix: payload boş olduğundan /feed push ediliyordu → siyah ekran)
+    if (type == 'selfie_rejected') return '/profile/selfie';
+    if (type == 'selfie_approved') return '/feed';
     final invId = payload['invitation_id'] as String?;
     final matchId = payload['match_id'] as String?;
     if (matchId != null) return '/chat/$matchId';

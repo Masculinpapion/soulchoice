@@ -2719,7 +2719,7 @@ abstract class AppLocalizations {
   /// No description provided for @selfie_tip_approval.
   ///
   /// In en, this message translates to:
-  /// **'Admin approves within 24 hours'**
+  /// **'A moderator approves within 24 hours'**
   String get selfie_tip_approval;
 
   /// No description provided for @selfie_submit_btn.
@@ -3391,7 +3391,7 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_gate_pending.
   ///
   /// In en, this message translates to:
-  /// **'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.'**
+  /// **'Your selfie is being reviewed. A moderator approves within 24 hours — you can create invitations after approval.'**
   String get create_inv_gate_pending;
 
   /// No description provided for @create_inv_gate_rejected.

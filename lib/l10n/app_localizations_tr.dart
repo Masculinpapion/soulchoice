@@ -1423,7 +1423,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selfie_tip_face => 'Yüzün açıkça görünmeli';
 
   @override
-  String get selfie_tip_approval => 'Yönetici 24 saat içinde onaylar';
+  String get selfie_tip_approval => 'Moderatör 24 saat içinde onaylar';
 
   @override
   String get selfie_submit_btn => 'Gönder';
@@ -1795,7 +1795,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_gate_pending =>
-      'Selfie\'n inceleniyor. Yönetici 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
+      'Selfie\'n inceleniyor. Moderatör 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
 
   @override
   String get create_inv_gate_rejected =>

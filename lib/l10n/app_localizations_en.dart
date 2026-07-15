@@ -1430,7 +1430,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selfie_tip_face => 'Your face should be clearly visible';
 
   @override
-  String get selfie_tip_approval => 'Admin approves within 24 hours';
+  String get selfie_tip_approval => 'A moderator approves within 24 hours';
 
   @override
   String get selfie_submit_btn => 'Submit';
@@ -1804,7 +1804,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_inv_gate_pending =>
-      'Your selfie is being reviewed. Admins approve within 24 hours — you can create invitations after approval.';
+      'Your selfie is being reviewed. A moderator approves within 24 hours — you can create invitations after approval.';
 
   @override
   String get create_inv_gate_rejected =>

@@ -42,6 +42,14 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
           table: 'messages',
           callback: (_) => ref.invalidate(matchesProvider),
         )
+        // Yeni eşleşme (kabul) anlık listeye düşsün — RLS yalnız kendi
+        // match'lerini verir, filtre gerekmez.
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'matches',
+          callback: (_) => ref.invalidate(matchesProvider),
+        )
         .subscribe();
   }
 

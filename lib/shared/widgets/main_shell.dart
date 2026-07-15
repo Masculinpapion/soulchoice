@@ -1,15 +1,20 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/aurora_theme.dart';
+import '../../features/messaging/providers/matches_provider.dart';
 
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
   const MainShell({super.key, required this.navigationShell});
 
+  // Branch 2 = Mesajlar (router StatefulShellBranch sırası)
+  static const _messagesBranch = 2;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopScope(
       canPop: navigationShell.currentIndex == 0,
       onPopInvokedWithResult: (didPop, _) {
@@ -21,10 +26,14 @@ class MainShell extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: _AuroraNavBar(
         currentBranchIndex: navigationShell.currentIndex,
-        onBranchTap: (i) => navigationShell.goBranch(
-          i,
-          initialLocation: i == navigationShell.currentIndex,
-        ),
+        onBranchTap: (i) {
+          // Mesajlar sekmesi her açıldığında taze eşleşme listesi çek
+          if (i == _messagesBranch) ref.invalidate(matchesProvider);
+          navigationShell.goBranch(
+            i,
+            initialLocation: i == navigationShell.currentIndex,
+          );
+        },
         onFabTap: () => context.push('/invitation/create'),
       ),
     ));

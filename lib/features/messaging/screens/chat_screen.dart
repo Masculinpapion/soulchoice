@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -376,8 +377,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (mounted) {
         setState(() =>
             _messages.removeWhere((m) => m.id == optimistic.id));
+        // Bilinen guard hatası (örn. ACCOUNT_SUSPENDED) lokalize gösterilir
+        final guard = GuardError.from(context, e);
+        if (guard != null) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => guard.navigate(context));
+        }
         _showAuroraSnack(
-          AppLocalizations.of(context)!.chat_send_error(e.toString()),
+          guard?.message ??
+              AppLocalizations.of(context)!.chat_send_error(e.toString()),
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );

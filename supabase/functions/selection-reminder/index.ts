@@ -37,7 +37,7 @@ serve(async (_req) => {
         `insert into notifications (user_id, type, title, body, payload)
          values ($1, 'selection_reminder', 'Заявки ждут ✨',
                  'Окно выбора скоро закроется — взгляните на заявки.',
-                 jsonb_build_object('invitation_id', $2))`,
+                 jsonb_build_object('invitation_id', $2::text))`,
         [c.owner_id, c.id],
       )
       await fetch(SUPABASE_URL + '/functions/v1/send-notification', {

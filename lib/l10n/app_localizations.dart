@@ -1660,6 +1660,18 @@ abstract class AppLocalizations {
   /// **'This chat is archived'**
   String get chat_archived;
 
+  /// No description provided for @chat_deleted_user.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted user'**
+  String get chat_deleted_user;
+
+  /// No description provided for @chat_deleted_user_info.
+  ///
+  /// In en, this message translates to:
+  /// **'This user deleted their account. You can no longer send messages.'**
+  String get chat_deleted_user_info;
+
   /// No description provided for @chat_meeting_question.
   ///
   /// In en, this message translates to:

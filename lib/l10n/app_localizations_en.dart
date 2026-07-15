@@ -842,6 +842,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_archived => 'This chat is archived';
 
   @override
+  String get chat_deleted_user => 'Deleted user';
+
+  @override
+  String get chat_deleted_user_info =>
+      'This user deleted their account. You can no longer send messages.';
+
+  @override
   String get chat_meeting_question => 'Did your meeting happen?';
 
   @override

@@ -852,6 +852,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_archived => 'Этот чат в архиве';
 
   @override
+  String get chat_deleted_user => 'Удалённый пользователь';
+
+  @override
+  String get chat_deleted_user_info =>
+      'Этот пользователь удалил свой аккаунт. Отправка сообщений больше недоступна.';
+
+  @override
   String get chat_meeting_question => 'Встреча состоялась?';
 
   @override

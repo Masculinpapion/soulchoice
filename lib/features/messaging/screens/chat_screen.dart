@@ -39,6 +39,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Map<String, dynamic>? _matchInfo;
   String? _currentUid;
   bool _isUser1 = false;
+  // Karşı taraf hesabını silmiş (matches.user*_id SET NULL) — yazma kapalı
+  bool _otherDeleted = false;
 
   // Derived from match
   DateTime? _meetingDate;
@@ -73,34 +75,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         return;
       }
 
-      final user1Id = matchRow['user1_id'] as String;
+      final user1Id = matchRow['user1_id'] as String?;
       _isUser1 = user1Id == _currentUid;
       final otherUserId =
-          _isUser1 ? matchRow['user2_id'] as String : user1Id;
+          _isUser1 ? matchRow['user2_id'] as String? : user1Id;
 
       Map<String, dynamic>? otherUser;
       Map<String, dynamic>? myUser;
       String? photoUrl;
       try {
         final results = await Future.wait<dynamic>([
-          client.from('users').select('name, age, city:cities(utc_offset)').eq('id', otherUserId).maybeSingle(),
+          if (otherUserId != null)
+            client.from('users').select('name, age, city:cities(utc_offset)').eq('id', otherUserId).maybeSingle()
+          else
+            Future.value(null),
           client.from('users').select('city:cities(utc_offset)').eq('id', _currentUid as Object).maybeSingle(),
         ]);
         otherUser = results[0] as Map<String, dynamic>?;
         myUser = results[1] as Map<String, dynamic>?;
       } catch (_) {}
-      try {
-        final photoRows = await client
-            .from('user_photos')
-            .select('url')
-            .eq('user_id', otherUserId)
-            .eq('is_primary', true)
-            .eq('is_selfie', false)
-            .limit(1);
-        if (photoRows is List && photoRows.isNotEmpty) {
-          photoUrl = (photoRows.first as Map<String, dynamic>)['url'] as String?;
-        }
-      } catch (_) {}
+      if (otherUserId != null) {
+        try {
+          final photoRows = await client
+              .from('user_photos')
+              .select('url')
+              .eq('user_id', otherUserId)
+              .eq('is_primary', true)
+              .eq('is_selfie', false)
+              .limit(1);
+          if (photoRows is List && photoRows.isNotEmpty) {
+            photoUrl = (photoRows.first as Map<String, dynamic>)['url'] as String?;
+          }
+        } catch (_) {}
+      }
 
       if (!mounted) return;
 
@@ -111,6 +118,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final myCity = myUser?['city'] as Map<String, dynamic>?;
 
       setState(() {
+        _otherDeleted = otherUserId == null;
         _matchInfo = {
           'invitation': matchRow['invitation'],
           'other': otherUser,
@@ -200,11 +208,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _markRead() async {
+    // sender_id silinmiş kullanıcıda NULL — neq NULL satırı atlar, or ile kapsa
     await Supabase.instance.client
         .from('messages')
         .update({'read_at': DateTime.now().toIso8601String()})
         .eq('match_id', widget.matchId)
-        .neq('sender_id', _currentUid ?? '')
+        .or('sender_id.neq.${_currentUid ?? ''},sender_id.is.null')
         .isFilter('read_at', null);
   }
 
@@ -300,7 +309,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_archivedAt != null) return;
+    if (_archivedAt != null || _otherDeleted) return;
     final text = _messageController.text.trim();
     if (text.isEmpty || _currentUid == null) return;
     _messageController.clear();
@@ -464,8 +473,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final inv = _matchInfo?['invitation'] as Map<String, dynamic>?;
     final otherUser = _matchInfo?['other'] as Map<String, dynamic>?;
     final initial = widget.initialPartner;
-    final otherName =
-        otherUser?['name'] as String? ?? initial?['name'] as String? ?? '—';
+    final otherName = _otherDeleted
+        ? AppLocalizations.of(context)!.chat_deleted_user
+        : otherUser?['name'] as String? ?? initial?['name'] as String? ?? '—';
     final otherAge =
         (otherUser?['age'] as int?) ?? (initial?['age'] as int?) ?? 0;
     final invTitle = inv?['title'] as String? ?? '';
@@ -553,8 +563,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
             ),
 
-            // Input bar (only when not archived)
-            if (!isArchived)
+            // Input bar (only when not archived and partner still exists)
+            if (_otherDeleted)
+              const _DeletedUserBanner()
+            else if (!isArchived)
               _InputBar(
                 controller: _messageController,
                 onSend: _sendMessage,
@@ -594,6 +606,43 @@ class _ArchivedBanner extends StatelessWidget {
                 fontSize: 11,
                 color: AuroraTheme.textSecondary,
                 letterSpacing: 0.25,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Deleted User Banner — input bar yerine gösterilir, yazma kapalı
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _DeletedUserBanner extends StatelessWidget {
+  const _DeletedUserBanner();
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.person_off_outlined,
+                size: 16, color: AuroraTheme.textMuted),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.chat_deleted_user_info,
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 11,
+                  color: AuroraTheme.textSecondary,
+                  letterSpacing: 0.25,
+                ),
               ),
             ),
           ],

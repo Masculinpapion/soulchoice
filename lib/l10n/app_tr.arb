@@ -353,6 +353,8 @@
   "inv_detail_weekday_sat_full": "Cumartesi",
   "inv_detail_weekday_sun_full": "Pazar",
   "chat_archived": "Bu sohbet arşivlendi",
+  "chat_deleted_user": "Silinmiş kullanıcı",
+  "chat_deleted_user_info": "Bu kullanıcı hesabını sildi. Artık mesaj gönderemezsin.",
   "chat_meeting_question": "Buluşmanız gerçekleşti mi?",
   "chat_yes_we_met": "Evet, buluştuk",
   "chat_other_no_show": "Karşı taraf gelmedi",

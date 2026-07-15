@@ -353,6 +353,8 @@
   "inv_detail_weekday_sat_full": "Saturday",
   "inv_detail_weekday_sun_full": "Sunday",
   "chat_archived": "This chat is archived",
+  "chat_deleted_user": "Deleted user",
+  "chat_deleted_user_info": "This user deleted their account. You can no longer send messages.",
   "chat_meeting_question": "Did your meeting happen?",
   "chat_yes_we_met": "Yes, we met",
   "chat_other_no_show": "The other person didn't come",

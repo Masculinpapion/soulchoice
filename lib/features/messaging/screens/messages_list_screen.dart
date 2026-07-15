@@ -164,6 +164,9 @@ class _MatchTile extends StatelessWidget {
             : match.lastMessage!)
         : AppLocalizations.of(context)!.messages_no_preview;
     final hasUnread = match.unreadCount > 0;
+    final displayName = match.isDeleted
+        ? AppLocalizations.of(context)!.chat_deleted_user
+        : '${match.otherName}, ${match.otherAge}';
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(AuroraTheme.radiusInfoCard),
@@ -175,7 +178,9 @@ class _MatchTile extends StatelessWidget {
             onTap: () => context.push(
               '/chat/${match.matchId}',
               extra: {
-                'name': match.otherName,
+                'name': match.isDeleted
+                    ? AppLocalizations.of(context)!.chat_deleted_user
+                    : match.otherName,
                 'age': match.otherAge,
                 'photoUrl': match.otherPhotoUrl,
               },
@@ -208,7 +213,7 @@ class _MatchTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${match.otherName}, ${match.otherAge}',
+                          displayName,
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontWeight: FontWeight.w700,

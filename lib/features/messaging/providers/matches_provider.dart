@@ -4,7 +4,8 @@ import '../../../core/providers/auth_provider.dart';
 
 class MatchPreview {
   final String matchId;
-  final String otherUserId;
+  // null = karşı taraf hesabını silmiş (DB SET NULL)
+  final String? otherUserId;
   final String otherName;
   final int otherAge;
   final String? otherPhotoUrl;
@@ -16,7 +17,7 @@ class MatchPreview {
 
   const MatchPreview({
     required this.matchId,
-    required this.otherUserId,
+    this.otherUserId,
     required this.otherName,
     required this.otherAge,
     this.otherPhotoUrl,
@@ -26,6 +27,8 @@ class MatchPreview {
     this.meetingDate,
     this.archivedAt,
   });
+
+  bool get isDeleted => otherUserId == null;
 
   bool get isArchived {
     if (archivedAt != null) return true;
@@ -55,11 +58,11 @@ final matchesProvider =
 
   final matchIds = matches.map((m) => m['id'] as String).toList();
   final otherUserIds = matches.map((m) {
-    final u1 = m['user1_id'] as String;
-    final u2 = m['user2_id'] as String;
+    final u1 = m['user1_id'] as String?;
+    final u2 = m['user2_id'] as String?;
     return u1 == uid ? u2 : u1;
   }).toList();
-  final uniqueOtherIds = otherUserIds.toSet().toList();
+  final uniqueOtherIds = otherUserIds.whereType<String>().toSet().toList();
 
   // 3 sorgu paralel: kullanıcı bilgisi + foto + mesajlar
   final results = await Future.wait([
@@ -106,10 +109,12 @@ final matchesProvider =
     final matchId = m['id'] as String;
     final otherUserId = otherUserIds[i];
     final userRow = userMap[otherUserId];
-    if (seen.containsKey(otherUserId)) continue;
+    // Silinmiş kullanıcıda kişi bazlı dedup yapılamaz — match bazında tut
+    final seenKey = otherUserId ?? 'match:$matchId';
+    if (seen.containsKey(seenKey)) continue;
 
     final lastMsg = lastMsgMap[matchId];
-    seen[otherUserId] = MatchPreview(
+    seen[seenKey] = MatchPreview(
       matchId: matchId,
       otherUserId: otherUserId,
       otherName: userRow?['name'] as String? ?? '—',

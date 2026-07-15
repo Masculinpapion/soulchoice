@@ -841,6 +841,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_archived => 'Bu sohbet arşivlendi';
 
   @override
+  String get chat_deleted_user => 'Silinmiş kullanıcı';
+
+  @override
+  String get chat_deleted_user_info =>
+      'Bu kullanıcı hesabını sildi. Artık mesaj gönderemezsin.';
+
+  @override
   String get chat_meeting_question => 'Buluşmanız gerçekleşti mi?';
 
   @override

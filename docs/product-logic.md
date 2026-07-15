@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.2 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.3 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -73,7 +73,8 @@ active (6/12/24/48 saat — sahibi seçer)
 - İlandan bağımsız yaşar: ilan silinse de sohbet ve mesajlar korunur. ✅ (17.06 CASCADE vakasının dersi — bağ SET NULL)
 - Okundu bilgisi: karşı taraf mesajı görünce işaretlenir; rozet buna göre söner. ✅ (15.07 fix)
 - **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. Engelleme **çift yönlü süzülür**: engellediğim + beni engelleyen kişilerin ilanları feed/keşfette görünmez (`hidden_from_feed` RPC). ✅ 15.07
-- **Sohbet menüsündeki "sil" seçeneği kaldırılacak** — engelleme yeterli tek-taraflı çıkış yoludur; "sil" bugün match'i silip karşı tarafın sohbetini de yok ediyor (ilkeye aykırı). Listeyi sadeleştirme (kendi tarafında gizleme/arşiv) post-launch. 🔧
+- **Sohbet menüsündeki "sil" → tek-taraflı "gizle" (WhatsApp standardı):** gizleyen kullanıcının listesinden sohbet kalkar; karşı tarafta aynen durur; mesaj geçmişi korunur (gizleme yalnız liste seviyesindedir). Gizlenen sohbete karşı taraftan **yeni mesaj gelince sohbet listeye geri döner**. Match **SİLİNMEZ** — yukarıdaki ilkeye uygun (otomatik/tek-taraflı süreç sohbeti yok etmez, yalnız listeden gizler). 🔧
+- **Engelleme** bundan ayrıdır ve mevcut haliyle kalır: match tamamen silinir, sohbet iki taraftan da gider (bu, kullanıcının bilinçli "tam kesme" aksiyonudur). ✅
 - **Buluşma mekaniği (canlandırılacak 🕐):** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır; buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet **arşive** iner (silinmez, arşiv sekmesinde durur). Launch-kritik değil.
 
 ## 8. Hesap silme — "Silinen kullanıcı" modeli (15.07 kararı, canlı)
@@ -124,6 +125,6 @@ active (6/12/24/48 saat — sahibi seçer)
 | In-app bildirim metinleri RU/EN/TR | launch öncesi | ✅ (zaten render-time l10n'dı) |
 | pending→expired cron adımı + "seçim yapılmadı" gösterimi | launch öncesi | ✅ 15.07 |
 | Selfie onay metni nötrleştirme ("mavi tik" → nötr) | launch öncesi | ✅ 15.07 |
-| Sohbet menüsünden "sil" seçeneğini kaldırma | 🔧 launch öncesi | karar bekliyor (§7) |
+| Sohbet "sil" → tek-taraflı "gizle" (WhatsApp standardı, §7) | 🔧 launch öncesi | planlandı |
 | Buluşma/arşiv mekaniğinin canlandırılması | 🕐 uygun boşlukta | açık |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |

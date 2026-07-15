@@ -800,11 +800,12 @@
   "notif_action_new_application": "откликнулся(ась) на ваше приглашение",
   "notif_action_selected": "выбрал(а) тебя 🎉",
   "notif_action_not_selected": "ответил(а) на твою заявку",
-  "chat_delete_conversation": "Удалить чат",
+  "chat_hide_conversation": "Скрыть чат",
+  "chat_hide": "Скрыть",
   "chat_block_and_close": "Заблокировать и закрыть",
   "chat_block": "Заблокировать",
   "chat_open": "Чат открыт",
-  "chat_delete_confirm_body": "Хочешь удалить этот чат? Он переместится в архив.",
+  "chat_hide_confirm_body": "Чат исчезнет из твоего списка. Собеседник продолжит его видеть; при новом сообщении чат вернётся.",
   "chat_block_confirm_body": "{gender, select, female{Ты уверена, что хочешь заблокировать этого человека? Чат закроется.} other{Ты уверен, что хочешь заблокировать этого человека? Чат закроется.}}",
   "@chat_block_confirm_body": {
     "placeholders": {

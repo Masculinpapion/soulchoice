@@ -426,12 +426,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  Future<void> _deleteChat() async {
+  // Tek-taraflı gizleme (WhatsApp standardı): match SİLİNMEZ, yalnız benim
+  // listemden kalkar; karşı taraf sohbeti aynen görür; yeni mesajla geri döner.
+  Future<void> _hideChat() async {
     try {
       await Supabase.instance.client
-          .from('matches')
-          .delete()
-          .eq('id', widget.matchId);
+          .rpc('hide_chat', params: {'p_match_id': widget.matchId});
       if (mounted) context.go('/messages');
     } catch (e) {
       if (mounted) {
@@ -501,7 +501,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               isLoading: _matchInfo == null && initial == null,
               onBack: () => context.pop(),
               onBlock: _block,
-              onDelete: _deleteChat,
+              onHide: _hideChat,
               currentUserGender: _currentUserGender(),
             ),
             // Event badge — davet bilgisi özeti
@@ -768,7 +768,7 @@ class _ChatAppBar extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onBack;
   final VoidCallback? onBlock;
-  final VoidCallback? onDelete;
+  final VoidCallback? onHide;
   final String currentUserGender;
   const _ChatAppBar({
     required this.otherName,
@@ -778,7 +778,7 @@ class _ChatAppBar extends StatelessWidget {
     this.isLoading = false,
     required this.onBack,
     this.onBlock,
-    this.onDelete,
+    this.onHide,
     this.currentUserGender = 'other',
   });
 
@@ -894,14 +894,14 @@ class _ChatAppBar extends StatelessWidget {
                   shadowColor: Colors.black54,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   onSelected: (val) {
-                    if (val == 'delete') {
+                    if (val == 'hide') {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
                           backgroundColor: const Color(0xFF14121E),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                           title: Text(
-                            AppLocalizations.of(context)!.chat_delete_conversation,
+                            AppLocalizations.of(context)!.chat_hide_conversation,
                             style: TextStyle(
                               fontFamily: 'Fraunces',
                               fontStyle: FontStyle.italic,
@@ -910,7 +910,7 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            AppLocalizations.of(context)!.chat_delete_confirm_body,
+                            AppLocalizations.of(context)!.chat_hide_confirm_body,
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),
@@ -925,8 +925,8 @@ class _ChatAppBar extends StatelessWidget {
                                   style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
                             ),
                             TextButton(
-                              onPressed: () { Navigator.pop(ctx); onDelete!(); },
-                              child: Text(AppLocalizations.of(context)!.btn_delete,
+                              onPressed: () { Navigator.pop(ctx); onHide!(); },
+                              child: Text(AppLocalizations.of(context)!.chat_hide,
                                   style: TextStyle(
                                     fontFamily: 'JetBrainsMono',
                                     color: Colors.white.withOpacity(0.8),
@@ -981,13 +981,13 @@ class _ChatAppBar extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    if (onDelete != null)
+                    if (onHide != null)
                       PopupMenuItem(
-                        value: 'delete',
+                        value: 'hide',
                         child: Row(children: [
-                          Icon(Icons.delete_outline, color: Colors.white.withOpacity(0.6), size: 18),
+                          Icon(Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.6), size: 18),
                           const SizedBox(width: 10),
-                          Text(AppLocalizations.of(context)!.chat_delete_conversation,
+                          Text(AppLocalizations.of(context)!.chat_hide_conversation,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,

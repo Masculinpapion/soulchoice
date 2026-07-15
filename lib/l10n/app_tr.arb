@@ -800,11 +800,12 @@
   "notif_action_new_application": "davetinize başvurdu",
   "notif_action_selected": "seni seçti 🎉",
   "notif_action_not_selected": "başvurunu yanıtladı",
-  "chat_delete_conversation": "Sohbeti Sil",
+  "chat_hide_conversation": "Sohbeti Gizle",
+  "chat_hide": "Gizle",
   "chat_block_and_close": "Engelle ve Kapat",
   "chat_block": "Engelle",
   "chat_open": "Chat açık",
-  "chat_delete_confirm_body": "Bu sohbeti silmek istiyor musun? Geçmiş'e taşınacak.",
+  "chat_hide_confirm_body": "Bu sohbet listenden kalkacak. Karşı taraf sohbeti görmeye devam eder; yeni mesaj gelirse sohbet geri gelir.",
   "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.",
   "@chat_block_confirm_body": {
     "placeholders": {

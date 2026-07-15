@@ -1687,7 +1687,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notif_action_not_selected => 'ответил(а) на твою заявку';
 
   @override
-  String get chat_delete_conversation => 'Удалить чат';
+  String get chat_hide_conversation => 'Скрыть чат';
+
+  @override
+  String get chat_hide => 'Скрыть';
 
   @override
   String get chat_block_and_close => 'Заблокировать и закрыть';
@@ -1699,8 +1702,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_open => 'Чат открыт';
 
   @override
-  String get chat_delete_confirm_body =>
-      'Хочешь удалить этот чат? Он переместится в архив.';
+  String get chat_hide_confirm_body =>
+      'Чат исчезнет из твоего списка. Собеседник продолжит его видеть; при новом сообщении чат вернётся.';
 
   @override
   String chat_block_confirm_body(String gender) {

@@ -1661,7 +1661,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notif_action_not_selected => 'responded to your application';
 
   @override
-  String get chat_delete_conversation => 'Delete Chat';
+  String get chat_hide_conversation => 'Hide chat';
+
+  @override
+  String get chat_hide => 'Hide';
 
   @override
   String get chat_block_and_close => 'Block and Close';
@@ -1673,8 +1676,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_open => 'Chat open';
 
   @override
-  String get chat_delete_confirm_body =>
-      'Do you want to delete this chat? It will be moved to history.';
+  String get chat_hide_confirm_body =>
+      'This chat leaves your list. The other person still sees it; it returns when a new message arrives.';
 
   @override
   String chat_block_confirm_body(String gender) {

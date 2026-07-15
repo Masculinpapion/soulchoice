@@ -46,7 +46,8 @@ final matchesProvider =
 
   final data = await client
       .from('matches')
-      .select('id, user1_id, user2_id, meeting_date, archived_at')
+      .select('id, user1_id, user2_id, meeting_date, archived_at, '
+          'user1_hidden_at, user2_hidden_at')
       .or('user1_id.eq.$uid,user2_id.eq.$uid')
       // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
       // match varsa seen.containsKey eski archived olanı tutmasın)
@@ -109,11 +110,23 @@ final matchesProvider =
     final matchId = m['id'] as String;
     final otherUserId = otherUserIds[i];
     final userRow = userMap[otherUserId];
+    final lastMsg = lastMsgMap[matchId];
+
+    // Tek-taraflı gizleme: benim hidden_at'imden sonra yeni mesaj yoksa gizle.
+    // Yeni mesaj gelince (created_at > hidden_at) sohbet otomatik geri döner.
+    final myHiddenRaw =
+        (m['user1_id'] == uid) ? m['user1_hidden_at'] : m['user2_hidden_at'];
+    if (myHiddenRaw != null) {
+      final hiddenAt = DateTime.parse(myHiddenRaw as String);
+      final lastRaw = lastMsg?['created_at'] as String?;
+      if (lastRaw == null || !DateTime.parse(lastRaw).isAfter(hiddenAt)) {
+        continue;
+      }
+    }
+
     // Silinmiş kullanıcıda kişi bazlı dedup yapılamaz — match bazında tut
     final seenKey = otherUserId ?? 'match:$matchId';
     if (seen.containsKey(seenKey)) continue;
-
-    final lastMsg = lastMsgMap[matchId];
     seen[seenKey] = MatchPreview(
       matchId: matchId,
       otherUserId: otherUserId,

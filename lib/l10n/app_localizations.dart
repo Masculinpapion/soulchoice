@@ -3148,11 +3148,17 @@ abstract class AppLocalizations {
   /// **'responded to your application'**
   String get notif_action_not_selected;
 
-  /// No description provided for @chat_delete_conversation.
+  /// No description provided for @chat_hide_conversation.
   ///
   /// In en, this message translates to:
-  /// **'Delete Chat'**
-  String get chat_delete_conversation;
+  /// **'Hide chat'**
+  String get chat_hide_conversation;
+
+  /// No description provided for @chat_hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get chat_hide;
 
   /// No description provided for @chat_block_and_close.
   ///
@@ -3172,11 +3178,11 @@ abstract class AppLocalizations {
   /// **'Chat open'**
   String get chat_open;
 
-  /// No description provided for @chat_delete_confirm_body.
+  /// No description provided for @chat_hide_confirm_body.
   ///
   /// In en, this message translates to:
-  /// **'Do you want to delete this chat? It will be moved to history.'**
-  String get chat_delete_confirm_body;
+  /// **'This chat leaves your list. The other person still sees it; it returns when a new message arrives.'**
+  String get chat_hide_confirm_body;
 
   /// No description provided for @chat_block_confirm_body.
   ///

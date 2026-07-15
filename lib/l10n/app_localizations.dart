@@ -1402,6 +1402,12 @@ abstract class AppLocalizations {
   /// **'Expired'**
   String get inv_detail_status_expired;
 
+  /// No description provided for @inv_detail_status_not_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
+  String get inv_detail_status_not_selected;
+
   /// No description provided for @inv_detail_day_mon.
   ///
   /// In en, this message translates to:

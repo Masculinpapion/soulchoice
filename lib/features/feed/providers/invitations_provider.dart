@@ -27,10 +27,12 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     int maxAge = 60;
     if (currentUserId != null) {
       final results = await Future.wait<dynamic>([
-        client.from('blocks').select('blocked_id').eq('blocker_id', currentUserId),
+        // Çift yönlü gizleme: engellediğim + beni engelleyen (SECURITY DEFINER RPC)
+        client.rpc('hidden_from_feed'),
         client.from('users').select('gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
       ]);
-      blockedIds = (results[0] as List).map((b) => b['blocked_id'] as String).toList();
+      blockedIds =
+          (results[0] as List).map((b) => b['user_id'] as String).toList();
       final userRow = results[1] as Map<String, dynamic>?;
       myGender = userRow?['gender'] as String?;
       minAge = userRow?['min_age'] as int? ?? 21;
@@ -70,6 +72,12 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
+
+      // Yaş aralığı tercihi (product-logic §5): aralık dışı ilan sahibini gösterme
+      final ownerAge = ownerRow?['age'] as int?;
+      if (ownerAge != null && (ownerAge < minAge || ownerAge > maxAge)) {
+        return null;
+      }
 
       final owner = ownerRow != null
           ? UserModel(

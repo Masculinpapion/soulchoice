@@ -702,6 +702,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_status_expired => 'Expired';
 
   @override
+  String get inv_detail_status_not_selected => 'Not selected';
+
+  @override
   String get inv_detail_day_mon => 'Mon';
 
   @override

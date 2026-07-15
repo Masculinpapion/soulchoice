@@ -276,6 +276,7 @@
   "inv_detail_status_awaiting": "AWAITING SELECTION",
   "inv_detail_status_remaining": "TIME REMAINING",
   "inv_detail_status_expired": "Expired",
+  "inv_detail_status_not_selected": "Not selected",
   "inv_detail_day_mon": "Mon",
   "inv_detail_day_tue": "Tue",
   "inv_detail_day_wed": "Wed",

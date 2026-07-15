@@ -718,7 +718,13 @@ class _CountdownStrip extends StatelessWidget {
   }
 
   String _value(AppLocalizations l10n) {
-    if (invStatus == 'closed' || invStatus == 'cancelled') return '—';
+    if (invStatus == 'closed' || invStatus == 'cancelled') {
+      // Başvuran ve seçilmemiş (accepted değil) → "seçim yapılmadı" (product-logic §4)
+      if (appStatus != null && appStatus != 'accepted') {
+        return l10n.inv_detail_status_not_selected;
+      }
+      return '—';
+    }
     if (appStatus == 'accepted') {
       if (eventDate != null) {
         final days = [

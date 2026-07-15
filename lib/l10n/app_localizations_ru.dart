@@ -708,6 +708,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_status_expired => 'Истекло';
 
   @override
+  String get inv_detail_status_not_selected => 'Выбор не сделан';
+
+  @override
   String get inv_detail_day_mon => 'Пн';
 
   @override

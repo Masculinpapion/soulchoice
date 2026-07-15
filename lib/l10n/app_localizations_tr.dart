@@ -701,6 +701,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_status_expired => 'Süresi doldu';
 
   @override
+  String get inv_detail_status_not_selected => 'Seçim yapılmadı';
+
+  @override
   String get inv_detail_day_mon => 'Pzt';
 
   @override

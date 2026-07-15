@@ -1,6 +1,6 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.1 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.2 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
@@ -42,7 +42,7 @@ active (6/12/24/48 saat — sahibi seçer)
 
 - Geçişler saatlik cron'la olur; saate yuvarlanır. ✅
 - `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
-- **Süresi dolan bekleyen başvurular `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). 🔧
+- **Kapanan (`closed`) ilanlarda seçilmeyen bekleyen başvurular saatlik temizlikte `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). ✅ 15.07
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
 ## 5. Limitler, filtreler ve Premium
@@ -53,7 +53,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - **Premium = sınırsız başvuru. Başka hiçbir şey açmaz.** Tek paket 1000₽/ay, kayıtlı karttan iptale kadar otomatik yenileme (Точка), ödeme gecikmesinde grace-period korumalı. ✅
 - Eşleşmiş çiftin yeni başvurusu da paywall'a takılır — bilinçli, istisna yok (12.07). ✅
 - **Bu kuralların TAMAMI artık sunucuda (DB trigger + RLS) zorlanır** — modifiye istemci bedava/sınırsız başvuramaz, kendi ilanına başvuramaz, doğrudan `accepted` insert edemez. ✅ (15.07 sertleştirme)
-- **Yaş aralığı filtresi:** Kullanıcının Ayarlar'daki min/max yaş tercihi feed ve keşfette uygulanır (yalnız bu aralıktaki karşı-cins ilanları görünür). Tercih kalıcıdır ve UI'da kalır. 🔧 _(bugün ayar kaydediliyor ama sorgular okumuyor — bağlanacak)_
+- **Yaş aralığı filtresi:** Kullanıcının Ayarlar'daki min/max yaş tercihi feed ve keşfette uygulanır (yalnız bu aralıktaki karşı-cins ilan sahipleri görünür). Tercih kalıcıdır ve UI'da kalır. ✅ 15.07
 
 ## 6. Seçim: "Serbest Seçim" modeli
 
@@ -72,7 +72,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - Sohbet **yalnızca kabul anında** açılır; başka yolu yoktur. ✅
 - İlandan bağımsız yaşar: ilan silinse de sohbet ve mesajlar korunur. ✅ (17.06 CASCADE vakasının dersi — bağ SET NULL)
 - Okundu bilgisi: karşı taraf mesajı görünce işaretlenir; rozet buna göre söner. ✅ (15.07 fix)
-- **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. ✅
+- **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. Engelleme **çift yönlü süzülür**: engellediğim + beni engelleyen kişilerin ilanları feed/keşfette görünmez (`hidden_from_feed` RPC). ✅ 15.07
 - **Sohbet menüsündeki "sil" seçeneği kaldırılacak** — engelleme yeterli tek-taraflı çıkış yoludur; "sil" bugün match'i silip karşı tarafın sohbetini de yok ediyor (ilkeye aykırı). Listeyi sadeleştirme (kendi tarafında gizleme/arşiv) post-launch. 🔧
 - **Buluşma mekaniği (canlandırılacak 🕐):** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır; buluşma saatinden sonra iki tarafa "buluşma gerçekleşti mi?" anketi çıkar; buluşmadan 24 saat sonra sohbet **arşive** iner (silinmez, arşiv sekmesinde durur). Launch-kritik değil.
 
@@ -96,7 +96,7 @@ active (6/12/24/48 saat — sahibi seçer)
 | Selfie reddedildi | kullanıcı | ✅ | ❌ | |
 
 - Push l10n çağıran tarafın (gönderenin) dilinde üretilir — mevcut kalıp; tüm push'lar böyle.
-- **In-app bildirim metinleri bugün DB'de sabit Türkçe** — RU/EN/TR'ye taşınacak (render-time l10n). 🔧 launch öncesi.
+- **In-app bildirim metinleri `type`'a göre render-time l10n üretilir (RU/EN/TR).** DB'deki title/body yalnız fallback/kayıttır. ✅ _(ADIM 1'de "sabit TR" sanılmıştı — ekran zaten lokalize)_
 - Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅
 
 ## 10. Kayıt ve doğrulama
@@ -119,11 +119,11 @@ active (6/12/24/48 saat — sahibi seçer)
 | Başvuru/kabul kurallarını sunucuda zorlama (guard trigger + RLS) | launch-kritik | ✅ 15.07 |
 | Kabul bildirimi (in-app + push, l10n) | launch-kritik | ✅ 15.07 |
 | Selfie kapısını başvuruya da koyma | launch-kritik | ✅ 15.07 (guard trigger'a dahil) |
-| Yaş aralığı filtresini feed/keşfete bağlama | 🔧 launch öncesi | açık |
-| Engellemeyi çift yönlü süzme (beni engelleyeni ben de görmeyeyim) | 🔧 launch öncesi | açık |
-| Sohbet menüsünden "sil" seçeneğini kaldırma | 🔧 launch öncesi | açık |
-| In-app bildirim metinleri RU/EN/TR | 🔧 launch öncesi | açık |
-| pending→expired cron adımı + "seçim yapılmadı" gösterimi | 🔧 launch öncesi | açık |
-| Selfie onay metni nötrleştirme ("mavi tik" → "profilin doğrulandı") | 🔧 launch öncesi | açık |
+| Yaş aralığı filtresini feed/keşfete bağlama | launch öncesi | ✅ 15.07 |
+| Engellemeyi çift yönlü süzme (beni engelleyeni ben de görmeyeyim) | launch öncesi | ✅ 15.07 |
+| In-app bildirim metinleri RU/EN/TR | launch öncesi | ✅ (zaten render-time l10n'dı) |
+| pending→expired cron adımı + "seçim yapılmadı" gösterimi | launch öncesi | ✅ 15.07 |
+| Selfie onay metni nötrleştirme ("mavi tik" → nötr) | launch öncesi | ✅ 15.07 |
+| Sohbet menüsünden "sil" seçeneğini kaldırma | 🔧 launch öncesi | karar bekliyor (§7) |
 | Buluşma/arşiv mekaniğinin canlandırılması | 🕐 uygun boşlukta | açık |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |

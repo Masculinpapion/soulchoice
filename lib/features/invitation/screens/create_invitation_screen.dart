@@ -121,7 +121,11 @@ class _CreateInvitationScreenState
       selected: _category,
       onSelected: (v) => setState(() => _category = v),
     ),
-    _StepTitle(controller: _titleController, category: _category),
+    _StepTitle(
+      controller: _titleController,
+      category: _category,
+      flowType: _flowType,
+    ),
     _StepDescription(
       controller: _descriptionController,
       flowType: _flowType,
@@ -909,7 +913,12 @@ class _StepCategory extends StatelessWidget {
 class _StepTitle extends StatelessWidget {
   final TextEditingController controller;
   final InvitationCategory? category;
-  const _StepTitle({required this.controller, this.category});
+  final InvitationFlowType flowType;
+  const _StepTitle({
+    required this.controller,
+    this.category,
+    required this.flowType,
+  });
 
   // Kategoriye özel şeffaf örnek — kullanıcı ne yazacağını örnekten görür
   // (hediye linki deseninin genele yayılması, Mustafa kararı 16.07).
@@ -922,7 +931,11 @@ class _StepTitle extends StatelessWidget {
         InvitationCategory.concert => l10n.create_inv_title_ph_concert,
         InvitationCategory.culture => l10n.create_inv_title_ph_culture,
         InvitationCategory.travel => l10n.create_inv_title_ph_travel,
-        InvitationCategory.gift => l10n.create_inv_title_ph_gift,
+        // Hediye başlığı akışa göre ayrılır: "Sana sürprizim var" davet eden
+        // dili; istek açanda "Sürprizleri severim" (16.07 düzeltmesi).
+        InvitationCategory.gift => flowType == InvitationFlowType.invite
+            ? l10n.create_inv_title_ph_gift
+            : l10n.create_inv_title_ph_gift_req,
         InvitationCategory.sport => l10n.create_inv_title_ph_sport,
         InvitationCategory.walk => l10n.create_inv_title_ph_walk,
         InvitationCategory.karaoke => l10n.create_inv_title_ph_karaoke,
@@ -1034,22 +1047,51 @@ class _StepDescription extends StatelessWidget {
     }
   }
 
-  // Kutu içi şeffaf örnek metin — akış-nötr, kategoriye özel (16.07).
-  String _inputHint(AppLocalizations l10n) => switch (category) {
-        InvitationCategory.food => l10n.create_inv_desc_ph_food,
-        InvitationCategory.bar => l10n.create_inv_desc_ph_bar,
-        InvitationCategory.coffee => l10n.create_inv_desc_ph_coffee,
-        InvitationCategory.cinema => l10n.create_inv_desc_ph_cinema,
-        InvitationCategory.theater => l10n.create_inv_desc_ph_theater,
-        InvitationCategory.concert => l10n.create_inv_desc_ph_concert,
-        InvitationCategory.culture => l10n.create_inv_desc_ph_culture,
-        InvitationCategory.travel => l10n.create_inv_desc_ph_travel,
-        InvitationCategory.gift => l10n.create_inv_desc_ph_gift,
-        InvitationCategory.sport => l10n.create_inv_desc_ph_sport,
-        InvitationCategory.walk => l10n.create_inv_desc_ph_walk,
-        InvitationCategory.karaoke => l10n.create_inv_desc_ph_karaoke,
-        _ => l10n.create_inv_desc_input_hint,
-      };
+  // Kutu içi şeffaf örnek — kategoriye VE akışa özel (16.07 düzeltmesi:
+  // "Rezervasyon benden / İlk kadeh benden" davet SAHİBİ dili; istek açan
+  // tarafta rezervasyon/ödeme iması olmayan "…isterim/arıyorum" dili gösterilir).
+  String _inputHint(AppLocalizations l10n) {
+    final isInvite = flowType == InvitationFlowType.invite;
+    return switch (category) {
+      InvitationCategory.food => isInvite
+          ? l10n.create_inv_desc_ph_food
+          : l10n.create_inv_desc_ph_food_req,
+      InvitationCategory.bar => isInvite
+          ? l10n.create_inv_desc_ph_bar
+          : l10n.create_inv_desc_ph_bar_req,
+      InvitationCategory.coffee => isInvite
+          ? l10n.create_inv_desc_ph_coffee
+          : l10n.create_inv_desc_ph_coffee_req,
+      InvitationCategory.cinema => isInvite
+          ? l10n.create_inv_desc_ph_cinema
+          : l10n.create_inv_desc_ph_cinema_req,
+      InvitationCategory.theater => isInvite
+          ? l10n.create_inv_desc_ph_theater
+          : l10n.create_inv_desc_ph_theater_req,
+      InvitationCategory.concert => isInvite
+          ? l10n.create_inv_desc_ph_concert
+          : l10n.create_inv_desc_ph_concert_req,
+      InvitationCategory.culture => isInvite
+          ? l10n.create_inv_desc_ph_culture
+          : l10n.create_inv_desc_ph_culture_req,
+      InvitationCategory.travel => isInvite
+          ? l10n.create_inv_desc_ph_travel
+          : l10n.create_inv_desc_ph_travel_req,
+      InvitationCategory.gift => isInvite
+          ? l10n.create_inv_desc_ph_gift
+          : l10n.create_inv_desc_ph_gift_req,
+      InvitationCategory.sport => isInvite
+          ? l10n.create_inv_desc_ph_sport
+          : l10n.create_inv_desc_ph_sport_req,
+      InvitationCategory.walk => isInvite
+          ? l10n.create_inv_desc_ph_walk
+          : l10n.create_inv_desc_ph_walk_req,
+      InvitationCategory.karaoke => isInvite
+          ? l10n.create_inv_desc_ph_karaoke
+          : l10n.create_inv_desc_ph_karaoke_req,
+      _ => l10n.create_inv_desc_input_hint,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {

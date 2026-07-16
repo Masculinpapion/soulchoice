@@ -1462,6 +1462,84 @@ abstract class AppLocalizations {
   /// **'Court, gym or club name'**
   String get create_inv_venue_subtitle_sport;
 
+  /// No description provided for @create_inv_desc_ph_food_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dreaming of a cozy Italian dinner — pasta, wine and easy conversation.'**
+  String get create_inv_desc_ph_food_req;
+
+  /// No description provided for @create_inv_desc_ph_bar_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I\'d love to meet over cocktails at a bar with a city view and good music.'**
+  String get create_inv_desc_ph_bar_req;
+
+  /// No description provided for @create_inv_desc_ph_coffee_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Up for a good chat over coffee and dessert at a cozy café.'**
+  String get create_inv_desc_ph_coffee_req;
+
+  /// No description provided for @create_inv_desc_ph_cinema_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I\'d love to catch the new release on the big screen and talk it over after.'**
+  String get create_inv_desc_ph_cinema_req;
+
+  /// No description provided for @create_inv_desc_ph_theater_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I\'ve been meaning to see a classic play — with a walk and chat after.'**
+  String get create_inv_desc_ph_theater_req;
+
+  /// No description provided for @create_inv_desc_ph_concert_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I love live music energy — looking for company for a good concert.'**
+  String get create_inv_desc_ph_concert_req;
+
+  /// No description provided for @create_inv_desc_ph_culture_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I\'d like to wander the new exhibition and share impressions at the museum café.'**
+  String get create_inv_desc_ph_culture_req;
+
+  /// No description provided for @create_inv_desc_ph_travel_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dreaming of a two-day city escape — old town, a river cruise and good food.'**
+  String get create_inv_desc_ph_travel_req;
+
+  /// No description provided for @create_inv_desc_ph_gift_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I adore little surprises — anyone who enjoys spoiling someone?'**
+  String get create_inv_desc_ph_gift_req;
+
+  /// No description provided for @create_inv_desc_ph_sport_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Looking for a tennis partner — an hour of play, smoothies after.'**
+  String get create_inv_desc_ph_sport_req;
+
+  /// No description provided for @create_inv_desc_ph_walk_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. An easy evening walk in the park and good conversation sounds perfect.'**
+  String get create_inv_desc_ph_walk_req;
+
+  /// No description provided for @create_inv_desc_ph_karaoke_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Looking for karaoke company — happy to duet or just cheer along.'**
+  String get create_inv_desc_ph_karaoke_req;
+
+  /// No description provided for @create_inv_title_ph_gift_req.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. I love surprises'**
+  String get create_inv_title_ph_gift_req;
+
   /// No description provided for @create_inv_datetime_placeholder.
   ///
   /// In en, this message translates to:

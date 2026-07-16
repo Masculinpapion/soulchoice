@@ -746,6 +746,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_venue_subtitle_sport => 'Court, gym or club name';
 
   @override
+  String get create_inv_desc_ph_food_req =>
+      'e.g. Dreaming of a cozy Italian dinner — pasta, wine and easy conversation.';
+
+  @override
+  String get create_inv_desc_ph_bar_req =>
+      'e.g. I\'d love to meet over cocktails at a bar with a city view and good music.';
+
+  @override
+  String get create_inv_desc_ph_coffee_req =>
+      'e.g. Up for a good chat over coffee and dessert at a cozy café.';
+
+  @override
+  String get create_inv_desc_ph_cinema_req =>
+      'e.g. I\'d love to catch the new release on the big screen and talk it over after.';
+
+  @override
+  String get create_inv_desc_ph_theater_req =>
+      'e.g. I\'ve been meaning to see a classic play — with a walk and chat after.';
+
+  @override
+  String get create_inv_desc_ph_concert_req =>
+      'e.g. I love live music energy — looking for company for a good concert.';
+
+  @override
+  String get create_inv_desc_ph_culture_req =>
+      'e.g. I\'d like to wander the new exhibition and share impressions at the museum café.';
+
+  @override
+  String get create_inv_desc_ph_travel_req =>
+      'e.g. Dreaming of a two-day city escape — old town, a river cruise and good food.';
+
+  @override
+  String get create_inv_desc_ph_gift_req =>
+      'e.g. I adore little surprises — anyone who enjoys spoiling someone?';
+
+  @override
+  String get create_inv_desc_ph_sport_req =>
+      'e.g. Looking for a tennis partner — an hour of play, smoothies after.';
+
+  @override
+  String get create_inv_desc_ph_walk_req =>
+      'e.g. An easy evening walk in the park and good conversation sounds perfect.';
+
+  @override
+  String get create_inv_desc_ph_karaoke_req =>
+      'e.g. Looking for karaoke company — happy to duet or just cheer along.';
+
+  @override
+  String get create_inv_title_ph_gift_req => 'e.g. I love surprises';
+
+  @override
   String get create_inv_datetime_placeholder => 'Select date & time';
 
   @override

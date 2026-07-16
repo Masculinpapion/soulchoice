@@ -747,6 +747,57 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_venue_subtitle_sport => 'Корт, зал или клуб';
 
   @override
+  String get create_inv_desc_ph_food_req =>
+      'Напр.: Мечтаю об уютном итальянском ресторане — паста, вино и лёгкое общение.';
+
+  @override
+  String get create_inv_desc_ph_bar_req =>
+      'Напр.: Хочу познакомиться за коктейлем в баре с видом на город и хорошей музыкой.';
+
+  @override
+  String get create_inv_desc_ph_coffee_req =>
+      'Напр.: С удовольствием поболтаю за кофе с десертом в уютной кофейне.';
+
+  @override
+  String get create_inv_desc_ph_cinema_req =>
+      'Напр.: Хочу посмотреть новинку на большом экране и обсудить после сеанса.';
+
+  @override
+  String get create_inv_desc_ph_theater_req =>
+      'Напр.: Давно хочу на классическую постановку — а после спектакля прогуляться и обсудить.';
+
+  @override
+  String get create_inv_desc_ph_concert_req =>
+      'Напр.: Люблю энергию живой музыки — ищу компанию на хороший концерт.';
+
+  @override
+  String get create_inv_desc_ph_culture_req =>
+      'Напр.: Хочу пройтись по новой выставке и обсудить впечатления в кафе музея.';
+
+  @override
+  String get create_inv_desc_ph_travel_req =>
+      'Напр.: Мечтаю о двух днях в другом городе — исторический центр, прогулка по реке и хорошие рестораны.';
+
+  @override
+  String get create_inv_desc_ph_gift_req =>
+      'Напр.: Обожаю маленькие сюрпризы — есть кто-то, кто любит радовать?';
+
+  @override
+  String get create_inv_desc_ph_sport_req =>
+      'Напр.: Ищу партнёра по теннису — час игры и смузи после.';
+
+  @override
+  String get create_inv_desc_ph_walk_req =>
+      'Напр.: Спокойная вечерняя прогулка в парке и хороший разговор — то, что нужно.';
+
+  @override
+  String get create_inv_desc_ph_karaoke_req =>
+      'Напр.: Ищу компанию на караоке — можно дуэтом, можно просто за компанию.';
+
+  @override
+  String get create_inv_title_ph_gift_req => 'Напр.: Люблю сюрпризы';
+
+  @override
   String get create_inv_datetime_placeholder => 'Выбрать дату и время';
 
   @override

@@ -745,6 +745,57 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_venue_subtitle_sport => 'Kort, salon veya kulüp adı';
 
   @override
+  String get create_inv_desc_ph_food_req =>
+      'Örn: Sakin bir İtalyan restoranında pasta ve şarap eşliğinde keyifli bir akşam hayal ediyorum.';
+
+  @override
+  String get create_inv_desc_ph_bar_req =>
+      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik eşliğinde tanışmak isterim.';
+
+  @override
+  String get create_inv_desc_ph_coffee_req =>
+      'Örn: Rahat bir kafede kahve ve tatlı eşliğinde güzel bir sohbete varım.';
+
+  @override
+  String get create_inv_desc_ph_cinema_req =>
+      'Örn: Yeni çıkan filmi büyük ekranda izlemek, sonrasında üzerine sohbet etmek isterim.';
+
+  @override
+  String get create_inv_desc_ph_theater_req =>
+      'Örn: Uzun süredir sahnede klasik bir oyun izlemek istiyorum — sonrasında kısa bir yürüyüş sohbeti.';
+
+  @override
+  String get create_inv_desc_ph_concert_req =>
+      'Örn: Canlı müzik enerjisini seviyorum — iyi bir konserde eşlik edecek biri arıyorum.';
+
+  @override
+  String get create_inv_desc_ph_culture_req =>
+      'Örn: Yeni açılan sergiyi gezmek ve izlenimleri müze kafesinde konuşmak isterim.';
+
+  @override
+  String get create_inv_desc_ph_travel_req =>
+      'Örn: İki günlük bir şehir kaçamağı hayalim var — tarihi merkez, nehir turu ve iyi restoranlar.';
+
+  @override
+  String get create_inv_desc_ph_gift_req =>
+      'Örn: Küçük sürprizlere bayılırım — beni şımartmak isteyen biri var mı?';
+
+  @override
+  String get create_inv_desc_ph_sport_req =>
+      'Örn: Tenis partneri arıyorum — bir saat oyun, sonrasında smoothie molası.';
+
+  @override
+  String get create_inv_desc_ph_walk_req =>
+      'Örn: Akşam parkta sakin bir yürüyüş ve güzel bir sohbet iyi gelir.';
+
+  @override
+  String get create_inv_desc_ph_karaoke_req =>
+      'Örn: Karaoke gecesine eşlik arıyorum — düete de varım, dinlemeye de.';
+
+  @override
+  String get create_inv_title_ph_gift_req => 'Örn: Sürprizleri severim';
+
+  @override
   String get create_inv_datetime_placeholder => 'Tarih ve saat seç';
 
   @override

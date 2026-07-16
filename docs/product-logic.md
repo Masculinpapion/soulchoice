@@ -1,10 +1,12 @@
 # SoulChoice — Ürün Mantığı (TEK KAYNAK)
 
-_Sürüm: 1.8 — 15.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
+_Sürüm: 1.9 — 16.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranış + Mustafa'nın ürün kararları._
 
 **Bu belge nasıl kullanılır:** Burası ürünün *niyetidir*. Kod bu belgeyle çelişiyorsa **kod hatalıdır** (belge güncellenmediyse). Davranış değiştiren her PR önce bu belgeyle karşılaştırılır; bilinçli sapma belgeye işlenmeden merge edilmez. "Kod doğru çalışıyor ama ürün mantığına aykırı" sınıfı hataları (ör. 17.06 matches-CASCADE vakası) yakalamak için var.
 
 Durum işaretleri: ✅ kodda böyle · 🔧 karar verildi, uygulanacak (launch öncesi) · 🕐 karar verildi, post-launch/uygun boşluk.
+
+_v1.9 değişiklikleri: selfie onay/red artık push da gönderiyor (§9 ✅ 16.07, Mustafa kararı); red gerekçesi selfie ekranında da gösteriliyor (§9 ✅ 16.07)._
 
 _v1.1 değişiklikleri: başvuru/kabul kuralları artık sunucuda zorlanıyor (§5, §6, §10 ✅); kabul bildirimi eklendi (§9 ✅); yaş filtresi, sohbet silme, çift yönlü engelleme kararları işlendi (§5, §7 🔧)._
 
@@ -114,14 +116,14 @@ active (6/12/24/48 saat — sahibi seçer)
 | Reddedildin | başvuran | ✅ | ❌ push bilinçli yok | |
 | Süre doldu / seçilmedin | başvuran | ❌ **bilinçli sessizlik** | ❌ | 15.07 kararı |
 | Yeni mesaj | karşı taraf | ✅ | ✅ | |
-| Selfie onaylandı | kullanıcı | ✅ | ❌ | 🔧 metin nötrleştirilecek: "mavi tik" değil, "profilin doğrulandı" |
-| Selfie reddedildi | kullanıcı | ✅ | ❌ | |
+| Selfie onaylandı | kullanıcı | ✅ | ✅ | 16.07: push eklendi (DB trigger → pg_net → send-notification, alıcı dilinde); metin nötr "Profil onaylandı ✓" |
+| Selfie reddedildi | kullanıcı | ✅ | ✅ | 16.07: push eklendi, preset sebep push gövdesinde; sebep selfie ekranında da banner olarak görünür |
 | **Seçim penceresi kapanıyor** | ilan sahibi | ✅ | ✅ | ✅ 15.07: `selecting` + bekleyen başvuru + ≤12h kala, TEK sefer (`owner_reminded_at`); saatlik selection-reminder cron |
 
 - **Push l10n ALICININ dilinde (✅ 15.07):** `users.locale` (app dil ayarından senkron) + send-notification sunucu şablonları (selected/new_application/new_message/selection_reminder); istemcinin gönderdiği metin yalnız fallback. Eski "gönderenin dili" kalıbı kapandı.
 - **Yeni mesaj push'u İÇERİK TAŞIMAZ (✅ 15.07, Mustafa kararı):** kilit ekranı gizliliği — başlık gönderen adı, gövde sabit "Yeni mesaj/Новое сообщение"; sunucu şablonu eski istemcilerin gönderdiği içeriği de ezer.
 - **In-app bildirim metinleri `type`'a göre render-time l10n üretilir (RU/EN/TR).** DB'deki title/body yalnız fallback/kayıttır. ✅ _(ADIM 1'de "sabit TR" sanılmıştı — ekran zaten lokalize)_
-- Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅
+- Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅ İstisna: selfie onay/red push'ları hesap-durumu (işlemsel) bildirimidir — ayrı tercih kategorisi yoktur, her zaman gönderilir (16.07).
 
 ## 10. Kayıt ve doğrulama
 

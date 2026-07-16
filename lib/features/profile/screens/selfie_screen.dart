@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
 import '../../../core/services/native_uploader.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/utils/selfie_reason_l10n.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -23,6 +24,38 @@ class _SelfieScreenState extends State<SelfieScreen> {
   File? _selfie;
   bool _isUploading = false;
   final _picker = ImagePicker();
+  bool _wasRejected = false;
+  String? _rejectedReason;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRejection();
+  }
+
+  // Red bildirimi kaçmış olabilir — son red durumu ve preset sebebi
+  // selfie ekranında da gösterilir (Mustafa kararı 16.07).
+  Future<void> _loadRejection() async {
+    final client = Supabase.instance.client;
+    final uid = client.auth.currentUser?.id;
+    if (uid == null) return;
+    try {
+      final row = await client
+          .from('users')
+          .select('selfie_status, selfie_rejected_reason')
+          .eq('id', uid)
+          .maybeSingle();
+      if (!mounted || row == null || row['selfie_status'] != 'rejected') {
+        return;
+      }
+      setState(() {
+        _wasRejected = true;
+        _rejectedReason = row['selfie_rejected_reason'] as String?;
+      });
+    } catch (_) {
+      // Banner bilgilendirme amaçlı — hata ekranı bloklamaz
+    }
+  }
 
   Future<void> _takeSelfie() async {
     final picked = await _picker.pickImage(
@@ -162,6 +195,56 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     height: 1.5,
                   ),
                 ),
+                if (_wasRejected) ...[
+                  const SizedBox(height: 16),
+                  GlassCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 18,
+                          color: AuroraTheme.auroraRed,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.notif_type_selfie_rejected_title,
+                                style: const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AuroraTheme.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                selfieReasonL10n(
+                                      AppLocalizations.of(context)!,
+                                      _rejectedReason,
+                                    ) ??
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.notif_type_selfie_rejected_body,
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 13,
+                                  color: AuroraTheme.textSecondary,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 32),
                 Center(
                   child: GestureDetector(

@@ -60,6 +60,28 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'Başvurular bekliyor ✨', b: '{count} başvuran seçimini bekliyor — pencere yakında kapanıyor' },
     en: { t: 'Applications waiting ✨', b: '{count} applicants await your choice — window closes soon' },
   },
+  // Selfie kararı push'ları DB trigger'ından (notify_selfie_status → pg_net)
+  // gelir; metinler app l10n notif_type_selfie_* anahtarlarıyla birebir aynı.
+  selfie_approved: {
+    ru: { t: 'Профиль подтверждён ✓', b: 'Теперь ты можешь участвовать в приглашениях' },
+    tr: { t: 'Profil onaylandı ✓', b: 'Artık davetlere katılabilirsin' },
+    en: { t: 'Profile verified ✓', b: 'You can now join invitations' },
+  },
+  selfie_rejected: {
+    ru: { t: 'Фото отклонено', b: 'Пожалуйста, загрузи новое селфи' },
+    tr: { t: 'Fotoğraf reddedildi', b: 'Lütfen yeni bir selfie yükle' },
+    en: { t: 'Photo rejected', b: 'Please upload a new selfie' },
+  },
+}
+
+// Preset red sebepleri — app l10n selfie_reason_* ile birebir aynı metinler
+const SELFIE_REASONS: Record<string, Record<string, string>> = {
+  face_unclear: { ru: 'Лицо видно нечётко', tr: 'Yüz net görünmüyor', en: 'Face not clearly visible' },
+  too_far: { ru: 'Сделай селфи ближе', tr: 'Daha yakından çekmelisin', en: 'Take a closer selfie' },
+  accessories: { ru: 'Очки/шапка/маска закрывают лицо', tr: 'Gözlük/şapka/maske yüzü kapatıyor', en: 'Glasses/hat/mask cover your face' },
+  lighting: { ru: 'Мало света — сними при хорошем освещении', tr: 'Işık yetersiz — aydınlık yerde çek', en: 'Poor lighting — retake in good light' },
+  mismatch: { ru: 'Не совпадает с фото профиля', tr: 'Profil fotoğraflarıyla eşleşmiyor', en: "Doesn't match your profile photos" },
+  multiple_people: { ru: 'В кадре кто-то ещё — сделай селфи в одиночку', tr: 'Kadrajda başka biri var — tek başına çek', en: 'Someone else in frame — take it alone' },
 }
 
 serve(async (req) => {
@@ -139,6 +161,11 @@ serve(async (req) => {
         .replace('{count}', String(args.count ?? ''))
       finalTitle = fill(tpl.t).trim()
       finalBody = fill(tpl.b).trim()
+      if (notifType === 'selfie_rejected') {
+        const rt = SELFIE_REASONS[String(args.reason ?? '')]
+        const reasonText = rt?.[locale] ?? rt?.['ru']
+        if (reasonText) finalBody = `${reasonText} — ${finalBody}`
+      }
     }
 
     const accessToken = await getFcmAccessToken()

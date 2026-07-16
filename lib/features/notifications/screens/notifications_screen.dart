@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../../../core/utils/selfie_reason_l10n.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/notifications_provider.dart';
@@ -391,15 +392,7 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
       return l.notif_type_selfie_approved_body;
     case 'selfie_rejected':
       // Preset red sebebi (slug) kullanıcının dilinde gösterilir (16.07)
-      final reason = switch (item.payload['reason'] as String?) {
-        'face_unclear' => l.selfie_reason_face_unclear,
-        'too_far' => l.selfie_reason_too_far,
-        'accessories' => l.selfie_reason_accessories,
-        'lighting' => l.selfie_reason_lighting,
-        'mismatch' => l.selfie_reason_mismatch,
-        'multiple_people' => l.selfie_reason_multiple_people,
-        _ => null,
-      };
+      final reason = selfieReasonL10n(l, item.payload['reason'] as String?);
       return reason == null
           ? l.notif_type_selfie_rejected_body
           : '$reason — ${l.notif_type_selfie_rejected_body}';

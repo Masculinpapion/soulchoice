@@ -116,11 +116,18 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
   }
 
   void _openFromPush(RemoteMessage m) {
-    final matchId = m.data['match_id'];
-    if (matchId is! String || matchId.isEmpty) return;
     // Oturum yoksa yönlendirme yapılmaz — giriş sonrası Mesajlar'da
     // "Yeni eşleşme" rozeti zaten en üstte gösterir.
     if (Supabase.instance.client.auth.currentUser == null) return;
+    // Selfie reddi → doğrudan yeniden çekim ekranı; sebep banner'ı orada
+    // (in-app listedeki routePath ile aynı rota). Onay push'u özel rota
+    // istemez — normal açılış feed'e düşer.
+    if (m.data['type'] == 'selfie_rejected') {
+      ref.read(routerProvider).push('/profile/selfie');
+      return;
+    }
+    final matchId = m.data['match_id'];
+    if (matchId is! String || matchId.isEmpty) return;
     ref.read(routerProvider).push('/chat/$matchId');
   }
 

@@ -13,6 +13,8 @@ class NotificationItem {
   final DateTime createdAt;
   final String? actorName;
   final String? actorPhotoUrl;
+  // RU fiil çekimi (отправила/отправил) aktörün cinsiyetine göre — 16.07
+  final String? actorGender;
 
   /// Aynı sohbete ait gruplanmış mesaj bildirimlerinin tüm id'leri (kendisi dahil).
   final List<String> groupIds;
@@ -28,6 +30,7 @@ class NotificationItem {
     required this.createdAt,
     this.actorName,
     this.actorPhotoUrl,
+    this.actorGender,
     this.groupIds = const [],
     this.groupCount = 1,
   });
@@ -45,7 +48,11 @@ class NotificationItem {
         createdAt: DateTime.parse(json['created_at'] as String),
       );
 
-  NotificationItem copyWithActor({String? actorName, String? actorPhotoUrl}) =>
+  NotificationItem copyWithActor({
+    String? actorName,
+    String? actorPhotoUrl,
+    String? actorGender,
+  }) =>
       NotificationItem(
         id: id,
         type: type,
@@ -56,6 +63,7 @@ class NotificationItem {
         createdAt: createdAt,
         actorName: actorName,
         actorPhotoUrl: actorPhotoUrl,
+        actorGender: actorGender,
         groupIds: groupIds,
         groupCount: groupCount,
       );
@@ -75,6 +83,7 @@ class NotificationItem {
         createdAt: createdAt,
         actorName: actorName,
         actorPhotoUrl: actorPhotoUrl,
+        actorGender: actorGender,
         groupIds: groupIds,
         groupCount: groupCount,
       );
@@ -147,11 +156,11 @@ final notificationsProvider =
   final actorRows = await client
       .from('users')
       .select(
-        'id, name, photos:user_photos(url, is_primary, is_selfie, order_index)',
+        'id, name, gender, photos:user_photos(url, is_primary, is_selfie, order_index)',
       )
       .inFilter('id', actorIds);
 
-  final actors = <String, ({String name, String? photoUrl})>{};
+  final actors = <String, ({String name, String? photoUrl, String? gender})>{};
   for (final u in (actorRows as List).cast<Map<String, dynamic>>()) {
     final photos = (u['photos'] as List<dynamic>? ?? [])
         .cast<Map<String, dynamic>>()
@@ -162,6 +171,7 @@ final notificationsProvider =
     actors[u['id'] as String] = (
       name: u['name'] as String? ?? '',
       photoUrl: photos.firstOrNull?['url'] as String?,
+      gender: u['gender'] as String?,
     );
   }
 
@@ -169,7 +179,11 @@ final notificationsProvider =
     final actorId = item.payload['actor_id'] as String?;
     final actor = actorId != null ? actors[actorId] : null;
     if (actor == null) return item;
-    return item.copyWithActor(actorName: actor.name, actorPhotoUrl: actor.photoUrl);
+    return item.copyWithActor(
+      actorName: actor.name,
+      actorPhotoUrl: actor.photoUrl,
+      actorGender: actor.gender,
+    );
   }).toList();
 
   return _groupMessages(mapped);

@@ -2065,8 +2065,8 @@ abstract class AppLocalizations {
   /// No description provided for @chat_selected_welcome.
   ///
   /// In en, this message translates to:
-  /// **'{name} chose you — you can now chat 🎉'**
-  String chat_selected_welcome(String name);
+  /// **'{gender, select, other{{name} chose you — you can now chat 🎉}}'**
+  String chat_selected_welcome(String name, String gender);
 
   /// No description provided for @profile_view_cta_message.
   ///
@@ -3553,8 +3553,8 @@ abstract class AppLocalizations {
   /// No description provided for @notif_action_new_message.
   ///
   /// In en, this message translates to:
-  /// **'sent a message'**
-  String get notif_action_new_message;
+  /// **'{gender, select, other{sent a message}}'**
+  String notif_action_new_message(String gender);
 
   /// No description provided for @notif_type_new_application_body_noname.
   ///
@@ -3577,20 +3577,20 @@ abstract class AppLocalizations {
   /// No description provided for @notif_action_new_application.
   ///
   /// In en, this message translates to:
-  /// **'applied to your invitation'**
-  String get notif_action_new_application;
+  /// **'{gender, select, other{applied to your invitation}}'**
+  String notif_action_new_application(String gender);
 
   /// No description provided for @notif_action_selected.
   ///
   /// In en, this message translates to:
-  /// **'selected you 🎉'**
-  String get notif_action_selected;
+  /// **'{gender, select, other{selected you 🎉}}'**
+  String notif_action_selected(String gender);
 
   /// No description provided for @notif_action_not_selected.
   ///
   /// In en, this message translates to:
-  /// **'responded to your application'**
-  String get notif_action_not_selected;
+  /// **'{gender, select, other{responded to your application}}'**
+  String notif_action_not_selected(String gender);
 
   /// No description provided for @chat_hide_conversation.
   ///

@@ -105,7 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       try {
         final results = await Future.wait<dynamic>([
           if (otherUserId != null)
-            client.from('users').select('name, age, city:cities(utc_offset)').eq('id', otherUserId).maybeSingle()
+            client.from('users').select('name, age, gender, city:cities(utc_offset)').eq('id', otherUserId).maybeSingle()
           else
             Future.value(null),
           client.from('users').select('city:cities(utc_offset)').eq('id', _currentUid as Object).maybeSingle(),
@@ -559,7 +559,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                   !_isUser1 &&
                                   !_otherDeleted)
                               ? AppLocalizations.of(context)!
-                                  .chat_selected_welcome(otherName)
+                                  .chat_selected_welcome(
+                                    otherName,
+                                    ((_matchInfo?['other']
+                                                as Map<String, dynamic>?)?[
+                                            'gender'] as String?) ??
+                                        'other',
+                                  )
                               : null,
                         )
                       : ListView.builder(

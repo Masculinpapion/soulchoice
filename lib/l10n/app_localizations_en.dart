@@ -1081,8 +1081,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messages_new_match => 'New match ✨';
 
   @override
-  String chat_selected_welcome(String name) {
-    return '$name chose you — you can now chat 🎉';
+  String chat_selected_welcome(String name, String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'other': '$name chose you — you can now chat 🎉',
+    });
+    return '$_temp0';
   }
 
   @override
@@ -1897,7 +1900,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Share your experience';
 
   @override
-  String get notif_action_new_message => 'sent a message';
+  String notif_action_new_message(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {'other': 'sent a message'});
+    return '$_temp0';
+  }
 
   @override
   String get notif_type_new_application_body_noname =>
@@ -1918,13 +1924,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get notif_action_new_application => 'applied to your invitation';
+  String notif_action_new_application(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'other': 'applied to your invitation',
+    });
+    return '$_temp0';
+  }
 
   @override
-  String get notif_action_selected => 'selected you 🎉';
+  String notif_action_selected(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {'other': 'selected you 🎉'});
+    return '$_temp0';
+  }
 
   @override
-  String get notif_action_not_selected => 'responded to your application';
+  String notif_action_not_selected(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'other': 'responded to your application',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get chat_hide_conversation => 'Hide chat';

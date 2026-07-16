@@ -145,12 +145,13 @@ class _DecisionScreenState extends State<DecisionScreen>
       // Seçilen başvurana push bildirim (in-app kaydı DB trigger'ından gelir).
       // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki l10n fallback.
       final l10n = AppLocalizations.of(context)!;
-      final myName = (await client
-              .from('users')
-              .select('name')
-              .eq('id', uid)
-              .maybeSingle())?['name'] as String? ??
-          '';
+      final myRow = await client
+          .from('users')
+          .select('name, gender')
+          .eq('id', uid)
+          .maybeSingle();
+      final myName = myRow?['name'] as String? ?? '';
+      final myGender = myRow?['gender'] as String? ?? '';
       client.functions.invoke('send-notification', body: {
         'user_id': _applicantId,
         'title': l10n.notif_selected_push_title,
@@ -161,7 +162,8 @@ class _DecisionScreenState extends State<DecisionScreen>
           // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
           'match_id': matchRes['id'],
         },
-        'template': {'name': myName},
+        // gender: RU şablonda выбрал/выбрала çekimi için (16.07)
+        'template': {'name': myName, 'gender': myGender},
       });
 
       if (mounted) context.go('/chat/${matchRes['id']}');

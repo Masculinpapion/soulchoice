@@ -1092,8 +1092,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messages_new_match => 'Новое совпадение ✨';
 
   @override
-  String chat_selected_welcome(String name) {
-    return '$name выбрал(а) вас — теперь можно общаться 🎉';
+  String chat_selected_welcome(String name, String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': '$name выбрала вас — теперь можно общаться 🎉',
+      'male': '$name выбрал вас — теперь можно общаться 🎉',
+      'other': '$name выбрал(а) вас — теперь можно общаться 🎉',
+    });
+    return '$_temp0';
   }
 
   @override
@@ -1920,7 +1925,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notif_type_feedback_request_body => 'Расскажи о своём опыте';
 
   @override
-  String get notif_action_new_message => 'отправил(а) сообщение';
+  String notif_action_new_message(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'отправила сообщение',
+      'male': 'отправил сообщение',
+      'other': 'отправил(а) сообщение',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get notif_type_new_application_body_noname => 'Поступила новая заявка';
@@ -1942,14 +1954,34 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get notif_action_new_application =>
-      'откликнулся(ась) на ваше приглашение';
+  String notif_action_new_application(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'откликнулась на ваше приглашение',
+      'male': 'откликнулся на ваше приглашение',
+      'other': 'откликнулся(ась) на ваше приглашение',
+    });
+    return '$_temp0';
+  }
 
   @override
-  String get notif_action_selected => 'выбрал(а) тебя 🎉';
+  String notif_action_selected(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'выбрала тебя 🎉',
+      'male': 'выбрал тебя 🎉',
+      'other': 'выбрал(а) тебя 🎉',
+    });
+    return '$_temp0';
+  }
 
   @override
-  String get notif_action_not_selected => 'ответил(а) на твою заявку';
+  String notif_action_not_selected(String gender) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'female': 'ответила на твою заявку',
+      'male': 'ответил на твою заявку',
+      'other': 'ответил(а) на твою заявку',
+    });
+    return '$_temp0';
+  }
 
   @override
   String get chat_hide_conversation => 'Скрыть чат';

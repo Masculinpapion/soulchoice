@@ -161,6 +161,13 @@ serve(async (req) => {
         .replace('{count}', String(args.count ?? ''))
       finalTitle = fill(tpl.t).trim()
       finalBody = fill(tpl.b).trim()
+      // RU fiil çekimi aktörün cinsiyetine göre (istemci template.gender yollar;
+      // eski istemciler yollamazsa nötr "(а)" hali kalır) — 16.07
+      if (notifType === 'selected') {
+        const g = String(args.gender ?? '')
+        const verb = g === 'female' ? 'выбрала' : g === 'male' ? 'выбрал' : 'выбрал(а)'
+        finalBody = finalBody.replace('выбрал(а)', verb)
+      }
       if (notifType === 'selfie_rejected') {
         const rt = SELFIE_REASONS[String(args.reason ?? '')]
         const reasonText = rt?.[locale] ?? rt?.['ru']

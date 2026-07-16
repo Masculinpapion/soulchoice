@@ -423,15 +423,17 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
 /// ("{isim}" + bu metin birleşip tek satırda gösteriliyor). Sadece actor_id
 /// olan (kişiye özel) türler için tanımlı — sistem bildirimlerinde null döner.
 String? _notifActionText(NotificationItem item, AppLocalizations l) {
+  // RU fiil çekimi aktörün cinsiyetine göre; bilinmiyorsa nötr "(а)" hali
+  final g = item.actorGender ?? 'other';
   switch (item.type) {
     case 'new_message':
-      return l.notif_action_new_message;
+      return l.notif_action_new_message(g);
     case 'new_application':
-      return l.notif_action_new_application;
+      return l.notif_action_new_application(g);
     case 'selected':
-      return l.notif_action_selected;
+      return l.notif_action_selected(g);
     case 'not_selected':
-      return l.notif_action_not_selected;
+      return l.notif_action_not_selected(g);
     default:
       return null;
   }

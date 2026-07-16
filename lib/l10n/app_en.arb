@@ -434,10 +434,13 @@
   "messages_connection_error": "Connection error",
   "messages_no_preview": "No messages yet",
   "messages_new_match": "New match ✨",
-  "chat_selected_welcome": "{name} chose you — you can now chat 🎉",
+  "chat_selected_welcome": "{gender, select, other{{name} chose you — you can now chat 🎉}}",
   "@chat_selected_welcome": {
     "placeholders": {
       "name": {
+        "type": "String"
+      },
+      "gender": {
         "type": "String"
       }
     }
@@ -867,7 +870,8 @@
   "notif_type_meeting_reminder_body": "Your meetup is starting soon",
   "notif_type_feedback_request_title": "How was the meetup?",
   "notif_type_feedback_request_body": "Share your experience",
-  "notif_action_new_message": "sent a message",
+  "notif_action_new_message": "{gender, select, other{sent a message}}",
+  "@notif_action_new_message": {"placeholders": {"gender": {"type": "String"}}},
   "notif_type_new_application_body_noname": "You have a new application",
   "notif_type_new_message_body_noname": "New message",
   "notif_grouped_messages": "{count, plural, one{{count} new message} other{{count} new messages}}",
@@ -878,9 +882,12 @@
       }
     }
   },
-  "notif_action_new_application": "applied to your invitation",
-  "notif_action_selected": "selected you 🎉",
-  "notif_action_not_selected": "responded to your application",
+  "notif_action_new_application": "{gender, select, other{applied to your invitation}}",
+  "@notif_action_new_application": {"placeholders": {"gender": {"type": "String"}}},
+  "notif_action_selected": "{gender, select, other{selected you 🎉}}",
+  "@notif_action_selected": {"placeholders": {"gender": {"type": "String"}}},
+  "notif_action_not_selected": "{gender, select, other{responded to your application}}",
+  "@notif_action_not_selected": {"placeholders": {"gender": {"type": "String"}}},
   "chat_hide_conversation": "Hide chat",
   "chat_hide": "Hide",
   "chat_block_and_close": "Block and Close",

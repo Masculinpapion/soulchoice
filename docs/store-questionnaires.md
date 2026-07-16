@@ -20,6 +20,8 @@ Mustafa'nın konsollarda dolduracağı formların hazır cevapları. Kaynak: ger
 - Uygulama etkinliği + tanılama: analitik olayları, çökme günlükleri
 - Cihaz kimlikleri: push token, cihaz/uygulama tanımlayıcıları (Firebase, AppMetrica)
 
+**Finansal bilgiler (Play):** İşlem geçmişi ✓ (payments+subscriptions, hesaba bağlı, app functionality). Kullanıcı ödeme bilgileri ✗ — kart verisi cihazdan geçmez (harici tarayıcıda banka sayfası; card_masked_pan sunucuya webhook'la gelir, "collection" sayılmaz). Kredi puanı/diğer finansal ✗.
+
 **Paylaşım (shared):** Analitik/çökme sağlayıcıları — Google Firebase (Analytics/Crashlytics/FCM) ve Yandex AppMetrica. Reklam amaçlı paylaşım YOK, veri satışı YOK.
 
 **Güvenlik uygulamaları:**

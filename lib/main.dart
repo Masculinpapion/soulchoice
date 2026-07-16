@@ -45,9 +45,15 @@ Future<void> _saveFcmToken() async {
         .update({
           'fcm_token': token,
           'last_platform': Platform.isIOS ? 'ios' : 'android',
-          'locale': await _effectiveLocaleCode(),
         })
         .eq('id', uid);
+    // locale burada EZİLMEZ (16.07: cihaz, hesabın dilini eziyordu);
+    // yalnız hesapta hiç dil yoksa (yeni kayıt) etkin dil doldurulur.
+    await Supabase.instance.client
+        .from('users')
+        .update({'locale': await _effectiveLocaleCode()})
+        .eq('id', uid)
+        .isFilter('locale', null);
   } catch (_) {}
 }
 

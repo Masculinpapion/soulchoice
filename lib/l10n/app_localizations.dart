@@ -1306,6 +1306,162 @@ abstract class AppLocalizations {
   /// **'What would you like to receive?'**
   String get create_inv_desc_request_gift;
 
+  /// No description provided for @create_inv_title_ph_food.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dinner at an Italian restaurant'**
+  String get create_inv_title_ph_food;
+
+  /// No description provided for @create_inv_title_ph_bar.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Cocktails at a rooftop bar'**
+  String get create_inv_title_ph_bar;
+
+  /// No description provided for @create_inv_title_ph_coffee.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Afternoon coffee break'**
+  String get create_inv_title_ph_coffee;
+
+  /// No description provided for @create_inv_title_ph_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. New sci-fi movie night'**
+  String get create_inv_title_ph_cinema;
+
+  /// No description provided for @create_inv_title_ph_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A classic play night'**
+  String get create_inv_title_ph_theater;
+
+  /// No description provided for @create_inv_title_ph_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Live concert on Friday'**
+  String get create_inv_title_ph_concert;
+
+  /// No description provided for @create_inv_title_ph_culture.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Modern art exhibition'**
+  String get create_inv_title_ph_culture;
+
+  /// No description provided for @create_inv_title_ph_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Weekend getaway to St. Petersburg'**
+  String get create_inv_title_ph_travel;
+
+  /// No description provided for @create_inv_title_ph_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A little surprise for you'**
+  String get create_inv_title_ph_gift;
+
+  /// No description provided for @create_inv_title_ph_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Weekend tennis match'**
+  String get create_inv_title_ph_sport;
+
+  /// No description provided for @create_inv_title_ph_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Sunset walk by the water'**
+  String get create_inv_title_ph_walk;
+
+  /// No description provided for @create_inv_title_ph_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Karaoke night — up for a duet?'**
+  String get create_inv_title_ph_karaoke;
+
+  /// No description provided for @create_inv_desc_ph_food.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A cozy Italian place — pasta, wine and good conversation. I\'ll book the table.'**
+  String get create_inv_desc_ph_food;
+
+  /// No description provided for @create_inv_desc_ph_bar.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A bar with a city view, cocktails and good music. First drink\'s on me.'**
+  String get create_inv_desc_ph_bar;
+
+  /// No description provided for @create_inv_desc_ph_coffee.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A cozy café — filter coffee, dessert and easy conversation.'**
+  String get create_inv_desc_ph_coffee;
+
+  /// No description provided for @create_inv_desc_ph_cinema.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Evening screening of the new release, then coffee to talk it over. Tickets on me.'**
+  String get create_inv_desc_ph_cinema;
+
+  /// No description provided for @create_inv_desc_ph_theater.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A classic performance, then a short walk and conversation after.'**
+  String get create_inv_desc_ph_theater;
+
+  /// No description provided for @create_inv_desc_ph_concert.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. My favourite band live — great energy, great music. I\'ll sort the tickets.'**
+  String get create_inv_desc_ph_concert;
+
+  /// No description provided for @create_inv_desc_ph_culture.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Let\'s walk through the new exhibition, then share impressions at the museum café.'**
+  String get create_inv_desc_ph_culture;
+
+  /// No description provided for @create_inv_desc_ph_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Two days in the city — old town, a river cruise and good food. Itinerary\'s ready.'**
+  String get create_inv_desc_ph_travel;
+
+  /// No description provided for @create_inv_desc_ph_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A special gift I think you\'ll love — handed over with a coffee.'**
+  String get create_inv_desc_ph_gift;
+
+  /// No description provided for @create_inv_desc_ph_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. An hour of tennis on an indoor court, smoothies after. I have a spare racket.'**
+  String get create_inv_desc_ph_sport;
+
+  /// No description provided for @create_inv_desc_ph_walk.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. An easy evening walk in the park — fresh air, nice views, good talk.'**
+  String get create_inv_desc_ph_walk;
+
+  /// No description provided for @create_inv_desc_ph_karaoke.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. A fun karaoke night — any repertoire, no shyness allowed.'**
+  String get create_inv_desc_ph_karaoke;
+
+  /// No description provided for @create_inv_venue_subtitle_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'The city or country you\'re heading to'**
+  String get create_inv_venue_subtitle_travel;
+
+  /// No description provided for @create_inv_venue_subtitle_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'Court, gym or club name'**
+  String get create_inv_venue_subtitle_sport;
+
   /// No description provided for @create_inv_datetime_placeholder.
   ///
   /// In en, this message translates to:

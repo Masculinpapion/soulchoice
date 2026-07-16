@@ -121,7 +121,7 @@ class _CreateInvitationScreenState
       selected: _category,
       onSelected: (v) => setState(() => _category = v),
     ),
-    _StepTitle(controller: _titleController),
+    _StepTitle(controller: _titleController, category: _category),
     _StepDescription(
       controller: _descriptionController,
       flowType: _flowType,
@@ -908,7 +908,26 @@ class _StepCategory extends StatelessWidget {
 
 class _StepTitle extends StatelessWidget {
   final TextEditingController controller;
-  const _StepTitle({required this.controller});
+  final InvitationCategory? category;
+  const _StepTitle({required this.controller, this.category});
+
+  // Kategoriye özel şeffaf örnek — kullanıcı ne yazacağını örnekten görür
+  // (hediye linki deseninin genele yayılması, Mustafa kararı 16.07).
+  String? _ph(AppLocalizations l10n) => switch (category) {
+        InvitationCategory.food => l10n.create_inv_title_ph_food,
+        InvitationCategory.bar => l10n.create_inv_title_ph_bar,
+        InvitationCategory.coffee => l10n.create_inv_title_ph_coffee,
+        InvitationCategory.cinema => l10n.create_inv_title_ph_cinema,
+        InvitationCategory.theater => l10n.create_inv_title_ph_theater,
+        InvitationCategory.concert => l10n.create_inv_title_ph_concert,
+        InvitationCategory.culture => l10n.create_inv_title_ph_culture,
+        InvitationCategory.travel => l10n.create_inv_title_ph_travel,
+        InvitationCategory.gift => l10n.create_inv_title_ph_gift,
+        InvitationCategory.sport => l10n.create_inv_title_ph_sport,
+        InvitationCategory.walk => l10n.create_inv_title_ph_walk,
+        InvitationCategory.karaoke => l10n.create_inv_title_ph_karaoke,
+        _ => null,
+      };
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -933,6 +952,7 @@ class _StepTitle extends StatelessWidget {
           style: _feedCardTitleStyle.copyWith(fontSize: 20),
           decoration: InputDecoration(
             labelText: AppLocalizations.of(context)!.create_inv_title_label,
+            hintText: _ph(AppLocalizations.of(context)!),
           ),
         ),
       ],
@@ -1014,6 +1034,23 @@ class _StepDescription extends StatelessWidget {
     }
   }
 
+  // Kutu içi şeffaf örnek metin — akış-nötr, kategoriye özel (16.07).
+  String _inputHint(AppLocalizations l10n) => switch (category) {
+        InvitationCategory.food => l10n.create_inv_desc_ph_food,
+        InvitationCategory.bar => l10n.create_inv_desc_ph_bar,
+        InvitationCategory.coffee => l10n.create_inv_desc_ph_coffee,
+        InvitationCategory.cinema => l10n.create_inv_desc_ph_cinema,
+        InvitationCategory.theater => l10n.create_inv_desc_ph_theater,
+        InvitationCategory.concert => l10n.create_inv_desc_ph_concert,
+        InvitationCategory.culture => l10n.create_inv_desc_ph_culture,
+        InvitationCategory.travel => l10n.create_inv_desc_ph_travel,
+        InvitationCategory.gift => l10n.create_inv_desc_ph_gift,
+        InvitationCategory.sport => l10n.create_inv_desc_ph_sport,
+        InvitationCategory.walk => l10n.create_inv_desc_ph_walk,
+        InvitationCategory.karaoke => l10n.create_inv_desc_ph_karaoke,
+        _ => l10n.create_inv_desc_input_hint,
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -1038,7 +1075,8 @@ class _StepDescription extends StatelessWidget {
             style: _bodyLargeStyle,
             scrollPadding: const EdgeInsets.only(bottom: 120),
             decoration: InputDecoration(
-              hintText: l10n.create_inv_desc_input_hint,
+              hintText: _inputHint(l10n),
+              hintMaxLines: 3,
               alignLabelWithHint: true,
               counterText: '',
             ),
@@ -1127,6 +1165,13 @@ class _StepVenue extends StatelessWidget {
         return l10n.create_inv_venue_subtitle_theater;
       case InvitationCategory.concert:
         return l10n.create_inv_venue_subtitle_concert;
+      // Genel "kafe, restoran, park" örneği bu iki alana uymuyordu (16.07).
+      // Not: travel'da mekân adımı tasarım gereği atlanır — anahtar yine de
+      // doğru dursun diye eklendi.
+      case InvitationCategory.travel:
+        return l10n.create_inv_venue_subtitle_travel;
+      case InvitationCategory.sport:
+        return l10n.create_inv_venue_subtitle_sport;
       default:
         return l10n.create_inv_venue_subtitle;
     }

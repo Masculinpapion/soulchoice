@@ -654,6 +654,99 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_desc_request_gift => 'Что хочешь получить в подарок?';
 
   @override
+  String get create_inv_title_ph_food => 'Напр.: Ужин в итальянском ресторане';
+
+  @override
+  String get create_inv_title_ph_bar => 'Напр.: Коктейли в баре на крыше';
+
+  @override
+  String get create_inv_title_ph_coffee => 'Напр.: Кофе после обеда';
+
+  @override
+  String get create_inv_title_ph_cinema =>
+      'Напр.: Идём на новый фантастический фильм';
+
+  @override
+  String get create_inv_title_ph_theater => 'Напр.: Вечер в театре — классика';
+
+  @override
+  String get create_inv_title_ph_concert => 'Напр.: Живой концерт в пятницу';
+
+  @override
+  String get create_inv_title_ph_culture =>
+      'Напр.: Выставка современного искусства';
+
+  @override
+  String get create_inv_title_ph_travel => 'Напр.: Выходные в Санкт-Петербурге';
+
+  @override
+  String get create_inv_title_ph_gift => 'Напр.: У меня для тебя сюрприз';
+
+  @override
+  String get create_inv_title_ph_sport => 'Напр.: Теннис в выходные';
+
+  @override
+  String get create_inv_title_ph_walk => 'Напр.: Прогулка на закате у воды';
+
+  @override
+  String get create_inv_title_ph_karaoke =>
+      'Напр.: Караоке-вечер — споём дуэтом?';
+
+  @override
+  String get create_inv_desc_ph_food =>
+      'Напр.: Уютный итальянский ресторан, паста и вино, лёгкое общение. Столик забронирую.';
+
+  @override
+  String get create_inv_desc_ph_bar =>
+      'Напр.: Бар с видом на город, коктейли и хорошая музыка. Первый бокал — с меня.';
+
+  @override
+  String get create_inv_desc_ph_coffee =>
+      'Напр.: Уютная кофейня, фильтр-кофе и десерт — познакомимся за разговором.';
+
+  @override
+  String get create_inv_desc_ph_cinema =>
+      'Напр.: Вечерний сеанс новинки, после — кофе и обсуждение. Билеты за мной.';
+
+  @override
+  String get create_inv_desc_ph_theater =>
+      'Напр.: Классическая постановка, после спектакля — прогулка и разговор.';
+
+  @override
+  String get create_inv_desc_ph_concert =>
+      'Напр.: Живое выступление любимой группы — драйв и хорошая музыка. Билеты возьму.';
+
+  @override
+  String get create_inv_desc_ph_culture =>
+      'Напр.: Пройдёмся по новой выставке, потом обсудим впечатления в кафе музея.';
+
+  @override
+  String get create_inv_desc_ph_travel =>
+      'Напр.: Два дня в городе — исторический центр, прогулка по реке и хорошие рестораны. Маршрут продуман.';
+
+  @override
+  String get create_inv_desc_ph_gift =>
+      'Напр.: Особенный подарок, который тебе точно понравится — вручу за чашкой кофе.';
+
+  @override
+  String get create_inv_desc_ph_sport =>
+      'Напр.: Час тенниса на крытом корте, потом смузи. Лишняя ракетка найдётся.';
+
+  @override
+  String get create_inv_desc_ph_walk =>
+      'Напр.: Спокойная вечерняя прогулка в парке — свежий воздух и хороший разговор.';
+
+  @override
+  String get create_inv_desc_ph_karaoke =>
+      'Напр.: Весёлый караоке-вечер — репертуар любой, стесняться нельзя.';
+
+  @override
+  String get create_inv_venue_subtitle_travel => 'Город или страна поездки';
+
+  @override
+  String get create_inv_venue_subtitle_sport => 'Корт, зал или клуб';
+
+  @override
   String get create_inv_datetime_placeholder => 'Выбрать дату и время';
 
   @override

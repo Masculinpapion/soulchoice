@@ -653,6 +653,99 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_desc_request_gift => 'What would you like to receive?';
 
   @override
+  String get create_inv_title_ph_food => 'e.g. Dinner at an Italian restaurant';
+
+  @override
+  String get create_inv_title_ph_bar => 'e.g. Cocktails at a rooftop bar';
+
+  @override
+  String get create_inv_title_ph_coffee => 'e.g. Afternoon coffee break';
+
+  @override
+  String get create_inv_title_ph_cinema => 'e.g. New sci-fi movie night';
+
+  @override
+  String get create_inv_title_ph_theater => 'e.g. A classic play night';
+
+  @override
+  String get create_inv_title_ph_concert => 'e.g. Live concert on Friday';
+
+  @override
+  String get create_inv_title_ph_culture => 'e.g. Modern art exhibition';
+
+  @override
+  String get create_inv_title_ph_travel =>
+      'e.g. Weekend getaway to St. Petersburg';
+
+  @override
+  String get create_inv_title_ph_gift => 'e.g. A little surprise for you';
+
+  @override
+  String get create_inv_title_ph_sport => 'e.g. Weekend tennis match';
+
+  @override
+  String get create_inv_title_ph_walk => 'e.g. Sunset walk by the water';
+
+  @override
+  String get create_inv_title_ph_karaoke =>
+      'e.g. Karaoke night — up for a duet?';
+
+  @override
+  String get create_inv_desc_ph_food =>
+      'e.g. A cozy Italian place — pasta, wine and good conversation. I\'ll book the table.';
+
+  @override
+  String get create_inv_desc_ph_bar =>
+      'e.g. A bar with a city view, cocktails and good music. First drink\'s on me.';
+
+  @override
+  String get create_inv_desc_ph_coffee =>
+      'e.g. A cozy café — filter coffee, dessert and easy conversation.';
+
+  @override
+  String get create_inv_desc_ph_cinema =>
+      'e.g. Evening screening of the new release, then coffee to talk it over. Tickets on me.';
+
+  @override
+  String get create_inv_desc_ph_theater =>
+      'e.g. A classic performance, then a short walk and conversation after.';
+
+  @override
+  String get create_inv_desc_ph_concert =>
+      'e.g. My favourite band live — great energy, great music. I\'ll sort the tickets.';
+
+  @override
+  String get create_inv_desc_ph_culture =>
+      'e.g. Let\'s walk through the new exhibition, then share impressions at the museum café.';
+
+  @override
+  String get create_inv_desc_ph_travel =>
+      'e.g. Two days in the city — old town, a river cruise and good food. Itinerary\'s ready.';
+
+  @override
+  String get create_inv_desc_ph_gift =>
+      'e.g. A special gift I think you\'ll love — handed over with a coffee.';
+
+  @override
+  String get create_inv_desc_ph_sport =>
+      'e.g. An hour of tennis on an indoor court, smoothies after. I have a spare racket.';
+
+  @override
+  String get create_inv_desc_ph_walk =>
+      'e.g. An easy evening walk in the park — fresh air, nice views, good talk.';
+
+  @override
+  String get create_inv_desc_ph_karaoke =>
+      'e.g. A fun karaoke night — any repertoire, no shyness allowed.';
+
+  @override
+  String get create_inv_venue_subtitle_travel =>
+      'The city or country you\'re heading to';
+
+  @override
+  String get create_inv_venue_subtitle_sport => 'Court, gym or club name';
+
+  @override
   String get create_inv_datetime_placeholder => 'Select date & time';
 
   @override

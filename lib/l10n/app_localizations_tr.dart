@@ -652,6 +652,99 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_desc_request_gift => 'Ne hediye edilmesini istiyorsun?';
 
   @override
+  String get create_inv_title_ph_food => 'Örn: İtalyan mutfağında akşam yemeği';
+
+  @override
+  String get create_inv_title_ph_bar => 'Örn: Çatı katı barda kokteyl';
+
+  @override
+  String get create_inv_title_ph_coffee => 'Örn: Öğleden sonra kahve molası';
+
+  @override
+  String get create_inv_title_ph_cinema =>
+      'Örn: Yeni bilim kurgu filmine gidelim';
+
+  @override
+  String get create_inv_title_ph_theater => 'Örn: Klasik bir oyuna davet';
+
+  @override
+  String get create_inv_title_ph_concert => 'Örn: Cuma akşamı canlı konser';
+
+  @override
+  String get create_inv_title_ph_culture => 'Örn: Modern sanat sergisi turu';
+
+  @override
+  String get create_inv_title_ph_travel =>
+      'Örn: Hafta sonu St. Petersburg kaçamağı';
+
+  @override
+  String get create_inv_title_ph_gift => 'Örn: Sana küçük bir sürprizim var';
+
+  @override
+  String get create_inv_title_ph_sport => 'Örn: Hafta sonu tenis maçı';
+
+  @override
+  String get create_inv_title_ph_walk => 'Örn: Gün batımında sahil yürüyüşü';
+
+  @override
+  String get create_inv_title_ph_karaoke =>
+      'Örn: Karaoke gecesi — düet var mı?';
+
+  @override
+  String get create_inv_desc_ph_food =>
+      'Örn: Sakin bir İtalyan restoranında pasta ve şarap eşliğinde keyifli sohbet. Rezervasyon benden.';
+
+  @override
+  String get create_inv_desc_ph_bar =>
+      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik. İlk kadeh benden.';
+
+  @override
+  String get create_inv_desc_ph_coffee =>
+      'Örn: Rahat bir kafede filtre kahve ve tatlı eşliğinde tanışma sohbeti.';
+
+  @override
+  String get create_inv_desc_ph_cinema =>
+      'Örn: Akşam seansında yeni çıkan filmi izleyelim, sonrasında kısa bir yorum kahvesi. Biletler benden.';
+
+  @override
+  String get create_inv_desc_ph_theater =>
+      'Örn: Sahnede klasik bir oyun, ardından yürüyerek kısa bir akşam sohbeti.';
+
+  @override
+  String get create_inv_desc_ph_concert =>
+      'Örn: Sevdiğim grubun canlı performansı — enerjik bir akşam, iyi müzik. Bilet ayarlıyorum.';
+
+  @override
+  String get create_inv_desc_ph_culture =>
+      'Örn: Yeni açılan sergiyi birlikte gezelim, sonrasında müze kafesinde izlenim sohbeti.';
+
+  @override
+  String get create_inv_desc_ph_travel =>
+      'Örn: İki günlük şehir turu — tarihi merkez, nehir turu ve iyi restoranlar. Plan bende.';
+
+  @override
+  String get create_inv_desc_ph_gift =>
+      'Örn: Beğeneceğini düşündüğüm özel bir hediye — kahve eşliğinde teslim ederim.';
+
+  @override
+  String get create_inv_desc_ph_sport =>
+      'Örn: Kapalı kortta bir saat tenis, sonrasında smoothie molası. Raket fazlam var.';
+
+  @override
+  String get create_inv_desc_ph_walk =>
+      'Örn: Parkta sakin bir akşam yürüyüşü — temiz hava, güzel manzara ve iyi sohbet.';
+
+  @override
+  String get create_inv_desc_ph_karaoke =>
+      'Örn: Eğlenceli bir karaoke gecesi — repertuvar serbest, çekinmek yasak.';
+
+  @override
+  String get create_inv_venue_subtitle_travel => 'Gideceğiniz şehir veya ülke';
+
+  @override
+  String get create_inv_venue_subtitle_sport => 'Kort, salon veya kulüp adı';
+
+  @override
   String get create_inv_datetime_placeholder => 'Tarih ve saat seç';
 
   @override
@@ -1814,11 +1907,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_gate_pending =>
-      'Selfie\'n inceleniyor. Moderatör 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
+      'Selfie incelemede. Moderatör 24 saat içinde onaylar — onaydan sonra davetiye açabilirsin.';
 
   @override
   String get create_inv_gate_rejected =>
-      'Selfie\'n reddedildi. Yeni bir selfie yüklemen gerekiyor.';
+      'Selfie reddedildi. Yeni bir selfie yüklemen gerekiyor.';
 
   @override
   String get create_inv_gate_action_upload => 'Selfie çek';

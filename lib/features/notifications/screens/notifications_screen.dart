@@ -26,14 +26,26 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   RealtimeChannel? _channel;
   List<NotificationItem>? _localItems; // dismiss için lokal kopya
   bool _isMarkingAll = false;
+  bool _refreshedOnOpen = false;
 
   @override
   void initState() {
     super.initState();
+    _subscribeRealtime();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     // Ekran her açılışta taze liste çeker — çan rozeti provider'ı canlı
     // tuttuğu için cache açılış anına takılı kalıyordu (16.07 fix).
-    ref.invalidate(notificationsProvider);
-    _subscribeRealtime();
+    // initState içinde ref kullanımı Flutter'ca yasak (ilk açılış çökmesi,
+    // 16.07); ilk didChangeDependencies build'den hemen önce çalışır —
+    // davranış birebir aynı kalır.
+    if (!_refreshedOnOpen) {
+      _refreshedOnOpen = true;
+      ref.invalidate(notificationsProvider);
+    }
   }
 
   void _subscribeRealtime() {

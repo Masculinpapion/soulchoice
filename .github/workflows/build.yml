@@ -36,6 +36,12 @@ jobs:
 
       - run: flutter pub get
 
+      # iOS workflow'uyla aynı desen: versionCode = CI run numarası.
+      # Uygulama içi "Hakkında" ile mağaza numarası eşleşir (16.07 bulgusu).
+      - name: Bump build number to CI run number
+        run: |
+          sed -i -E "s/^version: ([^+]+)\+.*/version: \1+${{ github.run_number }}/" pubspec.yaml
+
       - run: flutter build apk --debug --no-pub
 
       - uses: softprops/action-gh-release@v2
@@ -71,6 +77,11 @@ jobs:
           printf 'storeFile=soulchoice-release.jks\nstorePassword=soulchoice2026\nkeyAlias=soulchoice\nkeyPassword=soulchoice2026\n' > android/key.properties
 
       - run: flutter pub get
+
+      # Debug job'la aynı run numarası — APK ve AAB aynı versionCode taşır.
+      - name: Bump build number to CI run number
+        run: |
+          sed -i -E "s/^version: ([^+]+)\+.*/version: \1+${{ github.run_number }}/" pubspec.yaml
 
       - run: flutter build appbundle --release --no-pub
 

@@ -13,7 +13,8 @@ Mustafa'nın konsollarda dolduracağı formların hazır cevapları. Kaynak: ger
 
 ## 2) Google Play — Data Safety formu
 **Toplanan veriler (collected):**
-- Kişisel bilgi: ad, telefon numarası, cinsiyet, yaş, şehir, bio/iş/eğitim (ops.), fotoğraflar (profil+selfie)
+- Kişisel bilgi: ad, telefon numarası, **e-posta (ops. — users.billing_email; yenileme/makbuz mailleri + RIZALI pazarlama D+0/D+2, ФЗ-38 logu)**, cinsiyet, yaş, şehir, bio/iş/eğitim (ops.), fotoğraflar (profil+selfie)
+- Amaçlarda **Marketing/promotional da işaretlenir** (e-posta için; rıza kayıtlı)
 - Mesajlar: uygulama içi mesajlar (sunucuda saklanır)
 - Konum: **yaklaşık konum** (şehir; konum izni yalnız şehir önerisi için — ops.)
 - Uygulama etkinliği + tanılama: analitik olayları, çökme günlükleri
@@ -33,7 +34,7 @@ Mustafa'nın konsollarda dolduracağı formların hazır cevapları. Kaynak: ger
 
 ## 4) App Store Connect — App Privacy (Data Types)
 Data safety ile aynı içerik, Apple taksonomisiyle:
-- Contact Info: phone number, name · Photos: user photos · Location: coarse (ops.)
+- Contact Info: phone number, name, email address (optional) · Photos: user photos · Location: coarse (ops.)
 - User Content: messages, photos · Identifiers: device ID (analytics), push token
 - Usage Data + Diagnostics: analytics, crash
 - Hepsi "Linked to you" (hesaba bağlı); Tracking (ATT anlamında cross-app izleme): **HAYIR**

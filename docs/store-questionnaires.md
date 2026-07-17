@@ -22,7 +22,7 @@ Mustafa'nın konsollarda dolduracağı formların hazır cevapları. Kaynak: ger
 
 **Finansal bilgiler (Play):** İşlem geçmişi ✓ (payments+subscriptions, hesaba bağlı, app functionality). Kullanıcı ödeme bilgileri ✗ — kart verisi cihazdan geçmez (harici tarayıcıda banka sayfası; card_masked_pan sunucuya webhook'la gelir, "collection" sayılmaz). Kredi puanı/diğer finansal ✗.
 
-**Paylaşım (shared):** Analitik/çökme sağlayıcıları — Google Firebase (Analytics/Crashlytics/FCM) ve Yandex AppMetrica. Reklam amaçlı paylaşım YOK, veri satışı YOK.
+**Paylaşım (shared):** Formda **paylaşım YOK** işaretlendi (17.07.2026) — Firebase (Analytics/Crashlytics/FCM) ve Yandex AppMetrica, geliştirici adına işleyen service-provider muafiyeti kapsamında "shared" sayılmaz. Reklam amaçlı paylaşım YOK, veri satışı YOK. iOS App Privacy'de de aynı mantık: **Tracking = HAYIR**.
 
 **Güvenlik uygulamaları:**
 - Aktarımda şifreleme (HTTPS): EVET

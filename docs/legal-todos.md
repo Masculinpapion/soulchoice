@@ -34,3 +34,13 @@ sadece yeni kullanıcıların gördüğü kayıt tamamlama ekranı, doğru hukuk
 DB: `users.consent_given_at` + `users.consent_version` alanları eklendi
 (`supabase/migrations/20260708_consent_tracking.sql`), her onayda audit amacıyla
 dolduruluyor. Cihazda uçtan uca test edildi (buton disabled/enabled davranışı dahil).
+
+## Роспатент (ФИПС) — Marka Tescili Harçları — PLANLANDI (18.07.2026)
+
+- **Harç:** 55.000₽ — son ödeme tarihi **~30 Ağustos 2026**.
+- **Karar (Mustafa, 18.07.2026):** Launch sonrası İLK idari iş olarak ele alınacak
+  (öncelik notu onaylandı).
+- ⚠️ Son tarih dış ve bağlayıcı: launch gecikirse bile harç ~30 Ağustos'tan önce
+  ödenmiş olmalı — launch'a şartlanmaz.
+- Portal: new.fips.ru. Global tescil (WIPO — madrid.wipo.int) ayrı kalem, bu karara
+  dahil değil.

@@ -28,7 +28,7 @@ dahil), kodlama yarın.
 3. Mustafa masası: SMS.ru bakiye + 4 operatör şablon başvurusu («SoulChoice: код подтверждения
    %code%. Никому не сообщайте его.») | 4₽ iade (yapılmadıysa) | test kullanıcı AI fotoğrafları
 4. Sonraki sıra: store screenshot'ları (C), content rating (E/R), marka harçları (55.000₽,
-   deadline ~30 Ağustos)
+   deadline ~30 Ağustos — 18.07 kararı: launch sonrası ilk idari iş, detay: legal-todos.md)
 
 **Beklemedekiler:** 10.07 10:25 ilk doğal canlı digest (Gmail) • SMS operatör onayları (1-2 hafta) •
 hukukçu teyitleri: pazarlama rıza metni (SMS eklenirse) + D+0 sınıflandırması.

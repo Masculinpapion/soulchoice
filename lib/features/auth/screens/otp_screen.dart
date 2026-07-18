@@ -31,6 +31,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   bool _isLoading = false;
   String? _error;
   int _resendSeconds = 60;
+  // Son kullanılan gönderim kanalı — ekran metni/ikonu buna göre değişir.
+  // Giriş her zaman SMS ile başlar (phone_screen channel:'sms' gönderir).
+  String _channel = 'sms';
 
   @override
   void initState() {
@@ -104,13 +107,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
   }
 
-  Future<void> _resend() async {
+  Future<void> _resend({String channel = 'sms'}) async {
     try {
       await Supabase.instance.client.functions.invoke(
         'send-call-otp',
-        body: {'phone': widget.phone},
+        body: {'phone': widget.phone, 'channel': channel},
       );
-      if (mounted) setState(() => _resendSeconds = 60);
+      if (mounted) {
+        setState(() {
+          _channel = channel;
+          _resendSeconds = 60;
+        });
+      }
       _startResendTimer();
     } catch (_) {}
   }
@@ -157,8 +165,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                         ShaderMask(
                           shaderCallback: (b) =>
                               AuroraTheme.redBlueGradient.createShader(b),
-                          child: const Icon(
-                            Icons.phone_in_talk_outlined,
+                          child: Icon(
+                            _channel == 'call'
+                                ? Icons.phone_in_talk_outlined
+                                : Icons.sms_outlined,
                             color: Colors.white,
                             size: 36,
                           ),
@@ -186,7 +196,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                             ),
                             children: [
                               TextSpan(
-                                text: AppLocalizations.of(context)!.otp_sent_to,
+                                text: _channel == 'call'
+                                    ? AppLocalizations.of(context)!.otp_sent_to
+                                    : AppLocalizations.of(
+                                        context,
+                                      )!.otp_sms_sent_to,
                               ),
                               TextSpan(
                                 text: widget.phone,
@@ -203,7 +217,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          AppLocalizations.of(context)!.otp_call_hint,
+                          _channel == 'call'
+                              ? AppLocalizations.of(context)!.otp_call_hint
+                              : AppLocalizations.of(context)!.otp_sms_hint,
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             fontSize: 14,
@@ -274,23 +290,53 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                     height: 1.5,
                                   ),
                                 )
-                              : GestureDetector(
-                                  onTap: _resend,
-                                  child: ShaderMask(
-                                    shaderCallback: (b) => AuroraTheme
-                                        .redBlueGradient
-                                        .createShader(b),
-                                    child: Text(
-                                      AppLocalizations.of(context)!.otp_resend,
-                                      style: const TextStyle(
-                                        fontFamily: 'Manrope',
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.05,
-                                        color: Colors.white,
+                              : Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _resend(channel: _channel),
+                                      child: ShaderMask(
+                                        shaderCallback: (b) => AuroraTheme
+                                            .redBlueGradient
+                                            .createShader(b),
+                                        child: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.otp_resend,
+                                          style: const TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.05,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    if (_channel == 'sms') ...[
+                                      const SizedBox(height: 14),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            _resend(channel: 'call'),
+                                        child: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.otp_get_by_call,
+                                          style: TextStyle(
+                                            fontFamily: 'Manrope',
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.05,
+                                            color: AuroraTheme.textSecondary,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor:
+                                                AuroraTheme.textSecondary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                         ),
                         const SizedBox(height: 24),

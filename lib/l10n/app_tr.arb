@@ -59,6 +59,9 @@
   "otp_title": "Kodu gir",
   "otp_sent_to": "Gelen arama: ",
   "otp_call_hint": "Gelen numaranın son 4 hanesini gir",
+  "otp_sms_sent_to": "SMS ile kod gönderildi: ",
+  "otp_sms_hint": "Mesajdaki 4 haneli kodu gir",
+  "otp_get_by_call": "SMS gelmedi mi? Kodu aramayla al",
   "otp_resend_countdown": "Tekrar gönder ({seconds}s)",
   "@otp_resend_countdown": {
     "placeholders": {

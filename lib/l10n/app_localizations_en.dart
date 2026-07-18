@@ -193,6 +193,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otp_call_hint => 'Enter the last 4 digits of the incoming number';
 
   @override
+  String get otp_sms_sent_to => 'SMS code sent to ';
+
+  @override
+  String get otp_sms_hint => 'Enter the 4-digit code from the message';
+
+  @override
+  String get otp_get_by_call => 'No SMS? Get the code by phone call';
+
+  @override
   String otp_resend_countdown(int seconds) {
     return 'Resend (${seconds}s)';
   }

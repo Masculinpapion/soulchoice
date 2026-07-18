@@ -23,8 +23,12 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    const { phone } = await req.json()
+    const { phone, channel } = await req.json()
     if (!phone) return new Response(JSON.stringify({ error: 'phone required' }), { status: 400, headers: CORS })
+    // Kanal seçimi: yeni app sürümleri channel:'sms' gönderir (birincil kanal).
+    // Parametresiz istekler = SAHADAKİ ESKİ BUILD'LER → çağrı (UI'ları çağrıya
+    // göre yazılmış; varsayılanı sms yapmak sürüm çakışması yaratır).
+    const useSms = channel === 'sms'
 
     // SMS bombing koruması: aynı numaraya 60 sn içinde yeni kod YOK. Kontrol
     // SMS.ru çağrısından ÖNCE — hem bakiyeyi hem kurbanı (art arda çağrı) korur.
@@ -52,6 +56,21 @@ serve(async (req) => {
 
     if (isTestBypass) {
       code = testCode!
+    } else if (useSms) {
+      // Kodu biz üretiriz; gönderici adı SMS.ru panelinde varsayılan "SoulChoice"
+      // (operatörde ad onaylanana kadar SMS.ru stok adla teslim eder, geçiş otomatik).
+      const buf = new Uint32Array(1)
+      crypto.getRandomValues(buf)
+      code = String(1000 + (buf[0] % 9000))
+      const url = 'https://sms.ru/sms/send?api_id=' + SMS_RU_API_KEY +
+        '&to=' + encodeURIComponent(phone) +
+        '&msg=' + encodeURIComponent('SoulChoice: код подтверждения ' + code) + '&json=1'
+      const res = await fetch(url)
+      const data = await res.json()
+      const smsInfo = data.sms ? (Object.values(data.sms)[0] as { status?: string } | undefined) : undefined
+      if (data.status !== 'OK' || smsInfo?.status !== 'OK') {
+        return new Response(JSON.stringify({ error: 'sms_failed', detail: data }), { status: 500, headers: CORS })
+      }
     } else {
       const url = 'https://sms.ru/code/call?phone=' + encodeURIComponent(phone) + '&api_id=' + SMS_RU_API_KEY + '&json=1'
       const res = await fetch(url)

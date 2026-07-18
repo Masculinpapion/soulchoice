@@ -59,6 +59,9 @@
   "otp_title": "Введи код",
   "otp_sent_to": "Звонок поступит на номер ",
   "otp_call_hint": "Введи последние 4 цифры входящего номера",
+  "otp_sms_sent_to": "Код отправлен по SMS на номер ",
+  "otp_sms_hint": "Введи 4-значный код из сообщения",
+  "otp_get_by_call": "Не пришло SMS? Получить код звонком",
   "otp_resend_countdown": "Отправить снова ({seconds}с)",
   "@otp_resend_countdown": {
     "placeholders": {

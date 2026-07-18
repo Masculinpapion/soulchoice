@@ -127,7 +127,7 @@ active (6/12/24/48 saat — sahibi seçer)
 
 ## 10. Kayıt ve doğrulama
 
-- Giriş yalnızca telefon + çağrı-OTP (arama gelir, son 4 hane); OTP yalnız kullanıcı butona basınca tetiklenir. ✅
+- Giriş yalnızca telefon + SMS-OTP ("SoulChoice" imzalı SMS, 4 haneli kod); yedek kanal çağrı-OTP ("SMS gelmedi mi? Kodu aramayla al" — arama gelir, son 4 hane). Kanalsız (eski build) istekler backend'de çağrıya düşer. OTP yalnız kullanıcı butona basınca tetiklenir. (18.07: SMS.ru gönderici adı 4 büyük operatörde onaylanınca SMS birincil oldu; ad onayı bekleyen operatörlerde SMS stok adla teslim edilir.) ✅
 - **Selfie zorunludur:** onaysız selfie ile ne ilan açılabilir ne başvuru yapılabilir (ikisi de DB'de zorlanır). Herkes doğrulanmış olduğu için ayrı "tik" rozeti yoktur (özellik 19.06'da kaldırıldı). ✅
 - Store inceleme/demo girişi: `docs/store-review-demo.md`.
 

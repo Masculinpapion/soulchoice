@@ -454,6 +454,24 @@ abstract class AppLocalizations {
   /// **'Enter the last 4 digits of the incoming number'**
   String get otp_call_hint;
 
+  /// No description provided for @otp_sms_sent_to.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS code sent to '**
+  String get otp_sms_sent_to;
+
+  /// No description provided for @otp_sms_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 4-digit code from the message'**
+  String get otp_sms_hint;
+
+  /// No description provided for @otp_get_by_call.
+  ///
+  /// In en, this message translates to:
+  /// **'No SMS? Get the code by phone call'**
+  String get otp_get_by_call;
+
   /// No description provided for @otp_resend_countdown.
   ///
   /// In en, this message translates to:

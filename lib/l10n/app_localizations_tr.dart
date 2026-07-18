@@ -193,6 +193,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get otp_call_hint => 'Gelen numaranın son 4 hanesini gir';
 
   @override
+  String get otp_sms_sent_to => 'SMS ile kod gönderildi: ';
+
+  @override
+  String get otp_sms_hint => 'Mesajdaki 4 haneli kodu gir';
+
+  @override
+  String get otp_get_by_call => 'SMS gelmedi mi? Kodu aramayla al';
+
+  @override
   String otp_resend_countdown(int seconds) {
     return 'Tekrar gönder (${seconds}s)';
   }

@@ -48,7 +48,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     try {
       final response = await Supabase.instance.client.functions.invoke(
         'send-call-otp',
-        body: {'phone': phone},
+        // channel parametresiz istekleri backend eski build uyumu için çağrıya
+        // yönlendirir — SMS birincil kanal burada açıkça istenir.
+        body: {'phone': phone, 'channel': 'sms'},
       );
       final data = response.data as Map<String, dynamic>?;
       if (data?['success'] == true) {

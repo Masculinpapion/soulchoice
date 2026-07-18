@@ -193,6 +193,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otp_call_hint => 'Введи последние 4 цифры входящего номера';
 
   @override
+  String get otp_sms_sent_to => 'Код отправлен по SMS на номер ';
+
+  @override
+  String get otp_sms_hint => 'Введи 4-значный код из сообщения';
+
+  @override
+  String get otp_get_by_call => 'Не пришло SMS? Получить код звонком';
+
+  @override
   String otp_resend_countdown(int seconds) {
     return 'Отправить снова ($secondsс)';
   }

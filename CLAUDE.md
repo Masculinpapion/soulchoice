@@ -149,8 +149,8 @@ Feed tasarımı:
 
 ## Yasal / İdari
 - [ ] **BLOKLAYICI:** Rusya ИП/ООО açılışı (RuStore + YooKassa için ön koşul)
-- [ ] Marka tescili Rusya (Роспатент — new.fips.ru)
-- [ ] Marka tescili Global (WIPO — madrid.wipo.int)
+- [ ] Marka tescili Rusya — başvuruldu (№2026781417, №2026781420); harç son tarihi Ağustos sonu, launch sonrası ilk idari iş → detay: docs/legal-todos.md
+- [ ] Marka tescili Global (WIPO — madrid.wipo.int) — ФИПС sonrasına ertelendi (18.07.2026)
 - [ ] SMS.ru sender adı onayı (commercial sender)
 - [x] Apple Developer Program ✅
 - [ ] Apple Developer kullanım sözleşmeleri imzalı mı kontrol

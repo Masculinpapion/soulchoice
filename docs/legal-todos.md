@@ -1,5 +1,23 @@
 # Hukuki Görevler ve Kayıtlar (RU Uyumluluk)
 
+## Marka Tescili — Роспатент/ФИПС — BAŞVURULDU, HARÇ BEKLİYOR (18.07.2026)
+
+SoulChoice marka başvuruları АРМ «Регистратор» üzerinden yapıldı (Haziran 2026,
+Наталья Бердова ile birlikte yürütülüyor):
+
+- **SoulChoice-001** — заявка №2026781417
+- **SoulChoice-002** — заявка №2026781420
+
+**Durum:** ФИПС'ten kabineye (АРМ «Регистратор») yazışmalar düştü — 25.06.2026 (her iki
+başvuru), 30.06.2026 (002), 07.07.2026 (001). İçerikleri kabinede; büyük olasılıkla
+kayıt bildirimi + harç tahakkuku (начисление пошлин).
+
+**⏰ Harç (пошлина) son tarihi: Ağustos 2026 sonu.**
+
+**Öncelik kararı (18.07.2026, Mustafa onayı):** ФИПС harç ödemesi + kabinedeki
+yazışmaların işlenmesi, **launch sonrası İLK idari iş**. WIPO/Madrid (global tescil)
+bundan sonraya ertelendi.
+
 ## Roskomnadzor — Kişisel Veri Operatörü Bildirimi (152-ФЗ) — TAMAMLANDI (07.07.2026)
 
 SoulChoice için Roskomnadzor'a "kişisel veri işleme niyeti" bildirimi başarıyla gönderildi.

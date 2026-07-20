@@ -12,8 +12,6 @@ class MatchPreview {
   final String? lastMessage;
   final DateTime? lastMessageTime;
   final int unreadCount;
-  final DateTime? meetingDate;
-  final DateTime? archivedAt;
   final DateTime createdAt;
 
   const MatchPreview({
@@ -25,8 +23,6 @@ class MatchPreview {
     this.lastMessage,
     this.lastMessageTime,
     required this.unreadCount,
-    this.meetingDate,
-    this.archivedAt,
     required this.createdAt,
   });
 
@@ -34,12 +30,6 @@ class MatchPreview {
 
   /// Henüz hiç mesajlaşılmamış eşleşme — listede en üstte, rozetle gösterilir
   bool get isNewMatch => lastMessage == null && !isDeleted;
-
-  bool get isArchived {
-    if (archivedAt != null) return true;
-    if (meetingDate == null) return false;
-    return DateTime.now().isAfter(meetingDate!.add(const Duration(hours: 24)));
-  }
 }
 
 final matchesProvider =
@@ -51,12 +41,11 @@ final matchesProvider =
 
   final data = await client
       .from('matches')
-      .select('id, user1_id, user2_id, meeting_date, archived_at, created_at, '
+      .select('id, user1_id, user2_id, created_at, '
           'user1_hidden_at, user2_hidden_at')
       .or('user1_id.eq.$uid,user2_id.eq.$uid')
-      // archived olmayan match'leri önce göster (aynı kişi ile birden fazla
-      // match varsa seen.containsKey eski archived olanı tutmasın)
-      .order('archived_at', ascending: true, nullsFirst: true)
+      // Sohbetler kalıcıdır (20.07.2026 kararı) — aynı kişiyle birden fazla
+      // match varsa seen.containsKey en yenisini tutar
       .order('created_at', ascending: false);
 
   final matches = (data as List).cast<Map<String, dynamic>>();
@@ -143,12 +132,6 @@ final matchesProvider =
           ? DateTime.parse(lastMsg['created_at'] as String)
           : null,
       unreadCount: unreadCountMap[matchId] ?? 0,
-      meetingDate: m['meeting_date'] != null
-          ? DateTime.parse(m['meeting_date'] as String)
-          : null,
-      archivedAt: m['archived_at'] != null
-          ? DateTime.parse(m['archived_at'] as String)
-          : null,
       createdAt: DateTime.parse(m['created_at'] as String),
     );
   }
@@ -168,7 +151,7 @@ final matchesProvider =
   return result;
 });
 
-/// Bu kullanıcıyla mevcut match id'si (aktif öncelikli) — profildeki
+/// Bu kullanıcıyla mevcut match id'si (en yeni) — profildeki
 /// "Mesaj yaz" girişi için. Match yoksa null.
 final matchWithUserProvider =
     FutureProvider.autoDispose.family<String?, String>((ref, otherUserId) async {
@@ -179,7 +162,6 @@ final matchWithUserProvider =
       .select('id')
       .or('and(user1_id.eq.$uid,user2_id.eq.$otherUserId),'
           'and(user1_id.eq.$otherUserId,user2_id.eq.$uid)')
-      .order('archived_at', ascending: true, nullsFirst: true)
       .order('created_at', ascending: false)
       .limit(1);
   final list = rows as List;
@@ -187,16 +169,3 @@ final matchWithUserProvider =
   return (list.first as Map<String, dynamic>)['id'] as String;
 });
 
-final activeMatchesProvider =
-    Provider.autoDispose<AsyncValue<List<MatchPreview>>>((ref) {
-  return ref.watch(matchesProvider).whenData(
-        (list) => list.where((m) => !m.isArchived).toList(),
-      );
-});
-
-final archivedMatchesProvider =
-    Provider.autoDispose<AsyncValue<List<MatchPreview>>>((ref) {
-  return ref.watch(matchesProvider).whenData(
-        (list) => list.where((m) => m.isArchived).toList(),
-      );
-});

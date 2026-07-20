@@ -1014,9 +1014,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_weekday_sun_full => 'Pazar';
 
   @override
-  String get chat_archived => 'Bu sohbet arşivlendi';
-
-  @override
   String get chat_deleted_user => 'Silinmiş kullanıcı';
 
   @override
@@ -1182,7 +1179,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get messages_empty_past => 'Geçmiş sohbet yok';
 
   @override
-  String get messages_empty_active => 'Henüz aktif sohbet yok';
+  String get messages_empty_active => 'Henüz sohbet yok';
 
   @override
   String get messages_empty_hint => 'Davetiye aç veya mevcut birine başvur';

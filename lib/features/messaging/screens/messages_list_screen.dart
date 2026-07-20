@@ -109,7 +109,9 @@ class _MatchesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listAsync = ref.watch(activeMatchesProvider);
+    // Sohbetler kalıcıdır (20.07.2026): kullanıcı gizlemedikçe/engellemedikçe
+    // hiçbir sohbet listeden düşmez — arşiv konsepti iptal edildi
+    final listAsync = ref.watch(matchesProvider);
 
     return listAsync.when(
       loading: () => _SkeletonList(),

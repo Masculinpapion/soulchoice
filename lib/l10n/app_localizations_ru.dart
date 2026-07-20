@@ -1026,9 +1026,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_weekday_sun_full => 'Воскресенье';
 
   @override
-  String get chat_archived => 'Этот чат в архиве';
-
-  @override
   String get chat_deleted_user => 'Удалённый пользователь';
 
   @override
@@ -1197,7 +1194,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messages_empty_past => 'Прошлых чатов нет';
 
   @override
-  String get messages_empty_active => 'Пока нет активных чатов';
+  String get messages_empty_active => 'Пока нет чатов';
 
   @override
   String get messages_empty_hint =>

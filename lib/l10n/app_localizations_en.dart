@@ -1015,9 +1015,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_weekday_sun_full => 'Sunday';
 
   @override
-  String get chat_archived => 'This chat is archived';
-
-  @override
   String get chat_deleted_user => 'Deleted user';
 
   @override
@@ -1185,7 +1182,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messages_empty_past => 'No past chats';
 
   @override
-  String get messages_empty_active => 'No active chats yet';
+  String get messages_empty_active => 'No chats yet';
 
   @override
   String get messages_empty_hint =>

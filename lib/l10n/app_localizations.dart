@@ -1942,12 +1942,6 @@ abstract class AppLocalizations {
   /// **'Sunday'**
   String get inv_detail_weekday_sun_full;
 
-  /// No description provided for @chat_archived.
-  ///
-  /// In en, this message translates to:
-  /// **'This chat is archived'**
-  String get chat_archived;
-
   /// No description provided for @chat_deleted_user.
   ///
   /// In en, this message translates to:
@@ -2245,7 +2239,7 @@ abstract class AppLocalizations {
   /// No description provided for @messages_empty_active.
   ///
   /// In en, this message translates to:
-  /// **'No active chats yet'**
+  /// **'No chats yet'**
   String get messages_empty_active;
 
   /// No description provided for @messages_empty_hint.

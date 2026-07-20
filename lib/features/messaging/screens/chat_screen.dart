@@ -51,7 +51,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   // Derived from match
   DateTime? _meetingDate;
-  DateTime? _archivedAt;
   bool? _myConfirmation;
   bool? _theirConfirmation;
 
@@ -85,7 +84,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final client = Supabase.instance.client;
     try {
       final matchRow = await client.from('matches').select(
-            'user1_id, user2_id, meeting_date, archived_at, created_at, '
+            'user1_id, user2_id, meeting_date, created_at, '
             'meeting_confirmed_user1, meeting_confirmed_user2, '
             'invitation:invitations(id, title, venue_name, event_date, category)',
           ).eq('id', widget.matchId).maybeSingle();
@@ -131,7 +130,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (!mounted) return;
 
       final meetDate = matchRow['meeting_date'];
-      final archDate = matchRow['archived_at'];
       final matchCreated = matchRow['created_at'];
       final invMap = matchRow['invitation'] as Map<String, dynamic>?;
       final isGift = invMap?['category'] == 'gift';
@@ -151,7 +149,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           'photoUrl': photoUrl,
         };
         _meetingDate = meetDate != null ? DateTime.parse(meetDate) : null;
-        _archivedAt = archDate != null ? DateTime.parse(archDate) : null;
         _myConfirmation = _isUser1
             ? matchRow['meeting_confirmed_user1'] as bool?
             : matchRow['meeting_confirmed_user2'] as bool?;
@@ -165,17 +162,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (mounted) setState(() => _matchInfo = {});
     }
 
-    // Auto-archive if meeting was >24h ago and not yet archived
-    if (_archivedAt == null &&
-        _meetingDate != null &&
-        DateTime.now()
-            .isAfter(_meetingDate!.add(const Duration(hours: 24)))) {
-      await client
-          .from('matches')
-          .update({'archived_at': DateTime.now().toIso8601String()})
-          .eq('id', widget.matchId);
-      if (mounted) setState(() => _archivedAt = DateTime.now());
-    }
   }
 
   void _onScroll() {
@@ -334,7 +320,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _sendMessage() async {
-    if (_archivedAt != null || _otherDeleted) return;
+    if (_otherDeleted) return;
     final text = _messageController.text.trim();
     if (text.isEmpty || _currentUid == null) return;
     _messageController.clear();
@@ -500,11 +486,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final invVenue = inv?['venue_name'] as String? ?? '';
     final rawDate = inv?['event_date'] as String?;
     final invDate = rawDate != null ? DateTime.tryParse(rawDate) : null;
-    final isArchived = _archivedAt != null ||
-        (_meetingDate != null &&
-            DateTime.now()
-                .isAfter(_meetingDate!.add(const Duration(hours: 24))));
-
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
@@ -528,9 +509,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
             // Hediye linki kartı — yalnız seçilen kişide görünür (get_gift_link)
             if (_giftUrl != null) _GiftLinkCard(url: _giftUrl!),
-
-            // Archived banner
-            if (isArchived) const _ArchivedBanner(),
 
             // "Geldi mi?" banner
             if (_showAttendanceBanner)
@@ -597,10 +575,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
             ),
 
-            // Input bar (only when not archived and partner still exists)
+            // Input bar (partner hesabı durdukça hep açık — sohbetler kalıcı)
             if (_otherDeleted)
               const _DeletedUserBanner()
-            else if (!isArchived)
+            else
               _InputBar(
                 controller: _messageController,
                 onSend: _sendMessage,
@@ -610,41 +588,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
   }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Archived Banner
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _ArchivedBanner extends StatelessWidget {
-  const _ArchivedBanner();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.archive_outlined,
-                size: 16, color: AuroraTheme.textMuted),
-            const SizedBox(width: 8),
-            Text(
-              AppLocalizations.of(context)!.chat_archived,
-              style: TextStyle(
-                fontFamily: 'JetBrainsMono',
-                fontSize: 11,
-                color: AuroraTheme.textSecondary,
-                letterSpacing: 0.25,
-              ),
-            ),
-          ],
-        ),
-      );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

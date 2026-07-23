@@ -110,6 +110,13 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'SoulChoice Premium', b: 'Aboneliğin sona erdi, Premium kapandı. Profilden yeniden başlatabilirsin.' },
     en: { t: 'SoulChoice Premium', b: 'Your subscription has ended and Premium is off. Restart it from your profile.' },
   },
+  // 24.07 C1: nötr askı bildirimi (DB trigger notify_suspension → pg_net).
+  // Gerekçe bilinçli olarak yazılmıyor — o tasarım post-launch karar.
+  account_suspended: {
+    ru: { t: 'SoulChoice', b: 'Аккаунт приостановлен — подробности: support@soulchoice.app' },
+    tr: { t: 'SoulChoice', b: 'Hesabın askıya alındı — detay: support@soulchoice.app' },
+    en: { t: 'SoulChoice', b: 'Your account has been suspended — details: support@soulchoice.app' },
+  },
 }
 
 // Preset red sebepleri — app l10n selfie_reason_* ile birebir aynı metinler

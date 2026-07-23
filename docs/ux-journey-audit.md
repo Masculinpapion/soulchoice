@@ -35,7 +35,7 @@ değiştirenler tek listeyle sorulur."
 
 | # | Konu | Durum |
 |---|------|-------|
-| C1 | Ban / no-show askısı bildirimsiz | **MUSTAFA'DA (tek açık karar).** Öneri: askı/ban anında push "Hesabın askıya alındı — detay: support@" (gerekçe metni ve itiraz akışı senin kararın; 152-ФЗ şeffaflık boyutu). Suspended ekranı mevcut, yani kullanıcı app'i açınca öğreniyor; push yalnız öğrenme süresini kısaltır. |
+| C1 | Ban / no-show askısı bildirimsiz | **YAPILDI (24.07, "önerini uygula" delegasyonu):** `users.suspended_at` NULL→dolu geçişine tek trigger (`notify_suspension`, pg_net) — no-show askısı + ops ban + gelecekteki tüm yollar kapsanır; nötr push 3 dilde ("Hesabın askıya alındı — detay: support@"), gerekçe bilinçli yazılmıyor. Gerekçe metni + itiraz akışı tasarımı post-launch (C9 ile birlikte). Migration prod'da uygulandı. |
 | C2 | ~~Reddedilen başvurana push yok / zil var çelişkisi~~ | **KAPANDI — çelişki yokmuş.** product-logic §9 zaten "Reddedildin: in-app ✅, push ❌ bilinçli" diyor; kod birebir uyumlu. Tarama ajanının yanlış alarmı. |
 | C3 | Hesap silme teyidi | **YAPILDI (24.07):** `billing_email` varsa silme sonrası `account_deleted` e-postası (3 dilde, best-effort). |
 | C4 | Sosyal push'lar istemci-tetikli | **BACKLOG (post-launch, checklist X):** pg_net trigger'a taşınacak — launch öncesi çekirdek trigger'lara dokunma riski alınmadı. |

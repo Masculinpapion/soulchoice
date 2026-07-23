@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendBillingEmail } from '../_shared/billing-email.ts'
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -34,6 +35,13 @@ Deno.serve(async (req: Request) => {
         headers: { 'Content-Type': 'application/json' },
       })
     }
+
+    // GDPR teyit e-postası için adres+dil, satır silinmeden ÖNCE alınır (24.07 C3)
+    const { data: delUserRow } = await adminClient
+      .from('users')
+      .select('billing_email, locale')
+      .eq('id', user.id)
+      .maybeSingle()
 
     // F2: hesap silinmeden ÖNCE aktif abonelik lokal iptal edilir ve iz billing_events'e
     // düşülür (subscriptions satırı CASCADE ile silinir; event user_id SET NULL ile kalır).
@@ -108,6 +116,13 @@ Deno.serve(async (req: Request) => {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       })
+    }
+
+    // GDPR silme teyidi — best effort, silme sonucunu etkilemez (24.07 C3)
+    const delEmail = delUserRow?.billing_email as string | null
+    if (delEmail) {
+      await sendBillingEmail(delEmail, 'account_deleted', {},
+        (delUserRow?.locale as string | null) ?? 'ru')
     }
 
     return new Response(JSON.stringify({ success: true }), {

@@ -28,19 +28,22 @@ davranış değiştiren her commit bu matrisi günceller. Tarama yöntemi: 3 par
   `PREMIUM_BELL_NOTIF` flag'i arkasında KAPALI. Build'ler 3 kanala dağıtılınca açılacak.
   O gün ayrıca yenileme/iptal/başarısızlık olayları da zile bağlanmalı (şu an yalnız initial).
 
-## C. ÜRÜN KARARI BEKLEYEN (Mustafa) — dokunulmadı
+## C. Karar konuları — 24.07 delegasyonuyla çözüm durumu
 
-| # | Konu | Not |
-|---|------|-----|
-| C1 | Ban / no-show askısı bildirimsiz | Kullanıcı ancak engellenince öğreniyor (suspended ekranı var). Push/e-posta + gerekçe/itiraz yolu eklensin mi? Şeffaflık/152-ФЗ boyutu var. |
-| C2 | Reddedilen başvurana push yok (zil kaydı VAR) | product-logic §118 "bilinçli sessizlik" ile zil trigger'ı çelişiyor — hangisi doğru? (Push'suz zil mevcut davranış.) |
-| C3 | Hesap silme onay e-postası yok | GDPR iyi pratiği "silindi" teyidi ister; e-posta adresi her kullanıcıda yok (yalnız billing_email). |
-| C4 | Sosyal push'lar istemci-tetikli (gönderen ölürse push düşmez; zil sağlam) | Kalıcı çözüm: selfie'deki gibi pg_net trigger'a taşımak. Launch öncesi riskli; post-launch backlog önerisi. |
-| C5 | SQL cron'daki genel premium düşüşü (F1/tekil `premium_until` bitişi) bildirimsiz | Abonelik grace-sonu 24.07'de kapandı; kalan durum tek-seferlik erişim bitişi. Dedup tasarımı ister. |
-| C6 | `welcome` + `premium_intro` e-postaları RU-only | Pazarlama kopyası — TR/EN metinleri onayınla yazılır. |
-| C7 | Onboarding yarıda kalırsa (kayıt sonrası foto/selfie öncesi çıkış) sonraki açılış feed'e düşüyor | Zorunlu tamamlama akışı mı, mevcut yumuşak kart mı? |
-| C8 | Ölü mekanikler: `meeting_reminder`/`feedback_request` bildirim tipleri (üretici yok), `match` push şablonu (çağıran yok), `DecisionScreen`+`'selected'` durumu (product-logic §137: hiç kullanılmıyor) | Temizlik ya da hayata geçirme kararı. Kullanıcı görmüyor; acil değil. |
-| C9 | Moderasyon aksiyonları (ilan kapatma, foto silme, uyarı, rapor sonucu) kullanıcıya yansımıyor | Ops paneli olgunlaştıkça bildirim setine bağlanmalı. |
+Mustafa 24.07: "her biri için kendi önerini uygula; yalnız ürün felsefesi/hukuki risk
+değiştirenler tek listeyle sorulur."
+
+| # | Konu | Durum |
+|---|------|-------|
+| C1 | Ban / no-show askısı bildirimsiz | **MUSTAFA'DA (tek açık karar).** Öneri: askı/ban anında push "Hesabın askıya alındı — detay: support@" (gerekçe metni ve itiraz akışı senin kararın; 152-ФЗ şeffaflık boyutu). Suspended ekranı mevcut, yani kullanıcı app'i açınca öğreniyor; push yalnız öğrenme süresini kısaltır. |
+| C2 | ~~Reddedilen başvurana push yok / zil var çelişkisi~~ | **KAPANDI — çelişki yokmuş.** product-logic §9 zaten "Reddedildin: in-app ✅, push ❌ bilinçli" diyor; kod birebir uyumlu. Tarama ajanının yanlış alarmı. |
+| C3 | Hesap silme teyidi | **YAPILDI (24.07):** `billing_email` varsa silme sonrası `account_deleted` e-postası (3 dilde, best-effort). |
+| C4 | Sosyal push'lar istemci-tetikli | **BACKLOG (post-launch, checklist X):** pg_net trigger'a taşınacak — launch öncesi çekirdek trigger'lara dokunma riski alınmadı. |
+| C5 | Tek-seferlik premium bitişi bildirimsiz | **BACKLOG (post-launch, checklist Y):** dedup tasarımı ister; abone grace-sonu 24.07'de kapandı, kalan yüzey küçük. |
+| C6 | `welcome`/`premium_intro` RU-only | **YAPILDI (24.07):** TR/EN kopyalar servis tonunda yazıldı (RU orijinaline birebir sadık). |
+| C7 | Onboarding yarıda kalma | **KARAR (öneri uygulandı = değişiklik yok):** yumuşak tamamlama kartı kalır; selfie kapısı çekirdek aksiyonları zaten kilitliyor, zorunlu akış drop-off'u artırır. |
+| C8 | Ölü mekanikler (meeting_reminder/feedback_request tipleri, match şablonu, DecisionScreen+'selected') | **BACKLOG (post-launch, checklist Z):** kullanıcı görmüyor; store inceleme dönemi kod churn'üne değmez. |
+| C9 | Moderasyon aksiyonları bildirimsiz | **BACKLOG (post-launch, checklist Z ile birlikte; C1 kararına bağlı).** |
 
 ## D. Doğrulanan SAĞLAM alanlar (özet)
 

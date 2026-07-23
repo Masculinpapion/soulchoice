@@ -16,6 +16,7 @@ export type BillingEmailKind =
   | 'renewal_failed'
   | 'cancel_confirm'
   | 'premium_expired' // grace bitti / abonelik kapandı (24.07)
+  | 'account_deleted' // GDPR silme teyidi (24.07)
   | 'welcome'        // D+0 — servis tonu, fiyat/teklif YOK (rızasız da gider)
   | 'premium_intro'  // D+2 — SADECE pazarlama rızalılara (ФЗ-38)
 
@@ -86,23 +87,36 @@ function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'):
         en: { subject: 'Your SoulChoice Premium has ended',
               body: 'Your subscription has ended and Premium is off. Restart anytime: the app (Profile → Subscription) or https://soulchoice.app/premium' },
       })
+    case 'account_deleted':
+      return pick({
+        ru: { subject: 'Аккаунт SoulChoice удалён',
+              body: 'Ваш аккаунт и данные удалены без возможности восстановления. Спасибо, что были с нами.\n\nЕсли это были не вы — напишите на support@soulchoice.app.' },
+        tr: { subject: 'SoulChoice hesabın silindi',
+              body: 'Hesabın ve verilerin geri getirilemez şekilde silindi. Bizimle olduğun için teşekkürler.\n\nBu işlemi sen yapmadıysan support@soulchoice.app adresine yaz.' },
+        en: { subject: 'Your SoulChoice account has been deleted',
+              body: 'Your account and data have been permanently deleted. Thank you for being with us.\n\nIf this was not you, contact support@soulchoice.app.' },
+      })
     case 'welcome':
-      return {
-        subject: 'Добро пожаловать в SoulChoice',
-        body:
-          'Привет! Ты в SoulChoice — приложении для тех, кто выбирает живое общение.\n\n' +
-          'С чего начать: создай приглашение на ужин, концерт или прогулку — или откликнись на чужое. Дальше всё решает взаимный выбор.\n\n' +
-          'Вопросы: support@soulchoice.app' + FOOTER,
+      return pick({
+        ru: { subject: 'Добро пожаловать в SoulChoice',
+              body: 'Привет! Ты в SoulChoice — приложении для тех, кто выбирает живое общение.\n\nС чего начать: создай приглашение на ужин, концерт или прогулку — или откликнись на чужое. Дальше всё решает взаимный выбор.\n\nВопросы: support@soulchoice.app' },
+        tr: { subject: "SoulChoice'a hoş geldin",
+              body: 'Merhaba! SoulChoice, canlı buluşmayı seçenlerin uygulaması.\n\nNereden başlamalı: akşam yemeği, konser veya yürüyüş için bir davet oluştur — ya da birininkine başvur. Gerisini karşılıklı seçim belirler.\n\nSorular: support@soulchoice.app' },
+        en: { subject: 'Welcome to SoulChoice',
+              body: "Hi! You're on SoulChoice — the app for people who choose real connection.\n\nWhere to start: create an invitation for dinner, a concert or a walk — or apply to someone else's. Mutual choice decides the rest.\n\nQuestions: support@soulchoice.app" },
+      })
+    case 'premium_intro': {
+      const intro = {
+        ru: { subject: 'SoulChoice Premium — безлимитные приглашения и заявки',
+              body: 'Premium открывает: безлимитные приглашения и заявки, чат после взаимного выбора, приоритет модерации.\n\nПодписка — 1000 ₽ каждые 30 дней с автопродлением (отмена в любой момент, в один клик) или разовый доступ на 30 дней.\n\nОформить: https://soulchoice.app/premium\n\n—\nВы получили это письмо, потому что дали согласие на новости SoulChoice.\nОтписаться: напишите на support@soulchoice.app' },
+        tr: { subject: 'SoulChoice Premium — sınırsız davet ve başvuru',
+              body: 'Premium ile: sınırsız davet ve başvuru, karşılıklı seçim sonrası sohbet, moderasyonda öncelik.\n\nAbonelik — otomatik yenilemeyle 30 günde bir 1000 ₽ (istediğin an tek tıkla iptal) veya 30 günlük tek seferlik erişim.\n\nBaşlat: https://soulchoice.app/premium\n\n—\nBu e-postayı SoulChoice haberlerine onay verdiğin için aldın.\nAbonelikten çık: support@soulchoice.app adresine yaz' },
+        en: { subject: 'SoulChoice Premium — unlimited invitations and applications',
+              body: 'Premium unlocks: unlimited invitations and applications, chat after mutual choice, moderation priority.\n\nSubscription — 1,000 ₽ every 30 days with auto-renewal (cancel anytime, one tap) or one-time 30-day access.\n\nGet it: https://soulchoice.app/premium\n\n—\nYou received this email because you opted in to SoulChoice news.\nUnsubscribe: email support@soulchoice.app' },
       }
-    case 'premium_intro':
-      return {
-        subject: 'SoulChoice Premium — безлимитные приглашения и заявки',
-        body:
-          'Premium открывает: безлимитные приглашения и заявки, чат после взаимного выбора, приоритет модерации.\n\n' +
-          'Подписка — 1000 ₽ каждые 30 дней с автопродлением (отмена в любой момент, в один клик) или разовый доступ на 30 дней.\n\n' +
-          'Оформить: https://soulchoice.app/premium\n\n' +
-          '—\nВы получили это письмо, потому что дали согласие на новости SoulChoice.\nОтписаться: напишите на support@soulchoice.app',
-      }
+      const v = intro[(locale === 'tr' || locale === 'en') ? locale : 'ru'] ?? intro.ru
+      return { subject: v.subject, body: v.body }
+    }
   }
 }
 

@@ -85,12 +85,17 @@ jobs:
 
       - run: flutter build appbundle --release --no-pub
 
+      # RuStore anahtar teslimi istemesin diye imzalı APK da üretilir (24.07 karar B).
+      - run: flutter build apk --release --no-pub
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-release
           name: "Release AAB (latest)"
           prerelease: false
-          files: build/app/outputs/bundle/release/app-release.aab
+          files: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-release.apk
 
   deploy-functions:
     needs: build-debug

@@ -8,6 +8,9 @@ allprojects {
 subprojects {
     plugins.withId("com.android.library") {
         extensions.configure<com.android.build.gradle.LibraryExtension> {
+            // Eski compileSdk'lı pluginler (appmetrica) APK'nın verifyReleaseResources
+            // adımında lStar hatası veriyor; app ile aynı SDK'ya sabitle.
+            compileSdk = 36
             if (namespace == null) {
                 val manifestFile = file("src/main/AndroidManifest.xml")
                 if (manifestFile.exists()) {

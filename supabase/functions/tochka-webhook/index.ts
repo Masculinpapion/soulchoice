@@ -241,6 +241,17 @@ serve(async (req) => {
           )
           if (chargeType === 'subscription_initial') {
             bindingActivated = true
+            // İlk ödeme onayı: kullanıcı web'de ödeyip döndüğünde teyit alsın
+            // (yenileme bildirimiyle aynı mekanik; `applied` koruması çift göndermeyi engeller)
+            const dateStr = fmtDate(until)
+            await sendPush(sub.user_id, 'SoulChoice Premium',
+              `Подписка оформлена! Premium активен до ${dateStr}.`)
+            const mail = await db.queryObject<{ billing_email: string | null }>(
+              `select billing_email from users where id = $1`,
+              [sub.user_id],
+            )
+            const email = mail.rows[0]?.billing_email
+            if (email) await sendBillingEmail(email, 'purchase_success', { date: dateStr })
           } else {
             // Renewal grant'ini yarışta webhook kazandıysa başarı bildirimi de buradan gider
             // (grant tekil — cron kazanırsa cron bildirir; çift bildirim imkânsız). 09.07 prova bulgusu.
@@ -327,6 +338,9 @@ serve(async (req) => {
              values ($1, 'active', 'tochka', now(), $2, false, $3, 'RUB')`,
             [userId, expiresAt, Math.round(amount)],
           )
+          // Tek-seferlik ödeme onayı (pending→paid claim'i idempotensi garantisi)
+          await sendPush(userId, 'SoulChoice Premium',
+            `Premium активирован до ${fmtDate(expiresAt)}.`)
         }
       }
       return new Response('ok')

@@ -11,6 +11,7 @@ const PASS = Deno.env.get('BILLING_SMTP_PASS') ?? ''
 
 export type BillingEmailKind =
   | 'renewal_reminder'
+  | 'purchase_success'
   | 'renewal_success'
   | 'renewal_failed'
   | 'cancel_confirm'
@@ -36,6 +37,11 @@ function template(kind: BillingEmailKind, p: BillingEmailParams): { subject: str
         body:
           `Подписка SoulChoice Premium продлится ${p.date ?? 'в ближайшие дни'} — спишется ${p.amount ?? '1 000 ₽'}. Управление — в профиле.` +
           FOOTER,
+      }
+    case 'purchase_success':
+      return {
+        subject: 'Подписка SoulChoice Premium оформлена',
+        body: `Подписка оформлена. Premium активен до ${p.date ?? ''}.` + FOOTER,
       }
     case 'renewal_success':
       return {

@@ -267,8 +267,10 @@ CofToken silme prosedürü destek cevabına (S4) göre eklenecek (o zamana dek: 
 için charge asla çağrılmaz — tek çekim tetikleyicisi biziz).
 
 ### 3c. Bildirimler (push = FCM `send-notification`; e-posta = Timeweb SMTP)
-Çekim öncesi ≥24s (F2-1, servis mesajı — ФЗ-38 reklam onayı gerektirmez) • çekim başarılı •
-çekim başarısız/past_due (+ app banner P8) • iptal onayı. Hepsi push+e-posta.
+**Abonelik oluşturuldu (ilk ödeme, 24.07.2026 eklendi: push+e-posta `purchase_success`; F1
+tek-seferlikte yalnız push)** • çekim öncesi ≥24s (F2-1, servis mesajı — ФЗ-38 reklam onayı
+gerektirmez) • çekim başarılı • çekim başarısız/past_due (+ app banner P8) • iptal onayı.
+Hepsi push+e-posta.
 **DNS hazır (09.07.2026 doğrulandı):** MX timeweb, SPF `include:_spf.timeweb.ru`, DKIM seçici
 `dkim`, DMARC `p=none` → kurulum gerekmez. **Eksik tek şey:** support@soulchoice.app SMTP
 şifresi (Mustafa'dan, Faz 2 ön koşulu). Fiskal çekler bankadan otomatik gider (bizim işimiz değil).

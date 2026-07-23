@@ -181,6 +181,9 @@ sürecinin kendisinin yakalaması. Bu bölüm tek kaynak; repo `CLAUDE.md` buray
    exception mı? (`e.toString()` snackbar'ı = kırık deneyim.)
 7. **l10n:** Yeni her metin RU/TR/EN üçünde de var mı? (Çift-dil senkron kuralı.)
 8. **Cihaz kanıtı:** Davranış değişikliği gerçek cihazda görüldü mü? ("Kod doğru, geçtim" yasak.)
+9. **Kanal matrisi (24.07 eklendi):** Bu değişikliğin dokunduğu yolculukta kanal matrisinde
+   (ekran durumu / push / zil / e-posta / i18n — `docs/ux-journey-audit.md`) yeni boşluk doğdu mu,
+   mevcut boşluk kapandı mı? Matris güncellendi mi?
 
 ### 13.2 Yolculuk taraması: yeni akış/ekran eklendiğinde
 

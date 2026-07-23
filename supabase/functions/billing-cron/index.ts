@@ -56,7 +56,8 @@ function jwtDaysLeft(expiresAt: Date | string | null): number | null {
   return Math.floor((new Date(expiresAt).getTime() - Date.now()) / 86400000)
 }
 
-async function sendPush(userId: string, title: string, body: string): Promise<boolean> {
+async function sendPush(userId: string, title: string, body: string,
+  type?: string, template?: Record<string, string>): Promise<boolean> {
   try {
     const res = await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
       method: 'POST',
@@ -65,7 +66,9 @@ async function sendPush(userId: string, title: string, body: string): Promise<bo
         Authorization: 'Bearer ' + SERVICE_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_id: userId, title, body }),
+      // type verilirse send-notification alıcının dilinde şablon uygular (24.07 i18n)
+      body: JSON.stringify({ user_id: userId, title, body,
+        ...(type ? { data: { type }, template } : {}) }),
     })
     return res.ok
   } catch {
@@ -128,7 +131,8 @@ serve(async (req) => {
       const amount = fmtAmount(sub.price_paid)
       const dateStr = fmtDate(sub.next_billing_at)
       const pushOk = await sendPush(sub.user_id, 'SoulChoice Premium',
-        `Подписка продлится ${dateStr} — спишется ${amount}. Управление — в профиле.`)
+        `Подписка продлится ${dateStr} — спишется ${amount}. Управление — в профиле.`,
+        'premium_renew_reminder', { date: dateStr, amount })
       const mail = sub.billing_email
         ? await sendBillingEmail(sub.billing_email, 'renewal_reminder', { amount, date: dateStr })
         : { ok: false, error: 'no_billing_email' }
@@ -187,7 +191,8 @@ serve(async (req) => {
         } else if (r.outcome === 'charged') {
           const dateStr = fmtDate(r.until)
           await sendPush(sub.user_id, 'SoulChoice Premium',
-            `Подписка продлена. Premium активен до ${dateStr}.`)
+            `Подписка продлена. Premium активен до ${dateStr}.`,
+            'premium_renewed', { date: dateStr })
           if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_success', { date: dateStr })
           summary.charged.push(label)
         } else if (r.outcome === 'pending_verify') {
@@ -204,7 +209,8 @@ serve(async (req) => {
             [sub.id, newRetry, cfg.grace_hours],
           )
           await sendPush(sub.user_id, 'SoulChoice Premium',
-            'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.')
+            'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.',
+            'premium_renew_failed', {})
           if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_failed', {})
           summary.charge_failed.push(`${label} → ${r.raw.slice(0, 120)}`)
           heartbeatStatus = 'warn'

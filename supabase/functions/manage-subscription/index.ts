@@ -31,7 +31,8 @@ function fmtDate(d: Date | string | null | undefined): string {
 }
 
 // Push best-effort: mevcut send-notification fn'i service key ile çağrılır, hata yutulur
-async function sendPush(userId: string, title: string, body: string) {
+async function sendPush(userId: string, title: string, body: string,
+  type?: string, template?: Record<string, string>) {
   try {
     await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
       method: 'POST',
@@ -40,7 +41,9 @@ async function sendPush(userId: string, title: string, body: string) {
         Authorization: 'Bearer ' + SERVICE_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_id: userId, title, body }),
+      // type verilirse send-notification alıcının dilinde şablon uygular (24.07 i18n)
+      body: JSON.stringify({ user_id: userId, title, body,
+        ...(type ? { data: { type }, template } : {}) }),
     })
   } catch (e) {
     console.error('push failed', e?.message ?? e)
@@ -142,7 +145,8 @@ serve(async (req) => {
         )
         const dateStr = fmtDate(premiumUntil)
         // Onaylı metinler (§7) — sade, kart lafı yok (KARAR 4)
-        await sendPush(user.id, 'Подписка отменена', `Premium активен до ${dateStr}.`)
+        await sendPush(user.id, 'Подписка отменена', `Premium активен до ${dateStr}.`,
+          'premium_cancelled', { date: dateStr })
         if (billingEmail) {
           const mail = await sendBillingEmail(billingEmail, 'cancel_confirm', { date: dateStr })
           await db.queryObject(
@@ -196,7 +200,8 @@ serve(async (req) => {
         }, cfgR.rows[0]?.period_days ?? 30, 'user_retry')
         if (r.outcome === 'charged' || r.outcome === 'reconciled') {
           const dateStr = fmtDate(r.until ?? premiumUntil)
-          await sendPush(user.id, 'SoulChoice Premium', `Подписка продлена. Premium активен до ${dateStr}.`)
+          await sendPush(user.id, 'SoulChoice Premium', `Подписка продлена. Premium активен до ${dateStr}.`,
+            'premium_renewed', { date: dateStr })
           if (billingEmail) {
             await sendBillingEmail(billingEmail, 'renewal_success', { date: dateStr })
           }

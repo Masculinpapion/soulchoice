@@ -82,7 +82,8 @@ async function bellNotif(db: Client, userId: string, dateStr: string) {
   } catch (e) { console.error('bell notif failed', e) }
 }
 
-async function sendPush(userId: string, title: string, body: string) {
+async function sendPush(userId: string, title: string, body: string,
+  type?: string, template?: Record<string, string>) {
   try {
     await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
       method: 'POST',
@@ -91,7 +92,10 @@ async function sendPush(userId: string, title: string, body: string) {
         Authorization: 'Bearer ' + SERVICE_KEY,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_id: userId, title, body }),
+      // type verilirse send-notification alıcının dilinde şablon uygular;
+      // title/body yalnız fallback (24.07 i18n)
+      body: JSON.stringify({ user_id: userId, title, body,
+        ...(type ? { data: { type }, template } : {}) }),
     })
   } catch (_) { /* best effort */ }
 }
@@ -260,7 +264,8 @@ serve(async (req) => {
             // (yenileme bildirimiyle aynı mekanik; `applied` koruması çift göndermeyi engeller)
             const dateStr = fmtDate(until)
             await sendPush(sub.user_id, 'SoulChoice Premium',
-              `Подписка оформлена! Premium активен до ${dateStr}.`)
+              `Подписка оформлена! Premium активен до ${dateStr}.`,
+              'premium_activated', { date: dateStr })
             await bellNotif(db, sub.user_id, dateStr)
             const mail = await db.queryObject<{ billing_email: string | null }>(
               `select billing_email from users where id = $1`,
@@ -273,7 +278,8 @@ serve(async (req) => {
             // (grant tekil — cron kazanırsa cron bildirir; çift bildirim imkânsız). 09.07 prova bulgusu.
             const dateStr = fmtDate(until)
             await sendPush(sub.user_id, 'SoulChoice Premium',
-              `Подписка продлена. Premium активен до ${dateStr}.`)
+              `Подписка продлена. Premium активен до ${dateStr}.`,
+              'premium_renewed', { date: dateStr })
             const mail = await db.queryObject<{ billing_email: string | null }>(
               `select billing_email from users where id = $1`,
               [sub.user_id],
@@ -356,7 +362,8 @@ serve(async (req) => {
           )
           // Tek-seferlik ödeme onayı (pending→paid claim'i idempotensi garantisi)
           await sendPush(userId, 'SoulChoice Premium',
-            `Premium активирован до ${fmtDate(expiresAt)}.`)
+            `Premium активирован до ${fmtDate(expiresAt)}.`,
+            'premium_one_time', { date: fmtDate(expiresAt) })
           await bellNotif(db, userId, fmtDate(expiresAt))
         }
       }

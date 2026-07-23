@@ -72,6 +72,39 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'Fotoğraf reddedildi', b: 'Lütfen yeni bir selfie yükle' },
     en: { t: 'Photo rejected', b: 'Please upload a new selfie' },
   },
+  // Ödeme push'ları (24.07): webhook/billing-cron/manage-subscription çağırır.
+  // Servis mesajları — bildirim tercihi kapısına bağlı değiller (ФЗ-38 uyumlu).
+  // Metinler app l10n notif_type_premium_* ve billing-email şablonlarıyla hizalı.
+  premium_activated: {
+    ru: { t: 'Premium активен', b: 'Подписка оформлена — Premium активен до {date}' },
+    tr: { t: 'Premium aktif', b: 'Aboneliğin başladı — Premium {date} tarihine kadar aktif' },
+    en: { t: 'Premium active', b: 'Your subscription has started — Premium is active until {date}' },
+  },
+  premium_one_time: {
+    ru: { t: 'Premium активен', b: 'Premium активен до {date}' },
+    tr: { t: 'Premium aktif', b: 'Premium {date} tarihine kadar aktif' },
+    en: { t: 'Premium active', b: 'Premium is active until {date}' },
+  },
+  premium_renewed: {
+    ru: { t: 'SoulChoice Premium', b: 'Подписка продлена — Premium активен до {date}' },
+    tr: { t: 'SoulChoice Premium', b: 'Aboneliğin yenilendi — Premium {date} tarihine kadar aktif' },
+    en: { t: 'SoulChoice Premium', b: 'Subscription renewed — Premium is active until {date}' },
+  },
+  premium_renew_reminder: {
+    ru: { t: 'SoulChoice Premium', b: 'Подписка продлится {date} — спишется {amount}. Управление — в профиле.' },
+    tr: { t: 'SoulChoice Premium', b: 'Aboneliğin {date} tarihinde yenilenecek — {amount} çekilecek. Yönetim: profil.' },
+    en: { t: 'SoulChoice Premium', b: 'Your subscription renews on {date} — {amount} will be charged. Manage it in your profile.' },
+  },
+  premium_renew_failed: {
+    ru: { t: 'SoulChoice Premium', b: 'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.' },
+    tr: { t: 'SoulChoice Premium', b: 'Abonelik yenilenemedi — kartını kontrol et. Premium şimdilik aktif, tekrar deneyeceğiz.' },
+    en: { t: 'SoulChoice Premium', b: "Couldn't renew your subscription — check your card. Premium is still active; we'll retry." },
+  },
+  premium_cancelled: {
+    ru: { t: 'Подписка отменена', b: 'Premium активен до {date}' },
+    tr: { t: 'Abonelik iptal edildi', b: 'Premium {date} tarihine kadar aktif' },
+    en: { t: 'Subscription cancelled', b: 'Premium is active until {date}' },
+  },
 }
 
 // Preset red sebepleri — app l10n selfie_reason_* ile birebir aynı metinler
@@ -159,6 +192,8 @@ serve(async (req) => {
       const fill = (s: string) => s
         .replace('{name}', String(args.name ?? ''))
         .replace('{count}', String(args.count ?? ''))
+        .replace('{date}', String(args.date ?? ''))
+        .replace('{amount}', String(args.amount ?? ''))
       finalTitle = fill(tpl.t).trim()
       finalBody = fill(tpl.b).trim()
       // RU fiil çekimi aktörün cinsiyetine göre (istemci template.gender yollar;

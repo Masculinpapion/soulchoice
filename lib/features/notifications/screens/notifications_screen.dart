@@ -118,7 +118,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+              AppLocalizations.of(context)!.error_with_detail(AppLocalizations.of(context)!.error_generic),
             ),
           ),
         );
@@ -143,7 +143,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+              AppLocalizations.of(context)!.error_with_detail(AppLocalizations.of(context)!.error_generic),
             ),
           ),
         );
@@ -164,7 +164,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.error_with_detail(e.toString()),
+              AppLocalizations.of(context)!.error_with_detail(AppLocalizations.of(context)!.error_generic),
             ),
           ),
         );
@@ -247,7 +247,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     child: Text(
                       AppLocalizations.of(
                         context,
-                      )!.notifications_error(e.toString()),
+                      )!.notifications_error(AppLocalizations.of(context)!.error_generic),
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         color: AuroraTheme.textSecondary,

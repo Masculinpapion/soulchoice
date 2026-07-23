@@ -93,7 +93,8 @@ class NotificationItem {
     // (16.07 fix: payload boş olduğundan /feed push ediliyordu → siyah ekran)
     if (type == 'selfie_rejected') return '/profile/selfie';
     if (type == 'selfie_approved') return '/feed';
-    if (type == 'premium_activated') return '/profile';
+    // '/profile' kayıtlı rota DEĞİL (24.07 denetim bulgusu) — abonelik ekranına
+    if (type == 'premium_activated') return '/subscription';
     final invId = payload['invitation_id'] as String?;
     final matchId = payload['match_id'] as String?;
     if (matchId != null) return '/chat/$matchId';

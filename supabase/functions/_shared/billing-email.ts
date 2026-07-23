@@ -15,6 +15,7 @@ export type BillingEmailKind =
   | 'renewal_success'
   | 'renewal_failed'
   | 'cancel_confirm'
+  | 'premium_expired' // grace bitti / abonelik kapandı (24.07)
   | 'welcome'        // D+0 — servis tonu, fiyat/teklif YOK (rızasız da gider)
   | 'premium_intro'  // D+2 — SADECE pazarlama rızalılara (ФЗ-38)
 
@@ -23,43 +24,68 @@ export interface BillingEmailParams {
   amount?: string // örn "1 000 ₽"
 }
 
-const FOOTER =
-  '\n\n—\nSoulChoice Premium. Управление подпиской: приложение (Профиль → Подписка) или https://soulchoice.app/premium\nПисьмо отправлено автоматически. Вопросы: support@soulchoice.app'
+// 24.07 i18n: işlemsel türler alıcının dilinde (users.locale, fallback ru);
+// welcome/premium_intro pazarlama kopyası — RU kalır (yeni kopya = Mustafa onayı).
+const FOOTERS: Record<string, string> = {
+  ru: '\n\n—\nSoulChoice Premium. Управление подпиской: приложение (Профиль → Подписка) или https://soulchoice.app/premium\nПисьмо отправлено автоматически. Вопросы: support@soulchoice.app',
+  tr: '\n\n—\nSoulChoice Premium. Abonelik yönetimi: uygulama (Profil → Abonelik) veya https://soulchoice.app/premium\nBu e-posta otomatik gönderildi. Sorular: support@soulchoice.app',
+  en: '\n\n—\nSoulChoice Premium. Manage your subscription: the app (Profile → Subscription) or https://soulchoice.app/premium\nThis email was sent automatically. Questions: support@soulchoice.app',
+}
+const FOOTER = FOOTERS.ru
 
-function template(kind: BillingEmailKind, p: BillingEmailParams): { subject: string; body: string } {
+function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'): { subject: string; body: string } {
+  const L = (locale === 'tr' || locale === 'en') ? locale : 'ru'
+  const F = FOOTERS[L]
+  const pick = (m: Record<string, { subject: string; body: string }>) => {
+    const v = m[L] ?? m.ru
+    return { subject: v.subject, body: v.body + F }
+  }
   switch (kind) {
     case 'renewal_reminder':
-      // notify_before_hours artık 72 saat — "завтра" yanlış olur, tarih yazılır
-      return {
-        subject: p.date
-          ? `Продление подписки SoulChoice Premium — ${p.date}`
-          : 'Скоро продление подписки SoulChoice Premium',
-        body:
-          `Подписка SoulChoice Premium продлится ${p.date ?? 'в ближайшие дни'} — спишется ${p.amount ?? '1 000 ₽'}. Управление — в профиле.` +
-          FOOTER,
-      }
+      return pick({
+        ru: { subject: p.date ? `Продление подписки SoulChoice Premium — ${p.date}` : 'Скоро продление подписки SoulChoice Premium',
+              body: `Подписка SoulChoice Premium продлится ${p.date ?? 'в ближайшие дни'} — спишется ${p.amount ?? '1 000 ₽'}. Управление — в профиле.` },
+        tr: { subject: p.date ? `SoulChoice Premium yenilenmesi — ${p.date}` : 'SoulChoice Premium aboneliğin yakında yenilenecek',
+              body: `SoulChoice Premium aboneliğin ${p.date ?? 'önümüzdeki günlerde'} yenilenecek — ${p.amount ?? '1 000 ₽'} çekilecek. Yönetim: profil.` },
+        en: { subject: p.date ? `SoulChoice Premium renewal — ${p.date}` : 'Your SoulChoice Premium renews soon',
+              body: `Your SoulChoice Premium renews on ${p.date ?? 'the coming days'} — ${p.amount ?? '1,000 ₽'} will be charged. Manage it in your profile.` },
+      })
     case 'purchase_success':
-      return {
-        subject: 'Подписка SoulChoice Premium оформлена',
-        body: `Подписка оформлена. Premium активен до ${p.date ?? ''}.` + FOOTER,
-      }
+      return pick({
+        ru: { subject: 'Подписка SoulChoice Premium оформлена', body: `Подписка оформлена. Premium активен до ${p.date ?? ''}.` },
+        tr: { subject: 'SoulChoice Premium aboneliğin başladı', body: `Aboneliğin başladı. Premium ${p.date ?? ''} tarihine kadar aktif.` },
+        en: { subject: 'Your SoulChoice Premium subscription has started', body: `Your subscription has started. Premium is active until ${p.date ?? ''}.` },
+      })
     case 'renewal_success':
-      return {
-        subject: 'Подписка SoulChoice Premium продлена',
-        body: `Подписка продлена. Premium активен до ${p.date ?? ''}.` + FOOTER,
-      }
+      return pick({
+        ru: { subject: 'Подписка SoulChoice Premium продлена', body: `Подписка продлена. Premium активен до ${p.date ?? ''}.` },
+        tr: { subject: 'SoulChoice Premium aboneliğin yenilendi', body: `Aboneliğin yenilendi. Premium ${p.date ?? ''} tarihine kadar aktif.` },
+        en: { subject: 'Your SoulChoice Premium has been renewed', body: `Subscription renewed. Premium is active until ${p.date ?? ''}.` },
+      })
     case 'renewal_failed':
-      return {
-        subject: 'Не удалось продлить подписку SoulChoice Premium',
-        body:
-          'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.' +
-          FOOTER,
-      }
+      return pick({
+        ru: { subject: 'Не удалось продлить подписку SoulChoice Premium',
+              body: 'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.' },
+        tr: { subject: 'SoulChoice Premium aboneliğin yenilenemedi',
+              body: 'Abonelik yenilenemedi — kartını kontrol et. Premium şimdilik aktif, tekrar deneyeceğiz.' },
+        en: { subject: "We couldn't renew your SoulChoice Premium",
+              body: "We couldn't renew your subscription — please check your card. Premium is still active; we'll retry." },
+      })
     case 'cancel_confirm':
-      return {
-        subject: 'Подписка SoulChoice Premium отменена',
-        body: `Подписка отменена. Premium активен до ${p.date ?? ''}.` + FOOTER,
-      }
+      return pick({
+        ru: { subject: 'Подписка SoulChoice Premium отменена', body: `Подписка отменена. Premium активен до ${p.date ?? ''}.` },
+        tr: { subject: 'SoulChoice Premium aboneliğin iptal edildi', body: `Aboneliğin iptal edildi. Premium ${p.date ?? ''} tarihine kadar aktif.` },
+        en: { subject: 'Your SoulChoice Premium has been cancelled', body: `Subscription cancelled. Premium is active until ${p.date ?? ''}.` },
+      })
+    case 'premium_expired':
+      return pick({
+        ru: { subject: 'Подписка SoulChoice Premium завершена',
+              body: 'Подписка завершилась, Premium отключён. Возобновить можно в любой момент: приложение (Профиль → Подписка) или https://soulchoice.app/premium' },
+        tr: { subject: 'SoulChoice Premium aboneliğin sona erdi',
+              body: 'Aboneliğin sona erdi, Premium kapandı. İstediğin an yeniden başlatabilirsin: uygulama (Profil → Abonelik) veya https://soulchoice.app/premium' },
+        en: { subject: 'Your SoulChoice Premium has ended',
+              body: 'Your subscription has ended and Premium is off. Restart anytime: the app (Profile → Subscription) or https://soulchoice.app/premium' },
+      })
     case 'welcome':
       return {
         subject: 'Добро пожаловать в SoulChoice',
@@ -192,11 +218,12 @@ export async function sendBillingEmail(
   to: string,
   kind: BillingEmailKind,
   params: BillingEmailParams = {},
+  locale = 'ru',
 ): Promise<{ ok: boolean; error?: string }> {
   if (!HOST || !USER || !PASS) return { ok: false, error: 'smtp_not_configured' }
   if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) return { ok: false, error: 'bad_recipient' }
 
-  const { subject, body } = template(kind, params)
+  const { subject, body } = template(kind, params, locale)
   try {
     await Promise.race([
       smtpSend(to, subject, body),

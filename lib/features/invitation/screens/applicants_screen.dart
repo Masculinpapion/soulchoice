@@ -62,7 +62,7 @@ class ApplicantsScreen extends ConsumerWidget {
               Expanded(
                 child: async.when(
                   loading: () => const Center(child: CircularProgressIndicator(color: AuroraTheme.auroraRed)),
-                  error: (e, _) => Center(child: Text('$e', style: TextStyle(color: AuroraTheme.textSecondary))),
+                  error: (e, _) => Center(child: Text(AppLocalizations.of(context)!.error_generic, style: TextStyle(color: AuroraTheme.textSecondary))),
                   data: (applicants) {
                     if (applicants.isEmpty) {
                       return Center(

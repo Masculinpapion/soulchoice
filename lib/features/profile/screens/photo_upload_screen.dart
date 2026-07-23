@@ -126,7 +126,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.photo_upload_pick_error(e.toString())),
+          content: Text(AppLocalizations.of(context)!.photo_upload_pick_error(AppLocalizations.of(context)!.error_generic)),
           backgroundColor: AuroraTheme.auroraRed,
         ),
       );
@@ -294,7 +294,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(AppLocalizations.of(context)!.photo_upload_error(e.toString())),
+              content: Text(AppLocalizations.of(context)!.photo_upload_error(AppLocalizations.of(context)!.error_generic)),
               backgroundColor: AuroraTheme.auroraRed),
         );
       }

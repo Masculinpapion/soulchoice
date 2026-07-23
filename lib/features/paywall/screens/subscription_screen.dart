@@ -20,6 +20,7 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Map<String, dynamic>? _data;
   bool _loading = true;
+  bool _loadError = false;
   bool _busy = false;
   late String _mode = Platform.isIOS ? 'hidden' : 'link';
 
@@ -57,10 +58,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         setState(() {
           _data = (response.data as Map?)?.cast<String, dynamic>();
           _loading = false;
+          _loadError = false;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _loading = false);
+      // 24.07 denetim: ağ hatası "abonelik yok" gibi görünmesin
+      if (mounted) setState(() { _loading = false; _loadError = true; });
     }
   }
 
@@ -231,7 +234,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           children: [
                             // Dönemi bitmiş cancelled/expired abonelik = fiilen "abonelik yok":
                             // boş tarihli iptal notu yerine boş-durum kartı (09.07 cihaz bulgusu)
-                            if (sub == null ||
+                            if (_loadError && _data == null) ...[
+                              Center(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 24),
+                                    Text(l10n.error_generic,
+                                        style: const TextStyle(
+                                            color: Colors.white70)),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _loading = true;
+                                          _loadError = false;
+                                        });
+                                        _refresh();
+                                      },
+                                      child: Text(l10n.inv_detail_retry),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ] else if (sub == null ||
                                 (!premiumActive &&
                                     (status == 'expired' || status == 'cancelled'))) ...[
                               _buildEmpty(l10n),

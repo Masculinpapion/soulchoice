@@ -72,7 +72,7 @@ class _InvitationDetailScreenState
         error: (e, _) => AmbientBackground(
           child: SafeArea(
             child: Center(
-              child: Text('$e',
+              child: Text(AppLocalizations.of(context)!.error_generic,
                   style: TextStyle(
                       color: AuroraTheme.textSecondary,
                       fontFamily: 'Manrope')),
@@ -650,7 +650,7 @@ class _InvitationDetailScreenState
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
-                                      content: Text('$e'),
+                                      content: Text(AppLocalizations.of(context)!.error_generic),
                                       backgroundColor:
                                           AuroraTheme.auroraRed,
                                     ));
@@ -1485,7 +1485,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(guard?.message ??
-                  AppLocalizations.of(context)!.inv_detail_error(e.toString())),
+                  AppLocalizations.of(context)!.inv_detail_error(AppLocalizations.of(context)!.error_generic)),
               backgroundColor: AuroraTheme.auroraRed),
         );
       }
@@ -1537,7 +1537,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.inv_detail_error(e.toString())), backgroundColor: AuroraTheme.auroraRed),
+          SnackBar(content: Text(AppLocalizations.of(context)!.inv_detail_error(AppLocalizations.of(context)!.error_generic)), backgroundColor: AuroraTheme.auroraRed),
         );
       }
     } finally {
@@ -1549,7 +1549,16 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final app = widget.existingApp;
+    // 24.07 denetim: süresi dolmuş/kapalı ilanda buton "Başvur" gibi durup
+    // sessizce hiçbir şey yapmasın — pasif "Süresi doldu" göster
+    final inactive = widget.invStatus != 'active' ||
+        (widget.expiresAt != null &&
+            DateTime.now().isAfter(widget.expiresAt!));
     if (app == null) {
+      if (inactive) {
+        return _AuroraCTA(
+            label: l10n.inv_detail_status_expired, onPressed: null);
+      }
       return _AuroraCTA(
         label: _loading
             ? l10n.inv_detail_apply_sending

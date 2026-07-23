@@ -105,6 +105,11 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'Abonelik iptal edildi', b: 'Premium {date} tarihine kadar aktif' },
     en: { t: 'Subscription cancelled', b: 'Premium is active until {date}' },
   },
+  premium_expired: {
+    ru: { t: 'SoulChoice Premium', b: 'Подписка завершилась, Premium отключён. Возобновить — в профиле.' },
+    tr: { t: 'SoulChoice Premium', b: 'Aboneliğin sona erdi, Premium kapandı. Profilden yeniden başlatabilirsin.' },
+    en: { t: 'SoulChoice Premium', b: 'Your subscription has ended and Premium is off. Restart it from your profile.' },
+  },
 }
 
 // Preset red sebepleri — app l10n selfie_reason_* ile birebir aynı metinler

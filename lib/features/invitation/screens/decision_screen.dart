@@ -188,7 +188,7 @@ class _DecisionScreenState extends State<DecisionScreen>
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    AppLocalizations.of(context)!.decision_error(e.toString()),
+                    AppLocalizations.of(context)!.decision_error(AppLocalizations.of(context)!.error_generic),
                     style: const TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 13,

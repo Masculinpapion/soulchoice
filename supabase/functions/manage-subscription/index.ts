@@ -90,12 +90,13 @@ serve(async (req) => {
       )
       const sub = subRes.rows[0] ?? null
 
-      const userRow = await db.queryObject<{ premium_until: Date | null; billing_email: string | null }>(
-        `select premium_until, billing_email from users where id = $1`,
+      const userRow = await db.queryObject<{ premium_until: Date | null; billing_email: string | null; locale: string | null }>(
+        `select premium_until, billing_email, locale from users where id = $1`,
         [user.id],
       )
       const premiumUntil = userRow.rows[0]?.premium_until ?? null
       const billingEmail = userRow.rows[0]?.billing_email ?? null
+      const userLocale = userRow.rows[0]?.locale ?? 'ru'
 
       if (action === 'status') {
         const history = await db.queryObject<{
@@ -148,7 +149,7 @@ serve(async (req) => {
         await sendPush(user.id, 'Подписка отменена', `Premium активен до ${dateStr}.`,
           'premium_cancelled', { date: dateStr })
         if (billingEmail) {
-          const mail = await sendBillingEmail(billingEmail, 'cancel_confirm', { date: dateStr })
+          const mail = await sendBillingEmail(billingEmail, 'cancel_confirm', { date: dateStr }, userLocale)
           await db.queryObject(
             `insert into billing_events (subscription_id, user_id, event, detail)
              values ($1, $2, 'notified', $3::jsonb)`,
@@ -203,7 +204,7 @@ serve(async (req) => {
           await sendPush(user.id, 'SoulChoice Premium', `Подписка продлена. Premium активен до ${dateStr}.`,
             'premium_renewed', { date: dateStr })
           if (billingEmail) {
-            await sendBillingEmail(billingEmail, 'renewal_success', { date: dateStr })
+            await sendBillingEmail(billingEmail, 'renewal_success', { date: dateStr }, userLocale)
           }
           return json(200, { ok: true, premium_until: r.until })
         }

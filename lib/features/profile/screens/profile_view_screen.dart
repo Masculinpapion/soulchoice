@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
@@ -60,7 +61,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
           ),
           error: (e, _) => AmbientBackground(
             child: Center(
-              child: Text('$e',
+              child: Text(AppLocalizations.of(context)!.error_generic,
                   style: TextStyle(
                       fontFamily: 'Manrope',
                       color: AuroraTheme.textSecondary)),
@@ -1420,7 +1421,13 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
         );
       }
     } catch (e) {
-      if (mounted) setState(() => _loading = false);
+      // 24.07 denetim: sessiz başarısızlık — sahibi bilgilendir (guard token'ları dahil)
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(GuardError.from(context, e)?.message ??
+                AppLocalizations.of(context)!.error_generic)));
+      }
     }
   }
 
@@ -1456,7 +1463,15 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
         'status': 'rejected',
         'responded_at': DateTime.now().toIso8601String(),
       }).eq('id', widget.applicationId);
-    } catch (_) {}
+    } catch (_) {
+      // 24.07 denetim: başarısız red, başarı gibi kapanmasın
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_generic)));
+      }
+      return;
+    }
     if (mounted) context.pop();
   }
 
@@ -1569,7 +1584,7 @@ class _MyInvitationSection extends ConsumerWidget {
               ),
             ),
           ),
-          error: (e, _) => Text('$e',
+          error: (e, _) => Text(AppLocalizations.of(context)!.error_generic,
               style: TextStyle(
                   color: AuroraTheme.textSecondary, fontFamily: 'Manrope')),
           data: (invs) {

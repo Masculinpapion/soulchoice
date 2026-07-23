@@ -101,7 +101,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         setState(() => _error = AppLocalizations.of(context)!.otp_error_failed);
       }
     } catch (e) {
-      if (mounted) setState(() => _error = e.toString());
+      if (mounted) {
+        setState(() =>
+            _error = AppLocalizations.of(context)!.otp_error_failed);
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

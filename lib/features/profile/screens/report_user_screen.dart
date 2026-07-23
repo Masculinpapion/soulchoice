@@ -120,7 +120,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     } catch (e) {
       if (mounted) {
         _showAuroraSnack(
-          AppLocalizations.of(context)!.report_error(e.toString()),
+          AppLocalizations.of(context)!.report_error(AppLocalizations.of(context)!.error_generic),
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );

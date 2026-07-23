@@ -505,7 +505,7 @@ class _CreateInvitationScreenState
                               )!.create_inv_error_active_limit
                             : AppLocalizations.of(
                                 context,
-                              )!.create_inv_error_publish(e.toString())),
+                              )!.create_inv_error_publish(AppLocalizations.of(context)!.error_generic)),
                     style: const TextStyle(
                       fontFamily: 'Manrope',
                       fontSize: 13,

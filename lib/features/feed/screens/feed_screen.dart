@@ -1004,7 +1004,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 ),
               ),
               error: (e, _) => Center(
-                child: Text(AppLocalizations.of(context)!.feed_error(e.toString()),
+                child: Text(AppLocalizations.of(context)!.feed_error(AppLocalizations.of(context)!.error_generic),
                     style: TextStyle(
                         color: AuroraTheme.textSecondary,
                         fontFamily: 'Manrope')),

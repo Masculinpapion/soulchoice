@@ -294,7 +294,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.profile_setup_error(e.toString()),
+              AppLocalizations.of(context)!.profile_setup_error(AppLocalizations.of(context)!.error_generic),
             ),
             backgroundColor: AuroraTheme.auroraRed,
           ),

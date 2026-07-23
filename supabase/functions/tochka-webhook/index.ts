@@ -267,12 +267,12 @@ serve(async (req) => {
               `Подписка оформлена! Premium активен до ${dateStr}.`,
               'premium_activated', { date: dateStr })
             await bellNotif(db, sub.user_id, dateStr)
-            const mail = await db.queryObject<{ billing_email: string | null }>(
-              `select billing_email from users where id = $1`,
+            const mail = await db.queryObject<{ billing_email: string | null; locale: string | null }>(
+              `select billing_email, locale from users where id = $1`,
               [sub.user_id],
             )
             const email = mail.rows[0]?.billing_email
-            if (email) await sendBillingEmail(email, 'purchase_success', { date: dateStr })
+            if (email) await sendBillingEmail(email, 'purchase_success', { date: dateStr }, mail.rows[0]?.locale ?? 'ru')
           } else {
             // Renewal grant'ini yarışta webhook kazandıysa başarı bildirimi de buradan gider
             // (grant tekil — cron kazanırsa cron bildirir; çift bildirim imkânsız). 09.07 prova bulgusu.
@@ -280,12 +280,12 @@ serve(async (req) => {
             await sendPush(sub.user_id, 'SoulChoice Premium',
               `Подписка продлена. Premium активен до ${dateStr}.`,
               'premium_renewed', { date: dateStr })
-            const mail = await db.queryObject<{ billing_email: string | null }>(
-              `select billing_email from users where id = $1`,
+            const mail = await db.queryObject<{ billing_email: string | null; locale: string | null }>(
+              `select billing_email, locale from users where id = $1`,
               [sub.user_id],
             )
             const email = mail.rows[0]?.billing_email
-            if (email) await sendBillingEmail(email, 'renewal_success', { date: dateStr })
+            if (email) await sendBillingEmail(email, 'renewal_success', { date: dateStr }, mail.rows[0]?.locale ?? 'ru')
           }
         }
 
@@ -365,6 +365,14 @@ serve(async (req) => {
             `Premium активирован до ${fmtDate(expiresAt)}.`,
             'premium_one_time', { date: fmtDate(expiresAt) })
           await bellNotif(db, userId, fmtDate(expiresAt))
+          // 24.07 denetim: tek-seferlik ödemede e-posta paritesi
+          const f1mail = await db.queryObject<{ billing_email: string | null; locale: string | null }>(
+            `select billing_email, locale from users where id = $1`, [userId])
+          const f1em = f1mail.rows[0]?.billing_email
+          if (f1em) {
+            await sendBillingEmail(f1em, 'purchase_success',
+              { date: fmtDate(expiresAt) }, f1mail.rows[0]?.locale ?? 'ru')
+          }
         }
       }
       return new Response('ok')

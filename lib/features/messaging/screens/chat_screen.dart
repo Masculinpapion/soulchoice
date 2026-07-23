@@ -32,6 +32,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _scrollController = ScrollController();
   final List<MessageModel> _messages = [];
   bool _loading = true;
+  bool _loadError = false;
   bool _loadingMore = false;
   bool _hasMore = true;
   static const _pageSize = 50;
@@ -173,25 +174,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Future<void> _loadMessages() async {
-    final data = await Supabase.instance.client
-        .from('messages')
-        .select()
-        .eq('match_id', widget.matchId)
-        .order('created_at', ascending: false)
-        .limit(_pageSize);
-    if (!mounted) return;
-    final msgs = (data as List)
-        .map((r) => MessageModel.fromJson(r))
-        .toList()
-        .reversed
-        .toList();
-    setState(() {
-      _messages.addAll(msgs);
-      _hasMore = data.length == _pageSize;
-      _loading = false;
-    });
-    _scrollToBottom();
-    _markRead();
+    // 24.07 denetim: hatasız try'da spinner sonsuza kalıyordu — hata durumu + retry
+    try {
+      final data = await Supabase.instance.client
+          .from('messages')
+          .select()
+          .eq('match_id', widget.matchId)
+          .order('created_at', ascending: false)
+          .limit(_pageSize);
+      if (!mounted) return;
+      final msgs = (data as List)
+          .map((r) => MessageModel.fromJson(r))
+          .toList()
+          .reversed
+          .toList();
+      setState(() {
+        _messages.addAll(msgs);
+        _hasMore = data.length == _pageSize;
+        _loading = false;
+        _loadError = false;
+      });
+      _scrollToBottom();
+      _markRead();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = true;
+      });
+    }
   }
 
   Future<void> _loadMoreMessages() async {
@@ -371,7 +382,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         }
         _showAuroraSnack(
           guard?.message ??
-              AppLocalizations.of(context)!.chat_send_error(e.toString()),
+              AppLocalizations.of(context)!.chat_send_error(AppLocalizations.of(context)!.error_generic),
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );
@@ -440,7 +451,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     } catch (e) {
       if (mounted) {
         _showAuroraSnack(
-          AppLocalizations.of(context)!.chat_send_error(e.toString()),
+          AppLocalizations.of(context)!.chat_send_error(AppLocalizations.of(context)!.error_generic),
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );
@@ -462,7 +473,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         }, onConflict: 'blocker_id,blocked_id'),
         client.from('matches').delete().eq('id', widget.matchId),
       ]);
-    } catch (_) {}
+    } catch (_) {
+      // 24.07 denetim: engelleme başarısızsa "engellendi" gibi çıkıp gitme
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_generic)));
+      }
+      return;
+    }
     if (!mounted) return;
     if (invitationId != null) {
       context.go('/invitation/$invitationId/applicants');
@@ -531,6 +549,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
                       ),
                     )
+                  : _loadError
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(AppLocalizations.of(context)!.error_generic,
+                                  style: const TextStyle(
+                                      color: Colors.white70, fontSize: 14)),
+                              const SizedBox(height: 12),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _loading = true;
+                                    _loadError = false;
+                                  });
+                                  _loadMessages();
+                                },
+                                child: Text(AppLocalizations.of(context)!
+                                    .inv_detail_retry),
+                              ),
+                            ],
+                          ),
+                        )
                   : _messages.isEmpty
                       ? _EmptyState(
                           welcomeText: (_matchInfo != null &&

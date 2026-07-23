@@ -35,6 +35,7 @@ interface Candidate extends ChargeSub {
   next_billing_at: Date
   renewal_notified_at: Date | null
   billing_email: string | null
+  locale: string | null
   premium_until: Date | null
 }
 
@@ -114,7 +115,7 @@ serve(async (req) => {
     // ================= FAZ A — BİLDİRİM (F2-1 kapısı) =================
     const notifyCands = await db.queryObject<Candidate>(
       `select s.id, s.user_id, s.status, s.tochka_subscription_id, s.next_billing_at,
-              s.renewal_notified_at, s.retry_count, s.price_paid, u.billing_email, u.premium_until
+              s.renewal_notified_at, s.retry_count, s.price_paid, u.billing_email, u.locale, u.premium_until
          from subscriptions s join users u on u.id = s.user_id
         where s.status = 'active' and s.auto_renew and s.tochka_subscription_id is not null
           and s.next_billing_at <= now() + make_interval(hours => $1)
@@ -134,7 +135,7 @@ serve(async (req) => {
         `Подписка продлится ${dateStr} — спишется ${amount}. Управление — в профиле.`,
         'premium_renew_reminder', { date: dateStr, amount })
       const mail = sub.billing_email
-        ? await sendBillingEmail(sub.billing_email, 'renewal_reminder', { amount, date: dateStr })
+        ? await sendBillingEmail(sub.billing_email, 'renewal_reminder', { amount, date: dateStr }, sub.locale ?? 'ru')
         : { ok: false, error: 'no_billing_email' }
       const channels = [...(pushOk ? ['push'] : []), ...(mail.ok ? ['email'] : [])]
       if (channels.length > 0) {
@@ -154,7 +155,7 @@ serve(async (req) => {
     // ================= FAZ B — ÇEKİM =================
     const chargeCands = await db.queryObject<Candidate>(
       `select s.id, s.user_id, s.status, s.tochka_subscription_id, s.next_billing_at,
-              s.renewal_notified_at, s.retry_count, s.price_paid, u.billing_email, u.premium_until
+              s.renewal_notified_at, s.retry_count, s.price_paid, u.billing_email, u.locale, u.premium_until
          from subscriptions s join users u on u.id = s.user_id
         where s.status in ('active', 'past_due') and s.auto_renew
           and s.tochka_subscription_id is not null
@@ -193,7 +194,7 @@ serve(async (req) => {
           await sendPush(sub.user_id, 'SoulChoice Premium',
             `Подписка продлена. Premium активен до ${dateStr}.`,
             'premium_renewed', { date: dateStr })
-          if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_success', { date: dateStr })
+          if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_success', { date: dateStr }, sub.locale ?? 'ru')
           summary.charged.push(label)
         } else if (r.outcome === 'pending_verify') {
           summary.pending_verify.push(label)
@@ -211,7 +212,7 @@ serve(async (req) => {
           await sendPush(sub.user_id, 'SoulChoice Premium',
             'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.',
             'premium_renew_failed', {})
-          if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_failed', {})
+          if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_failed', {}, sub.locale ?? 'ru')
           summary.charge_failed.push(`${label} → ${r.raw.slice(0, 120)}`)
           heartbeatStatus = 'warn'
         } else {
@@ -234,6 +235,13 @@ serve(async (req) => {
       )
       for (const d of down.rows) {
         await logEvent(db, d.id, d.user_id, 'downgraded', { reason: 'grace_expired' })
+        // 24.07 denetim: sessiz düşüş yok — kullanıcı premium'un kapandığını öğrenir
+        await sendPush(d.user_id, 'SoulChoice Premium',
+          'Подписка завершилась, Premium отключён.', 'premium_expired', {})
+        const u = await db.queryObject<{ billing_email: string | null; locale: string | null }>(
+          `select billing_email, locale from users where id = $1`, [d.user_id])
+        const em = u.rows[0]?.billing_email
+        if (em) await sendBillingEmail(em, 'premium_expired', {}, u.rows[0]?.locale ?? 'ru')
         summary.downgraded.push(d.id.slice(0, 8))
       }
     }

@@ -1888,6 +1888,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notif_type_selfie_approved_body => 'You can now join invitations';
 
   @override
+  String get notif_type_premium_activated_title => 'Premium active';
+
+  @override
+  String notif_type_premium_activated_body(String date) {
+    return 'Your subscription has started — Premium is active until $date';
+  }
+
+  @override
+  String get notif_type_premium_activated_body_nodate =>
+      'Your subscription has started — Premium is active';
+
+  @override
   String get notif_type_selfie_rejected_title => 'Photo rejected';
 
   @override

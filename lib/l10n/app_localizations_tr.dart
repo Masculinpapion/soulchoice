@@ -1881,6 +1881,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Artık davetlere katılabilirsin';
 
   @override
+  String get notif_type_premium_activated_title => 'Premium aktif';
+
+  @override
+  String notif_type_premium_activated_body(String date) {
+    return 'Aboneliğin başladı — Premium $date tarihine kadar aktif';
+  }
+
+  @override
+  String get notif_type_premium_activated_body_nodate =>
+      'Aboneliğin başladı — Premium aktif';
+
+  @override
   String get notif_type_selfie_rejected_title => 'Fotoğraf reddedildi';
 
   @override

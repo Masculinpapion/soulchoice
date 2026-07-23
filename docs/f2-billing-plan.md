@@ -268,7 +268,9 @@ için charge asla çağrılmaz — tek çekim tetikleyicisi biziz).
 
 ### 3c. Bildirimler (push = FCM `send-notification`; e-posta = Timeweb SMTP)
 **Abonelik oluşturuldu (ilk ödeme, 24.07.2026 eklendi: push+e-posta `purchase_success`; F1
-tek-seferlikte yalnız push)** • çekim öncesi ≥24s (F2-1, servis mesajı — ФЗ-38 reklam onayı
+tek-seferlikte yalnız push; ayrıca zil ekranı kaydı `premium_activated` — `PREMIUM_BELL_NOTIF`
+flag'i arkasında KAPALI, destekli build'ler 3 kanala dağıtılınca açılacak; DB constraint
+migration'ı 24.07 prod'da uygulandı)** • çekim öncesi ≥24s (F2-1, servis mesajı — ФЗ-38 reklam onayı
 gerektirmez) • çekim başarılı • çekim başarısız/past_due (+ app banner P8) • iptal onayı.
 Hepsi push+e-posta.
 **DNS hazır (09.07.2026 doğrulandı):** MX timeweb, SPF `include:_spf.timeweb.ru`, DKIM seçici

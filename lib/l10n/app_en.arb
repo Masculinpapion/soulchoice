@@ -866,6 +866,16 @@
   },
   "notif_type_selfie_approved_title": "Profile verified ✓",
   "notif_type_selfie_approved_body": "You can now join invitations",
+  "notif_type_premium_activated_title": "Premium active",
+  "notif_type_premium_activated_body": "Your subscription has started — Premium is active until {date}",
+  "@notif_type_premium_activated_body": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notif_type_premium_activated_body_nodate": "Your subscription has started — Premium is active",
   "notif_type_selfie_rejected_title": "Photo rejected",
   "notif_type_selfie_rejected_body": "Please upload a new selfie",
   "notif_type_meeting_reminder_title": "Meeting reminder",

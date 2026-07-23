@@ -67,6 +67,21 @@ function fmtDate(d: Date | null): string {
   return `${p(dt.getDate())}.${p(dt.getMonth() + 1)}.${dt.getFullYear()}`
 }
 
+// Zil ekranı (in-app) kaydı — eski build'ler 'premium_activated' tipini tanımayıp
+// ham slug başlık gösterdiğinden, destekli build'ler 3 kanala dağıtılana kadar
+// PREMIUM_BELL_NOTIF=true olmadan hiçbir şey yazmaz (24.07 KARAR, Seçenek 1).
+async function bellNotif(db: Client, userId: string, dateStr: string) {
+  if (Deno.env.get('PREMIUM_BELL_NOTIF') !== 'true') return
+  try {
+    await db.queryObject(
+      `insert into notifications (user_id, type, title, body, payload)
+       values ($1, 'premium_activated', 'SoulChoice Premium', $2,
+               jsonb_build_object('until_date', $3::text))`,
+      [userId, `Подписка оформлена! Premium активен до ${dateStr}.`, dateStr],
+    )
+  } catch (e) { console.error('bell notif failed', e) }
+}
+
 async function sendPush(userId: string, title: string, body: string) {
   try {
     await fetch(SUPABASE_URL + '/functions/v1/send-notification', {
@@ -246,6 +261,7 @@ serve(async (req) => {
             const dateStr = fmtDate(until)
             await sendPush(sub.user_id, 'SoulChoice Premium',
               `Подписка оформлена! Premium активен до ${dateStr}.`)
+            await bellNotif(db, sub.user_id, dateStr)
             const mail = await db.queryObject<{ billing_email: string | null }>(
               `select billing_email from users where id = $1`,
               [sub.user_id],
@@ -341,6 +357,7 @@ serve(async (req) => {
           // Tek-seferlik ödeme onayı (pending→paid claim'i idempotensi garantisi)
           await sendPush(userId, 'SoulChoice Premium',
             `Premium активирован до ${fmtDate(expiresAt)}.`)
+          await bellNotif(db, userId, fmtDate(expiresAt))
         }
       }
       return new Response('ok')

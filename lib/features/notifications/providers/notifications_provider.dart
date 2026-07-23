@@ -93,6 +93,7 @@ class NotificationItem {
     // (16.07 fix: payload boş olduğundan /feed push ediliyordu → siyah ekran)
     if (type == 'selfie_rejected') return '/profile/selfie';
     if (type == 'selfie_approved') return '/feed';
+    if (type == 'premium_activated') return '/profile';
     final invId = payload['invitation_id'] as String?;
     final matchId = payload['match_id'] as String?;
     if (matchId != null) return '/chat/$matchId';
@@ -112,6 +113,8 @@ class NotificationItem {
         return Icons.waving_hand_rounded;
       case 'selfie_approved':
         return Icons.verified_user_rounded;
+      case 'premium_activated':
+        return Icons.workspace_premium_rounded;
       case 'selfie_rejected':
         return Icons.cancel_rounded;
       case 'meeting_reminder':

@@ -370,6 +370,8 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
       return l.notif_type_new_message_title;
     case 'selfie_approved':
       return l.notif_type_selfie_approved_title;
+    case 'premium_activated':
+      return l.notif_type_premium_activated_title;
     case 'selfie_rejected':
       return l.notif_type_selfie_rejected_title;
     case 'meeting_reminder':
@@ -402,6 +404,12 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
           : l.notif_type_new_message_body(name);
     case 'selfie_approved':
       return l.notif_type_selfie_approved_body;
+    case 'premium_activated':
+      // Tarih sunucudan DD.MM.YYYY gelir; payload'sız eski kayıt için tarihsiz gövde
+      final until = item.payload['until_date'] as String?;
+      return until == null
+          ? l.notif_type_premium_activated_body_nodate
+          : l.notif_type_premium_activated_body(until);
     case 'selfie_rejected':
       // Preset red sebebi (slug) kullanıcının dilinde gösterilir (16.07)
       final reason = selfieReasonL10n(l, item.payload['reason'] as String?);

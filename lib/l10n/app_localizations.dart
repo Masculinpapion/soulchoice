@@ -3526,6 +3526,24 @@ abstract class AppLocalizations {
   /// **'You can now join invitations'**
   String get notif_type_selfie_approved_body;
 
+  /// No description provided for @notif_type_premium_activated_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium active'**
+  String get notif_type_premium_activated_title;
+
+  /// No description provided for @notif_type_premium_activated_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription has started — Premium is active until {date}'**
+  String notif_type_premium_activated_body(String date);
+
+  /// No description provided for @notif_type_premium_activated_body_nodate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your subscription has started — Premium is active'**
+  String get notif_type_premium_activated_body_nodate;
+
   /// No description provided for @notif_type_selfie_rejected_title.
   ///
   /// In en, this message translates to:

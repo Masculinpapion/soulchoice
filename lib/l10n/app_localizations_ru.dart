@@ -1912,6 +1912,18 @@ class AppLocalizationsRu extends AppLocalizations {
       'Теперь ты можешь участвовать в приглашениях';
 
   @override
+  String get notif_type_premium_activated_title => 'Premium активен';
+
+  @override
+  String notif_type_premium_activated_body(String date) {
+    return 'Подписка оформлена — Premium активен до $date';
+  }
+
+  @override
+  String get notif_type_premium_activated_body_nodate =>
+      'Подписка оформлена — Premium активен';
+
+  @override
   String get notif_type_selfie_rejected_title => 'Фото отклонено';
 
   @override

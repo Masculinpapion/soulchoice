@@ -33,6 +33,9 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _checkAlreadyRequested() async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool(_kPermissionsRequestedKey) == true) {
+      // 24.07: aynı cihazda yeniden kayıtta bu erken-çıkış _finish'i atlar —
+      // token kaydı burada da garanti edilir (idempotent).
+      savePushToken();
       if (mounted) context.go('/profile/photos');
     }
   }

@@ -130,7 +130,9 @@ class MainActivity : FlutterActivity() {
                 val future = executor.submit<String?> {
                     try {
                         Log.d(TAG, "Compress ${bytes.size}B ct=$contentType")
-                        val (uploadBytes, uploadCT) = if (contentType == "image/png")
+                        // 24.07 E2E: sıkıştırma yalnız PNG'de çalışıyordu; büyük JPEG'ler
+                        // (crop çıktısı 1-3MB) ham gidip yüklemeyi uzatıyordu — tüm görseller normalize edilir.
+                        val (uploadBytes, uploadCT) = if (contentType.startsWith("image/"))
                             Pair(compressToJpeg(bytes), "image/jpeg") else Pair(bytes, contentType)
                         Log.d(TAG, "Compressed → ${uploadBytes.size}B")
 

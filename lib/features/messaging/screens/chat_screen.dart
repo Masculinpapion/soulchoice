@@ -68,6 +68,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _subscribeRealtime();
     _loadMatchInfo();
     _loadGiftLink();
+    // 24.07: cinsiyetli RU metinleri — provider soğukken 'other'a (eril)
+    // düşüyordu (Natalia dialog vakası); cinsiyet bir kez yüklenip saklanır.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadMyGender());
+  }
+
+  String _myGender = 'other';
+
+  Future<void> _loadMyGender() async {
+    final uid = _currentUid;
+    if (uid == null) return;
+    try {
+      final profile = await ref.read(userProfileProvider(uid).future);
+      final g = profile?['gender'] as String?;
+      if (mounted && g != null) setState(() => _myGender = g);
+    } catch (_) {}
   }
 
   // Hediye linki: yalnız match tarafı + moderasyon onaylı ise döner (RPC).
@@ -311,12 +326,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ));
   }
 
-  String _currentUserGender() {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return 'other';
-    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
-    return profile?['gender'] as String? ?? 'other';
-  }
+  String _currentUserGender() => _myGender;
 
   @override
   void dispose() {

@@ -138,12 +138,6 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                         context,
                       )!.delete_account_warn_invitations,
                     ),
-                    const SizedBox(height: 10),
-                    _WarnItem(
-                      text: AppLocalizations.of(
-                        context,
-                      )!.delete_account_warn_phone,
-                    ),
                   ],
                 ),
               ),
@@ -182,7 +176,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   )!.delete_account_btn_delete,
                   onPressed: _delete,
                   isLoading: _isDeleting,
-                  icon: Icons.fingerprint,
+                  icon: Icons.delete_forever,
                 ),
               const SizedBox(height: 12),
               ScButton(

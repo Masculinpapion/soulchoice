@@ -10,6 +10,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import '../providers/profile_provider.dart';
+import '../../../core/services/push_token.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
@@ -311,6 +312,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       ref.invalidate(userProfileProvider(uid));
       ref.invalidate(userPromptsProvider(uid));
     }
+    // 24.07: users satırı artık var — kayıt akışında push token'ı garantiye al
+    // (signedIn anında satır olmadığından ilk deneme boşa düşüyordu).
+    savePushToken();
     if (mounted) {
       context.go('/permissions');
     }

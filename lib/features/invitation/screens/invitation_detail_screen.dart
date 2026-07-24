@@ -30,12 +30,27 @@ class _InvitationDetailScreenState
   final PageController _photoCtrl = PageController();
   int _photoIndex = 0;
 
-  String _currentUserGender() {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return 'other';
-    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
-    return profile?['gender'] as String? ?? 'other';
+  // 24.07: cinsiyetli RU metinleri — provider soğukken 'other'a (eril)
+  // düşüyordu (Natalia dialog vakası); cinsiyet bir kez yüklenip saklanır.
+  String _myGender = 'other';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadMyGender());
   }
+
+  Future<void> _loadMyGender() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    try {
+      final profile = await ref.read(userProfileProvider(uid).future);
+      final g = profile?['gender'] as String?;
+      if (mounted && g != null) setState(() => _myGender = g);
+    } catch (_) {}
+  }
+
+  String _currentUserGender() => _myGender;
 
   @override
   void dispose() {
@@ -1494,14 +1509,21 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     }
   }
 
-  String _currentUserGender() {
+  // 24.07: provider soğukken 'other'a (eril) düşmesin — dialogdan önce await edilir.
+  Future<String> _currentUserGender() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return 'other';
-    final profile = ref.read(userProfileProvider(uid)).valueOrNull;
-    return profile?['gender'] as String? ?? 'other';
+    try {
+      final profile = await ref.read(userProfileProvider(uid).future);
+      return profile?['gender'] as String? ?? 'other';
+    } catch (_) {
+      return 'other';
+    }
   }
 
   Future<void> _withdraw() async {
+    final gender = await _currentUserGender();
+    if (!mounted) return;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) {
@@ -1511,7 +1533,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(l.inv_detail_withdraw_title,
             style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, color: Colors.white, fontSize: 18)),
-        content: Text(l.inv_detail_withdraw_body(_currentUserGender()),
+        content: Text(l.inv_detail_withdraw_body(gender),
             style: TextStyle(fontFamily: 'Manrope', color: AuroraTheme.textSecondary, fontSize: 14)),
         actions: [
           TextButton(

@@ -16,6 +16,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import 'core/constants/supabase_constants.dart';
 import 'core/providers/locale_provider.dart';
+import 'core/services/push_token.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -24,38 +25,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 }
 
-// Kullanıcının etkin dili (ayar > sistem) — push'lar alıcının dilinde gitsin
-// diye users.locale'e yazılır; send-notification şablon seçiminde okur.
-Future<String> _effectiveLocaleCode() async {
-  final prefs = await SharedPreferences.getInstance();
-  final saved = prefs.getString('selected_locale');
-  if (saved != null && saved != 'system') return saved;
-  final sys = PlatformDispatcher.instance.locale.languageCode;
-  return (sys == 'ru' || sys == 'tr') ? sys : 'en';
-}
-
-Future<void> _saveFcmToken() async {
-  try {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    final token = await FirebaseMessaging.instance.getToken();
-    if (token == null) return;
-    await Supabase.instance.client
-        .from('users')
-        .update({
-          'fcm_token': token,
-          'last_platform': Platform.isIOS ? 'ios' : 'android',
-        })
-        .eq('id', uid);
-    // locale burada EZİLMEZ (16.07: cihaz, hesabın dilini eziyordu);
-    // yalnız hesapta hiç dil yoksa (yeni kayıt) etkin dil doldurulur.
-    await Supabase.instance.client
-        .from('users')
-        .update({'locale': await _effectiveLocaleCode()})
-        .eq('id', uid)
-        .isFilter('locale', null);
-  } catch (_) {}
-}
+// FCM token kaydı core/services/push_token.dart'a taşındı (24.07):
+// kayıt akışının sonunda da çağrılması gerekiyor (yeni kullanıcı push bug'ı).
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,11 +61,11 @@ Future<void> main() async {
     anonKey: SupabaseConstants.supabaseAnonKey,
   );
 
-  _saveFcmToken();
+  savePushToken();
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-    if (data.event == AuthChangeEvent.signedIn) _saveFcmToken();
+    if (data.event == AuthChangeEvent.signedIn) savePushToken();
   });
-  FirebaseMessaging.instance.onTokenRefresh.listen((_) => _saveFcmToken());
+  FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
 
   runApp(const ProviderScope(child: SoulChoiceApp()));
 }

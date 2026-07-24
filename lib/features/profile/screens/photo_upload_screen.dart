@@ -186,7 +186,9 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           })
           .toList();
 
-      for (int orderIdx = 0; orderIdx < filled.length; orderIdx++) {
+      // 24.07 E2E: seri yükleme (foto başına yükle+bekle+DB+bekle) uzun spinner
+      // yaratıyordu — foto işlemleri artık paralel koşuyor.
+      Future<void> processEntry(int orderIdx) async {
         final entry = filled[orderIdx].value;
         final isPrimary = filled[orderIdx].key == 0;
 
@@ -202,7 +204,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
             accessToken: accessToken,
             apiKey: SupabaseConstants.supabaseAnonKey,
             bytes: entry.bytes!,
-            contentType: 'image/png',
+            contentType: 'image/jpeg',
           );
           uploadedPaths.add(path); // rollback: upload başarılı, izle
 
@@ -233,6 +235,11 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           keptIds.add(entry.remoteId!);
         }
       }
+
+      await Future.wait(
+        [for (int i = 0; i < filled.length; i++) processEntry(i)],
+        eagerError: false,
+      );
 
       // Storage cleanup: orijinal yüklenen remote fotoğraflardan artık tutulmayanlara ait
       // dosyaları storage'dan sil (DB'den silmeden önce)

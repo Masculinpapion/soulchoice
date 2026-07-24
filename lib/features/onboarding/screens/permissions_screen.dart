@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/services/push_token.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
@@ -117,6 +118,9 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _finish() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPermissionsRequestedKey, true);
+    // 24.07 E2E: kayıt sırasında signedIn anında users satırı olmadığından
+    // token yazılamıyordu; bildirim izni de yeni alındı — burada tekrar kaydet.
+    savePushToken();
     if (mounted) context.go('/profile/photos');
   }
 

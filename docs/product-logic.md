@@ -73,6 +73,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - **Başvuru: ömür boyu 1 ücretsiz; ilk başvuruda hak yakılır; sonrası premium.** ✅
 - **Premium = sınırsız başvuru. Başka hiçbir şey açmaz.** Tek paket 1000₽/ay, kayıtlı karttan iptale kadar otomatik yenileme (Точка), ödeme gecikmesinde grace-period korumalı. ✅
 - Eşleşmiş çiftin yeni başvurusu da paywall'a takılır — bilinçli, istisna yok (12.07). ✅
+- **Geri çekilen başvuru aynı davete YENİDEN yapılabilir** (24.07, Mustafa kararı): withdrawn→pending geçişi RLS+trigger ile açık; yeniden-başvuruda INSERT ile aynı kurallar (ilan açık, selfie onaylı, hak/premium, askı yok) uygulanır ve davet sahibine yeni-başvuru bildirimi gider. Ücretsiz hak yalnız İLK başvuruda (INSERT) yakılır; geri çekmek hakkı geri getirmez. ✅
 - **Bu kuralların TAMAMI artık sunucuda (DB trigger + RLS) zorlanır** — modifiye istemci bedava/sınırsız başvuramaz, kendi ilanına başvuramaz, doğrudan `accepted` insert edemez. ✅ (15.07 sertleştirme)
 - **Yaş aralığı filtresi:** Kullanıcının Ayarlar'daki min/max yaş tercihi feed ve keşfette uygulanır (yalnız bu aralıktaki karşı-cins ilan sahipleri görünür). Tercih kalıcıdır ve UI'da kalır. ✅ 15.07
 

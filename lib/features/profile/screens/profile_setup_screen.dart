@@ -165,6 +165,9 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       (_ageConfirmed && _dataConsent && _profileVisibilityConsent);
 
   Future<void> _next() async {
+    // 24.07 E2E: klavye, metin girişi olmayan adımlarda (cinsiyet, şehir) açık
+    // kalıp ekranı kesiyordu — adım geçişinde kapat.
+    FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context)!;
     if (_step == 0) {
       if (_nameController.text.trim().isEmpty) {
@@ -314,6 +317,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   }
 
   void _back() {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_step > 0) {
       setState(() => _step--);
       _pageController.previousPage(

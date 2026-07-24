@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -1404,31 +1405,60 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
 
   Future<void> _select() async {
     setState(() => _loading = true);
+    final client = Supabase.instance.client;
     try {
-      final client = Supabase.instance.client;
+      // 24.07 E2E: timeout'suz await, yanıt kaybolduğunda sonsuz spinner
+      // bırakıyordu (sunucu işlemi bitirmişti) — timeout + kurtarma eklendi.
       final matchId = await client.rpc('match_and_select', params: {
         'p_application_id': widget.applicationId,
         'p_invitation_id': widget.invitationId,
-      }) as String;
+      }).timeout(const Duration(seconds: 20)) as String;
 
       // Başvuru sahibine "seçildin" bildirimi gönder
       _sendSelectedNotification(widget.applicantId, matchId);
-
-      if (mounted) {
-        context.push(
-          '/chat/$matchId',
-          extra: {'name': widget.applicantName},
-        );
-      }
+      _openChat(matchId);
+    } on TimeoutException {
+      // Sunucu işlemi bitirmiş olabilir — durumu sorgula, accepted ise kurtar
+      try {
+        final app = await client
+            .from('applications')
+            .select('status')
+            .eq('id', widget.applicationId)
+            .maybeSingle();
+        if (app?['status'] == 'accepted') {
+          final match = await client
+              .from('matches')
+              .select('id')
+              .eq('invitation_id', widget.invitationId)
+              .maybeSingle();
+          if (match != null) {
+            _openChat(match['id'] as String);
+            return;
+          }
+        }
+      } catch (_) {}
+      _showSelectError(TimeoutException('match_and_select'));
     } catch (e) {
       // 24.07 denetim: sessiz başarısızlık — sahibi bilgilendir (guard token'ları dahil)
-      if (mounted) {
-        setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(GuardError.from(context, e)?.message ??
-                AppLocalizations.of(context)!.error_generic)));
-      }
+      _showSelectError(e);
     }
+  }
+
+  void _openChat(String matchId) {
+    if (!mounted) return;
+    setState(() => _loading = false);
+    context.push(
+      '/chat/$matchId',
+      extra: {'name': widget.applicantName},
+    );
+  }
+
+  void _showSelectError(Object e) {
+    if (!mounted) return;
+    setState(() => _loading = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(GuardError.from(context, e)?.message ??
+            AppLocalizations.of(context)!.error_generic)));
   }
 
   Future<void> _sendSelectedNotification(String applicantId, String matchId) async {

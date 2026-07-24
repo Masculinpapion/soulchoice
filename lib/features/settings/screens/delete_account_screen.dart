@@ -77,7 +77,10 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
         ),
       ),
       body: AmbientBackground(
-        child: Padding(
+        child: SafeArea(
+          top: false,
+          // 24.07: İptal butonu sistem çubuğu/klavye altında kalıyordu
+          child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,6 +189,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               ),
               const SizedBox(height: 8),
             ],
+          ),
           ),
         ),
       ),

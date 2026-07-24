@@ -26,7 +26,10 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  String _selfieStatus = 'none';
+  // 24.07: null = durum henüz DB'den gelmedi/başarısız — kart gösterilmez.
+  // Eski 'none' varsayılanı, sorgu gecikince/hata verince onaylı kullanıcıya
+  // yanlışlıkla "Henüz selfie yüklenmedi" gösteriyordu.
+  String? _selfieStatus;
   int _minAge = 21;
   int _maxAge = 60;
   bool _quietEnabled = false;
@@ -42,17 +45,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _loadUserData() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
-    final row = await Supabase.instance.client
-        .from('users')
-        .select('selfie_status, min_age, max_age')
-        .eq('id', uid)
-        .maybeSingle();
-    if (mounted) {
-      setState(() {
-        _selfieStatus = row?['selfie_status'] as String? ?? 'none';
-        _minAge = row?['min_age'] as int? ?? 21;
-        _maxAge = row?['max_age'] as int? ?? 60;
-      });
+    try {
+      final row = await Supabase.instance.client
+          .from('users')
+          .select('selfie_status, min_age, max_age')
+          .eq('id', uid)
+          .maybeSingle();
+      if (mounted) {
+        setState(() {
+          _selfieStatus = row?['selfie_status'] as String? ?? 'none';
+          _minAge = row?['min_age'] as int? ?? 21;
+          _maxAge = row?['max_age'] as int? ?? 60;
+        });
+      }
+    } catch (_) {
+      // Sorgu başarısızsa durum bilinmiyor — kart gizli kalır, yanlış
+      // "yüklenmedi" gösterilmez.
     }
   }
 
@@ -584,8 +592,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   children: [
                     // Doğrulama kartı (yalnız pending/rejected/none'da görünür;
                     // boşluğu kendi içinde taşır ki gizliyken artık kalmasın)
+                    if (_selfieStatus != null)
                     _VerificationCard(
-                      selfieStatus: _selfieStatus,
+                      selfieStatus: _selfieStatus!,
                       onRetake: () {
                         context
                             .push('/profile/selfie')

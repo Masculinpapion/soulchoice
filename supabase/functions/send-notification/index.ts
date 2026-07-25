@@ -243,6 +243,25 @@ serve(async (req) => {
       }
     )
     const fcmData = await fcmRes.json()
+    // 25.07: FCM hatası sessiz yutulmaz (E2E'de ölü token 2 gün fark edilmedi).
+    // UNREGISTERED/404 = token'ın ait olduğu kurulum artık yok (app silinmiş /
+    // yeniden kurulmuş) → DB'den temizle ki durum görünür olsun; alıcı app'i
+    // bir sonraki açışında main.dart savePushToken taze token'ı yazar.
+    if (!fcmRes.ok) {
+      const errCode = fcmData?.error?.details?.find?.((d: { errorCode?: string }) => d?.errorCode)?.errorCode ?? fcmData?.error?.status ?? ''
+      console.error(`send-notification FCM FAIL user=${user_id} type=${notifType} http=${fcmRes.status} code=${errCode}`)
+      if (fcmRes.status === 404 || errCode === 'UNREGISTERED') {
+        try {
+          const db2 = new Client(DB_URL)
+          await db2.connect()
+          await db2.queryObject('UPDATE users SET fcm_token = NULL WHERE id = $1 AND fcm_token = $2', [user_id, fcmToken])
+          await db2.end()
+        } catch (_) { /* temizlik başarısız olsa da push zaten gitmedi; log yeterli */ }
+      }
+      return new Response(JSON.stringify({ success: false, fcm: fcmData }), {
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+      })
+    }
     return new Response(JSON.stringify({ success: true, fcm: fcmData }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     })

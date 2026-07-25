@@ -55,6 +55,13 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: '💬 {name}', b: 'Yeni mesaj' },
     en: { t: '💬 {name}', b: 'New message' },
   },
+  // 26.07: davet sahibine eşleşme push'u (trg_notify_new_match) — "Eşleşmeler"
+  // tercihi artık gerçek bir olayı yönetiyor; başvurana ikinci push atılmaz.
+  match: {
+    ru: { t: 'Совпадение! 🎉', b: 'Чат с {name} открыт' },
+    tr: { t: 'Eşleşme! 🎉', b: '{name} ile sohbet açıldı' },
+    en: { t: "It's a match! 🎉", b: 'Chat with {name} is open' },
+  },
   selection_reminder: {
     ru: { t: 'Заявки ждут ✨', b: 'Заявок: {count} — окно выбора скоро закроется' },
     tr: { t: 'Başvurular bekliyor ✨', b: '{count} başvuran seçimini bekliyor — pencere yakında kapanıyor' },
@@ -186,6 +193,25 @@ serve(async (req) => {
           }
         }
       }
+      // 26.07 çift-push koruması: DB trigger'ı + eski istemci (build ≤618)
+      // aynı olayı iki kez yollayabilir; 8 sn pencerede aynı (alıcı, tip, ref)
+      // ikinci kez gönderilmez. push_log yoksa/hata olursa dedupe atlanır —
+      // push göndermek dedupe'tan her zaman önceliklidir.
+      try {
+        const dedupRef = String(data?.match_id ?? data?.invitation_id ?? '')
+        const dup = await db.queryObject(
+          "SELECT 1 FROM push_log WHERE user_id = $1 AND type = $2 AND ref = $3 AND sent_at > now() - interval '8 seconds' LIMIT 1",
+          [user_id, notifType, dedupRef]
+        )
+        if (dup.rows.length > 0) {
+          await db.end()
+          return new Response(JSON.stringify({ success: true, skipped: 'duplicate' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
+        }
+        await db.queryObject(
+          'INSERT INTO push_log(user_id, type, ref) VALUES ($1, $2, $3)',
+          [user_id, notifType, dedupRef]
+        )
+      } catch (_) { /* dedupe altyapısı henüz yoksa push yine gitsin */ }
     }
 
     await db.end()

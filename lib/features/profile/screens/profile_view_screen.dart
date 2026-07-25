@@ -1414,8 +1414,7 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
         'p_invitation_id': widget.invitationId,
       }).timeout(const Duration(seconds: 20)) as String;
 
-      // Başvuru sahibine "seçildin" bildirimi gönder
-      _sendSelectedNotification(widget.applicantId, matchId);
+      // "Seçildin" push'u sunucudan gider: notify_application_status (26.07 madde X)
       _openChat(matchId);
     } on TimeoutException {
       // Sunucu işlemi bitirmiş olabilir — durumu sorgula, accepted ise kurtar
@@ -1459,31 +1458,6 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(GuardError.from(context, e)?.message ??
             AppLocalizations.of(context)!.error_generic)));
-  }
-
-  Future<void> _sendSelectedNotification(String applicantId, String matchId) async {
-    try {
-      final client = Supabase.instance.client;
-      final uid = client.auth.currentUser?.id;
-      final myName = uid == null
-          ? ''
-          : (await client.from('users').select('name').eq('id', uid).maybeSingle())?['name']
-                  as String? ??
-              '';
-      // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki RU fallback.
-      await client.functions.invoke('send-notification', body: {
-        'user_id': applicantId,
-        'title': '🎉 Тебя выбрали!',
-        'body': 'Твоя заявка принята. Открой чат!',
-        'data': {
-          'type': 'selected',
-          'invitation_id': widget.invitationId,
-          // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
-          'match_id': matchId,
-        },
-        'template': {'name': myName},
-      });
-    } catch (_) {}
   }
 
   Future<void> _reject() async {

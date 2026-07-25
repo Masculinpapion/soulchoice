@@ -142,29 +142,8 @@ class _DecisionScreenState extends State<DecisionScreen>
         throw Exception('accept_not_persisted');
       }
 
-      // Seçilen başvurana push bildirim (in-app kaydı DB trigger'ından gelir).
-      // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki l10n fallback.
-      final l10n = AppLocalizations.of(context)!;
-      final myRow = await client
-          .from('users')
-          .select('name, gender')
-          .eq('id', uid)
-          .maybeSingle();
-      final myName = myRow?['name'] as String? ?? '';
-      final myGender = myRow?['gender'] as String? ?? '';
-      client.functions.invoke('send-notification', body: {
-        'user_id': _applicantId,
-        'title': l10n.notif_selected_push_title,
-        'body': l10n.notif_selected_push_body,
-        'data': {
-          'type': 'selected',
-          'invitation_id': widget.invitationId,
-          // Push'a dokununca doğrudan sohbete düşsün (main.dart deep link)
-          'match_id': matchRes['id'],
-        },
-        // gender: RU şablonda выбрал/выбрала çekimi için (16.07)
-        'template': {'name': myName, 'gender': myGender},
-      });
+      // "Seçildin" push'u sunucudan gider: notify_application_status
+      // status→accepted güncellemesini görünce push atar (26.07 madde X).
 
       if (mounted) context.go('/chat/${matchRes['id']}');
     } catch (e) {

@@ -1339,33 +1339,6 @@ class _ApplyButton extends ConsumerStatefulWidget {
 class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   bool _loading = false;
 
-  Future<void> _sendNewApplicationNotification(String applicantId) async {
-    try {
-      final client = Supabase.instance.client;
-      final inv = await client
-          .from('invitations')
-          .select('owner_id, users!owner_id(name)')
-          .eq('id', widget.invitationId)
-          .maybeSingle();
-      final ownerId = inv?['owner_id'] as String?;
-      if (ownerId == null || ownerId == applicantId) return;
-      final applicant = await client
-          .from('users')
-          .select('name')
-          .eq('id', applicantId)
-          .maybeSingle();
-      final applicantName = applicant?['name'] as String? ?? '';
-      // Metin sunucu şablonundan ALICININ dilinde üretilir; buradaki RU fallback.
-      await client.functions.invoke('send-notification', body: {
-        'user_id': ownerId,
-        'title': '🔔 Новая заявка',
-        'body': '$applicantName хочет присоединиться',
-        'data': {'type': 'new_application', 'invitation_id': widget.invitationId},
-        'template': {'name': applicantName},
-      });
-    } catch (_) {}
-  }
-
   Future<void> _apply() async {
     if (widget.invStatus != 'active') return;
     if (widget.expiresAt != null && DateTime.now().isAfter(widget.expiresAt!)) return;
@@ -1402,9 +1375,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         'applicant_id': uid,
         'status': 'pending',
       }, onConflict: 'invitation_id,applicant_id');
-
-      // Davetiye sahibine push bildirim gönder
-      _sendNewApplicationNotification(uid);
+      // Sahibin push'u sunucudan gider: trg_notify_new_application (26.07 madde X)
 
       widget.onApplied();
       if (mounted) {

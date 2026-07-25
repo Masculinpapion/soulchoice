@@ -123,7 +123,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         });
       }
       _startResendTimer();
-    } catch (_) {}
+    } catch (_) {
+      // OTP sessiz-retry fix (26.07): yeniden gönderim düşerse kullanıcı
+      // bunu GÖRMELİ; timer sıfırlanmaz ki beklemeden tekrar deneyebilsin.
+      if (mounted) {
+        setState(() => _error = AppLocalizations.of(context)!.error_generic);
+      }
+    }
   }
 
   @override

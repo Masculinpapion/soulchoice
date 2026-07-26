@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,12 +110,29 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                             .where((inv) => inv.category == _selectedCategory)
                             .toList();
                     if (invitations.isEmpty) {
-                      return _EmptyState(
-                        title: AppLocalizations.of(context)!.discover_empty_title,
-                        subtitle: AppLocalizations.of(context)!.discover_empty_subtitle,
-                        btnLabel: AppLocalizations.of(context)!.discover_btn_create,
-                        onCreateTap: () =>
-                            context.push('/invitation/create'),
+                      // 26.07 iOS turu: boş durumda RefreshIndicator yoktu —
+                      // eski "boş" sonuç önbellekte kalıyor, çekip yenileme
+                      // olmadan bir daha sorgulanmıyordu (feed deseniyle aynı).
+                      return RefreshIndicator(
+                        color: AuroraTheme.auroraRed,
+                        backgroundColor: AuroraTheme.glassStrong,
+                        onRefresh: () async =>
+                            ref.invalidate(discoverProvider(cityId)),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: constraints.maxHeight,
+                              child: _EmptyState(
+                                title: AppLocalizations.of(context)!.discover_empty_title,
+                                subtitle: AppLocalizations.of(context)!.discover_empty_subtitle,
+                                btnLabel: AppLocalizations.of(context)!.discover_btn_create,
+                                onCreateTap: () =>
+                                    context.push('/invitation/create'),
+                              ),
+                            ),
+                          ),
+                        ),
                       );
                     }
                     return RefreshIndicator(
@@ -390,7 +408,15 @@ class _DiscoverCard extends StatelessWidget {
                               ? Image.asset('assets/icons/music.png',
                                   width: 14.7, height: 14.7,
                                   color: AuroraTheme.auroraRed)
-                              : Text(inv.category.emoji, style: const TextStyle(fontSize: 14)),
+                              // iOS: Apple emoji glifinin optik merkezi farklı — feed
+                              // kart rozetiyle aynı platform düzeltmesi.
+                              : Transform.translate(
+                                  offset: defaultTargetPlatform == TargetPlatform.iOS
+                                      ? const Offset(0.5, -1.0)
+                                      : Offset.zero,
+                                  child: Text(inv.category.emoji,
+                                      style: const TextStyle(fontSize: 14, height: 1.0)),
+                                ),
                         ),
                       ),
                     ),

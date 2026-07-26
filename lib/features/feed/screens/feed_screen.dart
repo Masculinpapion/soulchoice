@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1349,7 +1350,15 @@ class InvitationCard extends StatelessWidget {
                             ? Image.asset('assets/icons/music.png',
                                 width: 14.7, height: 14.7,
                                 color: AuroraTheme.auroraRed)
-                            : Text(category.emoji, style: const TextStyle(fontSize: 14)),
+                            // iOS: Apple emoji glifinin optik merkezi Noto'dan farklı —
+                            // kutu içinde sola/aşağı kaçıyor; platforma özel düzeltme.
+                            : Transform.translate(
+                                offset: defaultTargetPlatform == TargetPlatform.iOS
+                                    ? const Offset(0.5, -1.0)
+                                    : Offset.zero,
+                                child: Text(category.emoji,
+                                    style: const TextStyle(fontSize: 14, height: 1.0)),
+                              ),
                       ),
                     ),
                   ),

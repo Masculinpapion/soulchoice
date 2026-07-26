@@ -1417,30 +1417,43 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
       // "Seçildin" push'u sunucudan gider: notify_application_status (26.07 madde X)
       _openChat(matchId);
     } on TimeoutException {
-      // Sunucu işlemi bitirmiş olabilir — durumu sorgula, accepted ise kurtar
-      try {
-        final app = await client
-            .from('applications')
-            .select('status')
-            .eq('id', widget.applicationId)
-            .maybeSingle();
-        if (app?['status'] == 'accepted') {
-          final match = await client
-              .from('matches')
-              .select('id')
-              .eq('invitation_id', widget.invitationId)
-              .maybeSingle();
-          if (match != null) {
-            _openChat(match['id'] as String);
-            return;
-          }
-        }
-      } catch (_) {}
+      // Sunucu işlemi bitirmiş olabilir — durumu sorgula, accepted ise kurtar.
+      // 26.07 iOS turu: tek denemelik kurtarma aynı ağ kopuşuna denk gelip
+      // başarıyı "hata" gösterdi — kısa aralıkla 2 kez dene.
+      for (var attempt = 0; attempt < 2; attempt++) {
+        try {
+          if (await _recoverIfAccepted()) return;
+        } catch (_) {}
+        await Future.delayed(const Duration(seconds: 2));
+      }
       _showSelectError(TimeoutException('match_and_select'));
     } catch (e) {
+      // Zaten seçilmişse (çift dokunuş / bayat ekran) hata yerine sohbete git
+      try {
+        if (await _recoverIfAccepted()) return;
+      } catch (_) {}
       // 24.07 denetim: sessiz başarısızlık — sahibi bilgilendir (guard token'ları dahil)
       _showSelectError(e);
     }
+  }
+
+  // Başvuru sunucuda kabul edilmişse mevcut match'i bulup sohbeti açar.
+  Future<bool> _recoverIfAccepted() async {
+    final client = Supabase.instance.client;
+    final app = await client
+        .from('applications')
+        .select('status')
+        .eq('id', widget.applicationId)
+        .maybeSingle();
+    if (app?['status'] != 'accepted') return false;
+    final match = await client
+        .from('matches')
+        .select('id')
+        .eq('invitation_id', widget.invitationId)
+        .maybeSingle();
+    if (match == null) return false;
+    _openChat(match['id'] as String);
+    return true;
   }
 
   void _openChat(String matchId) {

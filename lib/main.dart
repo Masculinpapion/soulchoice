@@ -103,6 +103,14 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
       ref.read(routerProvider).push('/profile/selfie');
       return;
     }
+    // Yeni başvuru → başvuranlar ekranı (26.07 iOS turu: feed'e düşüyordu)
+    final invitationId = m.data['invitation_id'];
+    if (m.data['type'] == 'new_application' &&
+        invitationId is String &&
+        invitationId.isNotEmpty) {
+      ref.read(routerProvider).push('/invitation/$invitationId/applicants');
+      return;
+    }
     final matchId = m.data['match_id'];
     if (matchId is! String || matchId.isEmpty) return;
     ref.read(routerProvider).push('/chat/$matchId');

@@ -1354,7 +1354,7 @@ class InvitationCard extends StatelessWidget {
                             // kutu içinde sola/aşağı kaçıyor; platforma özel düzeltme.
                             : Transform.translate(
                                 offset: defaultTargetPlatform == TargetPlatform.iOS
-                                    ? const Offset(0.5, -1.0)
+                                    ? const Offset(2.0, -1.0)
                                     : Offset.zero,
                                 child: Text(category.emoji,
                                     style: const TextStyle(fontSize: 14, height: 1.0)),

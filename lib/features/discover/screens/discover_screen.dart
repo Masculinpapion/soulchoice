@@ -412,7 +412,7 @@ class _DiscoverCard extends StatelessWidget {
                               // kart rozetiyle aynı platform düzeltmesi.
                               : Transform.translate(
                                   offset: defaultTargetPlatform == TargetPlatform.iOS
-                                      ? const Offset(0.5, -1.0)
+                                      ? const Offset(2.0, -1.0)
                                       : Offset.zero,
                                   child: Text(inv.category.emoji,
                                       style: const TextStyle(fontSize: 14, height: 1.0)),

@@ -61,6 +61,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 26.07.2026 — **iOS TAM E2E turu KAPANDI (10/10 adım cihaz kanıtlı):** sıfırdan kayıt→selfie onay push→bildirim bataryası 4/4→davet/başvuru/seçim/çift yönlü chat+push (kilit ekranı + deep-link dahil)→GDPR silme (sıfır kalıntı)→gerçek SMS ile dönüş. 4 bulgu fix'i `d317f96`: keşfet boş-durum yenileme, Seç ağ-kopuşu kurtarma, emoji rozet iOS hizası (yeni TestFlight build'inde görsel teyit bekliyor), new_application push deep-link. Not: Natalia Wi-Fi'ında aralıklı APNs gecikmesi görüldü (uygulama dışı, LTE'de sorunsuz). Artık iki platformda da çalışmayan kullanıcı-görünür mekanizma yok.
 - 15.07.2026 — Off-site immutable yedek (Yandex Object Lock 14g) + restore provası (DB canlıyla eşleşti + xattr korundu) + ops panel Veri&Yedek gerçek veri + alarm off-site kapsama → Altyapı %61→%72 ✅ EŞİK, genel %89→%92
 - 15.07.2026 — Ürün-mantığı denetimi: kabul akışı kırığı + kabul bildirimi + sunucu-taraflı başvuru kuralları + yaş filtresi + çift yönlü engelleme + hide-chat + buluşma mekaniği + silinen-kullanıcı modeli (GDPR) + mark-read → Ürün %72→%75 ✅ EŞİK, UX %76→%83, Para %92→%93, Store %85→%86, genel %87→%89
 - 14.07.2026 — Moderasyon paneli kapandı (E2E kanıtlı) → Güvenlik %90→%92 ✅ EŞİK, genel %86→%87

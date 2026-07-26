@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -50,19 +49,10 @@ Future<void> main() async {
   timeago.setLocaleMessages('en', timeago.EnMessages());
   timeago.setLocaleMessages('de', timeago.DeMessages());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // Android: sistem gezinme çubuğu şeffaf — gri şerit yerine uygulama
-  // zemini uzanır (iOS'taki bütünleşik alt görünümün karşılığı, 27.07).
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  }
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.light,
-      systemNavigationBarContrastEnforced: false,
     ),
   );
 

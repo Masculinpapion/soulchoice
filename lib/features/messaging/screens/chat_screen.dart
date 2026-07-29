@@ -11,6 +11,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../features/profile/providers/profile_provider.dart';
+import '../providers/matches_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
 
@@ -589,6 +590,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           .from('matches')
           .delete()
           .eq('id', widget.matchId);
+      // Liste önbelleği tazelenmezse silinen sohbet satırı görünmeye devam
+      // ediyor (29.07 cihaz bulgusu) — dönmeden önce invalidate.
+      ref.invalidate(matchesProvider);
       if (mounted) context.go('/messages');
     } catch (_) {
       if (mounted) {

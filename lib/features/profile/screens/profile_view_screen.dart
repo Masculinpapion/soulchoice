@@ -1918,96 +1918,102 @@ class _MyApplicationsSection extends ConsumerWidget {
       children: [
         _EditSectionHeader(label: l10n.profile_my_applications),
         const SizedBox(height: 16),
-        ...apps.map((a) {
-          final inv = a['invitation'] as Map<String, dynamic>?;
-          final ownerName =
-              (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
-          final title = inv?['title'] as String? ?? '—';
-          final status = a['status'] as String? ?? 'pending';
-          final invStatus = inv?['status'] as String?;
-          // pending + ilan kapandıysa fiilen "seçim yapılmadı"
-          final effective = (status == 'pending' && invStatus == 'closed')
-              ? 'expired'
-              : status;
-          final (chipText, chipColor) = switch (effective) {
-            'accepted' => (l10n.app_status_accepted, const Color(0xFF34C759)),
-            'rejected' => (l10n.app_status_rejected, AuroraTheme.textMuted),
-            'expired' => (l10n.app_status_expired, AuroraTheme.textMuted),
-            _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
-          };
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: InkWell(
-              onTap: inv == null
-                  ? null
-                  : () => context.push('/invitation/${inv['id']}'),
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AuroraTheme.glassBg,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AuroraTheme.glassBorder),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                          if (ownerName != null) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              ownerName,
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                fontSize: 12,
-                                color: AuroraTheme.textMuted,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: chipColor.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(100),
-                        border:
-                            Border.all(color: chipColor.withOpacity(0.45)),
-                      ),
-                      child: Text(
-                        chipText,
-                        style: TextStyle(
-                          fontFamily: 'JetBrainsMono',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: chipColor,
-                          letterSpacing: 0.4,
+        // 29.07 Mustafa (tasarım B): dikey liste sayı arttıkça profili
+        // uzatıyordu — sabit boy, yana kaydırmalı mini kartlar.
+        SizedBox(
+          height: 96,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: apps.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, i) {
+              final a = apps[i];
+              final inv = a['invitation'] as Map<String, dynamic>?;
+              final ownerName =
+                  (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
+              final title = inv?['title'] as String? ?? '—';
+              final status = a['status'] as String? ?? 'pending';
+              final invStatus = inv?['status'] as String?;
+              // pending + ilan kapandıysa fiilen "seçim yapılmadı"
+              final effective = (status == 'pending' && invStatus == 'closed')
+                  ? 'expired'
+                  : status;
+              final (chipText, chipColor) = switch (effective) {
+                'accepted' => (
+                    l10n.app_status_accepted,
+                    const Color(0xFF34C759)
+                  ),
+                'rejected' => (l10n.app_status_rejected, AuroraTheme.textMuted),
+                'expired' => (l10n.app_status_expired, AuroraTheme.textMuted),
+                _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
+              };
+              return InkWell(
+                onTap: inv == null
+                    ? null
+                    : () => context.push('/invitation/${inv['id']}'),
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 190,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 11),
+                  decoration: BoxDecoration(
+                    color: AuroraTheme.glassBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AuroraTheme.glassBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.5,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                  ],
+                      if (ownerName != null)
+                        Text(
+                          ownerName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 11.5,
+                            color: AuroraTheme.textMuted,
+                          ),
+                        ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 9, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: chipColor.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                              color: chipColor.withOpacity(0.45)),
+                        ),
+                        child: Text(
+                          chipText,
+                          style: TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                            color: chipColor,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        }),
+              );
+            },
+          ),
+        ),
         const SizedBox(height: 18),
       ],
     );

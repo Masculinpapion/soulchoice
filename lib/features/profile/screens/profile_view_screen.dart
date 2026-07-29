@@ -14,6 +14,8 @@ import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../messaging/providers/matches_provider.dart';
 import '../../invitation/providers/my_applications_provider.dart';
+import '../../feed/providers/invitations_provider.dart';
+import '../../discover/providers/discover_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/photo_focus.dart';
 
@@ -418,8 +420,15 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) =>
-          _ActionSheet(targetUserId: targetUserId, targetName: null),
+      builder: (_) => _ActionSheet(
+        targetUserId: targetUserId,
+        targetName: null,
+        // Engellenen kişinin kartları feed/keşfette bayat kalmasın (29.07)
+        onBlocked: () {
+          ref.invalidate(invitationsProvider);
+          ref.invalidate(discoverProvider);
+        },
+      ),
     );
   }
 }
@@ -1190,14 +1199,22 @@ class _GlassIconButton extends StatelessWidget {
 class _ActionSheet extends StatelessWidget {
   final String targetUserId;
   final String? targetName;
-  const _ActionSheet({required this.targetUserId, this.targetName});
+  final VoidCallback? onBlocked;
+  const _ActionSheet(
+      {required this.targetUserId, this.targetName, this.onBlocked});
 
   Future<void> _block(BuildContext ctx) async {
     final l10n = AppLocalizations.of(ctx)!;
+    // 29.07 bulgusu: sheet kapandıktan sonra ctx ÖLÜYOR — diyalog butonları
+    // (Отмена/Заблокировать) sessizce çöp oluyordu. Canlı referanslar sheet
+    // kapanmadan alınır; diyalog kendi context'iyle (dctx) kapanır.
+    final rootCtx = Navigator.of(ctx, rootNavigator: true).context;
+    final messenger = ScaffoldMessenger.of(ctx);
+    final router = GoRouter.of(ctx);
     Navigator.pop(ctx);
     final confirmed = await showDialog<bool>(
-      context: ctx,
-      builder: (_) => AlertDialog(
+      context: rootCtx,
+      builder: (dctx) => AlertDialog(
         backgroundColor: const Color(0xFF0D0D12),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20)),
@@ -1218,14 +1235,14 @@ class _ActionSheet extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => Navigator.pop(dctx, false),
             child: Text(l10n.profile_view_action_block_cancel,
                 style: TextStyle(
                     fontFamily: 'Manrope',
                     color: AuroraTheme.textMuted)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => Navigator.pop(dctx, true),
             child: Text(l10n.profile_view_action_block_confirm,
                 style: const TextStyle(
                     fontFamily: 'Manrope',
@@ -1235,25 +1252,32 @@ class _ActionSheet extends StatelessWidget {
         ],
       ),
     );
-    if (confirmed != true || !ctx.mounted) return;
+    if (confirmed != true) return;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
-    final targetData = await Supabase.instance.client
-        .from('users')
-        .select('gender')
-        .eq('id', targetUserId)
-        .maybeSingle();
-    final targetGender = targetData?['gender'] as String? ?? 'other';
-    await Supabase.instance.client.from('blocks').upsert({
-      'blocker_id': uid,
-      'blocked_id': targetUserId,
-    });
-    if (ctx.mounted) {
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text(l10n.profile_view_blocked_snack(targetName ?? l10n.profile_view_anonymous_user, targetGender)),
+    try {
+      final targetData = await Supabase.instance.client
+          .from('users')
+          .select('gender')
+          .eq('id', targetUserId)
+          .maybeSingle();
+      final targetGender = targetData?['gender'] as String? ?? 'other';
+      await Supabase.instance.client.from('blocks').upsert({
+        'blocker_id': uid,
+        'blocked_id': targetUserId,
+      });
+      onBlocked?.call();
+      messenger.showSnackBar(SnackBar(
+        content: Text(l10n.profile_view_blocked_snack(
+            targetName ?? l10n.profile_view_anonymous_user, targetGender)),
         backgroundColor: const Color(0xFF10B981),
       ));
-      ctx.pop();
+      router.pop();
+    } catch (_) {
+      // 24.07 kuralı: başarısız engelleme başarı gibi kapanmasın
+      messenger.showSnackBar(SnackBar(
+          content: Text(l10n.error_generic),
+          backgroundColor: AuroraTheme.auroraRed));
     }
   }
 
@@ -1306,8 +1330,11 @@ class _ActionSheet extends StatelessWidget {
                           fontSize: 15,
                           color: Colors.white)),
                   onTap: () {
+                    // Router referansı pop'tan ÖNCE — kapanan sheet'in
+                    // context'iyle push ölü-context hatası veriyordu (29.07)
+                    final router = GoRouter.of(context);
                     Navigator.pop(context);
-                    context.push('/report/$targetUserId');
+                    router.push('/report/$targetUserId');
                   },
                 ),
                 ListTile(

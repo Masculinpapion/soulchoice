@@ -1465,11 +1465,13 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
     );
   }
 
-  void _showSelectError(Object e) {
+  Future<void> _showSelectError(Object e) async {
     if (!mounted) return;
     setState(() => _loading = false);
+    final guard = await GuardError.resolve(context, e);
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(GuardError.from(context, e)?.message ??
+        content: Text(guard?.message ??
             AppLocalizations.of(context)!.error_generic)));
   }
 

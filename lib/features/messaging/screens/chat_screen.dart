@@ -372,7 +372,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         setState(() =>
             _messages.removeWhere((m) => m.id == optimistic.id));
         // Bilinen guard hatası (örn. ACCOUNT_SUSPENDED) lokalize gösterilir
-        final guard = GuardError.from(context, e);
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
         if (guard != null) {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => guard.navigate(context));

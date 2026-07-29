@@ -26,6 +26,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
   final _picker = ImagePicker();
   bool _wasRejected = false;
   String? _rejectedReason;
+  bool _isPending = false;
 
   @override
   void initState() {
@@ -45,9 +46,15 @@ class _SelfieScreenState extends State<SelfieScreen> {
           .select('selfie_status, selfie_rejected_reason')
           .eq('id', uid)
           .maybeSingle();
-      if (!mounted || row == null || row['selfie_status'] != 'rejected') {
+      if (!mounted || row == null) return;
+      final status = row['selfie_status'] as String?;
+      // Onay bekleyen kullanıcı yeniden çekip kuyruğunu sıfırlamasın —
+      // banner + çekim/gönder kilidi (29.07).
+      if (status == 'pending') {
+        setState(() => _isPending = true);
         return;
       }
+      if (status != 'rejected') return;
       setState(() {
         _wasRejected = true;
         _rejectedReason = row['selfie_rejected_reason'] as String?;
@@ -195,6 +202,52 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     height: 1.5,
                   ),
                 ),
+                if (_isPending) ...[
+                  const SizedBox(height: 16),
+                  GlassCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.hourglass_top_rounded,
+                          size: 18,
+                          color: AuroraTheme.auroraBlue,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.selfie_pending_banner_title,
+                                style: const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AuroraTheme.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.selfie_pending_banner_body,
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 13,
+                                  color: AuroraTheme.textSecondary,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (_wasRejected) ...[
                   const SizedBox(height: 16),
                   GlassCard(
@@ -248,7 +301,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                 const SizedBox(height: 32),
                 Center(
                   child: GestureDetector(
-                    onTap: _takeSelfie,
+                    onTap: _isPending ? null : _takeSelfie,
                     child: Container(
                       width: 220,
                       height: 260,
@@ -313,7 +366,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                 const SizedBox(height: 32),
                 ScButton(
                   label: AppLocalizations.of(context)!.selfie_submit_btn,
-                  onPressed: _selfie != null ? _submit : null,
+                  onPressed: (_selfie != null && !_isPending) ? _submit : null,
                   isLoading: _isUploading,
                 ),
                 const SizedBox(height: 8),

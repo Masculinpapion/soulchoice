@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 /// Sunucu guard trigger'larının token hatalarını (SELFIE_NOT_APPROVED vb.)
@@ -33,6 +34,31 @@ class GuardError {
       return GuardError(l10n.err_account_suspended, '/suspended');
     }
     return null;
+  }
+
+  /// Sunucu guard'ı pending/none/rejected ayırmadan tek SELFIE_NOT_APPROVED
+  /// token'ı atar. Onay bekleyen kullanıcı kameraya değil bekleme mesajına
+  /// düşmeli (yönlendirme yok) — durum burada istemciden okunur.
+  static Future<GuardError?> resolve(BuildContext context, Object e) async {
+    final base = from(context, e);
+    if (base == null || base.route != '/profile/selfie') return base;
+    final pendingMessage = AppLocalizations.of(context)!.err_selfie_pending;
+    try {
+      final client = Supabase.instance.client;
+      final uid = client.auth.currentUser?.id;
+      if (uid == null) return base;
+      final row = await client
+          .from('users')
+          .select('selfie_status')
+          .eq('id', uid)
+          .maybeSingle();
+      if (row?['selfie_status'] == 'pending') {
+        return GuardError(pendingMessage);
+      }
+    } catch (_) {
+      // Durum okunamazsa mevcut davranış korunur.
+    }
+    return base;
   }
 
   void navigate(BuildContext context) {

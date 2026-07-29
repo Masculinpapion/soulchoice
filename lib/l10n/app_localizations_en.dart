@@ -1119,6 +1119,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Verify your profile with a selfie first — opening the camera screen.';
 
   @override
+  String get err_selfie_pending =>
+      'Your selfie is being reviewed — a moderator will approve it within 24 hours.';
+
+  @override
+  String get selfie_pending_banner_title => 'Selfie under review';
+
+  @override
+  String get selfie_pending_banner_body =>
+      'A moderator will review it within 24 hours and you\'ll get a notification. No need to submit a new one.';
+
+  @override
   String get err_apply_limit =>
       'Your free application is used — Premium unlocks unlimited applications.';
 

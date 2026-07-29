@@ -2122,6 +2122,24 @@ abstract class AppLocalizations {
   /// **'Verify your profile with a selfie first — opening the camera screen.'**
   String get err_selfie_required;
 
+  /// No description provided for @err_selfie_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selfie is being reviewed — a moderator will approve it within 24 hours.'**
+  String get err_selfie_pending;
+
+  /// No description provided for @selfie_pending_banner_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie under review'**
+  String get selfie_pending_banner_title;
+
+  /// No description provided for @selfie_pending_banner_body.
+  ///
+  /// In en, this message translates to:
+  /// **'A moderator will review it within 24 hours and you\'ll get a notification. No need to submit a new one.'**
+  String get selfie_pending_banner_body;
+
   /// No description provided for @err_apply_limit.
   ///
   /// In en, this message translates to:

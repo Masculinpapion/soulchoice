@@ -1131,6 +1131,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сначала подтвердите профиль селфи — открываем камеру.';
 
   @override
+  String get err_selfie_pending =>
+      'Твоё селфи проверяется — модератор одобрит в течение 24 часов.';
+
+  @override
+  String get selfie_pending_banner_title => 'Селфи на проверке';
+
+  @override
+  String get selfie_pending_banner_body =>
+      'Модератор проверит его в течение 24 часов — придёт уведомление. Новое селфи отправлять не нужно.';
+
+  @override
   String get err_apply_limit =>
       'Бесплатная заявка использована — безлимит открывает Premium.';
 

@@ -472,7 +472,8 @@ class _CreateInvitationScreenState
     } catch (e) {
       if (mounted) {
         // Bilinen guard hataları lokalize + doğru yönlendirme (selfie/askı)
-        final guard = GuardError.from(context, e);
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
         if (guard != null) {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => guard.navigate(context));

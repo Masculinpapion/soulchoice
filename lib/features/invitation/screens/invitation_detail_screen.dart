@@ -1463,7 +1463,8 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       if (mounted) {
         // Bilinen guard hataları (selfie/limit/askı/kapalı ilan) lokalize
         // mesaj + doğru CTA; ham e.toString() yalnız bilinmeyen hatada.
-        final guard = GuardError.from(context, e);
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
         if (guard != null) {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => guard.navigate(context));

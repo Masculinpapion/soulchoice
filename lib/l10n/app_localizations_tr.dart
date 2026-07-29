@@ -1118,6 +1118,17 @@ class AppLocalizationsTr extends AppLocalizations {
       'Önce selfie ile profilini doğrula — kamera ekranı açılıyor.';
 
   @override
+  String get err_selfie_pending =>
+      'Selfie\'n inceleniyor — moderatör 24 saat içinde onaylayacak.';
+
+  @override
+  String get selfie_pending_banner_title => 'Selfie incelemede';
+
+  @override
+  String get selfie_pending_banner_body =>
+      'Moderatör 24 saat içinde inceleyecek, sonuç bildirimle gelecek. Yeni selfie göndermene gerek yok.';
+
+  @override
   String get err_apply_limit =>
       'Ücretsiz başvuru hakkın kullanıldı — sınırsız başvuru Premium ile.';
 

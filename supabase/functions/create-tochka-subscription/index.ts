@@ -134,8 +134,10 @@ serve(async (req) => {
             amount: amount.toFixed(2),
             purpose,
             recurring: true,
-            redirectUrl: 'https://soulchoice.app/premium?sub=ok',
-            failRedirectUrl: 'https://soulchoice.app/premium?sub=fail',
+            // 29.07 Mustafa bulgusu: /premium'a dönüş "tekrar mı ödeyeceğim"
+            // hissi veriyordu — özel başarı/başarısızlık sayfaları.
+            redirectUrl: 'https://soulchoice.app/payment-success',
+            failRedirectUrl: 'https://soulchoice.app/payment-fail',
             Client: { email },
             Items: [{ name: purpose, amount: amount.toFixed(2), quantity: 1 }],
           },

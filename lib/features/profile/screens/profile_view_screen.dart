@@ -1916,7 +1916,25 @@ class _MyApplicationsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _EditSectionHeader(label: l10n.profile_my_applications),
+        Row(
+          children: [
+            _EditSectionHeader(
+                label: '${l10n.profile_my_applications} (${apps.length})'),
+            // 2'den fazlaysa devamı olduğunu fısılda (feed'le aynı dil)
+            if (apps.length > 2)
+              Padding(
+                padding: const EdgeInsets.only(left: 6),
+                child: Text(
+                  l10n.feed_swipe_hint,
+                  style: AuroraTheme.monoLabel.copyWith(
+                    fontSize: 9,
+                    letterSpacing: 1.2,
+                    color: AuroraTheme.auroraBlue.withOpacity(0.8),
+                  ),
+                ),
+              ),
+          ],
+        ),
         const SizedBox(height: 16),
         // 29.07 Mustafa (tasarım B): dikey liste sayı arttıkça profili
         // uzatıyordu — sabit boy, yana kaydırmalı mini kartlar.

@@ -190,7 +190,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otp_sent_to => 'Звонок поступит на номер ';
 
   @override
-  String get otp_call_hint => 'Введи последние 4 цифры входящего номера';
+  String get otp_call_hint =>
+      'Введи последние 4 цифры входящего номера. Звонок может прийти беззвучно — проверь пропущенные';
 
   @override
   String get otp_sms_sent_to => 'Код отправлен по SMS на номер ';
@@ -277,6 +278,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get feed_be_first => 'Будь первым!';
+
+  @override
+  String get empty_filter_hint =>
+      'Возможно, дело в фильтрах — попробуй расширить возрастной диапазон';
+
+  @override
+  String get empty_filter_btn => 'Открыть настройки';
 
   @override
   String get feed_todays_invitations => 'ПРИГЛАШЕНИЯ СЕГОДНЯ';
@@ -1377,6 +1385,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_city_not_found => 'Город не найден';
+
+  @override
+  String get city_request_btn => 'Моего города нет — сообщите мне';
+
+  @override
+  String get city_request_title => 'Напиши свой город';
+
+  @override
+  String get city_request_hint => 'Название города';
+
+  @override
+  String get city_request_send => 'Отправить';
+
+  @override
+  String get city_request_done =>
+      'Записали! Сообщим, когда откроем твой город 🎉';
 
   @override
   String get profile_setup_bio_title => 'Расскажи о себе';

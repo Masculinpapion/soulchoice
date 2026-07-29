@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -78,18 +79,51 @@ class SoulChoiceApp extends ConsumerStatefulWidget {
 }
 
 class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
+  // Uygulama ÖN PLANDAYKEN gelen push çekmeceye düşmez (26.07 "gelmedi"
+  // sanılan vaka) — kullanıcı kaçırmasın diye uygulama içi banner gösterilir.
+  RemoteMessage? _bannerMsg;
+  Timer? _bannerTimer;
+
   @override
   void initState() {
     super.initState();
     // Push'a dokunma → deep link. match_id taşıyan her bildirim (seçildin,
     // yeni mesaj) doğrudan ilgili sohbeti açar.
     FirebaseMessaging.onMessageOpenedApp.listen(_openFromPush);
+    FirebaseMessaging.onMessage.listen(_showInAppBanner);
     // Uygulama kapalıyken push'a dokunulup açıldıysa: splash/auth
     // yönlendirmesi otursun diye kısa gecikmeyle gir.
     FirebaseMessaging.instance.getInitialMessage().then((m) {
       if (m == null) return;
       Future.delayed(const Duration(milliseconds: 900), () => _openFromPush(m));
     });
+  }
+
+  void _showInAppBanner(RemoteMessage m) {
+    final n = m.notification;
+    if (n == null || !mounted) return;
+    // Kullanıcı zaten o sohbetteyse banner gürültü olur — realtime akış var.
+    final matchId = m.data['match_id'];
+    if (matchId is String && matchId.isNotEmpty) {
+      final path = ref
+          .read(routerProvider)
+          .routerDelegate
+          .currentConfiguration
+          .uri
+          .toString();
+      if (path.contains('/chat/$matchId')) return;
+    }
+    setState(() => _bannerMsg = m);
+    _bannerTimer?.cancel();
+    _bannerTimer = Timer(const Duration(seconds: 4), () {
+      if (mounted) setState(() => _bannerMsg = null);
+    });
+  }
+
+  @override
+  void dispose() {
+    _bannerTimer?.cancel();
+    super.dispose();
   }
 
   void _openFromPush(RemoteMessage m) {
@@ -129,7 +163,87 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
       builder: (context, child) => GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         behavior: HitTestBehavior.translucent,
-        child: child,
+        child: Stack(
+          children: [
+            if (child != null) child,
+            // Foreground push banner'ı — dokun: ilgili ekrana git; yukarı
+            // kaydır: kapat; 4 sn'de kendiliğinden kaybolur.
+            if (_bannerMsg != null)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      final m = _bannerMsg!;
+                      setState(() => _bannerMsg = null);
+                      _openFromPush(m);
+                    },
+                    onVerticalDragEnd: (d) {
+                      if ((d.primaryVelocity ?? 0) < 0) {
+                        setState(() => _bannerMsg = null);
+                      }
+                    },
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xF20D0D16),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: Colors.white.withOpacity(0.14)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 18,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _bannerMsg!.notification?.title ?? 'SoulChoice',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            if ((_bannerMsg!.notification?.body ?? '')
+                                .isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  _bannerMsg!.notification!.body!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 12.5,
+                                    height: 1.35,
+                                    color: Colors.white.withOpacity(0.75),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
       theme: AppTheme.dark,
       routerConfig: router,

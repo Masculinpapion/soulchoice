@@ -190,7 +190,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otp_sent_to => 'Incoming call to ';
 
   @override
-  String get otp_call_hint => 'Enter the last 4 digits of the incoming number';
+  String get otp_call_hint =>
+      'Enter the last 4 digits of the incoming number. The call may arrive silently — check your missed calls';
 
   @override
   String get otp_sms_sent_to => 'SMS code sent to ';
@@ -277,6 +278,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feed_be_first => 'Be the first to open one!';
+
+  @override
+  String get empty_filter_hint =>
+      'It may be your filters — try widening the age range';
+
+  @override
+  String get empty_filter_btn => 'Open Settings';
 
   @override
   String get feed_todays_invitations => 'TODAY\'S INVITATIONS';
@@ -1365,6 +1373,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_setup_city_not_found => 'City not found';
+
+  @override
+  String get city_request_btn => 'My city isn\'t listed — notify me';
+
+  @override
+  String get city_request_title => 'Type your city';
+
+  @override
+  String get city_request_hint => 'City name';
+
+  @override
+  String get city_request_send => 'Send';
+
+  @override
+  String get city_request_done =>
+      'Got it! We\'ll let you know when your city opens 🎉';
 
   @override
   String get profile_setup_bio_title => 'Tell us about yourself';

@@ -812,10 +812,92 @@ class _StepCityState extends State<_StepCity> {
                   ),
                 );
               }),
+            // Şehri listede olmayan kullanıcıyı kaybetme (29.07): talebi
+            // kaydet, şehir açılınca haber verilecek — açılış kararı veriyle.
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Center(
+                child: TextButton(
+                  onPressed: _requestCity,
+                  child: Text(
+                    AppLocalizations.of(context)!.city_request_btn,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 12,
+                      color: AuroraTheme.auroraBlue,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _requestCity() async {
+    final l = AppLocalizations.of(context)!;
+    final ctrl = TextEditingController(text: _searchCtrl.text.trim());
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          l.city_request_title,
+          style: const TextStyle(
+            fontFamily: 'Fraunces',
+            fontStyle: FontStyle.italic,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+        content: TextField(
+          controller: ctrl,
+          autofocus: true,
+          style: const TextStyle(
+              fontFamily: 'Manrope', fontSize: 15, color: Colors.white),
+          decoration: InputDecoration(
+            hintText: l.city_request_hint,
+            hintStyle: TextStyle(color: AuroraTheme.textMuted),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.btn_cancel,
+                style: const TextStyle(
+                    fontFamily: 'JetBrainsMono', color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.city_request_send,
+                style: const TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    color: AuroraTheme.auroraBlue,
+                    fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    final name = ctrl.text.trim();
+    if (ok != true || name.isEmpty || !mounted) return;
+    try {
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      if (uid != null) {
+        await Supabase.instance.client
+            .from('city_requests')
+            .insert({'user_id': uid, 'city_text': name});
+      }
+    } catch (_) {
+      // Talep kaydı süsleyici — hata kullanıcı akışını bozmaz.
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.city_request_done)),
+      );
+    }
   }
 }
 

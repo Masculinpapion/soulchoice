@@ -1038,6 +1038,33 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                   l10n.feed_be_first,
                   style: AuroraTheme.monoLabel,
                 ),
+                // Boş feed'in en sık sebebi dar yaş filtresi (26.07 vakası) —
+                // kullanıcı "uygulama boş" sanıp silmesin, sebebe yönlendir.
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Text(
+                    l10n.empty_filter_hint,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Manrope',
+                      fontSize: 12.5,
+                      height: 1.4,
+                      color: AuroraTheme.textMuted,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => context.push('/settings'),
+                  child: Text(
+                    l10n.empty_filter_btn,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 12,
+                      color: AuroraTheme.auroraBlue,
+                    ),
+                  ),
+                ),
               ],
             ),
           );

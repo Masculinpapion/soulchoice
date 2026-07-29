@@ -471,6 +471,29 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             ScButton(label: btnLabel, onPressed: onCreateTap),
+            // Boş keşfetin en sık sebebi dar yaş filtresi (26.07 vakası)
+            const SizedBox(height: 18),
+            Text(
+              AppLocalizations.of(context)!.empty_filter_hint,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 12.5,
+                height: 1.4,
+                color: AuroraTheme.textMuted,
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push('/settings'),
+              child: Text(
+                AppLocalizations.of(context)!.empty_filter_btn,
+                style: const TextStyle(
+                  fontFamily: 'JetBrainsMono',
+                  fontSize: 12,
+                  color: AuroraTheme.auroraBlue,
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -190,7 +190,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get otp_sent_to => 'Gelen arama: ';
 
   @override
-  String get otp_call_hint => 'Gelen numaranın son 4 hanesini gir';
+  String get otp_call_hint =>
+      'Gelen numaranın son 4 hanesini gir. Çağrı sessiz düşebilir — cevapsız aramalara da bak';
 
   @override
   String get otp_sms_sent_to => 'SMS ile kod gönderildi: ';
@@ -276,6 +277,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get feed_be_first => 'İlk davetiyeyi sen aç!';
+
+  @override
+  String get empty_filter_hint =>
+      'Boşluk filtrelerden olabilir — yaş aralığını genişletmeyi dene';
+
+  @override
+  String get empty_filter_btn => 'Ayarları aç';
 
   @override
   String get feed_todays_invitations => 'GÜNÜN DAVETİYELERİ';
@@ -1361,6 +1369,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_setup_city_not_found => 'Şehir bulunamadı';
+
+  @override
+  String get city_request_btn => 'Şehrim listede yok — haber verin';
+
+  @override
+  String get city_request_title => 'Şehrini yaz';
+
+  @override
+  String get city_request_hint => 'Şehir adı';
+
+  @override
+  String get city_request_send => 'Gönder';
+
+  @override
+  String get city_request_done =>
+      'Kaydettik! Şehrin açılınca sana haber vereceğiz 🎉';
 
   @override
   String get profile_setup_bio_title => 'Kendin hakkında anlat';

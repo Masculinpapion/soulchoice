@@ -451,7 +451,7 @@ abstract class AppLocalizations {
   /// No description provided for @otp_call_hint.
   ///
   /// In en, this message translates to:
-  /// **'Enter the last 4 digits of the incoming number'**
+  /// **'Enter the last 4 digits of the incoming number. The call may arrive silently — check your missed calls'**
   String get otp_call_hint;
 
   /// No description provided for @otp_sms_sent_to.
@@ -609,6 +609,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Be the first to open one!'**
   String get feed_be_first;
+
+  /// No description provided for @empty_filter_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'It may be your filters — try widening the age range'**
+  String get empty_filter_hint;
+
+  /// No description provided for @empty_filter_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get empty_filter_btn;
 
   /// No description provided for @feed_todays_invitations.
   ///
@@ -2559,6 +2571,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'City not found'**
   String get profile_setup_city_not_found;
+
+  /// No description provided for @city_request_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'My city isn\'t listed — notify me'**
+  String get city_request_btn;
+
+  /// No description provided for @city_request_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your city'**
+  String get city_request_title;
+
+  /// No description provided for @city_request_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'City name'**
+  String get city_request_hint;
+
+  /// No description provided for @city_request_send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get city_request_send;
+
+  /// No description provided for @city_request_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it! We\'ll let you know when your city opens 🎉'**
+  String get city_request_done;
 
   /// No description provided for @profile_setup_bio_title.
   ///

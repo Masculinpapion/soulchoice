@@ -1922,8 +1922,13 @@ class _MyApplicationsSection extends ConsumerWidget {
         // uzatıyordu — sabit boy, yana kaydırmalı mini kartlar.
         SizedBox(
           height: 96,
-          child: ListView.separated(
+          child: LayoutBuilder(builder: (context, constraints) {
+            // 29.07: sabit 190px'te ikinci kart kesik kalıyordu — genişlik
+            // ekrana göre tam 2 kart; PageScrollPhysics yarım kartta durdurmaz.
+            final cardW = (constraints.maxWidth - 10) / 2;
+            return ListView.separated(
             scrollDirection: Axis.horizontal,
+            physics: const PageScrollPhysics(),
             itemCount: apps.length,
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, i) {
@@ -1953,7 +1958,7 @@ class _MyApplicationsSection extends ConsumerWidget {
                     : () => context.push('/invitation/${inv['id']}'),
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: 190,
+                  width: cardW,
                   padding: const EdgeInsets.symmetric(
                       horizontal: 14, vertical: 11),
                   decoration: BoxDecoration(
@@ -2012,7 +2017,8 @@ class _MyApplicationsSection extends ConsumerWidget {
                 ),
               );
             },
-          ),
+          );
+          }),
         ),
         const SizedBox(height: 18),
       ],

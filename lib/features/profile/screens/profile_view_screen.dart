@@ -276,13 +276,16 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                   }
                                 }
 
+                                // 29.07 Mustafa: davetten açılan profildeki
+                                // "Хочу прийти" başvuru YAPMIYOR, yalnız geri
+                                // dönüyordu (yalancı CTA) — kaldırıldı. Başvuru
+                                // davet kartında; profil salt inceleme yüzeyi.
+                                if (!isOwnProfile) {
+                                  return const SizedBox.shrink();
+                                }
                                 return _EditorialCTA(
-                                  label: isOwnProfile
-                                      ? l10n.profile_view_cta_edit
-                                      : l10n.profile_view_cta_come,
-                                  onTap: isOwnProfile
-                                      ? () => context.push('/profile/edit')
-                                      : () => context.pop(),
+                                  label: l10n.profile_view_cta_edit,
+                                  onTap: () => context.push('/profile/edit'),
                                 );
                               }),
                             ),

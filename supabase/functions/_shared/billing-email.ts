@@ -15,6 +15,7 @@ export type BillingEmailKind =
   | 'renewal_success'
   | 'renewal_failed'
   | 'cancel_confirm'
+  | 'resume_confirm' // iptal sonrası yeniden açma (29.07 — Mustafa: simetri şart)
   | 'premium_expired' // grace bitti / abonelik kapandı (24.07)
   | 'account_deleted' // GDPR silme teyidi (24.07)
   | 'welcome'        // D+0 — servis tonu, fiyat/teklif YOK (rızasız da gider)
@@ -77,6 +78,15 @@ function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'):
         ru: { subject: 'Подписка SoulChoice Premium отменена', body: `Подписка отменена. Premium активен до ${p.date ?? ''}.` },
         tr: { subject: 'SoulChoice Premium aboneliğin iptal edildi', body: `Aboneliğin iptal edildi. Premium ${p.date ?? ''} tarihine kadar aktif.` },
         en: { subject: 'Your SoulChoice Premium has been cancelled', body: `Subscription cancelled. Premium is active until ${p.date ?? ''}.` },
+      })
+    case 'resume_confirm':
+      return pick({
+        ru: { subject: 'Подписка SoulChoice Premium возобновлена',
+              body: `Автопродление снова включено. Следующее списание 1 000 ₽ — ${p.date ?? ''}. Отменить можно в любой момент: Профиль → Подписка.` },
+        tr: { subject: 'SoulChoice Premium aboneliğin yeniden açıldı',
+              body: `Otomatik yenileme yeniden açıldı. Sonraki çekim (1 000 ₽): ${p.date ?? ''}. İstediğin an iptal edebilirsin: Profil → Abonelik.` },
+        en: { subject: 'Your SoulChoice Premium is back on',
+              body: `Auto-renewal is on again. Next charge (1,000 ₽): ${p.date ?? ''}. You can cancel anytime: Profile → Subscription.` },
       })
     case 'premium_expired':
       return pick({

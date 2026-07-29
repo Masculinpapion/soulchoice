@@ -177,6 +177,20 @@ serve(async (req) => {
            values ($1, $2, 'reactivated', $3::jsonb)`,
           [sub.id, user.id, JSON.stringify({ source: body?.source ?? 'unknown' })],
         )
+        // 29.07 Mustafa: iptalde mail/push var, geri açmada da olmalı (simetri) —
+        // kullanıcı ilerideki çekimden haberdar edilir.
+        const resumeDate = fmtDate(premiumUntil)
+        await sendPush(user.id, 'Подписка возобновлена',
+          `Автопродление включено. Следующее списание — ${resumeDate}.`,
+          'premium_resumed', { date: resumeDate })
+        if (billingEmail) {
+          const mail = await sendBillingEmail(billingEmail, 'resume_confirm', { date: resumeDate }, userLocale)
+          await db.queryObject(
+            `insert into billing_events (subscription_id, user_id, event, detail)
+             values ($1, $2, 'notified', $3::jsonb)`,
+            [sub.id, user.id, JSON.stringify({ kind: 'resume_confirm', email_ok: mail.ok, error: mail.error ?? null })],
+          )
+        }
         return json(200, { resumed: true, next_billing_at: premiumUntil })
       }
 

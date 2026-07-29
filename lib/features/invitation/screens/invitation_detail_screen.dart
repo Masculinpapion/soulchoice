@@ -11,6 +11,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/invitation_provider.dart';
 import '../providers/my_active_invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
+import '../providers/my_applications_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -509,6 +510,9 @@ class _InvitationDetailScreenState
                                       myApplicationProvider(invitationId));
                                   // Feed kartındaki CTA "beklemede"ye dönsün
                                   ref.invalidate(invitationsProvider);
+                                  // Profildeki "Başvurularım" bayat kalmasın
+                                  // (29.07: 5 başvurudan 1'i görünüyordu)
+                                  ref.invalidate(myApplicationsListProvider);
                                 },
                               ),
                             ),

@@ -36,6 +36,8 @@ RETURNS jsonb LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
         'id', u.id, 'name', u.name, 'age', u.age, 'gender', u.gender,
         'bio', u.bio,
         'city', (SELECT c.name FROM cities c WHERE c.id = u.city_id),
+        'phone', (SELECT au.phone FROM auth.users au WHERE au.id = p_user_id),
+        'billing_email', u.billing_email,
         'selfie_status', u.selfie_status,
         'subscription_status', u.subscription_status,
         'premium_until', u.premium_until,

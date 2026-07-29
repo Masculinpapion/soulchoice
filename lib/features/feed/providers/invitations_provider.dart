@@ -121,12 +121,18 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
       final cityRow = row['city'] as Map<String, dynamic>?;
 
+      final appliedByMe = currentUserId != null &&
+          pendingApps.any((a) =>
+              (a['applicant'] as Map<String, dynamic>?)?['id'] ==
+              currentUserId);
+
       return InvitationModel.fromJson({...row, 'owner': null, 'city': null}).copyWith(
         owner: owner,
         ownerPhotoUrl: ownerPhotoUrl,
         applicationCount: pendingApps.length,
         applicantPhotoUrls: applicantPhotoUrls,
         cityName: _cityName(cityRow, lang),
+        appliedByMe: appliedByMe,
       );
     }).whereType<InvitationModel>()
         .where((inv) => inv.ownerPhotoUrl != null)

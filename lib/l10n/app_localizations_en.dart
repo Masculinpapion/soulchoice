@@ -291,6 +291,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feed_cta_invite => 'I want to come';
 
   @override
+  String get feed_cta_applied => 'Application sent';
+
+  @override
   String get feed_cta_request => 'I want to join';
 
   @override
@@ -1976,6 +1979,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chat_hide_conversation => 'Hide chat';
+
+  @override
+  String get chat_delete_conversation => 'Delete chat';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'This user deleted their account. The chat and its history will be permanently deleted.';
+
+  @override
+  String get chat_delete => 'Delete';
 
   @override
   String get chat_hide => 'Hide';

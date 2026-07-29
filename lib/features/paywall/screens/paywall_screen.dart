@@ -22,6 +22,7 @@ class _PaywallScreenState extends State<PaywallScreen>
   late String _mode = Platform.isIOS ? 'hidden' : 'link';
   bool _isLoading = false;
   String? _billingEmail;
+  ScaffoldMessengerState? _messenger;
   // Consent kanıtındaki oferta sürümü — sunucudan (feature_flags.oferta_version) okunur,
   // bayrak yoksa canlıdaki oferta tarihi
   String _ofertaVersion = '2026-07-07';
@@ -35,8 +36,16 @@ class _PaywallScreenState extends State<PaywallScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _messenger = ScaffoldMessenger.maybeOf(context);
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Ekrandan çıkarken bekleyen snackbar'lar başka ekranlara taşmasın
+    _messenger?.clearSnackBars();
     super.dispose();
   }
 
@@ -116,6 +125,8 @@ class _PaywallScreenState extends State<PaywallScreen>
   }
 
   void _snack(String msg) {
+    // Kuyruklama yerine değiştir — art arda basışlar snackbar yığmasın
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -162,6 +173,9 @@ class _PaywallScreenState extends State<PaywallScreen>
     final emailCtrl = TextEditingController(text: _billingEmail ?? '');
     bool consent = false;
     bool sheetBusy = false;
+    // Validasyon hatası sheet İÇİNDE gösterilir — kök snackbar ekran
+    // değişince de yaşamaya devam ediyordu (29.07 kullanıcı bulgusu).
+    String? sheetError;
 
     await showModalBottomSheet<void>(
       context: context,
@@ -243,6 +257,25 @@ class _PaywallScreenState extends State<PaywallScreen>
                   ],
                 ),
               ),
+              if (sheetError != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.error_outline,
+                        size: 16, color: AuroraTheme.auroraRed),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        sheetError!,
+                        style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 12.5,
+                            color: AuroraTheme.auroraRed),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 18),
               _CtaButton(
                 label: l10n.sub_continue,
@@ -250,14 +283,17 @@ class _PaywallScreenState extends State<PaywallScreen>
                 onTap: () async {
                   final email = emailCtrl.text.trim();
                   if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
-                    _snack(l10n.sub_email_invalid);
+                    setSheet(() => sheetError = l10n.sub_email_invalid);
                     return;
                   }
                   if (!consent) {
-                    _snack(l10n.sub_consent_required);
+                    setSheet(() => sheetError = l10n.sub_consent_required);
                     return;
                   }
-                  setSheet(() => sheetBusy = true);
+                  setSheet(() {
+                    sheetError = null;
+                    sheetBusy = true;
+                  });
                   final ok = await _startSubscription(email);
                   if (ctx.mounted) {
                     if (ok) {

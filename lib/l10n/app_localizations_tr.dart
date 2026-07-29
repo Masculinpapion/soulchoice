@@ -290,6 +290,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get feed_cta_invite => 'Gelmek isterim';
 
   @override
+  String get feed_cta_applied => 'Başvuru gönderildi';
+
+  @override
   String get feed_cta_request => 'Katılmak isterim';
 
   @override
@@ -1967,6 +1970,16 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get chat_hide_conversation => 'Sohbeti Gizle';
+
+  @override
+  String get chat_delete_conversation => 'Sohbeti Sil';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'Bu kullanıcı hesabını silmiş. Sohbet ve geçmişi kalıcı olarak silinecek.';
+
+  @override
+  String get chat_delete => 'Sil';
 
   @override
   String get chat_hide => 'Gizle';

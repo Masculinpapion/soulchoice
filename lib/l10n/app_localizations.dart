@@ -634,6 +634,12 @@ abstract class AppLocalizations {
   /// **'I want to come'**
   String get feed_cta_invite;
 
+  /// No description provided for @feed_cta_applied.
+  ///
+  /// In en, this message translates to:
+  /// **'Application sent'**
+  String get feed_cta_applied;
+
   /// No description provided for @feed_cta_request.
   ///
   /// In en, this message translates to:
@@ -3645,6 +3651,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hide chat'**
   String get chat_hide_conversation;
+
+  /// No description provided for @chat_delete_conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete chat'**
+  String get chat_delete_conversation;
+
+  /// No description provided for @chat_delete_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'This user deleted their account. The chat and its history will be permanently deleted.'**
+  String get chat_delete_confirm_body;
+
+  /// No description provided for @chat_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get chat_delete;
 
   /// No description provided for @chat_hide.
   ///

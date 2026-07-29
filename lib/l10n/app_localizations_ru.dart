@@ -291,6 +291,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get feed_cta_invite => 'Хочу прийти';
 
   @override
+  String get feed_cta_applied => 'Заявка отправлена';
+
+  @override
   String get feed_cta_request => 'Хочу присоединиться';
 
   @override
@@ -2014,6 +2017,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chat_hide_conversation => 'Скрыть чат';
+
+  @override
+  String get chat_delete_conversation => 'Удалить чат';
+
+  @override
+  String get chat_delete_confirm_body =>
+      'Этот пользователь удалил аккаунт. Чат и его история будут удалены навсегда.';
+
+  @override
+  String get chat_delete => 'Удалить';
 
   @override
   String get chat_hide => 'Скрыть';

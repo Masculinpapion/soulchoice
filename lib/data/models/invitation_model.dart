@@ -103,6 +103,10 @@ class InvitationModel {
   final List<String> applicantPhotoUrls;
   final String? cityName;
 
+  /// Oturumdaki kullanıcının bu davete bekleyen başvurusu var mı
+  /// (withdrawn sayılmaz — yeniden başvuru serbest).
+  final bool appliedByMe;
+
   const InvitationModel({
     required this.id,
     required this.ownerId,
@@ -124,6 +128,7 @@ class InvitationModel {
     this.ownerPhotoUrl,
     this.applicantPhotoUrls = const [],
     this.cityName,
+    this.appliedByMe = false,
   });
 
   bool get isExpired => DateTime.now().isAfter(expiresAt);
@@ -179,6 +184,7 @@ class InvitationModel {
     String? ownerPhotoUrl,
     List<String>? applicantPhotoUrls,
     String? cityName,
+    bool? appliedByMe,
   }) =>
       InvitationModel(
         id: id,
@@ -201,6 +207,7 @@ class InvitationModel {
         ownerPhotoUrl: ownerPhotoUrl ?? this.ownerPhotoUrl,
         applicantPhotoUrls: applicantPhotoUrls ?? this.applicantPhotoUrls,
         cityName: cityName ?? this.cityName,
+        appliedByMe: appliedByMe ?? this.appliedByMe,
       );
 }
 

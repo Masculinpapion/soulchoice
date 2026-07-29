@@ -1120,6 +1120,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                             flowType: flowType,
                             cardWidth: double.infinity,
                             isOwner: isOwner,
+                            appliedByMe: inv.appliedByMe,
                             onTap: () => context.push('/invitation/${inv.id}'),
                             onCtaTap: isOwner
                                 ? () => context.push('/invitation/${inv.id}/applicants')
@@ -1165,6 +1166,9 @@ class InvitationCard extends StatelessWidget {
   final InvitationFlowType flowType;
   final double? cardWidth;
 
+  /// Kullanıcının bu davete bekleyen başvurusu var — CTA "beklemede" hâline döner.
+  final bool appliedByMe;
+
   const InvitationCard({
     super.key,
     required this.title,
@@ -1183,6 +1187,7 @@ class InvitationCard extends StatelessWidget {
     this.isOwner = false,
     this.flowType = InvitationFlowType.invite,
     this.cardWidth,
+    this.appliedByMe = false,
   });
 
   String _formatTimer(Duration d) {
@@ -1436,23 +1441,53 @@ class InvitationCard extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 13),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: isOwner
-                                ? [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet]
-                                : isInviteFlow
-                                    ? [AuroraTheme.auroraRed, AuroraTheme.auroraBlue]
-                                    : [AuroraTheme.auroraBlue, AuroraTheme.auroraRed],
-                          ),
+                          // Başvurulmuş kartta gradient söner — durum "beklemede"
+                          gradient: (!isOwner && appliedByMe)
+                              ? null
+                              : LinearGradient(
+                                  colors: isOwner
+                                      ? [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet]
+                                      : isInviteFlow
+                                          ? [AuroraTheme.auroraRed, AuroraTheme.auroraBlue]
+                                          : [AuroraTheme.auroraBlue, AuroraTheme.auroraRed],
+                                ),
+                          color: (!isOwner && appliedByMe)
+                              ? Colors.white.withOpacity(0.08)
+                              : null,
+                          border: (!isOwner && appliedByMe)
+                              ? Border.all(color: AuroraTheme.auroraGold.withOpacity(0.55))
+                              : null,
                           borderRadius: BorderRadius.circular(100),
-                          boxShadow: [BoxShadow(color: glowColor.withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 4))],
+                          boxShadow: (!isOwner && appliedByMe)
+                              ? null
+                              : [BoxShadow(color: glowColor.withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 4))],
                         ),
                         alignment: Alignment.center,
-                        child: Text(
-                          isOwner
-                              ? l10n.inv_detail_applicants_btn
-                              : (isInviteFlow ? l10n.feed_cta_invite : l10n.feed_cta_request),
-                          style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
-                        ),
+                        child: (!isOwner && appliedByMe)
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.hourglass_top_rounded,
+                                      size: 14,
+                                      color: AuroraTheme.auroraGold.withOpacity(0.9)),
+                                  const SizedBox(width: 7),
+                                  Text(
+                                    l10n.feed_cta_applied,
+                                    style: TextStyle(
+                                        fontFamily: 'JetBrainsMono',
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white.withOpacity(0.85),
+                                        letterSpacing: 0.5),
+                                  ),
+                                ],
+                              )
+                            : Text(
+                                isOwner
+                                    ? l10n.inv_detail_applicants_btn
+                                    : (isInviteFlow ? l10n.feed_cta_invite : l10n.feed_cta_request),
+                                style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5),
+                              ),
                       ),
                     ),
                   ],

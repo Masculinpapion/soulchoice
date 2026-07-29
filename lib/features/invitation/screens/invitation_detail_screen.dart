@@ -504,8 +504,12 @@ class _InvitationDetailScreenState
                                     inv['flow_type'] == 'request',
                                 invStatus: invStatus,
                                 expiresAt: expiresAt,
-                                onApplied: () => ref.invalidate(
-                                    myApplicationProvider(invitationId)),
+                                onApplied: () {
+                                  ref.invalidate(
+                                      myApplicationProvider(invitationId));
+                                  // Feed kartındaki CTA "beklemede"ye dönsün
+                                  ref.invalidate(invitationsProvider);
+                                },
                               ),
                             ),
                     ),

@@ -38,6 +38,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   static const _pageSize = 50;
   RealtimeChannel? _channel;
 
+  // Mesaj tepkileri: messageId → {userId: emoji} (29.07, v1: 6 sabit emoji,
+  // kullanıcı başına mesaj başına 1 tepki, push yok)
+  final Map<String, Map<String, String>> _reactions = {};
+  static const List<String> _reactionEmojis = ['❤️', '😂', '👍', '😮', '😢', '🔥'];
+
   // Match meta
   Map<String, dynamic>? _matchInfo;
   String? _currentUid;
@@ -211,6 +216,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       });
       _scrollToBottom();
       _markRead();
+      _loadReactions();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -218,6 +224,99 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         _loadError = true;
       });
     }
+  }
+
+  Future<void> _loadReactions() async {
+    try {
+      final data = await Supabase.instance.client
+          .from('message_reactions')
+          .select('message_id, user_id, emoji')
+          .eq('match_id', widget.matchId);
+      if (!mounted) return;
+      setState(() {
+        _reactions.clear();
+        for (final r in (data as List).cast<Map<String, dynamic>>()) {
+          (_reactions[r['message_id'] as String] ??= {})[r['user_id'] as String] =
+              r['emoji'] as String;
+        }
+      });
+    } catch (_) {
+      // Tepkiler süsleyici veri — yüklenemezse sohbeti bloklamaz.
+    }
+  }
+
+  Future<void> _toggleReaction(String messageId, String emoji) async {
+    final uid = _currentUid;
+    if (uid == null) return;
+    final client = Supabase.instance.client;
+    final current = _reactions[messageId]?[uid];
+    // Optimistic güncelleme — realtime kendi yazdığımızı da geri getirir
+    setState(() {
+      if (current == emoji) {
+        _reactions[messageId]?.remove(uid);
+      } else {
+        (_reactions[messageId] ??= {})[uid] = emoji;
+      }
+    });
+    try {
+      if (current == emoji) {
+        await client
+            .from('message_reactions')
+            .delete()
+            .eq('message_id', messageId)
+            .eq('user_id', uid);
+      } else {
+        await client.from('message_reactions').upsert({
+          'message_id': messageId,
+          'user_id': uid,
+          'match_id': widget.matchId,
+          'emoji': emoji,
+        }, onConflict: 'message_id,user_id');
+      }
+    } catch (_) {
+      if (mounted) _loadReactions(); // sunucuyla eşitle
+    }
+  }
+
+  void _showReactionPicker(String messageId) {
+    final uid = _currentUid;
+    if (uid == null) return;
+    final mine = _reactions[messageId]?[uid];
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF14121E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final e in _reactionEmojis)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _toggleReaction(messageId, e);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: mine == e
+                          ? AuroraTheme.auroraBlue.withOpacity(0.25)
+                          : Colors.transparent,
+                    ),
+                    // Emoji-only: fontFamily verilmez (platform emoji fontu)
+                    child: Text(e, style: const TextStyle(fontSize: 30)),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _loadMoreMessages() async {
@@ -290,6 +389,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             setState(() {
               final idx = _messages.indexWhere((m) => m.id == updated.id);
               if (idx != -1) _messages[idx] = updated;
+            });
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'message_reactions',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'match_id',
+            value: widget.matchId,
+          ),
+          callback: (payload) {
+            if (!mounted) return;
+            setState(() {
+              if (payload.eventType == PostgresChangeEvent.delete) {
+                final old = payload.oldRecord;
+                _reactions[old['message_id'] as String?]
+                    ?.remove(old['user_id'] as String?);
+              } else {
+                final rec = payload.newRecord;
+                (_reactions[rec['message_id'] as String] ??= {})[
+                    rec['user_id'] as String] = rec['emoji'] as String;
+              }
             });
           },
         )
@@ -457,6 +580,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  // Silinmiş kullanıcı sohbeti: karşı taraf yok, match satırının kimseye
+  // değeri kalmadı — gerçek silme (29.07 Mustafa kararı). Normal sohbetlerde
+  // silme YOK (20.07 kararı: sohbetler kalıcı, tek taraflı gizleme var).
+  Future<void> _deleteChat() async {
+    try {
+      await Supabase.instance.client
+          .from('matches')
+          .delete()
+          .eq('id', widget.matchId);
+      if (mounted) context.go('/messages');
+    } catch (_) {
+      if (mounted) {
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.error_generic,
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
+      }
+    }
+  }
+
   Future<void> _block() async {
     final otherUid = _matchInfo?['otherUserId'] as String?;
     if (otherUid == null || _currentUid == null) return;
@@ -515,8 +659,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               otherUserId: _matchInfo?['otherUserId'] as String?,
               isLoading: _matchInfo == null && initial == null,
               onBack: () => context.pop(),
-              onBlock: _block,
-              onHide: _hideChat,
+              // Silinmiş kullanıcıda Engelle anlamsız (hedef hesap yok) ve
+              // sessizce no-op oluyordu — yerine tek net aksiyon: Sohbeti sil.
+              onBlock: _otherDeleted ? null : _block,
+              onHide: _otherDeleted ? null : _hideChat,
+              onDelete: _otherDeleted ? _deleteChat : null,
               currentUserGender: _currentUserGender(),
             ),
             // Event badge — davet bilgisi özeti
@@ -609,7 +756,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             final msg = _messages[_messages.length - 1 - i];
                             final isMe = msg.senderId == _currentUid;
                             final senderOffset = isMe ? _myUtcOffset : _otherUtcOffset;
-                            return _MessageBubble(message: msg, isMe: isMe, senderUtcOffset: senderOffset);
+                            return _MessageBubble(
+                              message: msg,
+                              isMe: isMe,
+                              senderUtcOffset: senderOffset,
+                              reactions: _reactions[msg.id] ?? const {},
+                              onLongPress: _otherDeleted
+                                  ? null
+                                  : () => _showReactionPicker(msg.id),
+                            );
                           },
                         ),
             ),
@@ -889,6 +1044,7 @@ class _ChatAppBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback? onBlock;
   final VoidCallback? onHide;
+  final VoidCallback? onDelete;
   final String currentUserGender;
   const _ChatAppBar({
     required this.otherName,
@@ -899,6 +1055,7 @@ class _ChatAppBar extends StatelessWidget {
     required this.onBack,
     this.onBlock,
     this.onHide,
+    this.onDelete,
     this.currentUserGender = 'other',
   });
 
@@ -1006,7 +1163,7 @@ class _ChatAppBar extends StatelessWidget {
                   ],
                 ),
               )),
-              if (onBlock != null)
+              if (onBlock != null || onDelete != null)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   color: const Color(0xFF14121E),
@@ -1014,7 +1171,49 @@ class _ChatAppBar extends StatelessWidget {
                   shadowColor: Colors.black54,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   onSelected: (val) {
-                    if (val == 'hide') {
+                    if (val == 'delete') {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: const Color(0xFF14121E),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          title: Text(
+                            AppLocalizations.of(context)!.chat_delete_conversation,
+                            style: TextStyle(
+                              fontFamily: 'Fraunces',
+                              fontStyle: FontStyle.italic,
+                              color: Colors.white,
+                              fontSize: 20,
+                            ),
+                          ),
+                          content: Text(
+                            AppLocalizations.of(context)!.chat_delete_confirm_body,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              color: Colors.white.withOpacity(0.65),
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx),
+                              child: Text(AppLocalizations.of(context)!.btn_cancel,
+                                  style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
+                            ),
+                            TextButton(
+                              onPressed: () { Navigator.pop(ctx); onDelete!(); },
+                              child: Text(AppLocalizations.of(context)!.chat_delete,
+                                  style: const TextStyle(
+                                    fontFamily: 'JetBrainsMono',
+                                    color: AuroraTheme.auroraRed,
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (val == 'hide') {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -1101,6 +1300,20 @@ class _ChatAppBar extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
+                    if (onDelete != null)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          const Icon(Icons.delete_forever_outlined, color: AuroraTheme.auroraRed, size: 18),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context)!.chat_delete_conversation,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              )),
+                        ]),
+                      ),
                     if (onHide != null)
                       PopupMenuItem(
                         value: 'hide',
@@ -1278,7 +1491,18 @@ class _MessageBubble extends StatelessWidget {
   final MessageModel message;
   final bool isMe;
   final int? senderUtcOffset;
-  const _MessageBubble({required this.message, required this.isMe, this.senderUtcOffset});
+
+  /// userId → emoji (bu mesaja bırakılan tepkiler)
+  final Map<String, String> reactions;
+  final VoidCallback? onLongPress;
+
+  const _MessageBubble({
+    required this.message,
+    required this.isMe,
+    this.senderUtcOffset,
+    this.reactions = const {},
+    this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1290,6 +1514,12 @@ class _MessageBubble extends StatelessWidget {
     final time =
         '${shown.hour.toString().padLeft(2, '0')}:${shown.minute.toString().padLeft(2, '0')}';
 
+    // Emoji → adet (aynı emojiye iki taraf da basmış olabilir)
+    final Map<String, int> grouped = {};
+    for (final e in reactions.values) {
+      grouped[e] = (grouped[e] ?? 0) + 1;
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Align(
@@ -1297,9 +1527,55 @@ class _MessageBubble extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.72),
-          child: isMe
-              ? _SentBubble(message: message, time: time)
-              : _ReceivedBubble(message: message, time: time),
+          child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onLongPress: onLongPress,
+                child: isMe
+                    ? _SentBubble(message: message, time: time)
+                    : _ReceivedBubble(message: message, time: time),
+              ),
+              if (grouped.isNotEmpty)
+                Transform.translate(
+                  offset: const Offset(0, -6),
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        left: isMe ? 0 : 10, right: isMe ? 10 : 0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 7, vertical: 2.5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF14121E),
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.14)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final entry in grouped.entries) ...[
+                          // Emoji-only: fontFamily verilmez (platform fontu)
+                          Text(entry.key,
+                              style: const TextStyle(fontSize: 13)),
+                          if (entry.value > 1)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 2),
+                              child: Text('${entry.value}',
+                                  style: TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontSize: 11,
+                                      color:
+                                          Colors.white.withOpacity(0.7))),
+                            ),
+                          const SizedBox(width: 3),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

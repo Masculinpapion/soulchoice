@@ -163,7 +163,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_download_data => 'Verilerimi indir';
 
   @override
-  String get phone_title => 'Telefon numaranı\ngir';
+  String get phone_title => 'Telefon numaranı gir';
 
   @override
   String get phone_subtitle => 'Sana bir doğrulama kodu göndereceğiz';

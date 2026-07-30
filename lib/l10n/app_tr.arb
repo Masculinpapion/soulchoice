@@ -49,7 +49,7 @@
   "settings_do_not_disturb": "Gece sessizliği",
   "settings_active_devices": "Aktif cihazlar",
   "settings_download_data": "Verilerimi indir",
-  "phone_title": "Telefon numaranı\ngir",
+  "phone_title": "Telefon numaranı gir",
   "phone_subtitle": "Sana bir doğrulama kodu göndereceğiz",
   "phone_error_empty": "Telefon numarası gir",
   "phone_error_connection": "Bağlantı hatası, tekrar dene",

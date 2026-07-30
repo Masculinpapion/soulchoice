@@ -49,7 +49,7 @@
   "settings_do_not_disturb": "Do not disturb",
   "settings_active_devices": "Active devices",
   "settings_download_data": "Download my data",
-  "phone_title": "Enter your\nphone number",
+  "phone_title": "Enter your phone number",
   "phone_subtitle": "We will send you a verification code",
   "phone_error_empty": "Enter phone number",
   "phone_error_connection": "Connection error, please try again",

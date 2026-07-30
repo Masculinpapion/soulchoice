@@ -283,7 +283,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                       ),
                       children: [
                         TextSpan(
-                          text: AppLocalizations.of(context)!.phone_terms + ' ',
+                          text: AppLocalizations.of(context)!.phone_terms + '\n',
                         ),
                         TextSpan(
                           text: AppLocalizations.of(
@@ -298,7 +298,8 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                               Uri.parse('https://soulchoice.app/privacy'),
                             ),
                         ),
-                        const TextSpan(text: ' & '),
+                        // NBSP: '&' satır başına yetim düşmesin
+                        const TextSpan(text: '\u00A0& '),
                         TextSpan(
                           text: AppLocalizations.of(
                             context,

@@ -397,7 +397,7 @@ abstract class AppLocalizations {
   /// No description provided for @phone_title.
   ///
   /// In en, this message translates to:
-  /// **'Enter your\nphone number'**
+  /// **'Enter your phone number'**
   String get phone_title;
 
   /// No description provided for @phone_subtitle.

@@ -823,7 +823,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String decision_selected_body(String name, String title) {
-    return '$name adlı kişiyi \"$title\" davetiyeniz için seçtiniz.\nBu eşleşmeyi onaylamak ister misiniz?';
+    return '$name adlı kişiyi \"$title\" davetin için seçtin.\nBu eşleşmeyi onaylamak ister misin?';
   }
 
   @override

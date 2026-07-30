@@ -571,11 +571,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_venue_subtitle_gift =>
-      'Место встречи, где вы передадите подарок';
+      'Место встречи, где ты передашь подарок';
 
   @override
   String get create_inv_venue_subtitle_gift_request =>
-      'Место встречи, где вы получите подарок';
+      'Место встречи, где ты получишь подарок';
 
   @override
   String get create_inv_venue_question_cinema => 'В каком кинотеатре?';
@@ -824,7 +824,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String decision_selected_body(String name, String title) {
-    return 'Вы выбрали $name для вашего приглашения \"$title\".\nХотите подтвердить это совпадение?';
+    return 'Ты выбираешь $name для приглашения \"$title\".\nПодтвердить совпадение?';
   }
 
   @override
@@ -1049,7 +1049,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Покупка происходит вне SoulChoice, в стороннем магазине; ответственность несут пользователи.';
 
   @override
-  String get notif_selected_push_title => 'Вас выбрали! 🎉';
+  String get notif_selected_push_title => 'Тебя выбрали! 🎉';
 
   @override
   String get notif_selected_push_body => 'Чат открыт — поздоровайтесь';
@@ -1110,9 +1110,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String chat_selected_welcome(String name, String gender) {
     String _temp0 = intl.Intl.selectLogic(gender, {
-      'female': '$name выбрала вас — теперь можно общаться 🎉',
-      'male': '$name выбрал вас — теперь можно общаться 🎉',
-      'other': '$name выбрал(а) вас — теперь можно общаться 🎉',
+      'female': '$name выбрала тебя — теперь можно общаться 🎉',
+      'male': '$name выбрал тебя — теперь можно общаться 🎉',
+      'other': '$name выбрал(а) тебя — теперь можно общаться 🎉',
     });
     return '$_temp0';
   }
@@ -1161,10 +1161,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get err_active_invitation_limit =>
-      'У вас уже есть активное приглашение этого типа.';
+      'У тебя уже есть активное приглашение этого типа.';
 
   @override
-  String get err_account_suspended => 'Ваш аккаунт приостановлен.';
+  String get err_account_suspended => 'Твой аккаунт приостановлен.';
 
   @override
   String get selfie_reason_face_unclear => 'Лицо видно нечётко';
@@ -1586,7 +1586,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_view_block_confirm_body =>
-      'Вы уверены, что хотите заблокировать этого пользователя?';
+      'Точно заблокировать этого пользователя?';
 
   @override
   String get profile_view_anonymous_user => 'Пользователь';
@@ -2011,9 +2011,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String notif_action_new_application(String gender) {
     String _temp0 = intl.Intl.selectLogic(gender, {
-      'female': 'откликнулась на ваше приглашение',
-      'male': 'откликнулся на ваше приглашение',
-      'other': 'откликнулся(ась) на ваше приглашение',
+      'female': 'откликнулась на твоё приглашение',
+      'male': 'откликнулся на твоё приглашение',
+      'other': 'откликнулся(ась) на твоё приглашение',
     });
     return '$_temp0';
   }
@@ -2286,7 +2286,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Продлевается автоматически каждые 30 дней. Отмена в любой момент.';
 
   @override
-  String get sub_already_active => 'У вас уже есть активная подписка.';
+  String get sub_already_active => 'У тебя уже есть активная подписка.';
 
   @override
   String get sub_use_resume_hint =>

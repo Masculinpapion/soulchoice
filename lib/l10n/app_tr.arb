@@ -290,7 +290,7 @@
   "create_inv_title_ph_gift_req": "Örn: Sürprizleri severim",
   "create_inv_datetime_placeholder": "Tarih ve saat seç",
   "decision_selected_title": "Eşleşme Onayı",
-  "decision_selected_body": "{name} adlı kişiyi \"{title}\" davetiyeniz için seçtiniz.\nBu eşleşmeyi onaylamak ister misiniz?",
+  "decision_selected_body": "{name} adlı kişiyi \"{title}\" davetin için seçtin.\nBu eşleşmeyi onaylamak ister misin?",
   "@decision_selected_body": {
     "placeholders": {
       "name": {

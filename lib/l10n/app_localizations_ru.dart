@@ -10,19 +10,18 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboarding_1_title =>
-      'План готов — не хватает только того, с кем пойти';
+      'План готов! Не хватает только того, с кем пойти';
 
   @override
   String get onboarding_1_desc =>
-      'Ресторан, концерт, мероприятие. Открой приглашение, угости и сам выбери, с кем пойдёшь.';
+      'Ресторан, концерт, мероприятие. Открой приглашение, угости и сам выбери, с кем пойдёшь.';
 
   @override
-  String get onboarding_2_title =>
-      'Скажи, куда хочешь пойти — и тебя пригласят';
+  String get onboarding_2_title => 'Скажи, куда хочешь пойти. Тебя пригласят';
 
   @override
   String get onboarding_2_desc =>
-      'Кафе, театр, концерт. Поделись желанием и жди того, кто угостит и сводит тебя.';
+      'Кафе, театр, концерт. Поделись желанием и жди того, кто угостит и сводит тебя.';
 
   @override
   String get onboarding_3_title =>

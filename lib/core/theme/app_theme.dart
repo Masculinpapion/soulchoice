@@ -112,14 +112,18 @@ class AppTheme {
           entryModeIconColor: AppColors.textSecondary,
         ),
         snackBarTheme: SnackBarThemeData(
-          // Aurora-tonlu koyu menekşe — koyu zeminden ayrışsın (30.07 Mustafa)
-          backgroundColor: const Color(0xFF2B1A3E),
+          // Nötr bilgi mesajı: koyu cam + ince kenarlık. Anlam taşıyan
+          // mesajlar dolgu rengini kendi verir (yeşil=başarı, kırmızı=hata) —
+          // ev deseni bu; mor varyantlar denendi ve reddedildi (30.07).
+          backgroundColor: const Color(0xFF15111C),
           contentTextStyle:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
           behavior: SnackBarBehavior.floating,
+          showCloseIcon: true,
+          closeIconColor: const Color(0x99FFFFFF),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
-            side: const BorderSide(color: Color(0x998B5CF6), width: 1.2),
+            side: const BorderSide(color: AppColors.glassBorder),
           ),
           elevation: 8,
           insetPadding:

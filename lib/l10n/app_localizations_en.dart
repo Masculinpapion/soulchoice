@@ -22,7 +22,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding_2_desc =>
-      'A café, a theatre, a concert. Share your wish and wait for someone to treat and take you.';
+      'A café, a theatre, a concert. Share your wish and wait for someone to treat you and take you out.';
 
   @override
   String get onboarding_3_title => 'Verified profiles, a responsible community';

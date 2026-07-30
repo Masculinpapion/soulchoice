@@ -14,7 +14,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Ресторан, концерт, мероприятие. Открой приглашение, угости и сам выбери, с кем пойдёшь.';
+      'Ресторан, концерт, мероприятие. Открой приглашение, угости и выбери, с кем пойдёшь.';
 
   @override
   String get onboarding_2_title => 'Скажи, куда хочешь пойти. Тебя пригласят';

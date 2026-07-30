@@ -14,7 +14,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_1_desc =>
-      'Bir restoran, bir konser, bir etkinlik. Davet aç, ısmarla ve kiminle gitmek istediğini sen seç.';
+      'Restoran, konser, etkinlik. Davet aç, ısmarla ve kiminle gitmek istediğini sen seç.';
 
   @override
   String get onboarding_2_title =>
@@ -22,7 +22,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_2_desc =>
-      'Bir kafe, bir tiyatro, bir konser. İsteğini paylaş, ısmarlayıp seni götürecek birini bekle.';
+      'Kafe, tiyatro, konser. İsteğini paylaş, ısmarlayıp seni dışarı çıkaracak birini bekle.';
 
   @override
   String get onboarding_3_title =>
@@ -30,7 +30,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_3_desc =>
-      'Her profil selfie ile onaylanır. Randevuya gelmeyen veya uygunsuz davranan kullanıcılar engellenir.';
+      'Her profil selfie ile onaylanır. Buluşmaya gelmeyen veya uygunsuz davranan kullanıcılar engellenir.';
 
   @override
   String get onboarding_start_button => 'Başla';

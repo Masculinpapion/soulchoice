@@ -121,7 +121,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_2_desc.
   ///
   /// In en, this message translates to:
-  /// **'A café, a theatre, a concert. Share your wish and wait for someone to treat and take you.'**
+  /// **'A café, a theatre, a concert. Share your wish and wait for someone to treat you and take you out.'**
   String get onboarding_2_desc;
 
   /// No description provided for @onboarding_3_title.

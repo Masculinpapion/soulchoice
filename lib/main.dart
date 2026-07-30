@@ -18,6 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'core/constants/supabase_constants.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/services/push_token.dart';
+import 'core/services/presence_ping.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -97,6 +98,8 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
       if (m == null) return;
       Future.delayed(const Duration(milliseconds: 900), () => _openFromPush(m));
     });
+    // Panel-only online sinyali — kullanıcıya görünmez (31.07).
+    PresencePing.instance.start();
   }
 
   void _showInAppBanner(RemoteMessage m) {

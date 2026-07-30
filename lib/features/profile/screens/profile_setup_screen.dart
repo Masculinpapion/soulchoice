@@ -915,7 +915,9 @@ class _StepCityState extends State<_StepCity> {
     }
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.city_request_done)),
+        SnackBar(
+            content: Text(l.city_request_done),
+            duration: const Duration(seconds: 8)),
       );
     }
   }

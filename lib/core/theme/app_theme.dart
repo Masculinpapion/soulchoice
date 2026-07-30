@@ -112,13 +112,14 @@ class AppTheme {
           entryModeIconColor: AppColors.textSecondary,
         ),
         snackBarTheme: SnackBarThemeData(
-          backgroundColor: AppColors.bgCard,
+          // Aurora-tonlu koyu menekşe — koyu zeminden ayrışsın (30.07 Mustafa)
+          backgroundColor: const Color(0xFF2B1A3E),
           contentTextStyle:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
-            side: const BorderSide(color: AppColors.glassBorder),
+            side: const BorderSide(color: Color(0x998B5CF6), width: 1.2),
           ),
           elevation: 8,
           insetPadding:

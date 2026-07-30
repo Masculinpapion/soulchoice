@@ -1384,7 +1384,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get city_request_done =>
-      'Kaydettik! Şehrin açılınca sana haber vereceğiz 🎉';
+      'Kaydettik! Şehrin açılınca haber vereceğiz 🎉 İstersen şimdilik yakın bir şehri seçip uygulamayı keşfedebilirsin.';
 
   @override
   String get profile_setup_bio_title => 'Kendin hakkında anlat';

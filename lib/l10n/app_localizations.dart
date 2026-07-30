@@ -2599,7 +2599,7 @@ abstract class AppLocalizations {
   /// No description provided for @city_request_done.
   ///
   /// In en, this message translates to:
-  /// **'Got it! We\'ll let you know when your city opens 🎉'**
+  /// **'Got it! We\'ll let you know when your city opens 🎉 Meanwhile, feel free to pick a nearby city and explore the app.'**
   String get city_request_done;
 
   /// No description provided for @profile_setup_bio_title.

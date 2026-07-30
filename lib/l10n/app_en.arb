@@ -604,7 +604,7 @@
   "city_request_title": "Type your city",
   "city_request_hint": "City name",
   "city_request_send": "Send",
-  "city_request_done": "Got it! We'll let you know when your city opens 🎉",
+  "city_request_done": "Got it! We'll let you know when your city opens 🎉 Meanwhile, feel free to pick a nearby city and explore the app.",
   "profile_setup_bio_title": "Tell us about yourself",
   "profile_setup_bio_subtitle": "Optional — max 200 characters",
   "profile_setup_bio_hint": "Briefly introduce yourself...",

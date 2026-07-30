@@ -1388,7 +1388,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get city_request_done =>
-      'Got it! We\'ll let you know when your city opens 🎉';
+      'Got it! We\'ll let you know when your city opens 🎉 Meanwhile, feel free to pick a nearby city and explore the app.';
 
   @override
   String get profile_setup_bio_title => 'Tell us about yourself';

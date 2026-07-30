@@ -1400,7 +1400,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get city_request_done =>
-      'Записали! Сообщим, когда откроем твой город 🎉';
+      'Записали! Сообщим, когда откроем твой город 🎉 А пока можешь выбрать ближайший город и осмотреться в приложении.';
 
   @override
   String get profile_setup_bio_title => 'Расскажи о себе';

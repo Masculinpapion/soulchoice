@@ -119,13 +119,13 @@ class AppTheme {
           contentTextStyle:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
           behavior: SnackBarBehavior.floating,
-          showCloseIcon: true,
-          closeIconColor: const Color(0x99FFFFFF),
+          // X YOK: kapatma çarpısı yalnız şehir-talebi 8sn mesajında (Mustafa,
+          // 31.07 — 'her yere koyma'). elevation 0: çift gölge istenmiyor.
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: const BorderSide(color: AppColors.glassBorder),
           ),
-          elevation: 8,
+          elevation: 0,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           actionTextColor: AppColors.blue,

@@ -917,6 +917,8 @@ class _StepCityState extends State<_StepCity> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(l.city_request_done),
+            showCloseIcon: true,
+            closeIconColor: const Color(0x99FFFFFF),
             duration: const Duration(seconds: 8)),
       );
     }

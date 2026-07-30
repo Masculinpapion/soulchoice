@@ -1392,6 +1392,9 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            // Özel tasarımlı içerik: global temanın çerçevesini devralma
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(18))),
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 110),
             padding: EdgeInsets.zero,
             duration: const Duration(seconds: 3),

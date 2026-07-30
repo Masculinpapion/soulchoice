@@ -590,7 +590,7 @@
   "profile_setup_city_question": "В каком ты городе?",
   "profile_setup_city_search": "Поиск города...",
   "profile_setup_city_not_found": "Город не найден",
-  "city_request_btn": "Моего города нет — сообщите мне",
+  "city_request_btn": "Моего города нет",
   "city_request_title": "Напиши свой город",
   "city_request_hint": "Название города",
   "city_request_send": "Отправить",

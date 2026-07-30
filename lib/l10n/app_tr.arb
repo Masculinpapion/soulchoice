@@ -590,7 +590,7 @@
   "profile_setup_city_question": "Hangi şehirdesin?",
   "profile_setup_city_search": "Şehir ara...",
   "profile_setup_city_not_found": "Şehir bulunamadı",
-  "city_request_btn": "Şehrim listede yok — haber verin",
+  "city_request_btn": "Şehrim listede yok",
   "city_request_title": "Şehrini yaz",
   "city_request_hint": "Şehir adı",
   "city_request_send": "Gönder",

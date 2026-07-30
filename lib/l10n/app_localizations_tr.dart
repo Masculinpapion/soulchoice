@@ -1371,7 +1371,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_city_not_found => 'Şehir bulunamadı';
 
   @override
-  String get city_request_btn => 'Şehrim listede yok — haber verin';
+  String get city_request_btn => 'Şehrim listede yok';
 
   @override
   String get city_request_title => 'Şehrini yaz';

@@ -111,5 +111,19 @@ class AppTheme {
           dialTextColor: AppColors.textPrimary,
           entryModeIconColor: AppColors.textSecondary,
         ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: AppColors.bgCard,
+          contentTextStyle:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: AppColors.glassBorder),
+          ),
+          elevation: 8,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          actionTextColor: AppColors.blue,
+        ),
       );
 }

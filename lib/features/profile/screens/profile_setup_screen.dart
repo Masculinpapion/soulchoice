@@ -815,16 +815,36 @@ class _StepCityState extends State<_StepCity> {
             // Şehri listede olmayan kullanıcıyı kaybetme (29.07): talebi
             // kaydet, şehir açılınca haber verilecek — açılış kararı veriyle.
             Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: 10),
               child: Center(
-                child: TextButton(
-                  onPressed: _requestCity,
-                  child: Text(
-                    AppLocalizations.of(context)!.city_request_btn,
-                    style: const TextStyle(
-                      fontFamily: 'JetBrainsMono',
-                      fontSize: 12,
-                      color: AuroraTheme.auroraBlue,
+                child: InkWell(
+                  onTap: _requestCity,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AuroraTheme.glassBg,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: AuroraTheme.glassBorder),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add_location_alt_outlined,
+                            size: 15, color: AuroraTheme.textSecondary),
+                        const SizedBox(width: 7),
+                        Text(
+                          AppLocalizations.of(context)!.city_request_btn,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AuroraTheme.textSecondary,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

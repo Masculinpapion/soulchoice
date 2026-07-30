@@ -2575,7 +2575,7 @@ abstract class AppLocalizations {
   /// No description provided for @city_request_btn.
   ///
   /// In en, this message translates to:
-  /// **'My city isn\'t listed — notify me'**
+  /// **'My city isn\'t listed'**
   String get city_request_btn;
 
   /// No description provided for @city_request_title.

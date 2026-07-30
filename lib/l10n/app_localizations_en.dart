@@ -1375,7 +1375,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_city_not_found => 'City not found';
 
   @override
-  String get city_request_btn => 'My city isn\'t listed — notify me';
+  String get city_request_btn => 'My city isn\'t listed';
 
   @override
   String get city_request_title => 'Type your city';

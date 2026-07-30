@@ -1387,7 +1387,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_city_not_found => 'Город не найден';
 
   @override
-  String get city_request_btn => 'Моего города нет — сообщите мне';
+  String get city_request_btn => 'Моего города нет';
 
   @override
   String get city_request_title => 'Напиши свой город';

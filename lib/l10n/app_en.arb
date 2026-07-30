@@ -600,7 +600,7 @@
   "profile_setup_city_question": "What city are you in?",
   "profile_setup_city_search": "Search city...",
   "profile_setup_city_not_found": "City not found",
-  "city_request_btn": "My city isn't listed — notify me",
+  "city_request_btn": "My city isn't listed",
   "city_request_title": "Type your city",
   "city_request_hint": "City name",
   "city_request_send": "Send",

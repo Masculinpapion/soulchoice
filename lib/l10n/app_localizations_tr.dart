@@ -10,7 +10,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_1_title =>
-      'Planın hazır, eksik olan birlikte gidecek biri';
+      'Planın hazır! Tek eksik, birlikte gidecek biri';
 
   @override
   String get onboarding_1_desc =>

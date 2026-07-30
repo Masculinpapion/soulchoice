@@ -18,7 +18,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_2_title =>
-      'Gitmek istediğin yeri söyle, biri seni davet etsin';
+      'Nereye gitmek istediğini söyle. Davet sana gelsin';
 
   @override
   String get onboarding_2_desc =>
@@ -26,7 +26,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboarding_3_title =>
-      'Doğrulanmış profiller, sorumlu bir topluluk';
+      'Doğrulanmış profiller, sorumlu bir topluluk';
 
   @override
   String get onboarding_3_desc =>

@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_1_title.
   ///
   /// In en, this message translates to:
-  /// **'You have the plan. Now find someone to go with.'**
+  /// **'You have the plan! Now find someone to go with'**
   String get onboarding_1_title;
 
   /// No description provided for @onboarding_1_desc.
@@ -115,7 +115,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_2_title.
   ///
   /// In en, this message translates to:
-  /// **'Say where you want to go, let someone invite you'**
+  /// **'Say where you want to go. Let someone invite you'**
   String get onboarding_2_title;
 
   /// No description provided for @onboarding_2_desc.
@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding_3_title.
   ///
   /// In en, this message translates to:
-  /// **'Verified profiles, a responsible community'**
+  /// **'Verified profiles, a responsible community'**
   String get onboarding_3_title;
 
   /// No description provided for @onboarding_3_desc.

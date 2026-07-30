@@ -10,7 +10,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding_1_title =>
-      'You have the plan. Now find someone to go with.';
+      'You have the plan! Now find someone to go with';
 
   @override
   String get onboarding_1_desc =>
@@ -18,14 +18,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding_2_title =>
-      'Say where you want to go, let someone invite you';
+      'Say where you want to go. Let someone invite you';
 
   @override
   String get onboarding_2_desc =>
       'A café, a theatre, a concert. Share your wish and wait for someone to treat and take you.';
 
   @override
-  String get onboarding_3_title => 'Verified profiles, a responsible community';
+  String get onboarding_3_title => 'Verified profiles, a responsible community';
 
   @override
   String get onboarding_3_desc =>

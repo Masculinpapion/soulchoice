@@ -11,6 +11,16 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
 serve(async (_req) => {
+  // 31.07 GÜVENLİK: uç kimlik doğrulamıyordu — herkes tetikleyip hatırlatma
+  // push'larının zamanını belirleyebiliyor ve owner_reminded_at damgasını
+  // erkenden yakabiliyordu (gerçek hatırlatma bir daha gitmez). Cron zaten
+  // service key ile çağırıyor.
+  const auth = (_req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
+  if (!SERVICE_KEY || auth !== SERVICE_KEY) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401, headers: { 'Content-Type': 'application/json' },
+    })
+  }
   const db = new Client(DB_URL)
   await db.connect()
   const reminded: string[] = []

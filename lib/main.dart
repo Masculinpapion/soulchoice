@@ -7,6 +7,7 @@ import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -34,22 +35,27 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // Tarayıcı demosu (01.08): Firebase/Crashlytics/AppMetrica/push web'de
+  // yapılandırılmadığı için çağrılırsa main() ölür (beyaz ekran). Web'de
+  // bunlar atlanır — demo salt ürün akışını gösterir, push YOKTUR.
+  if (!kIsWeb) {
+    await Firebase.initializeApp();
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  // 31.07: BEKLEME YOK. await olduğu için ilk açılışta sistem izin diyaloğu
-  // launch screen üstünde çıkıp runApp'i blokluyordu (kullanıcı cevaplayana
-  // kadar boş ekran). İzin zaten onboarding'de açıklamalı ekranla isteniyor.
-  unawaited(FirebaseMessaging.instance.requestPermission());
-  AppMetrica.activate(
-    const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'),
-  );
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // 31.07: BEKLEME YOK. await olduğu için ilk açılışta sistem izin diyaloğu
+    // launch screen üstünde çıkıp runApp'i blokluyordu (kullanıcı cevaplayana
+    // kadar boş ekran). İzin zaten onboarding'de açıklamalı ekranla isteniyor.
+    unawaited(FirebaseMessaging.instance.requestPermission());
+    AppMetrica.activate(
+      const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'),
+    );
+  }
 
   timeago.setLocaleMessages('tr', timeago.TrMessages());
   timeago.setLocaleMessages('ru', timeago.RuMessages());
@@ -68,11 +74,13 @@ Future<void> main() async {
     anonKey: SupabaseConstants.supabaseAnonKey,
   );
 
-  savePushToken();
-  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-    if (data.event == AuthChangeEvent.signedIn) savePushToken();
-  });
-  FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
+  if (!kIsWeb) {
+    savePushToken();
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.signedIn) savePushToken();
+    });
+    FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
+  }
 
   runApp(const ProviderScope(child: SoulChoiceApp()));
 }
@@ -94,6 +102,16 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
   @override
   void initState() {
     super.initState();
+    // Push mekanizmasının tamamı native'e özgü — tarayıcı demosunda atlanır.
+    if (!kIsWeb) _initPush();
+    // Panel-only online sinyali — kullanıcıya görünmez (31.07).
+    PresencePing.instance.start();
+    // iOS rozet: uygulama açılınca sıfırla (Android'de no-op).
+    WidgetsBinding.instance.addObserver(this);
+    NotificationCleaner.clearBadge();
+  }
+
+  void _initPush() {
     // Push'a dokunma → deep link. match_id taşıyan her bildirim (seçildin,
     // yeni mesaj) doğrudan ilgili sohbeti açar.
     FirebaseMessaging.onMessageOpenedApp.listen((m) => _routeFromPushData(m.data));
@@ -121,11 +139,6 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
       if (json == null) return;
       _openWhenSessionReady(_bridgePushData(json));
     }).catchError((_) {});
-    // Panel-only online sinyali — kullanıcıya görünmez (31.07).
-    PresencePing.instance.start();
-    // iOS rozet: uygulama açılınca sıfırla (Android'de no-op).
-    WidgetsBinding.instance.addObserver(this);
-    NotificationCleaner.clearBadge();
   }
 
   @override

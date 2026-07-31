@@ -1,9 +1,10 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../utils/platform_x.dart';
 
 // Kullanıcının etkin dili (ayar > sistem) — push'lar alıcının dilinde gitsin
 // diye users.locale'e yazılır; send-notification şablon seçiminde okur.
@@ -29,7 +30,7 @@ Future<void> savePushToken() async {
         .from('users')
         .update({
           'fcm_token': token,
-          'last_platform': Platform.isIOS ? 'ios' : 'android',
+          'last_platform': platformTag,
         })
         .eq('id', uid);
     // locale burada EZİLMEZ (16.07: cihaz, hesabın dilini eziyordu);

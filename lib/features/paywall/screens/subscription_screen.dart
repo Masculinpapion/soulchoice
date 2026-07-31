@@ -1,6 +1,7 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+
+import '../../../core/utils/platform_x.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -22,7 +23,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   bool _loading = true;
   bool _loadError = false;
   bool _busy = false;
-  late String _mode = Platform.isIOS ? 'hidden' : 'link';
+  late String _mode = isIOSDevice ? 'hidden' : 'link';
 
   @override
   void initState() {
@@ -40,7 +41,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           .maybeSingle();
       final value = row?['value'];
       if (value is Map) {
-        final mode = value[Platform.isIOS ? 'ios' : 'android'];
+        final mode = value[isIOSDevice ? 'ios' : 'android'];
         if (mode is String && mounted) setState(() => _mode = mode);
       }
     } catch (_) {
@@ -76,7 +77,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         'manage-subscription',
         body: {
           'action': 'retry',
-          'source': Platform.isIOS ? 'ios_app' : 'android',
+          'source': isIOSDevice ? 'ios_app' : 'android',
         },
       );
       final data = (response.data as Map?)?.cast<String, dynamic>();
@@ -103,7 +104,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         'manage-subscription',
         body: {
           'action': action,
-          'source': Platform.isIOS ? 'ios_app' : 'android',
+          'source': isIOSDevice ? 'ios_app' : 'android',
         },
       );
       await _refresh();
@@ -297,7 +298,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   fontWeight: FontWeight.w700,
                   color: Colors.white)),
           const SizedBox(height: 8),
-          Text(Platform.isIOS ? l10n.sub_none_body_ios : l10n.sub_none_body,
+          Text(isIOSDevice ? l10n.sub_none_body_ios : l10n.sub_none_body,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: 'Manrope',

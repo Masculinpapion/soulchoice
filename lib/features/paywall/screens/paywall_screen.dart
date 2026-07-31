@@ -1,6 +1,7 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+
+import '../../../core/utils/platform_x.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +20,7 @@ class _PaywallScreenState extends State<PaywallScreen>
     with WidgetsBindingObserver {
   // Sunucu bayrağı gelene kadar platform varsayılanı: iOS'ta CTA gizli
   // (App Store External Purchase entitlement onayına kadar), Android'de açık.
-  late String _mode = Platform.isIOS ? 'hidden' : 'link';
+  late String _mode = isIOSDevice ? 'hidden' : 'link';
   bool _isLoading = false;
   String? _billingEmail;
   ScaffoldMessengerState? _messenger;
@@ -113,7 +114,7 @@ class _PaywallScreenState extends State<PaywallScreen>
           .maybeSingle();
       final value = row?['value'];
       if (value is Map) {
-        final mode = value[Platform.isIOS ? 'ios' : 'android'];
+        final mode = value[isIOSDevice ? 'ios' : 'android'];
         if (mode is String && mounted) setState(() => _mode = mode);
       }
     } catch (_) {
@@ -151,7 +152,7 @@ class _PaywallScreenState extends State<PaywallScreen>
     try {
       final response = await Supabase.instance.client.functions.invoke(
         'create-tochka-payment',
-        body: {'source': Platform.isIOS ? 'ios_app' : 'android'},
+        body: {'source': isIOSDevice ? 'ios_app' : 'android'},
       );
       final data = response.data as Map<String, dynamic>?;
       final link = data?['paymentLink'] as String?;
@@ -318,7 +319,7 @@ class _PaywallScreenState extends State<PaywallScreen>
         'create-tochka-subscription',
         body: {
           'email': email,
-          'source': Platform.isIOS ? 'ios_app' : 'android',
+          'source': isIOSDevice ? 'ios_app' : 'android',
           'oferta_version': _ofertaVersion,
         },
       );

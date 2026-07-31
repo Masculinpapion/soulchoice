@@ -1991,18 +1991,14 @@ class _MyApplicationsSection extends ConsumerWidget {
                   (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
               final title = inv?['title'] as String? ?? '—';
               final status = a['status'] as String? ?? 'pending';
-              final invStatus = inv?['status'] as String?;
-              // pending + ilan kapandıysa fiilen "seçim yapılmadı"
-              final effective = (status == 'pending' && invStatus == 'closed')
-                  ? 'expired'
-                  : status;
-              final (chipText, chipColor) = switch (effective) {
+              // Seçilmeyen (expired / kapanmış ilanda pending) provider'da
+              // elenir (01.08 kararı) — burada yalnız 3 durum kalır.
+              final (chipText, chipColor) = switch (status) {
                 'accepted' => (
                     l10n.app_status_accepted,
                     const Color(0xFF34C759)
                   ),
                 'rejected' => (l10n.app_status_rejected, AuroraTheme.textMuted),
-                'expired' => (l10n.app_status_expired, AuroraTheme.textMuted),
                 _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
               };
               return InkWell(

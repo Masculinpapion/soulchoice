@@ -64,6 +64,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - Geçişler saatlik cron'la olur; saate yuvarlanır. ✅
 - `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
 - **Kapanan (`closed`) ilanlarda seçilmeyen bekleyen başvurular saatlik temizlikte `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). ✅ 15.07
+- **Profil "Başvurularım" seçilmeyeni HİÇ göstermez (KARAR Mustafa 01.08):** ilan kapandığında seçilmemiş başvurunun kartı profilden tamamen düşer — ilanın match'i olsa da ("seçim yapılmadı" kartı tutulmaz), olmasa da (satır zaten silinir). Sessizlik ilkesinin profile uzantısı; `rejected` bundan ayrıdır (açık karar, rozetiyle görünür kalır). ✅ 01.08
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
 ## 5. Limitler, filtreler ve Premium

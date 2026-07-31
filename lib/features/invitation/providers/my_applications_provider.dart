@@ -16,7 +16,17 @@ final myApplicationsListProvider =
           'owner:users!owner_id(name))')
       .eq('applicant_id', uid)
       .neq('status', 'withdrawn')
+      // 01.08 Mustafa kararı: seçilmeyen başvurunun kartı süre dolunca düşer
+      // ("seçim yapılmadı" kartı tutulmaz — sessizlik ilkesinin profile uzantısı)
+      .neq('status', 'expired')
       .order('created_at', ascending: false)
       .limit(20);
-  return (rows as List).cast<Map<String, dynamic>>();
+  return (rows as List)
+      .cast<Map<String, dynamic>>()
+      // Kapanmış ilandaki pending: temizlik cron'u expired yazana kadarki
+      // ≤1 saatlik pencere — aynı karar gereği burada da elenir.
+      .where((a) =>
+          a['status'] != 'pending' ||
+          (a['invitation'] as Map<String, dynamic>?)?['status'] != 'closed')
+      .toList();
 });

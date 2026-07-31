@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -74,7 +75,22 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     _startTimer();
   }
 
+  /// 31.07 PERFORMANS: şehir kimliği ağdan gelene kadar feed "tüm şehirler"
+  /// anahtarıyla sorgu atıyor, kimlik gelince anahtar değişip AYNI ağır
+  /// sorguları BAŞTAN atıyordu → liste bir kez boşalıp yeniden yükleniyor,
+  /// kullanıcı bunu "feed geç geliyor" olarak görüyordu. Kimlik artık
+  /// önbellekten anında okunur; ağ sorgusu yalnız ilk kurulumda gerekir.
+  static const _kCityCacheKey = 'moscow_city_id';
+
   Future<void> _loadMoskovaCityId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cached = prefs.getString(_kCityCacheKey);
+    if (cached != null && cached.isNotEmpty) {
+      if (!mounted) return;
+      setState(() => _selectedCityId = cached);
+      ref.read(selectedCityIdProvider.notifier).state = cached;
+      return;
+    }
     final data = await Supabase.instance.client
         .from('cities')
         .select('id')
@@ -82,6 +98,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
         .maybeSingle();
     if (!mounted || data == null) return;
     final id = data['id'] as String;
+    await prefs.setString(_kCityCacheKey, id);
+    if (!mounted) return;
     setState(() => _selectedCityId = id);
     ref.read(selectedCityIdProvider.notifier).state = id;
   }

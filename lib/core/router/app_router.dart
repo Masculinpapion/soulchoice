@@ -37,6 +37,7 @@ import '../../features/paywall/screens/subscription_screen.dart';
 import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/profile/screens/report_user_screen.dart';
 import '../../shared/widgets/main_shell.dart';
+import '../services/notification_cleaner.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -168,9 +169,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/invitation/:id/applicants',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (_, state) => ApplicantsScreen(
-          invitationId: state.pathParameters['id'] ?? '',
-        ),
+        builder: (_, state) {
+          final id = state.pathParameters['id'] ?? '';
+          // Çekmecede bu ilana ait bayat başvuru bildirimi kaldıysa temizle (31.07).
+          NotificationCleaner.clearForInvitation(id);
+          return ApplicantsScreen(invitationId: id);
+        },
       ),
       GoRoute(
         path: '/invitation/:id/decision',

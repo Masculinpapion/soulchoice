@@ -18,6 +18,33 @@ import UserNotifications
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
 
+    // Bildirim temizliği + rozet (31.07): sohbet uygulama içinden okununca
+    // teslim edilmiş bildirim kaldırılır (identifier = apns-collapse-id,
+    // thread = aps thread-id — ikisi de "<tip>:<ref>" sözleşmesi).
+    if let notifRegistrar = engineBridge.pluginRegistry.registrar(forPlugin: "SoulChoiceNotifications") {
+      let notifChannel = FlutterMethodChannel(
+        name: "com.soulchoice/notifications", binaryMessenger: notifRegistrar.messenger())
+      notifChannel.setMethodCallHandler { call, result in
+        switch call.method {
+        case "clearByKey":
+          let key = call.arguments as? String ?? ""
+          let center = UNUserNotificationCenter.current()
+          center.getDeliveredNotifications { notes in
+            let ids = notes.filter {
+              $0.request.identifier == key || $0.request.content.threadIdentifier == key
+            }.map { $0.request.identifier }
+            if !ids.isEmpty { center.removeDeliveredNotifications(withIdentifiers: ids) }
+          }
+          result(nil)
+        case "clearBadge":
+          DispatchQueue.main.async { UIApplication.shared.applicationIconBadgeNumber = 0 }
+          result(nil)
+        default:
+          result(FlutterMethodNotImplemented)
+        }
+      }
+    }
+
     guard let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "SoulChoiceUploader") else { return }
     let channel = FlutterMethodChannel(name: "com.soulchoice/uploader", binaryMessenger: registrar.messenger())
     channel.setMethodCallHandler { call, result in

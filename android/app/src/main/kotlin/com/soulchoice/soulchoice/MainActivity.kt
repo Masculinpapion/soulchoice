@@ -1,5 +1,7 @@
 package com.soulchoice.soulchoice
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -113,8 +115,46 @@ class MainActivity : FlutterActivity() {
         Log.d(TAG, "TUS upload complete")
     }
 
+    // Bildirim kanalları (31.07): "Mesajlar" ve "Genel" — Samsung ayarlarında
+    // düzgün görünür, kullanıcı türleri ayrı ayrı yönetebilir. Ad, cihaz diline
+    // göre bir kez belirlenir; yeniden oluşturma mevcut kanalı günceller.
+    private fun ensureNotificationChannels() {
+        val nm = getSystemService(NotificationManager::class.java) ?: return
+        val lang = java.util.Locale.getDefault().language
+        val names = mapOf(
+            "messages" to when (lang) { "ru" -> "Сообщения"; "tr" -> "Mesajlar"; else -> "Messages" },
+            "general"  to when (lang) { "ru" -> "Общие";     "tr" -> "Genel";    else -> "General"  },
+        )
+        names.forEach { (id, name) ->
+            nm.createNotificationChannel(
+                NotificationChannel(id, name, NotificationManager.IMPORTANCE_HIGH)
+            )
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
+        ensureNotificationChannels()
+
+        // Çekmece temizliği (31.07): sohbet uygulama içinden okununca o sohbetin
+        // bayat bildirimi kaldırılır. Anahtar = FCM tag ("<tip>:<ref>").
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.soulchoice/notifications")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "clearByKey" -> {
+                        val key = call.arguments as? String ?: ""
+                        val nm = getSystemService(NotificationManager::class.java)
+                        nm?.activeNotifications
+                            ?.filter { it.tag == key }
+                            ?.forEach { nm.cancel(it.tag, it.id) }
+                        result.success(null)
+                    }
+                    // Android'de rozet bildirimle birlikte yaşar — ayrı iş yok.
+                    "clearBadge" -> result.success(null)
+                    else -> result.notImplemented()
+                }
+            }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.soulchoice/uploader")
             .setMethodCallHandler { call, result ->

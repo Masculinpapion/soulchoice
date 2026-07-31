@@ -214,11 +214,33 @@ serve(async (req) => {
       } catch (_) { /* dedupe altyapısı henüz yoksa push yine gitsin */ }
     }
 
+    // iOS rozet: okunmamış in-app bildirim sayısı (notifications insert'i bu
+    // fonksiyondan ÖNCE yapıldığı için mevcut olay sayıma dahil). Süs — hata
+    // push'u engellemez.
+    let unread = 0
+    try {
+      const u = await db.queryObject<{ c: number }>(
+        'SELECT count(*)::int AS c FROM notifications WHERE user_id = $1 AND read_at IS NULL',
+        [user_id]
+      )
+      unread = Number(u.rows[0]?.c ?? 0)
+    } catch (_) { /* rozet süs */ }
+
     await db.end()
     const fcmToken = result.rows[0]?.fcm_token
     if (!fcmToken) {
       return new Response(JSON.stringify({ error: 'no fcm_token' }), { status: 404, headers: CORS })
     }
+
+    // 31.07 (Mustafa onayı) — çoklu bildirim düzeni:
+    //  • Collapse: aynı sohbet/ilan için TEK bildirim — yenisi eskisini günceller
+    //    (Android tag + apns-collapse-id). Anahtar sözleşmesi "<tip>:<ref>" —
+    //    app'teki NotificationCleaner ile birebir aynı.
+    //  • Android kanalı: sohbet mesajları "messages", geri kalan "general"
+    //    (kanal yoksa FCM varsayılan kanala düşer — eski build güvenli).
+    const collapseRef = String(data?.match_id ?? data?.invitation_id ?? '')
+    const collapseKey = collapseRef ? `${notifType}:${collapseRef}` : ''
+    const channelId = notifType === 'new_message' ? 'messages' : 'general'
 
     // Şablon: alıcının dilinde metin üret; istemci title/body yalnız fallback
     let finalTitle = title
@@ -262,8 +284,23 @@ serve(async (req) => {
             token: fcmToken,
             notification: { title: finalTitle, body: finalBody },
             data: data ?? {},
-            android: { priority: 'high' },
-            apns: { payload: { aps: { sound: 'default' } } },
+            android: {
+              priority: 'high',
+              notification: {
+                channel_id: channelId,
+                ...(collapseKey ? { tag: collapseKey } : {}),
+              },
+            },
+            apns: {
+              ...(collapseKey ? { headers: { 'apns-collapse-id': collapseKey } } : {}),
+              payload: {
+                aps: {
+                  sound: 'default',
+                  badge: unread,
+                  ...(collapseKey ? { 'thread-id': collapseKey } : {}),
+                },
+              },
+            },
           },
         }),
       }

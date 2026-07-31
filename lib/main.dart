@@ -19,6 +19,7 @@ import 'core/constants/supabase_constants.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/services/push_token.dart';
 import 'core/services/presence_ping.dart';
+import 'core/services/notification_cleaner.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -79,7 +80,8 @@ class SoulChoiceApp extends ConsumerStatefulWidget {
   ConsumerState<SoulChoiceApp> createState() => _SoulChoiceAppState();
 }
 
-class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
+class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
+    with WidgetsBindingObserver {
   // Uygulama ÖN PLANDAYKEN gelen push çekmeceye düşmez (26.07 "gelmedi"
   // sanılan vaka) — kullanıcı kaçırmasın diye uygulama içi banner gösterilir.
   RemoteMessage? _bannerMsg;
@@ -92,14 +94,34 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
     // yeni mesaj) doğrudan ilgili sohbeti açar.
     FirebaseMessaging.onMessageOpenedApp.listen(_openFromPush);
     FirebaseMessaging.onMessage.listen(_showInAppBanner);
-    // Uygulama kapalıyken push'a dokunulup açıldıysa: splash/auth
-    // yönlendirmesi otursun diye kısa gecikmeyle gir.
+    // Uygulama kapalıyken push'a dokunulup açıldıysa: sabit gecikme DEĞİL,
+    // oturum yüklenene kadar bekle (31.07: 900 ms gerçek cihazda yetmiyordu —
+    // currentUser null kalınca yönlendirme sessizce iptal olup feed'e düşüyordu).
     FirebaseMessaging.instance.getInitialMessage().then((m) {
       if (m == null) return;
-      Future.delayed(const Duration(milliseconds: 900), () => _openFromPush(m));
+      _openWhenSessionReady(m);
     });
     // Panel-only online sinyali — kullanıcıya görünmez (31.07).
     PresencePing.instance.start();
+    // iOS rozet: uygulama açılınca sıfırla (Android'de no-op).
+    WidgetsBinding.instance.addObserver(this);
+    NotificationCleaner.clearBadge();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) NotificationCleaner.clearBadge();
+  }
+
+  Future<void> _openWhenSessionReady(RemoteMessage m) async {
+    // Soğuk açılış: Supabase oturumu diskten/refresh'ten gelene kadar bekle
+    // (en çok 12 sn; gelmezse bugünkü davranış — feed — korunur).
+    for (var i = 0; i < 24; i++) {
+      if (Supabase.instance.client.auth.currentUser != null) break;
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+    if (!mounted) return;
+    _openFromPush(m);
   }
 
   void _showInAppBanner(RemoteMessage m) {
@@ -125,6 +147,7 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _bannerTimer?.cancel();
     super.dispose();
   }

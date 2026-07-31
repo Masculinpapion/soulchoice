@@ -5,7 +5,16 @@ final userProfileProvider =
     FutureProvider.family<Map<String, dynamic>?, String>((ref, userId) async {
   return Supabase.instance.client
       .from('users')
-      .select('*, city:cities(name, name_ru, name_tr, name_en, country)')
+      // 31.07: select('*') KULLANMA — phone/billing_email/fcm_token kolonları
+      // gizlilik gereği kapatıldı (herkes tüm telefonları çekebiliyordu),
+      // '*' bu kolonları da isteyeceği için sorgu tümden reddedilir.
+      .select(
+          'id, name, age, gender, city_id, bio, job, education, interests, '
+          'verified, subscription_status, premium_until, selfie_status, '
+          'selfie_rejected_reason, show_gender, min_age, max_age, banned, '
+          'suspended_at, suspension_reason, is_deleted, is_admin, locale, '
+          'free_application_used, no_show_count, created_at, last_seen_at, '
+          'city:cities(name, name_ru, name_tr, name_en, country)')
       .eq('id', userId)
       .maybeSingle();
 });

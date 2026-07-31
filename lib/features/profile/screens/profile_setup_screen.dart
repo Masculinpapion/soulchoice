@@ -109,7 +109,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       final row = await client
           .from('users')
           .select(
-            'name, age, gender, city_id, bio, job, education, interests, min_age, max_age, billing_email, cities(name, name_ru, name_tr, name_en)',
+            'name, age, gender, city_id, bio, job, education, interests, min_age, max_age, cities(name, name_ru, name_tr, name_en)',
           )
           .eq('id', user.id)
           .maybeSingle();
@@ -122,7 +122,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       _bioController.text = row['bio'] as String? ?? '';
       _jobController.text = row['job'] as String? ?? '';
       _educationController.text = row['education'] as String? ?? '';
-      _emailController.text = row['billing_email'] as String? ?? '';
+      // 31.07: billing_email doğrudan okunamıyor (gizlilik) — RPC ile
+      final myEmail = await client.rpc('my_billing_email');
+      if (!mounted) return;
+      _emailController.text = myEmail is String ? myEmail : '';
 
       final prompts = await client
           .from('user_prompts')

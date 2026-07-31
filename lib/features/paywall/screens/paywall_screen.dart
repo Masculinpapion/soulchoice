@@ -87,12 +87,9 @@ class _PaywallScreenState extends State<PaywallScreen>
     try {
       final uid = Supabase.instance.client.auth.currentUser?.id;
       if (uid != null) {
-        final row = await Supabase.instance.client
-            .from('users')
-            .select('billing_email')
-            .eq('id', uid)
-            .maybeSingle();
-        final email = row?['billing_email'];
+        // 31.07: billing_email kolonu artık doğrudan okunamıyor (tüm
+        // kullanıcıların e-postası sızıyordu) — kendi verisi RPC ile gelir.
+        final email = await Supabase.instance.client.rpc('my_billing_email');
         if (email is String && mounted) setState(() => _billingEmail = email);
       }
       final flag = await Supabase.instance.client

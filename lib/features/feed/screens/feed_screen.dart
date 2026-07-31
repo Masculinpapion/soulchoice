@@ -1028,7 +1028,14 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: SizedBox(
             height: constraints.maxHeight,
+            // 31.07: yenileme sırasında ekranı BOŞALTMA — elimizdeki kartlar
+            // dursun, arkada tazelensin. (30 sn'lik timer, sekme dönüşü ve
+            // öne gelme her seferinde feed'i spinner'a düşürüyordu; sunucu
+            // 9 ms'de dönse bile Türkiye→Rusya yolu istek başına ~1 sn
+            // eklediği için kullanıcı bunu "feed geç yükleniyor" görüyordu.)
             child: async.when(
+              skipLoadingOnRefresh: true,
+              skipLoadingOnReload: true,
               loading: () => Center(
                 child: SizedBox(
                   width: 32,

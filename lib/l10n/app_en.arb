@@ -73,6 +73,13 @@
   "otp_resend": "Resend",
   "otp_verify": "Verify",
   "otp_error_failed": "Verification failed",
+  "otp_error_too_many": "Too many wrong attempts — request a new code",
+  "phone_error_too_soon": "Too many tries — try again in {seconds} s",
+  "@phone_error_too_soon": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
   "perm_notification_title": "Allow notifications",
   "perm_notification_desc": "Required to notify you of new messages when selected",
   "perm_location_title": "Share your location",

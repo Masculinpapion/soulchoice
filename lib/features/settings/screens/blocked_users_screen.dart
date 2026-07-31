@@ -1,20 +1,24 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../feed/providers/invitations_provider.dart';
+import '../../discover/providers/discover_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
 
-class BlockedUsersScreen extends StatefulWidget {
+class BlockedUsersScreen extends ConsumerStatefulWidget {
   const BlockedUsersScreen({super.key});
 
   @override
-  State<BlockedUsersScreen> createState() => _BlockedUsersScreenState();
+  ConsumerState<BlockedUsersScreen> createState() =>
+      _BlockedUsersScreenState();
 }
 
-class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
+class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
   bool _loading = true;
   List<_BlockedUser> _users = [];
 
@@ -31,14 +35,21 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
       return;
     }
 
-    final rows = await Supabase.instance.client
-        .from('blocks')
-        .select(
-          'blocked_id, '
-          'blocked:users!blocks_blocked_id_fkey(id, name, '
-          'photos:user_photos(url, is_selfie, order_index))',
-        )
-        .eq('blocker_id', uid);
+    // 31.07 denetimi: korumasız await hatada spinner'ı sonsuza kilitliyordu
+    final List<dynamic> rows;
+    try {
+      rows = await Supabase.instance.client
+          .from('blocks')
+          .select(
+            'blocked_id, '
+            'blocked:users!blocks_blocked_id_fkey(id, name, '
+            'photos:user_photos(url, is_selfie, order_index))',
+          )
+          .eq('blocker_id', uid);
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+      return;
+    }
 
     final parsed = (rows as List).map((row) {
       final u = row['blocked'] as Map<String, dynamic>?;
@@ -71,6 +82,9 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
           .delete()
           .eq('blocker_id', uid)
           .eq('blocked_id', blockedId);
+      // Engeli kalkan kişinin ilanları feed/keşfete anında dönsün (31.07)
+      ref.invalidate(invitationsProvider);
+      ref.invalidate(discoverProvider);
     } catch (_) {
       await _load();
     }

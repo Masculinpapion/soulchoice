@@ -217,6 +217,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get otp_error_failed => 'Doğrulama başarısız';
 
   @override
+  String get otp_error_too_many => 'Çok fazla yanlış deneme — yeni kod iste';
+
+  @override
+  String phone_error_too_soon(Object seconds) {
+    return 'Çok sık denedin — $seconds saniye sonra tekrar dene';
+  }
+
+  @override
   String get perm_notification_title => 'Bildirimlere izin ver';
 
   @override

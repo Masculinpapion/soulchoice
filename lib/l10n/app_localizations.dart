@@ -496,6 +496,18 @@ abstract class AppLocalizations {
   /// **'Verification failed'**
   String get otp_error_failed;
 
+  /// No description provided for @otp_error_too_many.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many wrong attempts — request a new code'**
+  String get otp_error_too_many;
+
+  /// No description provided for @phone_error_too_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many tries — try again in {seconds} s'**
+  String phone_error_too_soon(Object seconds);
+
   /// No description provided for @perm_notification_title.
   ///
   /// In en, this message translates to:

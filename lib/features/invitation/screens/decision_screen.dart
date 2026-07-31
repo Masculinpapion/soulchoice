@@ -1,23 +1,26 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../messaging/providers/matches_provider.dart';
+import '../providers/applications_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
-class DecisionScreen extends StatefulWidget {
+class DecisionScreen extends ConsumerStatefulWidget {
   final String invitationId;
   const DecisionScreen({super.key, required this.invitationId});
 
   @override
-  State<DecisionScreen> createState() => _DecisionScreenState();
+  ConsumerState<DecisionScreen> createState() => _DecisionScreenState();
 }
 
-class _DecisionScreenState extends State<DecisionScreen>
+class _DecisionScreenState extends ConsumerState<DecisionScreen>
     with SingleTickerProviderStateMixin {
   static const _totalSeconds = 3600;
   int _remainingSeconds = _totalSeconds;
@@ -92,15 +95,16 @@ class _DecisionScreenState extends State<DecisionScreen>
   }
 
   Future<void> _accept() async {
-    if (_applicationId == null || _applicantId == null) return;
     setState(() => _isLoading = true);
     try {
+      // 31.07 denetimi: eksik extra/oturum sessiz return'dü — kullanıcı
+      // "Kabul et"e basıp hiçbir tepki almıyordu. Artık hata görünür.
+      if (_applicationId == null || _applicantId == null) {
+        throw Exception('missing_application_context');
+      }
       final client = Supabase.instance.client;
       final user = client.auth.currentUser;
-      if (user == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
+      if (user == null) throw Exception('no_session');
       final uid = user.id;
 
       // Mevcut match var mı kontrol et (idempotent)
@@ -144,6 +148,10 @@ class _DecisionScreenState extends State<DecisionScreen>
 
       // "Seçildin" push'u sunucudan gider: notify_application_status
       // status→accepted güncellemesini görünce push atar (26.07 madde X).
+
+      // Dönülen listeler bayat kalmasın (31.07 denetimi).
+      ref.invalidate(matchesProvider);
+      ref.invalidate(applicantsProvider(widget.invitationId));
 
       if (mounted) context.go('/chat/${matchRes['id']}');
     } catch (e) {
@@ -197,7 +205,16 @@ class _DecisionScreenState extends State<DecisionScreen>
             'responded_at': DateTime.now().toIso8601String(),
           })
           .eq('id', _applicationId!);
-    } catch (_) {}
+    } catch (_) {
+      // 31.07 denetimi: hata yutulup pop ediliyordu — red hiç yazılmadan
+      // kullanıcı reddettiğini sanıyordu. Hata görünür, ekranda kalınır.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_generic)));
+      }
+      return;
+    }
+    ref.invalidate(applicantsProvider(widget.invitationId));
     if (mounted) context.pop();
   }
 

@@ -513,6 +513,9 @@ class _InvitationDetailScreenState
                                   // Profildeki "Başvurularım" bayat kalmasın
                                   // (29.07: 5 başvurudan 1'i görünüyordu)
                                   ref.invalidate(myApplicationsListProvider);
+                                  // Başlıktaki "N başvuru" sayacı da (31.07)
+                                  ref.invalidate(
+                                      applicationCountProvider(invitationId));
                                 },
                               ),
                             ),
@@ -1576,9 +1579,13 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       return _AuroraCTA(
         label: l10n.inv_detail_selected_btn,
         icon: Icons.favorite_outline,
+        // applicantId eksikti → DecisionScreen'de Kabul sessiz no-op'tu (31.07 Y5)
         onPressed: () => context.push(
             '/invitation/${widget.invitationId}/decision',
-            extra: {'applicationId': app['id']}),
+            extra: {
+              'applicationId': app['id'],
+              'applicantId': Supabase.instance.client.auth.currentUser?.id,
+            }),
       );
     }
     if (status == 'accepted') {

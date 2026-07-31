@@ -327,7 +327,12 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back_ios_new, color: AuroraTheme.textPrimary),
-                        onPressed: () => context.pop(),
+                        // Onboarding go() zinciriyle gelinir; pop edilecek şey
+                        // yokken geri oku ölüydü (31.07 Y4) — sihirbazda bir
+                        // adım geri: profil kurulumuna dön.
+                        onPressed: () => context.canPop()
+                            ? context.pop()
+                            : context.go('/profile/setup'),
                         padding: EdgeInsets.zero,
                         alignment: Alignment.centerLeft,
                       ),
@@ -611,7 +616,10 @@ class _CropScreenState extends State<_CropScreen> {
                     setState(() => _isCropping = false);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(AppLocalizations.of(context)!.photo_crop_error(result.cause.toString())),
+                        // Ham exception metni kullanıcıya sızdırılmaz (31.07)
+                        content: Text(AppLocalizations.of(context)!
+                            .photo_crop_error(
+                                AppLocalizations.of(context)!.error_generic)),
                         backgroundColor: AuroraTheme.auroraRed,
                       ),
                     );

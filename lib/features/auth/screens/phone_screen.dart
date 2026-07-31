@@ -3,7 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show FunctionException, Supabase;
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -62,6 +63,16 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 data?['error']?.toString() ??
                 AppLocalizations.of(context)!.phone_error_connection,
           );
+      }
+    } on FunctionException catch (e) {
+      // 31.07 denetimi: 60 sn rate-limit'i (too_soon + retry_after) "bağlantı
+      // hatası" olarak görünüyordu — kullanıcı sebepsiz yere tekrar deniyordu.
+      if (mounted) {
+        final d = (e.details is Map) ? e.details as Map : const {};
+        setState(() => _error = d['error'] == 'too_soon'
+            ? AppLocalizations.of(context)!
+                .phone_error_too_soon('${d['retry_after'] ?? 60}')
+            : AppLocalizations.of(context)!.phone_error_connection);
       }
     } catch (e) {
       if (mounted)

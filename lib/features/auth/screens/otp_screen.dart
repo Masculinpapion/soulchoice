@@ -100,6 +100,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       } else {
         setState(() => _error = AppLocalizations.of(context)!.otp_error_failed);
       }
+    } on FunctionException catch (e) {
+      // 31.07 denetimi: non-2xx exception fırlattığı için sunucunun hata kodu
+      // (too_many_attempts = "kod iptal, yenisini iste") hiç yüzeye çıkmıyordu
+      // — kullanıcı aynı ölü kodu tekrar tekrar giriyordu.
+      if (mounted) {
+        final code = (e.details is Map) ? (e.details as Map)['error'] : null;
+        setState(() => _error = code == 'too_many_attempts'
+            ? AppLocalizations.of(context)!.otp_error_too_many
+            : AppLocalizations.of(context)!.otp_error_failed);
+      }
     } catch (e) {
       if (mounted) {
         setState(() =>

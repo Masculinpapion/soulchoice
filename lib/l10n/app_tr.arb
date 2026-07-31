@@ -73,6 +73,13 @@
   "otp_resend": "Tekrar gönder",
   "otp_verify": "Doğrula",
   "otp_error_failed": "Doğrulama başarısız",
+  "otp_error_too_many": "Çok fazla yanlış deneme — yeni kod iste",
+  "phone_error_too_soon": "Çok sık denedin — {seconds} saniye sonra tekrar dene",
+  "@phone_error_too_soon": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
   "perm_notification_title": "Bildirimlere izin ver",
   "perm_notification_desc": "Seçildiğinde yeni mesajları bildirebilmek için gerekli",
   "perm_location_title": "Konumunu paylaş",

@@ -29,7 +29,10 @@ class ApplicantsScreen extends ConsumerWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                      onPressed: () => context.pop(),
+                      // go() ile gelinmiş olabilir (engelleme akışı) — çıplak
+                      // pop GoError fırlatıp geri oku öldürüyordu (31.07 Y3).
+                      onPressed: () =>
+                          context.canPop() ? context.pop() : context.go('/feed'),
                     ),
                     Expanded(
                       child: Text(

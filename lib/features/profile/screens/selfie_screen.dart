@@ -82,7 +82,9 @@ class _SelfieScreenState extends State<SelfieScreen> {
       final client = Supabase.instance.client;
       final uid = client.auth.currentUser?.id;
       final selfie = _selfie;
-      if (uid == null || selfie == null) return;
+      // 31.07 denetimi: sessiz return _isUploading'i kalıcı true bırakıyordu —
+      // buton kilitlenip selfie hiç gönderilemiyordu. Hata görünür olsun.
+      if (uid == null || selfie == null) throw Exception('no_session_or_photo');
       final path = '$uid/selfie_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       final bytes = await selfie.readAsBytes();
@@ -110,10 +112,11 @@ class _SelfieScreenState extends State<SelfieScreen> {
       });
 
       if (mounted) context.go('/feed');
-    } catch (e) {
+    } catch (_) {
+      // Ham exception metni kullanıcıya sızdırılmaz (31.07)
       if (mounted) {
         _showAuroraSnack(
-          '${AppLocalizations.of(context)!.error_generic}: $e',
+          AppLocalizations.of(context)!.error_generic,
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );
@@ -171,7 +174,11 @@ class _SelfieScreenState extends State<SelfieScreen> {
             Icons.arrow_back_ios_new,
             color: AuroraTheme.textPrimary,
           ),
-          onPressed: () => context.pop(),
+          // Onboarding go() zinciri — çıplak pop ölüydü (31.07 Y4); bir adım
+          // geri: fotoğraf yükleme ekranı.
+          onPressed: () => context.canPop()
+              ? context.pop()
+              : context.go('/profile/photos'),
         ),
       ),
       body: AmbientBackground(

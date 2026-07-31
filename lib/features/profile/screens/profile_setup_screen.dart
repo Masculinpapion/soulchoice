@@ -231,10 +231,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     try {
       final client = Supabase.instance.client;
       final user = client.auth.currentUser;
-      if (user == null) {
-        setState(() => _isSaving = false);
-        return;
-      }
+      // 31.07 denetimi: sessiz return kullanıcıyı "kaydoldum" sanıp bırakıyordu
+      if (user == null) throw Exception('no_session');
       final uid = user.id;
 
       await client.from('users').upsert({
@@ -303,7 +301,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
             backgroundColor: AuroraTheme.auroraRed,
           ),
         );
+        setState(() => _isSaving = false);
       }
+      // 31.07 denetimi: hata gösterilip yine /permissions'a geçiliyordu —
+      // profil yazılmadan akış ilerliyordu. Hatada bu adımda kal.
+      return;
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

@@ -14,6 +14,7 @@ import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../messaging/providers/matches_provider.dart';
 import '../../invitation/providers/my_applications_provider.dart';
+import '../../invitation/providers/applications_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../../discover/providers/discover_provider.dart';
 import '../../../core/providers/locale_provider.dart';
@@ -423,10 +424,12 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       builder: (_) => _ActionSheet(
         targetUserId: targetUserId,
         targetName: null,
-        // Engellenen kişinin kartları feed/keşfette bayat kalmasın (29.07)
+        // Engellenen kişinin kartları feed/keşfet/sohbet listesinde bayat
+        // kalmasın (29.07 + 31.07 denetimi: matchesProvider eksikti)
         onBlocked: () {
           ref.invalidate(invitationsProvider);
           ref.invalidate(discoverProvider);
+          ref.invalidate(matchesProvider);
         },
       ),
     );
@@ -1413,7 +1416,7 @@ class _PhotoViewerPageState extends State<_PhotoViewerPage> {
 }
 
 // ── Başvuranlar için Seç / Reddet butonları ──────────────────────────────────
-class _ApplicantActions extends StatefulWidget {
+class _ApplicantActions extends ConsumerStatefulWidget {
   final String applicationId;
   final String invitationId;
   final String applicantId;
@@ -1427,10 +1430,10 @@ class _ApplicantActions extends StatefulWidget {
   });
 
   @override
-  State<_ApplicantActions> createState() => _ApplicantActionsState();
+  ConsumerState<_ApplicantActions> createState() => _ApplicantActionsState();
 }
 
-class _ApplicantActionsState extends State<_ApplicantActions> {
+class _ApplicantActionsState extends ConsumerState<_ApplicantActions> {
   bool _loading = false;
 
   Future<void> _select() async {
@@ -1489,6 +1492,9 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
   void _openChat(String matchId) {
     if (!mounted) return;
     setState(() => _loading = false);
+    // Dönülen listeler bayat kalmasın: sohbet listesi + başvuranlar (31.07)
+    ref.invalidate(matchesProvider);
+    ref.invalidate(applicantsProvider(widget.invitationId));
     context.push(
       '/chat/$matchId',
       extra: {'name': widget.applicantName},
@@ -1521,6 +1527,8 @@ class _ApplicantActionsState extends State<_ApplicantActions> {
       }
       return;
     }
+    // Başvuranlar listesi bayat kalmasın — reddedilen kişi anında düşsün (31.07)
+    ref.invalidate(applicantsProvider(widget.invitationId));
     if (mounted) context.pop();
   }
 

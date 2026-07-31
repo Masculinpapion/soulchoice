@@ -73,6 +73,13 @@
   "otp_resend": "Отправить снова",
   "otp_verify": "Подтвердить",
   "otp_error_failed": "Подтверждение не удалось",
+  "otp_error_too_many": "Слишком много неверных попыток — запроси новый код",
+  "phone_error_too_soon": "Слишком часто — попробуй снова через {seconds} сек",
+  "@phone_error_too_soon": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
   "perm_notification_title": "Разрешить уведомления",
   "perm_notification_desc": "Нужно, чтобы уведомлять тебя о новых сообщениях при выборе",
   "perm_location_title": "Поделиться геолокацией",

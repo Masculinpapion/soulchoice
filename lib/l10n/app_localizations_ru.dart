@@ -216,6 +216,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otp_error_failed => 'Подтверждение не удалось';
 
   @override
+  String get otp_error_too_many =>
+      'Слишком много неверных попыток — запроси новый код';
+
+  @override
+  String phone_error_too_soon(Object seconds) {
+    return 'Слишком часто — попробуй снова через $seconds сек';
+  }
+
+  @override
   String get perm_notification_title => 'Разрешить уведомления';
 
   @override

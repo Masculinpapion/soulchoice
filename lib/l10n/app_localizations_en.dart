@@ -217,6 +217,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otp_error_failed => 'Verification failed';
 
   @override
+  String get otp_error_too_many =>
+      'Too many wrong attempts — request a new code';
+
+  @override
+  String phone_error_too_soon(Object seconds) {
+    return 'Too many tries — try again in $seconds s';
+  }
+
+  @override
   String get perm_notification_title => 'Allow notifications';
 
   @override

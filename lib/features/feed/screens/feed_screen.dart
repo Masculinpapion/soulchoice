@@ -37,6 +37,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
   void _invalidateAll() {
     if (!mounted) return;
     ref.invalidate(invitationsProvider);
+    // Çan rozeti bayat kalmasın — uygulama açıkken gelen bildirim sayıya
+    // yansımıyordu (31.07 denetimi)
+    ref.invalidate(unreadNotificationCountProvider);
   }
 
   @override

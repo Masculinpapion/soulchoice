@@ -3,6 +3,8 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',
+  // 31.07: CT olmadan istemci hata kodlarını (too_soon/retry_after) parse edemiyordu
+  'Content-Type': 'application/json',
 }
 
 const SMS_RU_API_KEY = Deno.env.get('SMS_RU_API_KEY') ?? ''

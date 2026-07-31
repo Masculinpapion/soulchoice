@@ -94,10 +94,15 @@ class NotificationItem {
     if (type == 'selfie_rejected') return '/profile/selfie';
     if (type == 'selfie_approved') return '/feed';
     // '/profile' kayıtlı rota DEĞİL (24.07 denetim bulgusu) — abonelik ekranına
-    if (type == 'premium_activated') return '/subscription';
+    if (type.startsWith('premium_')) return '/subscription';
     final invId = payload['invitation_id'] as String?;
     final matchId = payload['match_id'] as String?;
     if (matchId != null) return '/chat/$matchId';
+    // Push ile aynı hedef (31.07 hizalama): başvuru/hatırlatma → başvuranlar
+    if (invId != null &&
+        (type == 'new_application' || type == 'selection_reminder')) {
+      return '/invitation/$invId/applicants';
+    }
     if (invId != null) return '/invitation/$invId';
     return '/feed';
   }

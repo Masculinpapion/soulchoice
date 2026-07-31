@@ -13,6 +13,8 @@ import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../features/profile/providers/profile_provider.dart';
 import '../providers/matches_provider.dart';
+import '../../feed/providers/invitations_provider.dart';
+import '../../discover/providers/discover_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
 
@@ -29,7 +31,8 @@ class ChatScreen extends ConsumerStatefulWidget {
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen>
+    with WidgetsBindingObserver {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
   final List<MessageModel> _messages = [];
@@ -72,6 +75,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _currentUid = Supabase.instance.client.auth.currentUser?.id;
     // Çekmecede bu sohbete ait bayat bildirim kaldıysa temizle (31.07).
     NotificationCleaner.clearForChat(widget.matchId);
+    WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
     _loadMessages();
     _subscribeRealtime();
@@ -326,35 +330,45 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _loadMoreMessages() async {
     if (_messages.isEmpty || _loadingMore || !_hasMore) return;
     setState(() => _loadingMore = true);
-    final oldest = _messages.first.createdAt;
-    final data = await Supabase.instance.client
-        .from('messages')
-        .select()
-        .eq('match_id', widget.matchId)
-        .lt('created_at', oldest.toUtc().toIso8601String())
-        .order('created_at', ascending: false)
-        .limit(_pageSize);
-    if (!mounted) return;
-    final older = (data as List)
-        .map((r) => MessageModel.fromJson(r))
-        .toList()
-        .reversed
-        .toList();
-    setState(() {
-      _messages.insertAll(0, older);
-      _hasMore = data.length == _pageSize;
-      _loadingMore = false;
-    });
+    try {
+      final oldest = _messages.first.createdAt;
+      final data = await Supabase.instance.client
+          .from('messages')
+          .select()
+          .eq('match_id', widget.matchId)
+          .lt('created_at', oldest.toUtc().toIso8601String())
+          .order('created_at', ascending: false)
+          .limit(_pageSize);
+      if (!mounted) return;
+      final older = (data as List)
+          .map((r) => MessageModel.fromJson(r))
+          .toList()
+          .reversed
+          .toList();
+      setState(() {
+        _messages.insertAll(0, older);
+        _hasMore = data.length == _pageSize;
+      });
+    } catch (_) {
+      // Tek ağ hatası sayfalamayı kalıcı kilitlemesin (31.07 denetimi) —
+      // bir sonraki kaydırmada tekrar denenir.
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
   }
 
   Future<void> _markRead() async {
-    // sender_id silinmiş kullanıcıda NULL — neq NULL satırı atlar, or ile kapsa
-    await Supabase.instance.client
-        .from('messages')
-        .update({'read_at': DateTime.now().toIso8601String()})
-        .eq('match_id', widget.matchId)
-        .or('sender_id.neq.${_currentUid ?? ''},sender_id.is.null')
-        .isFilter('read_at', null);
+    // sender_id silinmiş kullanıcıda NULL — neq NULL satırı atlar, or ile kapsa.
+    // Fire-and-forget: hata bir sonraki fetch'te telafi edilir; yakalanmayan
+    // async hata Crashlytics'e fatal düşmesin (31.07 denetimi).
+    try {
+      await Supabase.instance.client
+          .from('messages')
+          .update({'read_at': DateTime.now().toIso8601String()})
+          .eq('match_id', widget.matchId)
+          .or('sender_id.neq.${_currentUid ?? ''},sender_id.is.null')
+          .isFilter('read_at', null);
+    } catch (_) {/* sessiz */}
   }
 
   void _subscribeRealtime() {
@@ -420,7 +434,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             });
           },
         )
-        .subscribe();
+        .subscribe((status, [_]) {
+          // 31.07 denetimi: kanal kopunca gelen mesajlar kalıcı kayboluyordu
+          // (rejoin sonrası backfill yok). Kopma sonrası yeniden bağlanınca
+          // tüm pencereyi tazele.
+          if (status == RealtimeSubscribeStatus.channelError ||
+              status == RealtimeSubscribeStatus.timedOut ||
+              status == RealtimeSubscribeStatus.closed) {
+            _channelDropped = true;
+          } else if (status == RealtimeSubscribeStatus.subscribed &&
+              _channelDropped) {
+            _channelDropped = false;
+            if (mounted) {
+              _loadMessages();
+              _markRead();
+            }
+          }
+        });
+  }
+
+  bool _channelDropped = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Kilit/arka plandan dönüşte socket sessizce kopmuş olabilir — tazele.
+    if (state == AppLifecycleState.resumed && mounted) {
+      _loadMessages();
+      _markRead();
+    }
   }
 
   void _showAuroraSnack(String message,
@@ -457,6 +498,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _scrollController.removeListener(_onScroll);
     _messageController.dispose();
     _scrollController.dispose();
@@ -470,7 +512,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _sendMessage() async {
     if (_otherDeleted) return;
     final text = _messageController.text.trim();
-    if (text.isEmpty || _currentUid == null) return;
+    if (text.isEmpty) return;
+    // Soğuk açılışta initState oturumdan önce koşmuş olabilir — göndermeden
+    // önce taze dene; hâlâ yoksa sessiz no-op yerine hata göster (31.07).
+    _currentUid ??= Supabase.instance.client.auth.currentUser?.id;
+    if (_currentUid == null) {
+      _showAuroraSnack(
+        AppLocalizations.of(context)!.error_generic,
+        accentColor: AuroraTheme.auroraRed,
+        icon: Icons.error_outline,
+      );
+      return;
+    }
     _messageController.clear();
 
     final rng = Random.secure();
@@ -552,7 +605,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         'p_match_id': widget.matchId,
         'p_attended': attended,
       });
-    } catch (_) {}
+    } catch (_) {
+      // 31.07 denetimi: hata yutulup "kaydedildi" gösteriliyordu — no-show
+      // sayacı hiç artmadan kullanıcı bildirdiğini sanıyordu. Hata görünür,
+      // banner açık kalır, tekrar deneyebilir.
+      if (mounted) {
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.error_generic,
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
+      }
+      return;
+    }
 
     if (mounted) {
       setState(() => _myConfirmation = attended);
@@ -572,6 +637,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     try {
       await Supabase.instance.client
           .rpc('hide_chat', params: {'p_match_id': widget.matchId});
+      // Liste tazelenmezse gizlenen sohbet görünmeye devam eder
+      // (_deleteChat'teki 29.07 fix'inin atlanmış ikizi — 31.07 denetimi).
+      ref.invalidate(matchesProvider);
       if (mounted) context.go('/messages');
     } catch (e) {
       if (mounted) {
@@ -622,6 +690,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         }, onConflict: 'blocker_id,blocked_id'),
         client.from('matches').delete().eq('id', widget.matchId),
       ]);
+      // Engellenen kişi tüm yüzeylerden anında düşsün (31.07 denetimi):
+      // sohbet listesi + feed + keşfet; başvuranlar ekranı zaten yeniden yüklenir.
+      ref.invalidate(matchesProvider);
+      ref.invalidate(invitationsProvider);
+      ref.invalidate(discoverProvider);
     } catch (_) {
       // 24.07 denetim: engelleme başarısızsa "engellendi" gibi çıkıp gitme
       if (mounted) {
@@ -665,7 +738,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   initial?['photoUrl'] as String?,
               otherUserId: _matchInfo?['otherUserId'] as String?,
               isLoading: _matchInfo == null && initial == null,
-              onBack: () => context.pop(),
+              // go() ile gelinmiş olabilir (seçim akışı) — pop edilecek bir şey
+              // yoksa Mesajlar'a çık; çıplak pop GoError fırlatıyordu (31.07 Y2).
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go('/messages'),
               // Silinmiş kullanıcıda Engelle anlamsız (hedef hesap yok) ve
               // sessizce no-op oluyordu — yerine tek net aksiyon: Sohbeti sil.
               onBlock: _otherDeleted ? null : _block,

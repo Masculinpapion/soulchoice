@@ -107,6 +107,11 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'SoulChoice Premium', b: 'Abonelik yenilenemedi — kartını kontrol et. Premium şimdilik aktif, tekrar deneyeceğiz.' },
     en: { t: 'SoulChoice Premium', b: "Couldn't renew your subscription — check your card. Premium is still active; we'll retry." },
   },
+  premium_resumed: {
+    ru: { t: 'SoulChoice Premium', b: 'Автопродление снова включено — Premium активен до {date}' },
+    tr: { t: 'SoulChoice Premium', b: 'Otomatik yenileme yeniden açıldı — Premium {date} tarihine kadar aktif' },
+    en: { t: 'SoulChoice Premium', b: 'Auto-renewal is back on — Premium is active until {date}' },
+  },
   premium_cancelled: {
     ru: { t: 'Подписка отменена', b: 'Premium активен до {date}' },
     tr: { t: 'Abonelik iptal edildi', b: 'Premium {date} tarihine kadar aktif' },
@@ -163,17 +168,21 @@ serve(async (req) => {
       // Owner'a seçim hatırlatması — başvuru push tercihine bağlı
       selection_reminder: 'push_new_application',
     }
+    // Servis mesajları (para/hesap durumu — ФЗ-38): tercih ve sessiz-saat
+    // kapısına TAKILMAZ. Geri kalan her şey (selfie dahil) sessiz saatlere
+    // uyar (31.07 denetimi: selfie push'u gece 03:00'te gidebiliyordu).
+    const isService = notifType.startsWith('premium_') || notifType === 'account_suspended'
     const col = typeToColumn[notifType]
-    if (col) {
+    if (col || !isService) {
       const prefRes = await db.queryObject<Record<string, unknown>>(
-        `SELECT ${col} AS enabled, quiet_hours_enabled, quiet_hours_start, quiet_hours_end
+        `SELECT ${col ? `${col} AS enabled,` : 'true AS enabled,'} quiet_hours_enabled, quiet_hours_start, quiet_hours_end
          FROM notification_preferences WHERE user_id = $1 LIMIT 1`,
         [user_id]
       )
       const pref = prefRes.rows[0]
       if (pref) {
-        // Tür kapalı → atla
-        if (pref.enabled === false) {
+        // Tür kapalı → atla (yalnız toggle'ı olan türler)
+        if (col && pref.enabled === false) {
           await db.end()
           return new Response(JSON.stringify({ success: true, skipped: 'type_disabled' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
         }
@@ -193,26 +202,26 @@ serve(async (req) => {
           }
         }
       }
-      // 26.07 çift-push koruması: DB trigger'ı + eski istemci (build ≤618)
-      // aynı olayı iki kez yollayabilir; 8 sn pencerede aynı (alıcı, tip, ref)
-      // ikinci kez gönderilmez. push_log yoksa/hata olursa dedupe atlanır —
-      // push göndermek dedupe'tan her zaman önceliklidir.
-      try {
-        const dedupRef = String(data?.match_id ?? data?.invitation_id ?? '')
-        const dup = await db.queryObject(
-          "SELECT 1 FROM push_log WHERE user_id = $1 AND type = $2 AND ref = $3 AND sent_at > now() - interval '8 seconds' LIMIT 1",
-          [user_id, notifType, dedupRef]
-        )
-        if (dup.rows.length > 0) {
-          await db.end()
-          return new Response(JSON.stringify({ success: true, skipped: 'duplicate' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
-        }
-        await db.queryObject(
-          'INSERT INTO push_log(user_id, type, ref) VALUES ($1, $2, $3)',
-          [user_id, notifType, dedupRef]
-        )
-      } catch (_) { /* dedupe altyapısı henüz yoksa push yine gitsin */ }
     }
+    // 26.07 çift-push koruması (31.07: artık TÜM türler için — selfie/premium
+    // çift gidebiliyordu): 8 sn pencerede aynı (alıcı, tip, ref) ikinci kez
+    // gönderilmez. push_log yoksa/hata olursa dedupe atlanır — push göndermek
+    // dedupe'tan her zaman önceliklidir.
+    try {
+      const dedupRef = String(data?.match_id ?? data?.invitation_id ?? '')
+      const dup = await db.queryObject(
+        "SELECT 1 FROM push_log WHERE user_id = $1 AND type = $2 AND ref = $3 AND sent_at > now() - interval '8 seconds' LIMIT 1",
+        [user_id, notifType, dedupRef]
+      )
+      if (dup.rows.length > 0) {
+        await db.end()
+        return new Response(JSON.stringify({ success: true, skipped: 'duplicate' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
+      }
+      await db.queryObject(
+        'INSERT INTO push_log(user_id, type, ref) VALUES ($1, $2, $3)',
+        [user_id, notifType, dedupRef]
+      )
+    } catch (_) { /* dedupe altyapısı henüz yoksa push yine gitsin */ }
 
     // iOS rozet: okunmamış in-app bildirim sayısı (notifications insert'i bu
     // fonksiyondan ÖNCE yapıldığı için mevcut olay sayıma dahil). Süs — hata

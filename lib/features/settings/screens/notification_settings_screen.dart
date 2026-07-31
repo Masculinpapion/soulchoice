@@ -56,11 +56,18 @@ class _NotificationSettingsScreenState
       if (mounted) setState(() => _loading = false);
       return;
     }
-    final row = await Supabase.instance.client
-        .from('notification_preferences')
-        .select()
-        .eq('user_id', uid)
-        .maybeSingle();
+    // 31.07 denetimi: korumasız await hatada spinner'ı sonsuza kilitliyordu.
+    // Hata halinde varsayılanlarla açılır (kayıt yokmuş gibi) — ekran çalışır.
+    Map<String, dynamic>? row;
+    try {
+      row = await Supabase.instance.client
+          .from('notification_preferences')
+          .select()
+          .eq('user_id', uid)
+          .maybeSingle();
+    } catch (_) {
+      row = null;
+    }
     if (!mounted) return;
     setState(() {
       if (row != null) {
@@ -79,17 +86,32 @@ class _NotificationSettingsScreenState
 
   Future<void> _save() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
-    await Supabase.instance.client.from('notification_preferences').upsert({
-      'user_id': uid,
-      'push_new_application': _newApplication,
-      'push_selected': _selected,
-      'push_message': _message,
-      'push_match': _match,
-      'quiet_hours_enabled': _quietEnabled,
-      'quiet_hours_start': '${_fmt(_quietStart)}:00',
-      'quiet_hours_end': '${_fmt(_quietEnd)}:00',
-    }, onConflict: 'user_id');
+    // 31.07 denetimi: hata yutulup "Kaydedildi" gösteriliyordu — kullanıcı
+    // kapattığını sandığı push'u almaya devam ediyordu. Hata görünür + UI
+    // sunucudaki gerçek duruma geri döndürülür.
+    try {
+      if (uid == null) throw Exception('no_session');
+      await Supabase.instance.client.from('notification_preferences').upsert({
+        'user_id': uid,
+        'push_new_application': _newApplication,
+        'push_selected': _selected,
+        'push_message': _message,
+        'push_match': _match,
+        'quiet_hours_enabled': _quietEnabled,
+        'quiet_hours_start': '${_fmt(_quietStart)}:00',
+        'quiet_hours_end': '${_fmt(_quietEnd)}:00',
+      }, onConflict: 'user_id');
+    } catch (_) {
+      if (mounted) {
+        _messengerKey.currentState
+          ?..removeCurrentSnackBar()
+          ..showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.error_generic),
+          ));
+        _load(); // anahtarları sunucudaki gerçek konuma geri çek
+      }
+      return;
+    }
     // Anlık "kaydedildi" onayı — ama casper yok: önceki snackbar silinir
     // (kuyruk birikmez), kısa süre, ekran kapanınca dispose temizler.
     if (mounted) {
@@ -110,11 +132,8 @@ class _NotificationSettingsScreenState
                       color: Colors.white)),
             ],
           ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF23232B), // opak — koyu zeminde net okunur
-          elevation: 8,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          // Global SnackBar teması kullanılır (31.07: tema dışı gri + elevation
+          // kaldırıldı — 6c60d9f standardı)
           duration: const Duration(milliseconds: 1600),
         ));
     }

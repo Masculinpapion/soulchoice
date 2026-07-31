@@ -4,6 +4,9 @@ import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, content-type, x-client-info, apikey',
+  // 31.07: CT olmadan istemci FunctionException.details'i String görüyor,
+  // error kodları (too_many_attempts vb.) hiç parse edilemiyordu
+  'Content-Type': 'application/json',
 }
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''

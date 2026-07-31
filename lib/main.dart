@@ -114,10 +114,18 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
   }
 
   Future<void> _openWhenSessionReady(RemoteMessage m) async {
-    // Soğuk açılış: Supabase oturumu diskten/refresh'ten gelene kadar bekle
-    // (en çok 12 sn; gelmezse bugünkü davranış — feed — korunur).
-    for (var i = 0; i < 24; i++) {
-      if (Supabase.instance.client.auth.currentUser != null) break;
+    // Soğuk açılış: 1) oturum diskten gelene, 2) splash yönlendirmesi bitene
+    // kadar bekle. Splash sabit gecikmeyle go('/feed') yaptığı için erken
+    // push edilen deep-link siliniyordu (31.07 denetim bulgusu Y1).
+    for (var i = 0; i < 30; i++) {
+      final hasSession = Supabase.instance.client.auth.currentUser != null;
+      final loc = ref
+          .read(routerProvider)
+          .routerDelegate
+          .currentConfiguration
+          .uri
+          .toString();
+      if (hasSession && !loc.startsWith('/splash')) break;
       await Future.delayed(const Duration(milliseconds: 500));
     }
     if (!mounted) return;
@@ -163,12 +171,25 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
       ref.read(routerProvider).push('/profile/selfie');
       return;
     }
-    // Yeni başvuru → başvuranlar ekranı (26.07 iOS turu: feed'e düşüyordu)
+    final type = m.data['type'] as String? ?? '';
+    // Yeni başvuru + seçim hatırlatması → başvuranlar ekranı
+    // (26.07 iOS turu: feed'e düşüyordu; selection_reminder dalı 31.07 denetimi)
     final invitationId = m.data['invitation_id'];
-    if (m.data['type'] == 'new_application' &&
+    if ((type == 'new_application' || type == 'selection_reminder') &&
         invitationId is String &&
         invitationId.isNotEmpty) {
       ref.read(routerProvider).push('/invitation/$invitationId/applicants');
+      return;
+    }
+    // Ödeme/abonelik push'ları → abonelik ekranı (31.07 denetimi: dalı yoktu,
+    // dokununca hiçbir şey olmuyordu; in-app liste zaten /subscription açıyor)
+    if (type.startsWith('premium_')) {
+      ref.read(routerProvider).push('/subscription');
+      return;
+    }
+    // Askı bildirimi → askı ekranı (router guard'ı zaten oraya kilitler)
+    if (type == 'account_suspended') {
+      ref.read(routerProvider).go('/suspended');
       return;
     }
     final matchId = m.data['match_id'];

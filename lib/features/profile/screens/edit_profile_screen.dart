@@ -9,6 +9,8 @@ import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import '../providers/profile_provider.dart';
+import '../../feed/providers/invitations_provider.dart';
+import '../../discover/providers/discover_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 // Tek sayfa profil düzenleme — kayıt sihirbazı (ProfileSetupScreen) yalnız
@@ -269,6 +271,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         ref.invalidate(userProfileProvider(uid));
         ref.invalidate(userPromptsProvider(uid));
+        // Yaş aralığı feed/keşfet filtresini besler — bayat kalmasın
+        // (31.07 denetimi; settings_screen aynı işlemde zaten yapıyor)
+        ref.invalidate(invitationsProvider);
+        ref.invalidate(discoverProvider);
         context.pop();
       }
     } catch (e) {

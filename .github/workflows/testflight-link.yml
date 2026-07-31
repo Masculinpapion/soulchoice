@@ -34,8 +34,7 @@ jobs:
           r = requests.patch(f"{API}/betaGroups/{GROUP}", headers=hdr(), json={
               "data": {"type": "betaGroups", "id": GROUP, "attributes": {
                   "publicLinkEnabled": True,
-                  "publicLinkLimitEnabled": True,
-                  "publicLinkLimit": 100,
+                  "publicLinkLimitEnabled": False,
               }}})
           print("patch:", r.status_code, r.text[:300])
           r.raise_for_status()

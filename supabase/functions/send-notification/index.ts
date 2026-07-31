@@ -141,9 +141,21 @@ const SELFIE_REASONS: Record<string, Record<string, string>> = {
   multiple_people: { ru: 'В кадре кто-то ещё — сделай селфи в одиночку', tr: 'Kadrajda başka biri var — tek başına çek', en: 'Someone else in frame — take it alone' },
 }
 
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
   try {
+    // 31.07 GÜVENLİK: bu uç yalnız SUNUCU tarafından çağrılır (DB trigger'ları +
+    // billing/webhook fonksiyonları). Kong'da JWT doğrulaması kapalı olduğu için
+    // uç anahtarsız çağrılabiliyordu → herkes istediği kullanıcıya istediği
+    // metinle push atabiliyordu (kimlik avı). Artık service key şartı var.
+    const auth = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
+    if (!SERVICE_KEY || auth !== SERVICE_KEY) {
+      return new Response(JSON.stringify({ error: 'unauthorized' }), {
+        status: 401, headers: { ...CORS, 'Content-Type': 'application/json' },
+      })
+    }
     const { user_id, title, body, data, template } = await req.json()
     if (!user_id || !title || !body) {
       return new Response(JSON.stringify({ error: 'user_id, title, body required' }), { status: 400, headers: CORS })

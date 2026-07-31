@@ -197,7 +197,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                 ? null
                 : _fixCase(_descriptionController.text),
             'venue_name': venueFormatted,
-            'event_date': _eventDate?.toIso8601String(),
+            'event_date': _eventDate?.toUtc().toIso8601String(),
           })
           .eq('id', editId);
 

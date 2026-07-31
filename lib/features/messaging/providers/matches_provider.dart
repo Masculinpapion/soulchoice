@@ -70,11 +70,9 @@ final matchesProvider =
         .select('user_id, url')
         .inFilter('user_id', uniqueOtherIds)
         .eq('is_primary', true),
-    client
-        .from('messages')
-        .select('id, match_id, sender_id, content, created_at, read_at')
-        .inFilter('match_id', matchIds)
-        .order('created_at', ascending: false),
+    // 31.07: eskiden TÜM sohbetlerin TÜM mesajları limitsiz iniyordu
+    // (ölçekte megabaytlar). Artık sunucu tek satır özet döner.
+    client.rpc('my_chat_summaries'),
   ]);
 
   // Dart'ta index'le
@@ -89,13 +87,10 @@ final matchesProvider =
 
   final lastMsgMap = <String, Map<String, dynamic>>{};
   final unreadCountMap = <String, int>{};
-  for (final msg in (results[2] as List).cast<Map<String, dynamic>>()) {
-    final mid = msg['match_id'] as String;
-    // Sıralı geldiği için ilk karşılaşılan en yeni mesajdır
-    lastMsgMap.putIfAbsent(mid, () => msg);
-    if (msg['sender_id'] != uid && msg['read_at'] == null) {
-      unreadCountMap[mid] = (unreadCountMap[mid] ?? 0) + 1;
-    }
+  for (final row in (results[2] as List).cast<Map<String, dynamic>>()) {
+    final mid = row['match_id'] as String;
+    lastMsgMap[mid] = row;
+    unreadCountMap[mid] = (row['unread'] as num?)?.toInt() ?? 0;
   }
 
   final seen = <String, MatchPreview>{};

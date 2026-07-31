@@ -44,7 +44,24 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _invalidateAll();
+    // 31.07: arka planda timer boşuna sorgu atıyordu (pil/veri) — durdur,
+    // öne gelince tazele + yeniden başlat.
+    if (state == AppLifecycleState.resumed) {
+      _invalidateAll();
+      _startTimer();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _refreshTimer?.cancel();
+      _refreshTimer = null;
+    }
+  }
+
+  void _startTimer() {
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _invalidateAll(),
+    );
   }
 
   @override
@@ -54,10 +71,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     _tabController.addListener(_onTabChanged);
     _loadMoskovaCityId();
     WidgetsBinding.instance.addObserver(this);
-    _refreshTimer = Timer.periodic(
-      const Duration(seconds: 30),
-      (_) => _invalidateAll(),
-    );
+    _startTimer();
   }
 
   Future<void> _loadMoskovaCityId() async {

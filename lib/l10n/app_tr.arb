@@ -344,7 +344,7 @@
   "inv_detail_directions": "Yol tarifi",
   "inv_detail_section_invitation": "DAVETİYE",
   "inv_detail_section_details": "DETAYLAR",
-  "inv_detail_section_host": "DAVETÇI",
+  "inv_detail_section_host": "DAVETÇİ",
   "inv_detail_host_label": "Davetiye sahibi",
   "inv_detail_section_with_whom": "KİMİNLE",
   "inv_detail_section_who": "KİM",
@@ -360,7 +360,7 @@
   "inv_detail_withdraw_confirm": "Geri çek",
   "inv_detail_withdraw_btn": "Başvuruyu Geri Çek",
   "inv_detail_withdrawing": "İptal ediliyor...",
-  "inv_detail_selected_btn": "Seçildiniz — Kararınızı verin",
+  "inv_detail_selected_btn": "Seçildin — Kararını ver",
   "inv_detail_accepted_btn": "✓ Kabul edildi",
   "inv_detail_apply_sent_title": "Başvuru Gönderildi",
   "inv_detail_apply_sent_body": "Davetiye sahibinin seçim yapmasını bekle",
@@ -458,8 +458,8 @@
   "selfie_pending_banner_title": "Selfie incelemede",
   "selfie_pending_banner_body": "Moderatör 24 saat içinde inceleyecek, sonuç bildirimle gelecek. Yeni selfie göndermene gerek yok.",
   "err_apply_limit": "Ücretsiz başvuru hakkın kullanıldı — sınırsız başvuru Premium ile.",
-  "err_invitation_closed": "Bu ilan artık başvuru kabul etmiyor.",
-  "err_active_invitation_limit": "Bu türde zaten aktif bir ilanın var.",
+  "err_invitation_closed": "Bu davet artık başvuru kabul etmiyor.",
+  "err_active_invitation_limit": "Bu türde zaten aktif bir davetin var.",
   "err_account_suspended": "Hesabın askıya alınmış durumda.",
   "selfie_reason_face_unclear": "Yüz net görünmüyor",
   "selfie_reason_too_far": "Daha yakından çekmelisin",
@@ -630,7 +630,7 @@
   "profile_setup_prompt_favorite_restaurant": "EN SEVDİĞİM RESTORAN...",
   "profile_setup_prompt_last_book": "SON OKUDUĞUM KİTAP...",
   "profile_setup_prompt_perfect_evening": "MÜKEMMEL BİR AKŞAM...",
-  "profile_setup_prompt_travel_dream": "HAYALİNDEKİ SEYAHAT...",
+  "profile_setup_prompt_travel_dream": "HAYALİMDEKİ SEYAHAT...",
   "profile_setup_interest_art": "Sanat",
   "profile_setup_interest_music": "Müzik",
   "profile_setup_interest_sports": "Spor",
@@ -851,7 +851,7 @@
     }
   },
   "notif_type_new_application_title": "Yeni Başvuru",
-  "notif_type_new_application_body": "{name} davetinize başvurdu",
+  "notif_type_new_application_body": "{name} davetine başvurdu",
   "@notif_type_new_application_body": {
     "placeholders": {
       "name": {
@@ -894,7 +894,7 @@
       }
     }
   },
-  "notif_action_new_application": "{gender, select, other{davetinize başvurdu}}",
+  "notif_action_new_application": "{gender, select, other{davetine başvurdu}}",
   "notif_action_selected": "{gender, select, other{seni seçti 🎉}}",
   "notif_action_not_selected": "{gender, select, other{başvurunu yanıtladı}}",
   "chat_hide_conversation": "Sohbeti Gizle",
@@ -904,9 +904,9 @@
   "chat_hide": "Gizle",
   "chat_block_and_close": "Engelle ve Kapat",
   "chat_block": "Engelle",
-  "chat_open": "Chat açık",
+  "chat_open": "Sohbet açık",
   "chat_hide_confirm_body": "Bu sohbet listenden kalkacak. Karşı taraf sohbeti görmeye devam eder; yeni mesaj gelirse sohbet geri gelir.",
-  "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.",
+  "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Sohbet kapanacak.",
   "@chat_block_confirm_body": {
     "placeholders": {
       "gender": {
@@ -946,7 +946,7 @@
   "paywall_cancel_anytime": "İstediğin zaman iptal edebilirsin.",
   "paywall_coming_soon": "Ödeme sistemi yakında — ИП kuruluşu bekleniyor.",
   "paywall_close": "Kapat",
-  "profile_inv_section": "KARTLARIM",
+  "profile_inv_section": "DAVETLERİM",
   "profile_inv_empty_title": "Henüz aktif davetin yok",
   "profile_inv_create_cta": "+ Yeni davetiye oluştur",
   "profile_inv_applicants": "{count, plural, other{{count} başvuran}}",

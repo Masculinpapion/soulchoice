@@ -285,7 +285,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get feed_no_invitations => 'Пока нет приглашений';
 
   @override
-  String get feed_be_first => 'Будь первым!';
+  String get feed_be_first => 'Открой первое приглашение!';
 
   @override
   String get empty_filter_hint =>
@@ -345,8 +345,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get discover_empty_title => 'Пока нет активных приглашений';
 
   @override
-  String get discover_empty_subtitle =>
-      'Будь первым, кто откроет приглашение здесь';
+  String get discover_empty_subtitle => 'Открой здесь первое приглашение';
 
   @override
   String get discover_btn_create => '+ Создать приглашение';
@@ -552,7 +551,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_validation_description_travel =>
-      'Напишите, куда хотите поехать';
+      'Напиши, куда хочешь поехать';
 
   @override
   String get create_inv_venue_question_gift_invite =>
@@ -1061,11 +1060,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notif_selected_push_title => 'Тебя выбрали! 🎉';
 
   @override
-  String get notif_selected_push_body => 'Чат открыт — поздоровайтесь';
+  String get notif_selected_push_body => 'Чат открыт — поздоровайся';
 
   @override
   String get chat_deleted_user_info =>
-      'Этот пользователь удалил свой аккаунт. Отправка сообщений больше недоступна.';
+      'Аккаунт этого пользователя удалён. Отправка сообщений больше недоступна.';
 
   @override
   String get chat_meeting_question => 'Встреча состоялась?';
@@ -1130,14 +1129,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_view_cta_message => 'Написать сообщение';
 
   @override
-  String get phone_session_expired => 'Сессия истекла — войдите снова.';
+  String get phone_session_expired => 'Сессия истекла — войди снова.';
 
   @override
   String get suspended_title => 'Аккаунт приостановлен';
 
   @override
   String get suspended_body =>
-      'Аккаунт приостановлен из-за повторных неявок на встречи или нарушения правил. Если это ошибка — напишите нам.';
+      'Аккаунт приостановлен из-за повторных неявок на встречи или нарушения правил. Если это ошибка — напиши нам.';
 
   @override
   String get suspended_contact => 'Написать в поддержку';
@@ -1147,7 +1146,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get err_selfie_required =>
-      'Сначала подтвердите профиль селфи — открываем камеру.';
+      'Сначала подтверди профиль селфи — открываем камеру.';
 
   @override
   String get err_selfie_pending =>
@@ -1211,14 +1210,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get app_status_expired => 'ВЫБОР НЕ СДЕЛАН';
 
   @override
-  String get paywall_premium_active => 'Premium активен — пользуйтесь! 🎉';
+  String get paywall_premium_active => 'Premium активен — пользуйся! 🎉';
 
   @override
   String get notif_type_selection_reminder_title => 'Заявки ждут ✨';
 
   @override
   String get notif_type_selection_reminder_body =>
-      'Окно выбора скоро закроется — взгляните на заявки.';
+      'Окно выбора скоро закроется — загляни в заявки.';
 
   @override
   String get messages_empty_past => 'Прошлых чатов нет';
@@ -1324,7 +1323,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_consent_subtitle =>
-      'Прежде чем продолжить, подтвердите три пункта ниже.';
+      'Прежде чем продолжить, подтверди три пункта ниже.';
 
   @override
   String get profile_setup_consent_age => 'Мне исполнилось 18 лет';
@@ -1341,10 +1340,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Я разрешаю показывать мой профиль (фото, имя, возраст, город) другим пользователям сервиса';
 
   @override
-  String get profile_setup_validation_gender => 'Пожалуйста, выберите пол';
+  String get profile_setup_validation_gender => 'Пожалуйста, выбери пол';
 
   @override
-  String get profile_setup_validation_city => 'Пожалуйста, выберите город';
+  String get profile_setup_validation_city => 'Пожалуйста, выбери город';
 
   @override
   String get profile_setup_validation_name => 'Имя не может быть пустым';
@@ -2173,13 +2172,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywall_close => 'Закрыть';
 
   @override
-  String get profile_inv_section => 'МОИ ЗАЯВКИ';
+  String get profile_inv_section => 'МОИ ПРИГЛАШЕНИЯ';
 
   @override
   String get profile_inv_empty_title => 'Активной заявки нет';
 
   @override
-  String get profile_inv_create_cta => '+ Создать заявку';
+  String get profile_inv_create_cta => '+ Создать приглашение';
 
   @override
   String profile_inv_applicants(int count) {
@@ -2224,7 +2223,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sub_none_body =>
-      'Оформите Premium с автопродлением или разовый доступ на 30 дней.';
+      'Оформи Premium с автопродлением или разовый доступ на 30 дней.';
 
   @override
   String get sub_none_body_ios =>
@@ -2299,13 +2298,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sub_use_resume_hint =>
-      'Подписка отменена, но период ещё активен — возобновите её в Профиль → Подписка.';
+      'Подписка отменена, но период ещё активен — возобнови её в Профиль → Подписка.';
 
   @override
-  String get sub_email_invalid => 'Введите корректный e-mail.';
+  String get sub_email_invalid => 'Введи корректный e-mail.';
 
   @override
-  String get sub_consent_required => 'Чтобы продолжить, примите условия.';
+  String get sub_consent_required => 'Чтобы продолжить, прими условия.';
 
   @override
   String get sub_continue => 'Продолжить';
@@ -2315,11 +2314,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sub_retry_failed =>
-      'Списание не удалось. Проверьте карту и попробуйте позже.';
+      'Списание не удалось. Проверь карту и попробуй позже.';
 
   @override
   String get sub_retry_limit =>
-      'Слишком много попыток за сегодня — попробуйте завтра.';
+      'Слишком много попыток за сегодня — попробуй завтра.';
 
   @override
   String sub_resumed_note(String date) {

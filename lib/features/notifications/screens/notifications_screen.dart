@@ -99,7 +99,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     try {
       await Supabase.instance.client
           .from('notifications')
-          .update({'read_at': DateTime.now().toIso8601String()})
+          .update({'read_at': DateTime.now().toUtc().toIso8601String()})
           .eq('user_id', uid)
           .isFilter('read_at', null);
       ref.invalidate(notificationsProvider);
@@ -132,7 +132,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     try {
       await Supabase.instance.client
           .from('notifications')
-          .update({'read_at': DateTime.now().toIso8601String()})
+          .update({'read_at': DateTime.now().toUtc().toIso8601String()})
           .inFilter('id', ids)
           .isFilter('read_at', null);
       if (!mounted) return; // fire-and-forget: ekran kapanmış olabilir

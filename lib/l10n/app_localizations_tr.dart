@@ -926,7 +926,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_section_details => 'DETAYLAR';
 
   @override
-  String get inv_detail_section_host => 'DAVETÇI';
+  String get inv_detail_section_host => 'DAVETÇİ';
 
   @override
   String get inv_detail_host_label => 'Davetiye sahibi';
@@ -976,7 +976,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_withdrawing => 'İptal ediliyor...';
 
   @override
-  String get inv_detail_selected_btn => 'Seçildiniz — Kararınızı verin';
+  String get inv_detail_selected_btn => 'Seçildin — Kararını ver';
 
   @override
   String get inv_detail_accepted_btn => '✓ Kabul edildi';
@@ -1152,11 +1152,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ücretsiz başvuru hakkın kullanıldı — sınırsız başvuru Premium ile.';
 
   @override
-  String get err_invitation_closed => 'Bu ilan artık başvuru kabul etmiyor.';
+  String get err_invitation_closed => 'Bu davet artık başvuru kabul etmiyor.';
 
   @override
   String get err_active_invitation_limit =>
-      'Bu türde zaten aktif bir ilanın var.';
+      'Bu türde zaten aktif bir davetin var.';
 
   @override
   String get err_account_suspended => 'Hesabın askıya alınmış durumda.';
@@ -1456,7 +1456,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_prompt_perfect_evening => 'MÜKEMMEL BİR AKŞAM...';
 
   @override
-  String get profile_setup_prompt_travel_dream => 'HAYALİNDEKİ SEYAHAT...';
+  String get profile_setup_prompt_travel_dream => 'HAYALİMDEKİ SEYAHAT...';
 
   @override
   String get profile_setup_interest_art => 'Sanat';
@@ -1896,7 +1896,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String notif_type_new_application_body(String name) {
-    return '$name davetinize başvurdu';
+    return '$name davetine başvurdu';
   }
 
   @override
@@ -1981,7 +1981,7 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String notif_action_new_application(String gender) {
     String _temp0 = intl.Intl.selectLogic(gender, {
-      'other': 'davetinize başvurdu',
+      'other': 'davetine başvurdu',
     });
     return '$_temp0';
   }
@@ -2023,7 +2023,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_block => 'Engelle';
 
   @override
-  String get chat_open => 'Chat açık';
+  String get chat_open => 'Sohbet açık';
 
   @override
   String get chat_hide_confirm_body =>
@@ -2031,7 +2031,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String chat_block_confirm_body(String gender) {
-    return 'Bu kişiyi engellemek istediğine emin misin? Chat kapanacak.';
+    return 'Bu kişiyi engellemek istediğine emin misin? Sohbet kapanacak.';
   }
 
   @override
@@ -2121,7 +2121,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywall_close => 'Kapat';
 
   @override
-  String get profile_inv_section => 'KARTLARIM';
+  String get profile_inv_section => 'DAVETLERİM';
 
   @override
   String get profile_inv_empty_title => 'Henüz aktif davetin yok';

@@ -129,6 +129,32 @@ export async function isUnknownLocked(db: Client, subId: string): Promise<boolea
   return r.rows[0]?.event === 'charge_unknown'
 }
 
+/** Bankaya SOR, çekme: işlenmemiş ödeme varsa kayda geçir.
+ *  31.07: kilitli aboneliklerde de kullanılır — belirsiz çekim aslında
+ *  başarılıysa kullanıcı parasını kaptırmış olarak kilitli kalmasın. */
+export async function reconcileOnly(
+  db: Client,
+  sub: ChargeSub,
+  periodDays: number,
+  via: string,
+): Promise<{ outcome: 'reconciled' | 'nothing' | 'unavailable'; until: Date | null }> {
+  const op = await getOperation(sub.tochka_subscription_id)
+  if (!op) return { outcome: 'unavailable', until: null }
+  const orders = approvedOrders(op)
+  const known = await db.queryObject<{ order_id: string }>(
+    `select order_id from payments where operation_id = $1 and order_id <> ''`,
+    [sub.tochka_subscription_id],
+  )
+  const knownIds = new Set(known.rows.map((r) => r.order_id))
+  const missing = orders.filter((o) => !knownIds.has(o.orderId))
+  if (missing.length === 0) return { outcome: 'nothing', until: null }
+  let until: Date | null = null
+  for (const o of missing) {
+    until = (await grantOrder(db, sub, o, op, periodDays, via + '_reconcile')) ?? until
+  }
+  return { outcome: 'reconciled', until }
+}
+
 export async function attemptCharge(
   db: Client,
   sub: ChargeSub,
@@ -136,22 +162,17 @@ export async function attemptCharge(
   via: string,
 ): Promise<ChargeOutcome> {
   // 1) ÖN-MUTABAKAT: işlenmemiş çekim var mı? Varsa kaydet, ÇEKME (çifte çekim koruması)
-  const preOp = await getOperation(sub.tochka_subscription_id)
-  if (preOp) {
-    const orders = approvedOrders(preOp)
-    const known = await db.queryObject<{ order_id: string }>(
-      `select order_id from payments where operation_id = $1 and order_id <> ''`,
-      [sub.tochka_subscription_id],
-    )
-    const knownIds = new Set(known.rows.map((r) => r.order_id))
-    const missing = orders.filter((o) => !knownIds.has(o.orderId))
-    if (missing.length > 0) {
-      let until: Date | null = null
-      for (const o of missing) {
-        until = (await grantOrder(db, sub, o, preOp, periodDays, via + '_reconcile')) ?? until
-      }
-      return { outcome: 'reconciled', until }
-    }
+  const pre = await reconcileOnly(db, sub, periodDays, via)
+  // 31.07 DENETİM: banka sorulamadığında akış körlemesine çekime devam
+  // ediyordu → önceki çekim kayıt düşmemişse AYNI dönem için İKİNCİ KEZ para
+  // çekiliyordu. Artık fail-closed: çekme, ertesi koşuda tekrar dene.
+  if (pre.outcome === 'unavailable') {
+    await logEvent(db, sub.id, sub.user_id, 'charge_pending_verify',
+      { raw: 'preop_unavailable', via })
+    return { outcome: 'pending_verify', raw: 'preop_unavailable' }
+  }
+  if (pre.outcome === 'reconciled') {
+    return { outcome: 'reconciled', until: pre.until }
   }
 
   // 2) Deneme kaydı ÖNCE (S3 sayacı çökme/yeniden koşmada bile doğru kalır)

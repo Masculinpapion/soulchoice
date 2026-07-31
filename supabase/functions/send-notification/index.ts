@@ -63,7 +63,7 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     en: { t: "It's a match! 🎉", b: 'Chat with {name} is open' },
   },
   selection_reminder: {
-    ru: { t: 'Заявки ждут ✨', b: 'Заявок: {count} — окно выбора скоро закроется' },
+    ru: { t: 'Заявки ждут ✨', b: 'Заявок: {count} — загляни в них, окно выбора скоро закроется' },
     tr: { t: 'Başvurular bekliyor ✨', b: '{count} başvuran seçimini bekliyor — pencere yakında kapanıyor' },
     en: { t: 'Applications waiting ✨', b: '{count} applicants await your choice — window closes soon' },
   },
@@ -103,7 +103,7 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     en: { t: 'SoulChoice Premium', b: 'Your subscription renews on {date} — {amount} will be charged. Manage it in your profile.' },
   },
   premium_renew_failed: {
-    ru: { t: 'SoulChoice Premium', b: 'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.' },
+    ru: { t: 'SoulChoice Premium', b: 'Не удалось продлить подписку — проверь карту. Premium пока активен, мы повторим попытку.' },
     tr: { t: 'SoulChoice Premium', b: 'Abonelik yenilenemedi — kartını kontrol et. Premium şimdilik aktif, tekrar deneyeceğiz.' },
     en: { t: 'SoulChoice Premium', b: "Couldn't renew your subscription — check your card. Premium is still active; we'll retry." },
   },

@@ -12,6 +12,7 @@ import {
   attemptCharge,
   isUnknownLocked,
   logEvent,
+  reconcileOnly,
   type ChargeSub,
 } from '../_shared/billing-charge.ts'
 
@@ -175,10 +176,20 @@ serve(async (req) => {
     for (const sub of chargeCands.rows) {
       const label = `${sub.tochka_subscription_id.slice(0, 8)} (${fmtAmount(sub.price_paid)})`
       try {
-        // charge_unknown kilidi: manuel çözüm bekleyen abonelik atlanır
+        // charge_unknown kilidi: ÇEKİM yapılmaz — ama 31.07 denetimi: kilit
+        // mutabakatı da engelliyordu. Belirsiz çekim aslında BAŞARILI olduysa
+        // kullanıcının parası gitmiş, premium'u kapalı kalıyor ve abonelik
+        // sonsuza kadar kilitli olduğu için bir daha ödeyemiyordu. Artık
+        // kilitliyken de bankaya SORULUR (çekmeden); ödeme bulunursa kayda
+        // geçer, kilit kendiliğinden çözülür.
         if (await isUnknownLocked(db, sub.id)) {
-          summary.charge_unknown.push(`${label} → KİLİTLİ (önceki unknown çözülmedi)`)
-          heartbeatStatus = 'error'
+          const rec = await reconcileOnly(db, sub, cfg.period_days, 'cron_locked')
+          if (rec.outcome === 'reconciled') {
+            summary.reconciled.push(`${label} → kilit mutabakatla çözüldü`);
+          } else {
+            summary.charge_unknown.push(`${label} → KİLİTLİ (önceki unknown çözülmedi)`)
+            heartbeatStatus = 'error'
+          }
           continue
         }
         if (cfg.dry_run) {
@@ -210,7 +221,7 @@ serve(async (req) => {
             [sub.id, newRetry, cfg.grace_hours],
           )
           await sendPush(sub.user_id, 'SoulChoice Premium',
-            'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.',
+            'Не удалось продлить подписку — проверь карту. Premium пока активен, мы повторим попытку.',
             'premium_renew_failed', {})
           if (sub.billing_email) await sendBillingEmail(sub.billing_email, 'renewal_failed', {}, sub.locale ?? 'ru')
           summary.charge_failed.push(`${label} → ${r.raw.slice(0, 120)}`)
@@ -245,6 +256,29 @@ serve(async (req) => {
         summary.downgraded.push(d.id.slice(0, 8))
       }
     }
+    // 31.07 DENETİM: bağlama ödemesi için hiç mutabakat yoktu. Webhook
+    // kaybolursa kullanıcı ödemiş olmasına rağmen premium açılmıyor, 7 gün
+    // sonra kayıt "ödenmedi" diye kapanıyordu (para kaybı + sessiz mağduriyet).
+    // Artık expire ETMEDEN ÖNCE her bekleyen bağlama bankaya sorulur.
+    if (!cfg.dry_run) {
+      const stale = await db.queryObject<ChargeSub>(
+        `select s.id, s.user_id, s.tochka_subscription_id, s.price_paid,
+                s.retry_count, u.billing_email, u.locale
+           from subscriptions s left join users u on u.id = s.user_id
+          where s.status = 'pending_binding'
+            and s.created_at < now() - interval '7 days'`,
+      )
+      for (const sub of stale.rows) {
+        try {
+          const rec = await reconcileOnly(db, sub, cfg.period_days, 'cron_binding')
+          if (rec.outcome === 'reconciled') {
+            summary.reconciled.push(
+              `${sub.tochka_subscription_id.slice(0, 8)} → bağlama ödemesi bulundu (expire önlendi)`)
+          }
+        } catch (_) { /* mutabakat başarısızsa expire akışı devam eder */ }
+      }
+    }
+
     const expiredBindings = await db.queryObject<{ id: string }>(
       `update subscriptions set status = 'expired'
         where status = 'pending_binding' and created_at < now() - interval '7 days'

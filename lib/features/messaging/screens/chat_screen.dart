@@ -364,7 +364,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     try {
       await Supabase.instance.client
           .from('messages')
-          .update({'read_at': DateTime.now().toIso8601String()})
+          .update({'read_at': DateTime.now().toUtc().toIso8601String()})
           .eq('match_id', widget.matchId)
           .or('sender_id.neq.${_currentUid ?? ''},sender_id.is.null')
           .isFilter('read_at', null);

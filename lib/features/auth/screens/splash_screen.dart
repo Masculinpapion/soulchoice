@@ -37,23 +37,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _navigate() async {
+    // 31.07: sorgu ile animasyon PARALEL koşar (önce 1.8 sn beklenip sonra
+    // sorgu atılıyordu — açılışa boşuna ~0.5 sn ekliyordu).
+    final session = Supabase.instance.client.auth.currentSession;
+    final probe = session == null
+        ? null
+        : Supabase.instance.client
+            .from('users')
+            .select('id, suspended_at, banned')
+            .eq('id', session.user.id)
+            .maybeSingle()
+            .timeout(const Duration(seconds: 8));
+
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
 
-    final session = Supabase.instance.client.auth.currentSession;
-
-    if (session == null) {
+    if (session == null || probe == null) {
       context.go('/onboarding');
       return;
     }
 
     try {
-      final existing = await Supabase.instance.client
-          .from('users')
-          .select('id, suspended_at, banned')
-          .eq('id', session.user.id)
-          .maybeSingle()
-          .timeout(const Duration(seconds: 8));
+      final existing = await probe;
       if (!mounted) return;
       // Askıya alınmış/banlı hesap: aksiyonlar zaten sunucuda kilitli —
       // kullanıcıya nedenini ve destek yolunu gösteren tam ekran durum

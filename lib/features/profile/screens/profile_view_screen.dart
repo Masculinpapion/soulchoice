@@ -1516,7 +1516,7 @@ class _ApplicantActionsState extends ConsumerState<_ApplicantActions> {
     try {
       await Supabase.instance.client.from('applications').update({
         'status': 'rejected',
-        'responded_at': DateTime.now().toIso8601String(),
+        'responded_at': DateTime.now().toUtc().toIso8601String(),
       }).eq('id', widget.applicationId);
     } catch (_) {
       // 24.07 denetim: başarısız red, başarı gibi kapanmasın

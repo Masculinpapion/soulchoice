@@ -444,7 +444,7 @@ class _CreateInvitationScreenState
             ? null
             : _fixCase(_descriptionController.text),
         'venue_name': venueFormatted,
-        'event_date': _eventDate?.toIso8601String(),
+        'event_date': _eventDate?.toUtc().toIso8601String(),
         'expires_at': DateTime.now()
             .toUtc()
             .add(Duration(hours: _expiryHours))

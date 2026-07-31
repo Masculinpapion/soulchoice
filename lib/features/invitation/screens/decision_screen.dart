@@ -126,7 +126,7 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
               'user2_id': _applicantId!,
               // Buluşma tarihi belirtilmişse anket + arşiv mekaniğini besle
               if (_eventDate != null)
-                'meeting_date': _eventDate!.toIso8601String(),
+                'meeting_date': _eventDate!.toUtc().toIso8601String(),
             })
             .select('id')
             .single();
@@ -138,7 +138,7 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
           .from('applications')
           .update({
             'status': 'accepted',
-            'responded_at': DateTime.now().toIso8601String(),
+            'responded_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('id', _applicationId!)
           .select('id');
@@ -202,7 +202,7 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
           .from('applications')
           .update({
             'status': 'rejected',
-            'responded_at': DateTime.now().toIso8601String(),
+            'responded_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('id', _applicationId!);
     } catch (_) {

@@ -119,6 +119,8 @@ class MainActivity : FlutterActivity() {
     // düzgün görünür, kullanıcı türleri ayrı ayrı yönetebilir. Ad, cihaz diline
     // göre bir kez belirlenir; yeniden oluşturma mevcut kanalı günceller.
     private fun ensureNotificationChannels() {
+        // NotificationChannel API 26+; eski cihazlarda sınıf yok → NoClassDefFoundError
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) return
         val nm = getSystemService(NotificationManager::class.java) ?: return
         val lang = java.util.Locale.getDefault().language
         val names = mapOf(

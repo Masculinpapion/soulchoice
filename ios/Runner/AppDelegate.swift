@@ -62,7 +62,11 @@ import UserNotifications
         do {
           var uploadData = bytes.data
           var uploadCT = contentType
-          if contentType == "image/png", let img = UIImage(data: uploadData),
+          // 31.07: yalnız PNG sıkıştırılıyordu; iki çağıran da JPEG etiketi
+          // gönderdiği için iOS'ta HİÇBİR görsel sıkışmıyordu (crop çıktısı
+          // 1-3 MB ham gidiyordu). Android tarafı tüm image/* için q82'ye
+          // normalize ediyor — parite sağlandı.
+          if contentType.hasPrefix("image/"), let img = UIImage(data: uploadData),
              let jpeg = img.jpegData(compressionQuality: 0.82) {
             uploadData = jpeg
             uploadCT = "image/jpeg"

@@ -67,7 +67,7 @@ function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'):
     case 'renewal_failed':
       return pick({
         ru: { subject: 'Не удалось продлить подписку SoulChoice Premium',
-              body: 'Не удалось продлить подписку — проверьте карту. Premium пока активен, мы повторим попытку.' },
+              body: 'Не удалось продлить подписку — проверь карту. Premium пока активен, мы повторим попытку.' },
         tr: { subject: 'SoulChoice Premium aboneliğin yenilenemedi',
               body: 'Abonelik yenilenemedi — kartını kontrol et. Premium şimdilik aktif, tekrar deneyeceğiz.' },
         en: { subject: "We couldn't renew your SoulChoice Premium",
@@ -100,7 +100,7 @@ function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'):
     case 'account_deleted':
       return pick({
         ru: { subject: 'Аккаунт SoulChoice удалён',
-              body: 'Ваш аккаунт и данные удалены без возможности восстановления. Спасибо, что были с нами.\n\nЕсли это были не вы — напишите на support@soulchoice.app.' },
+              body: 'Твой аккаунт и данные удалены без возможности восстановления. Спасибо за время с нами.\n\nЕсли это сделал(а) не ты — напиши на support@soulchoice.app.' },
         tr: { subject: 'SoulChoice hesabın silindi',
               body: 'Hesabın ve verilerin geri getirilemez şekilde silindi. Bizimle olduğun için teşekkürler.\n\nBu işlemi sen yapmadıysan support@soulchoice.app adresine yaz.' },
         en: { subject: 'Your SoulChoice account has been deleted',
@@ -118,7 +118,7 @@ function template(kind: BillingEmailKind, p: BillingEmailParams, locale = 'ru'):
     case 'premium_intro': {
       const intro = {
         ru: { subject: 'SoulChoice Premium — безлимитные приглашения и заявки',
-              body: 'Premium открывает: безлимитные приглашения и заявки, чат после взаимного выбора, приоритет модерации.\n\nПодписка — 1000 ₽ каждые 30 дней с автопродлением (отмена в любой момент, в один клик) или разовый доступ на 30 дней.\n\nОформить: https://soulchoice.app/premium\n\n—\nВы получили это письмо, потому что дали согласие на новости SoulChoice.\nОтписаться: напишите на support@soulchoice.app' },
+              body: 'Premium открывает: безлимитные приглашения и заявки, чат после взаимного выбора, приоритет модерации.\n\nПодписка — 1000 ₽ каждые 30 дней с автопродлением (отмена в любой момент, в один клик) или разовый доступ на 30 дней.\n\nОформить: https://soulchoice.app/premium\n\n—\nЭто письмо пришло, потому что у нас есть твоё согласие на новости SoulChoice.\nОтписаться: напиши на support@soulchoice.app' },
         tr: { subject: 'SoulChoice Premium — sınırsız davet ve başvuru',
               body: 'Premium ile: sınırsız davet ve başvuru, karşılıklı seçim sonrası sohbet, moderasyonda öncelik.\n\nAbonelik — otomatik yenilemeyle 30 günde bir 1000 ₽ (istediğin an tek tıkla iptal) veya 30 günlük tek seferlik erişim.\n\nBaşlat: https://soulchoice.app/premium\n\n—\nBu e-postayı SoulChoice haberlerine onay verdiğin için aldın.\nAbonelikten çık: support@soulchoice.app adresine yaz' },
         en: { subject: 'SoulChoice Premium — unlimited invitations and applications',

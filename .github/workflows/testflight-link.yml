@@ -1,0 +1,45 @@
+# TestFlight public link üretimi (01.08) — elle tetiklenir; "Beta Testers"
+# (external) grubunda public link'i açar ve URL'i log'a basar. Landing'deki
+# iOS butonu bu linke bağlanır: arkadaş test kanalı, her build otomatik güncel.
+name: TestFlight Public Link
+
+on: workflow_dispatch
+
+jobs:
+  link:
+    runs-on: ubuntu-latest
+    env:
+      API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+      API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+      API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+    steps:
+      - name: Enable public link and print it
+        run: |
+          pip install --quiet pyjwt cryptography requests
+          python - <<'PY'
+          import os, time, base64, jwt, requests
+
+          KEY_ID = os.environ["API_KEY_ID"]
+          ISSUER = os.environ["API_ISSUER_ID"]
+          key = base64.b64decode(os.environ["API_KEY_BASE64"]).decode()
+          GROUP = "f2a2327f-4045-4a67-a5d8-51176a7b808c"  # "Beta Testers" (external)
+          API = "https://api.appstoreconnect.apple.com/v1"
+
+          def hdr():
+              tok = jwt.encode(
+                  {"iss": ISSUER, "aud": "appstoreconnect-v1", "exp": int(time.time()) + 1200},
+                  key, algorithm="ES256", headers={"kid": KEY_ID})
+              return {"Authorization": f"Bearer {tok}", "Content-Type": "application/json"}
+
+          r = requests.patch(f"{API}/betaGroups/{GROUP}", headers=hdr(), json={
+              "data": {"type": "betaGroups", "id": GROUP, "attributes": {
+                  "publicLinkEnabled": True,
+                  "publicLinkLimitEnabled": True,
+                  "publicLinkLimit": 100,
+              }}})
+          print("patch:", r.status_code, r.text[:300])
+          r.raise_for_status()
+          g = requests.get(f"{API}/betaGroups/{GROUP}", headers=hdr())
+          g.raise_for_status()
+          print("PUBLIC_LINK:", g.json()["data"]["attributes"].get("publicLink"))
+          PY

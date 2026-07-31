@@ -1,0 +1,29 @@
+# Kritik para/güvenlik testleri — 01.08.2026 (launch-readiness otomatik test kapısı).
+# edge-unit: çekim sınıflandırma + iade sayacı + DB sözleşme (status literalleri).
+# security-smoke: girişsiz erişim regresyonu (31.07 açık sınıfı) — canlıya anon
+# anahtarla vurur, korumalı yüzeyler 2xx dışı dönmek zorunda. Günlük cron da
+# koşar: kod değişmeden düşen koruma (config drift) 24 saat içinde kırmızı yanar.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 6 * * *'   # her gün 09:30 MSK
+  workflow_dispatch:
+
+jobs:
+  edge-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno test --allow-read --allow-env tests/edge/
+
+  security-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/security/smoke.sh

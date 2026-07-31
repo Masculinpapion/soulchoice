@@ -31,6 +31,8 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] Edge fn auth yüzeyi (+3) — **DENETLENDİ TEMİZ 13.07** (delete-account getUser-JWT; diğerleri user-token forward+RLS; IDOR yok)
 - [x] Moderasyon paneli (+2) — **KAPANDI 14.07 (Mustafa kararı: manuel değil, panel).** Ops panelde Moderasyon sekmesi CANLI: selfie kuyruğu (foto disk-proxy) + şikayet kuyruğu (5 aksiyon) + ConfirmDialog + audit_log; kısıtlı `ops_moderator` rolü (izolasyon 6 testle kanıtlı, service_role yok). E2E kanıtlı: 5 RPC gerçek akışla (approve/reject/warn/ban/resolve — audit dökümüyle), 2 RPC not-found yoluyla; test verisi psql kanıtıyla birebir geri alındı (verified_at dahil). Ekstra: ufw + DOCKER-USER (5432/6543/8000/8443 dışa kapandı, 14.07).
 
+- [x] **Otomatik regresyon kapısı (01.08.2026)** — CI'da her push + günlük cron `Tests` workflow: (1) para çekirdeği unit testleri (çekim sınıflandırma "belirsizse DUR", iade sayacı — 12 test), (2) DB sözleşme testi (koddaki status literalleri prod CHECK kısıtlarıyla eşleşmeli; 31.07 'canceled/cancelled' sınıfını yakalar), (3) güvenlik smoke: 13 korumalı yüzey anon anahtarla 2xx dışı dönmek zorunda + kanarya (31.07 girişsiz-erişim sınıfının bekçisi; günlük koşu config drift'i 24 saatte yakalar). **Kampanya yeşil ışığı kriteri: 2 ardışık temiz mini-denetim + bu testler 7 gün kesintisiz yeşil.**
+
 ### ✅ Para yolu (92% → hedef 92% — EŞİK GEÇİLDİ 14.07)
 - [x] Ödeme çifte-tıklama / ağ kopması (+6) — **DENETLENDİ SAĞLAM 13.07** (_isLoading+sheetBusy guard; webhook Точка'dan bağımsız)
 - [x] Webhook idempotency (+4) — **DENETLENDİ SAĞLAM 13.07** (on conflict do nothing + zaten-işlenmiş guard)
@@ -61,6 +63,7 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 01.08.2026 — **31.07 denetim backlog'u kapandı + otomatik test kapısı kuruldu:** iade akışı CANLI (E2E kanıtlı — test gerçek bir kısıt hatasını yakaladı: 'cancelled' çift L), billing-cron 60sn sınırı, fiyat tek kaynak, photoFocus RPC, CI keystore secret, RLS baseline (63 politika). `Tests` workflow: 12 unit + DB sözleşme + 13 yüzeyli güvenlik smoke (kanaryalı), her push + günlük cron. iOS paywall Seçenek A metni (Mustafa onayı).
 - 26.07.2026 — **iOS TAM E2E turu KAPANDI (10/10 adım cihaz kanıtlı):** sıfırdan kayıt→selfie onay push→bildirim bataryası 4/4→davet/başvuru/seçim/çift yönlü chat+push (kilit ekranı + deep-link dahil)→GDPR silme (sıfır kalıntı)→gerçek SMS ile dönüş. 4 bulgu fix'i `d317f96`: keşfet boş-durum yenileme, Seç ağ-kopuşu kurtarma, emoji rozet iOS hizası (yeni TestFlight build'inde görsel teyit bekliyor), new_application push deep-link. Not: Natalia Wi-Fi'ında aralıklı APNs gecikmesi görüldü (uygulama dışı, LTE'de sorunsuz). Artık iki platformda da çalışmayan kullanıcı-görünür mekanizma yok.
 - 15.07.2026 — Off-site immutable yedek (Yandex Object Lock 14g) + restore provası (DB canlıyla eşleşti + xattr korundu) + ops panel Veri&Yedek gerçek veri + alarm off-site kapsama → Altyapı %61→%72 ✅ EŞİK, genel %89→%92
 - 15.07.2026 — Ürün-mantığı denetimi: kabul akışı kırığı + kabul bildirimi + sunucu-taraflı başvuru kuralları + yaş filtresi + çift yönlü engelleme + hide-chat + buluşma mekaniği + silinen-kullanıcı modeli (GDPR) + mark-read → Ürün %72→%75 ✅ EŞİK, UX %76→%83, Para %92→%93, Store %85→%86, genel %87→%89

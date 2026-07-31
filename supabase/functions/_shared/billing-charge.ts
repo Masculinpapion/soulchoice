@@ -32,6 +32,28 @@ export type ChargeOutcome =
   | { outcome: 'fail'; raw: string }
   | { outcome: 'unknown'; raw: string }
 
+/** Savunmacı çekim sınıflandırması (SAF — CI testi tests/edge'de): yalnız net
+ *  başarı 'ok', net hata 'fail'; geri kalan her şey 'unknown' = para durumu
+ *  belirsiz, DUR. status 2xx dışıysa veya Errors alanı varsa 'fail'. */
+export function classifyChargeResponse(status: number, rawBody: string): 'ok' | 'fail' | 'unknown' {
+  let parsed: Record<string, unknown> | null = null
+  try {
+    parsed = JSON.parse(rawBody)
+  } catch { /* parse edilemedi → aşağıda sınıflandırılır */ }
+  const result = (parsed as { Data?: { result?: unknown } } | null)?.Data?.result
+  if (status === 200 && result === true) return 'ok'
+  if (status < 200 || status >= 300 || result === false ||
+      (parsed as { Errors?: unknown } | null)?.Errors) return 'fail'
+  return 'unknown'
+}
+
+/** İşlenecek iade sayısı (SAF — CI testi tests/edge'de): bankadaki
+ *  Order[type=refund] satırı sayısı − bizde zaten refunded olan. */
+export function pendingRefundCount(op: Record<string, unknown> | null, alreadyRefunded: number): number {
+  const refunds = ((op?.Order ?? []) as TochkaOrder[]).filter((o) => o?.type === 'refund')
+  return Math.max(0, refunds.length - alreadyRefunded)
+}
+
 export async function getOperation(operationId: string): Promise<Record<string, unknown> | null> {
   const res = await fetch(
     `${TOCHKA_API}/acquiring/v1.0/payments/${encodeURIComponent(operationId)}?customerCode=${CUSTOMER_CODE}`,
@@ -193,17 +215,10 @@ export async function attemptCharge(
       },
     )
     rawBody = (await res.text()).slice(0, 1000)
-    let parsed: Record<string, unknown> | null = null
-    try {
-      parsed = JSON.parse(rawBody)
-    } catch { /* parse edilemedi → aşağıda sınıflandırılır */ }
-    const result = (parsed as { Data?: { result?: unknown } } | null)?.Data?.result
-    if (res.status === 200 && result === true) cls = 'ok'
-    else if (!res.ok || result === false || (parsed as { Errors?: unknown } | null)?.Errors) cls = 'fail'
-    else cls = 'unknown' // 200 ama tanınmayan gövde — para durumu belirsiz, DUR
+    cls = classifyChargeResponse(res.status, rawBody)
   } catch (e) {
     cls = 'fail' // ağ hatası: çekim gitmedi varsayımı güvenli; sonraki ön-mutabakat yakalar
-    rawBody = String(e?.message ?? e)
+    rawBody = e instanceof Error ? e.message : String(e)
   }
 
   if (cls === 'fail') {

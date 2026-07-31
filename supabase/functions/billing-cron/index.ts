@@ -13,9 +13,9 @@ import {
   getOperation,
   isUnknownLocked,
   logEvent,
+  pendingRefundCount,
   reconcileOnly,
   type ChargeSub,
-  type TochkaOrder,
 } from '../_shared/billing-charge.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -357,14 +357,13 @@ serve(async (req) => {
         try {
           const op = await getOperation(operation_id)
           if (!op) continue
-          const refunds = ((op.Order ?? []) as TochkaOrder[]).filter((o) => o?.type === 'refund')
-          if (refunds.length === 0) continue
+          if (pendingRefundCount(op, 0) === 0) continue
           const done = await db.queryObject<{ n: string }>(
             `select count(*) as n from payments where operation_id = $1 and status = 'refunded'`,
             [operation_id],
           )
-          const todo = refunds.length - Number(done.rows[0]?.n ?? 0)
-          if (todo <= 0) continue
+          const todo = pendingRefundCount(op, Number(done.rows[0]?.n ?? 0))
+          if (todo === 0) continue
           const paidRows = await db.queryObject<{
             id: string
             user_id: string | null

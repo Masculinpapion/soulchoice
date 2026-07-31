@@ -97,6 +97,22 @@ jobs:
             build/app/outputs/bundle/release/app-release.aab
             build/app/outputs/flutter-apk/app-release.apk
 
+      # Landing'deki indirme bağlantısı (test kanalı) her push'ta tazelenir.
+      # ELLE yükleme yapılmaz: 01.08'de elle konan APK versionCode=2 ile
+      # üretilmişti ve RuStore sürümü kurulu cihazlara "downgrade" diye
+      # REDDEDİLİYORDU. CI run numarası monoton arttığı için sıra hep doğru.
+      - name: Publish APK to landing download page
+        if: github.ref == 'refs/heads/main'
+        run: |
+          install -m 600 /dev/null /tmp/tw_key
+          echo "${{ secrets.TIMEWEB_SSH_KEY }}" > /tmp/tw_key
+          scp -o StrictHostKeyChecking=no -i /tmp/tw_key \
+            build/app/outputs/flutter-apk/app-release.apk \
+            root@89.169.1.127:/var/www/soulchoice/download/soulchoice.apk.new
+          ssh -o StrictHostKeyChecking=no -i /tmp/tw_key root@89.169.1.127 \
+            'mv /var/www/soulchoice/download/soulchoice.apk.new /var/www/soulchoice/download/soulchoice.apk'
+          rm -f /tmp/tw_key
+
   deploy-functions:
     needs: build-debug
     runs-on: ubuntu-latest

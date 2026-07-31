@@ -16,8 +16,23 @@ const MERCHANT_ID = Deno.env.get('TOCHKA_MERCHANT_ID') ?? '200000000040619'
 // Banka test protokolü (1-2₽) için: sadece TEST_PAYMENT_KEY eşleşirse tutar override edilir
 const TEST_PAYMENT_KEY = Deno.env.get('TEST_PAYMENT_KEY') ?? ''
 
-const PRICE_RUB = 1000
+// Fiyatın tek kaynağı billing_config.price_rub — burası yalnız erişilemezse devreye
+// giren fallback (abonelik akışı zaten config'ten okuyor, artık ikisi aynı yerden).
+const PRICE_RUB_FALLBACK = 1000
 const VALID_SOURCES = ['web', 'android', 'ios_app']
+
+async function configPrice(): Promise<number> {
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/billing_config?id=eq.1&select=price_rub', {
+      headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },
+    })
+    const j = await r.json().catch(() => [])
+    const p = Number(Array.isArray(j) ? j[0]?.price_rub : null)
+    return Number.isFinite(p) && p > 0 ? p : PRICE_RUB_FALLBACK
+  } catch {
+    return PRICE_RUB_FALLBACK
+  }
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -43,7 +58,7 @@ serve(async (req) => {
     const body = await req.json().catch(() => ({}))
     const source = VALID_SOURCES.includes(body?.source) ? body.source : 'web'
 
-    let amount = PRICE_RUB
+    let amount = await configPrice()
     let isTest = false
     if (body?.testAmount != null) {
       if (!TEST_PAYMENT_KEY || body?.testKey !== TEST_PAYMENT_KEY) {

@@ -12,6 +12,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 ///
 /// Not: Ölçek büyüyünce (on binlerce foto) bu tek-sorgu harita yerine odak
 /// alanları mevcut join'lere taşınmalı; lansman ölçeğinde tek küçük sorgu.
+/// 31.07: sorgu photo_focus_entries() RPC'sine alındı — yalnız görünür
+/// kullanıcıların odağı iner, en yeni 5000 foto sınırı var.
 class PhotoFocus {
   static final Map<String, Alignment> _byUrl = {};
 
@@ -20,10 +22,7 @@ class PhotoFocus {
       (url == null ? null : _byUrl[url]) ?? fallback;
 
   static Future<void> load() async {
-    final rows = await Supabase.instance.client
-        .from('user_photos')
-        .select('url, face_focus_x, face_focus_y')
-        .gte('face_focus_x', 0);
+    final rows = await Supabase.instance.client.rpc('photo_focus_entries');
     for (final r in (rows as List).cast<Map<String, dynamic>>()) {
       final fx = (r['face_focus_x'] as num).toDouble();
       final fy = (r['face_focus_y'] as num).toDouble();

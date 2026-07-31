@@ -15,12 +15,14 @@ const TOCHKA_JWT = Deno.env.get('TOCHKA_JWT_TOKEN') ?? ''
 const CUSTOMER_CODE = Deno.env.get('TOCHKA_CUSTOMER_CODE') ?? '305892846'
 const MERCHANT_ID = Deno.env.get('TOCHKA_MERCHANT_ID') ?? '200000000040619'
 
-const PRICE_RUB = 1000
+// Fiyatın tek kaynağı billing_config.price_rub; bu yalnız fallback
+const PRICE_RUB_FALLBACK = 1000
 const PURPOSE = 'Подписка SoulChoice Premium, 1 месяц'
-// Onaylı metin (Variant A, 08.07.2026) — «заявка» terimi paywall ile aynı
-const SMS_TEXT = (link: string) =>
+// Onaylı metin (Variant A, 08.07.2026) — «заявка» terimi paywall ile aynı;
+// tutar config'ten gelir, 1000₽ iken metin Variant A ile birebir aynıdır
+const SMS_TEXT = (link: string, price: number) =>
   'SoulChoice: бесплатная заявка использована. Продолжить знакомства — ' +
-  'Premium 1000 ₽/мес, оплата в 1 клик: ' + link
+  `Premium ${price} ₽/мес, оплата в 1 клик: ` + link
 
 const rest = (path: string, init: RequestInit = {}) =>
   fetch(SUPABASE_URL + '/rest/v1' + path, {
@@ -59,6 +61,11 @@ serve(async (req) => {
     if (!usersRes.ok) throw new Error('users query failed: ' + (await usersRes.text()))
     const users: { id: string; phone: string }[] = await usersRes.json()
 
+    const priceRes = await rest('/billing_config?id=eq.1&select=price_rub')
+    const priceRows = await priceRes.json().catch(() => [])
+    const priceNum = Number(Array.isArray(priceRows) ? priceRows[0]?.price_rub : null)
+    const priceRub = Number.isFinite(priceNum) && priceNum > 0 ? priceNum : PRICE_RUB_FALLBACK
+
     const results: Record<string, string> = {}
     for (const u of users) {
       // Kişisel ödeme linki (7 gün geçerli, hesaba payments kaydıyla bağlı)
@@ -69,7 +76,7 @@ serve(async (req) => {
           Data: {
             customerCode: CUSTOMER_CODE,
             merchantId: MERCHANT_ID,
-            amount: PRICE_RUB.toFixed(2),
+            amount: priceRub.toFixed(2),
             purpose: PURPOSE,
             paymentMode: ['sbp', 'card'],
             redirectUrl: 'https://soulchoice.app/?payment=success',
@@ -91,7 +98,7 @@ serve(async (req) => {
         body: JSON.stringify({
           user_id: u.id,
           operation_id: op.operationId,
-          amount: PRICE_RUB,
+          amount: priceRub,
           currency: 'RUB',
           source: 'ios_sms', // Apple raporuna GİRMEZ (uygulama dışı kanal, %0)
           status: 'pending',
@@ -120,7 +127,7 @@ serve(async (req) => {
         body: new URLSearchParams({
           api_id: SMS_RU_API_KEY,
           to: u.phone,
-          msg: SMS_TEXT(op.paymentLink),
+          msg: SMS_TEXT(op.paymentLink, priceRub),
           json: '1',
         }),
       })

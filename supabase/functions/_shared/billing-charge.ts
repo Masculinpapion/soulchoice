@@ -215,16 +215,21 @@ export async function attemptCharge(
     return { outcome: 'unknown', raw: rawBody }
   }
 
-  // 4) result:true → Order kaydını senkron teyit et
-  await new Promise((r) => setTimeout(r, 15000))
-  const op2 = await getOperation(sub.tochka_subscription_id)
-  const orders2 = approvedOrders(op2).reverse() // en yeni önce
+  // 4) result:true → Order kaydını senkron teyit et.
+  // Sabit 15 sn bekleme yerine 3'er sn'lik poll: order görünür görünmez devam.
+  // (60 sn worker sınırında sabit bekleme ~3 çekimde koşuyu kesiyordu.)
   const known2 = await db.queryObject<{ order_id: string }>(
     `select order_id from payments where operation_id = $1 and order_id <> ''`,
     [sub.tochka_subscription_id],
   )
   const known2Ids = new Set(known2.rows.map((r) => r.order_id))
-  const fresh = orders2.find((o) => !known2Ids.has(o.orderId))
+  let op2: Record<string, unknown> | null = null
+  let fresh: TochkaOrder | undefined
+  for (let i = 0; i < 5 && !fresh; i++) {
+    await new Promise((r) => setTimeout(r, 3000))
+    op2 = await getOperation(sub.tochka_subscription_id)
+    fresh = approvedOrders(op2).reverse().find((o) => !known2Ids.has(o.orderId)) // en yeni önce
+  }
   if (fresh && op2) {
     const until = await grantOrder(db, sub, fresh, op2, periodDays, via)
     return { outcome: 'charged', until }

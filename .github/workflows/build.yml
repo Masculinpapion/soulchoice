@@ -74,7 +74,7 @@ jobs:
       - name: Restore release keystore
         run: |
           echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > android/app/soulchoice-release.jks
-          printf 'storeFile=soulchoice-release.jks\nstorePassword=soulchoice2026\nkeyAlias=soulchoice\nkeyPassword=soulchoice2026\n' > android/key.properties
+          printf 'storeFile=soulchoice-release.jks\nstorePassword=%s\nkeyAlias=soulchoice\nkeyPassword=%s\n' "${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" "${{ secrets.RELEASE_KEYSTORE_PASSWORD }}" > android/key.properties
 
       - run: flutter pub get
 

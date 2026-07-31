@@ -10,10 +10,12 @@ import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
 import { sendBillingEmail, sendCustomEmail } from '../_shared/billing-email.ts'
 import {
   attemptCharge,
+  getOperation,
   isUnknownLocked,
   logEvent,
   reconcileOnly,
   type ChargeSub,
+  type TochkaOrder,
 } from '../_shared/billing-charge.ts'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
@@ -96,6 +98,8 @@ serve(async (req) => {
     pending_verify: [] as string[],
     downgraded: [] as string[],
     lifecycle_sent: [] as string[],
+    refunded: [] as string[],
+    deferred: [] as string[],
     expired_bindings: 0,
     would_notify: [] as string[],
     would_charge: [] as string[],
@@ -103,6 +107,12 @@ serve(async (req) => {
     errors: [] as string[],
   }
   let heartbeatStatus = 'ok'
+  // Worker 60 sn'de kesilir: digest+heartbeat her koşulda yazılabilsin diye iş
+  // fazları 40 sn bütçeyle çalışır; artan adaylar sonraki koşuya kalır (koşullar
+  // zamana bağlı olmadığından kayıp yok, digest'e "ertelendi" düşer).
+  const RUN_DEADLINE_MS = 40_000
+  const runStart = Date.now()
+  const overBudget = () => Date.now() - runStart > RUN_DEADLINE_MS
 
   const db = new Client(DB_URL)
   await db.connect()
@@ -124,7 +134,13 @@ serve(async (req) => {
                or s.renewal_notified_at < s.next_billing_at - interval '96 hours')`,
       [cfg.notify_before_hours],
     )
+    let notifyLeft = notifyCands.rows.length
     for (const sub of notifyCands.rows) {
+      if (overBudget()) {
+        summary.deferred.push(`bildirim: ${notifyLeft} aday sonraki koşuya`)
+        break
+      }
+      notifyLeft--
       const label = `${sub.tochka_subscription_id.slice(0, 8)} (${fmtAmount(sub.price_paid)})`
       if (cfg.dry_run) {
         summary.would_notify.push(label)
@@ -173,7 +189,13 @@ serve(async (req) => {
       [cfg.min_notify_gap_hours, cfg.max_daily_attempts],
     )
 
+    let chargeLeft = chargeCands.rows.length
     for (const sub of chargeCands.rows) {
+      if (overBudget()) {
+        summary.deferred.push(`çekim: ${chargeLeft} aday sonraki koşuya`)
+        break
+      }
+      chargeLeft--
       const label = `${sub.tochka_subscription_id.slice(0, 8)} (${fmtAmount(sub.price_paid)})`
       try {
         // charge_unknown kilidi: ÇEKİM yapılmaz — ama 31.07 denetimi: kilit
@@ -315,6 +337,90 @@ serve(async (req) => {
       }
     }
 
+    // ================= FAZ E — İADE TARAMASI =================
+    // Kabinetten yapılan iade sistemde görünmüyordu: premium açık kalıyor,
+    // abonelik 'active' kaldığı için ertesi dönem YİNE çekiliyordu. Banka iadeyi
+    // Order[] dizisine type:'refund' satırı olarak ekler (canlıda doğrulandı,
+    // op 888189b9). Son 120 günün paid ödemeleri operasyon bazında taranır;
+    // bizde refunded sayısı bankadaki refund satırı sayısına eşitlenir.
+    if (!cfg.dry_run) {
+      const ops = await db.queryObject<{ operation_id: string }>(
+        `select distinct operation_id from payments
+          where status = 'paid' and operation_id <> ''
+            and paid_at > now() - interval '120 days'`,
+      )
+      for (const { operation_id } of ops.rows) {
+        if (overBudget()) {
+          summary.deferred.push('iade taraması: sonraki koşuya')
+          break
+        }
+        try {
+          const op = await getOperation(operation_id)
+          if (!op) continue
+          const refunds = ((op.Order ?? []) as TochkaOrder[]).filter((o) => o?.type === 'refund')
+          if (refunds.length === 0) continue
+          const done = await db.queryObject<{ n: string }>(
+            `select count(*) as n from payments where operation_id = $1 and status = 'refunded'`,
+            [operation_id],
+          )
+          const todo = refunds.length - Number(done.rows[0]?.n ?? 0)
+          if (todo <= 0) continue
+          const paidRows = await db.queryObject<{
+            id: string
+            user_id: string | null
+            subscription_id: string | null
+            amount: string
+            source: string
+            purpose: string | null
+          }>(
+            `select id, user_id, subscription_id, amount, source, purpose from payments
+              where operation_id = $1 and status = 'paid'
+              order by paid_at desc nulls last limit $2`,
+            [operation_id, todo],
+          )
+          for (const p of paidRows.rows) {
+            await db.queryObject(
+              `update payments set status = 'refunded', raw = $2::jsonb where id = $1`,
+              [p.id, JSON.stringify(op)],
+            )
+            const isTest = p.source === 'test' || (p.purpose ?? '').startsWith('Тест')
+            await logEvent(db, p.subscription_id, p.user_id, 'refund_detected', {
+              operation_id, payment_id: p.id, amount: p.amount, is_test: isTest,
+            })
+            summary.refunded.push(
+              `${operation_id.slice(0, 8)} (${fmtAmount(Number(p.amount))})${isTest ? ' [test]' : ''}`)
+            if (isTest || !p.user_id) continue
+            // Oferta: iade = hizmetten vazgeçme → premium biter, yenileme durur.
+            await db.queryObject(
+              `update users
+                  set subscription_status = 'free',
+                      premium_until = least(coalesce(premium_until, now()), now())
+                where id = $1`,
+              [p.user_id],
+            )
+            await db.queryObject(
+              `update subscriptions set status = 'canceled', auto_renew = false
+                where user_id = $1 and status in ('active', 'past_due', 'pending_binding')`,
+              [p.user_id],
+            )
+            await sendPush(p.user_id, 'SoulChoice Premium',
+              'Оплата возвращена — подписка остановлена, Premium отключён.')
+            const u = await db.queryObject<{ billing_email: string | null }>(
+              `select billing_email from users where id = $1`, [p.user_id])
+            const em = u.rows[0]?.billing_email
+            if (em) {
+              await sendCustomEmail(em, 'SoulChoice — возврат оплаты',
+                'Мы вернули оплату. Подписка остановлена, Premium отключён.\n' +
+                'Если это ошибка — напиши нам: support@soulchoice.app')
+            }
+          }
+        } catch (e) {
+          summary.errors.push(`iade ${operation_id.slice(0, 8)}: ${String(e?.message ?? e)}`)
+          heartbeatStatus = 'warn'
+        }
+      }
+    }
+
     // ================= DIGEST (P2) + JWT ALARMI (P7) =================
     const red = summary.charge_unknown.length > 0 || summary.errors.length > 0
     const jwtWarn = summary.jwt_days_left != null && summary.jwt_days_left < 90
@@ -325,6 +431,8 @@ serve(async (req) => {
       `Çekim: ${summary.charged.length} ok, ${summary.charge_failed.length} başarısız, ${summary.charge_unknown.length} BELİRSİZ, ${summary.pending_verify.length} teyit bekliyor, ${summary.reconciled.length} mutabakatla kapandı`,
       `Düşüş: ${summary.downgraded.length} abonelik sona erdi; ${summary.expired_bindings} bağlanmamış kayıt temizlendi`,
       summary.lifecycle_sent.length ? `Lifecycle: ${summary.lifecycle_sent.length} premium tanıtım maili (D+2)` : '',
+      summary.refunded.length ? `💸 İade işlendi: ${summary.refunded.join(' | ')}` : '',
+      summary.deferred.length ? `⏳ Süre bütçesi doldu — ${summary.deferred.join(' | ')}` : '',
       cfg.dry_run ? `DRY-RUN listeleri → bildirilecekti: [${summary.would_notify.join('; ') || '—'}] / çekilecekti: [${summary.would_charge.join('; ') || '—'}]` : '',
       summary.charge_failed.length ? `Başarısız: ${summary.charge_failed.join(' | ')}` : '',
       summary.charge_unknown.length ? `⚠️ BELİRSİZ (manuel bakılacak): ${summary.charge_unknown.join(' | ')}` : '',

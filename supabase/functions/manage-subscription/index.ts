@@ -202,15 +202,15 @@ serve(async (req) => {
         }
         if (await isUnknownLocked(db, sub.id)) return json(200, { ok: false, reason: 'needs_support' })
         if ((await attemptsLast20h(db, sub.id)) >= 2) return json(200, { ok: false, reason: 'retry_limit' })
-        const cfgR = await db.queryObject<{ period_days: number }>(
-          `select period_days from billing_config where id = 1`,
+        const cfgR = await db.queryObject<{ period_days: number; price_rub: number }>(
+          `select period_days, price_rub from billing_config where id = 1`,
         )
         const r = await attemptCharge(db, {
           id: sub.id,
           user_id: user.id,
           tochka_subscription_id: sub.tochka_subscription_id,
           status: sub.status,
-          price_paid: sub.price_paid ?? 1000,
+          price_paid: sub.price_paid ?? cfgR.rows[0]?.price_rub ?? 1000,
           retry_count: sub.retry_count ?? 0,
         }, cfgR.rows[0]?.period_days ?? 30, 'user_retry')
         if (r.outcome === 'charged' || r.outcome === 'reconciled') {

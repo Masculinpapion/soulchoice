@@ -18,7 +18,7 @@ concurrency:
 jobs:
   build-and-upload:
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 75
     env:
       API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
       API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
@@ -141,6 +141,63 @@ jobs:
             --file "$IPA" \
             --apiKey "$API_KEY_ID" \
             --apiIssuer "$API_ISSUER_ID"
+
+      # Yükleme tek başına yetmiyor: build gruba atanmadıkça testçilere DÜŞMÜYOR
+      # (31.07: #138 atanmadığı için Natalia'ya gitmedi). Bu adım build işlenene
+      # kadar bekler, beta review'a sunar ve Beta Testers grubuna atar.
+      - name: Distribute to Beta Testers group (auto)
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          pip3 install --quiet pyjwt cryptography requests
+          python3 - <<'PY'
+          import os, sys, time, jwt, requests
+
+          KEY_ID = os.environ["API_KEY_ID"]
+          ISSUER = os.environ["API_ISSUER_ID"]
+          BUILD = os.environ["BUILD_NUMBER"]
+          APP_ID = "6768422521"                                   # SoulChoice Apple ID
+          GROUP_ID = "f2a2327f-4045-4a67-a5d8-51176a7b808c"       # "Beta Testers" (external)
+          API = "https://api.appstoreconnect.apple.com/v1"
+          key = open(os.path.expanduser(f"~/.appstoreconnect/private_keys/AuthKey_{KEY_ID}.p8")).read()
+
+          def hdr():
+              tok = jwt.encode(
+                  {"iss": ISSUER, "aud": "appstoreconnect-v1", "exp": int(time.time()) + 1200},
+                  key, algorithm="ES256", headers={"kid": KEY_ID})
+              return {"Authorization": f"Bearer {tok}", "Content-Type": "application/json"}
+
+          bid = None
+          for _ in range(35):  # altool sonrası işleme tipik 5-15 dk
+              r = requests.get(f"{API}/builds", headers=hdr(),
+                               params={"filter[app]": APP_ID, "filter[version]": BUILD, "limit": "1"})
+              r.raise_for_status()
+              data = r.json()["data"]
+              if data:
+                  bid = data[0]["id"]
+                  state = data[0]["attributes"]["processingState"]
+                  print(f"build {BUILD}: {state}", flush=True)
+                  if state == "VALID":
+                      break
+                  if state in ("FAILED", "INVALID"):
+                      sys.exit(f"::error::build processing {state}")
+              else:
+                  print("build ASC'de henuz gorunmuyor", flush=True)
+              time.sleep(60)
+          else:
+              sys.exit("::error::35 dk icinde VALID olmadi")
+
+          r = requests.post(f"{API}/betaAppReviewSubmissions", headers=hdr(), json={
+              "data": {"type": "betaAppReviewSubmissions",
+                       "relationships": {"build": {"data": {"type": "builds", "id": bid}}}}})
+          print("beta review submit:", r.status_code, r.text[:200], flush=True)  # 409/422 = zaten sunulmus
+
+          r = requests.post(f"{API}/betaGroups/{GROUP_ID}/relationships/builds",
+                            headers=hdr(), json={"data": [{"type": "builds", "id": bid}]})
+          print("group assign:", r.status_code, r.text[:200], flush=True)
+          if r.status_code not in (200, 201, 204):
+              sys.exit("::error::gruba atama basarisiz")
+          PY
 
       - name: Upload IPA artifact (backup)
         if: always()

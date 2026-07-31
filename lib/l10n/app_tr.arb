@@ -991,5 +991,5 @@
   "profile_setup_email_label": "E-posta (isteğe bağlı) — çek ve haberler için",
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "SoulChoice haber ve özel tekliflerini (tanıtım dahil) e-posta ile almayı kabul ediyorum. Onayı istediğin zaman ayarlardan veya support@soulchoice.app adresine yazarak geri çekebilirsin.",
-  "paywall_subtitle_ios": "Premium sınırsızı açar."
+  "paywall_subtitle_ios": "Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır."
 }

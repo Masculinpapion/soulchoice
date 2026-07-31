@@ -399,7 +399,8 @@ serve(async (req) => {
               [p.user_id],
             )
             await db.queryObject(
-              `update subscriptions set status = 'canceled', auto_renew = false
+              `update subscriptions
+                  set status = 'cancelled', auto_renew = false, cancelled_at = now()
                 where user_id = $1 and status in ('active', 'past_due', 'pending_binding')`,
               [p.user_id],
             )

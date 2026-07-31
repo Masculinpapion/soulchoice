@@ -149,8 +149,9 @@ jobs:
         env:
           BUILD_NUMBER: ${{ github.run_number }}
         run: |
-          pip3 install --quiet pyjwt cryptography requests
-          python3 - <<'PY'
+          python3 -m venv /tmp/ascvenv
+          /tmp/ascvenv/bin/pip install --quiet pyjwt cryptography requests
+          /tmp/ascvenv/bin/python - <<'PY'
           import os, sys, time, jwt, requests
 
           KEY_ID = os.environ["API_KEY_ID"]

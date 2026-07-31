@@ -4,6 +4,21 @@ import UserNotifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
+  // Bildirim tıklaması köprüsü (01.08): firebase_messaging'in tap iletimi,
+  // delegate kurulumunu UIApplicationDidFinishLaunching bildirimine bağlar;
+  // implicit-engine düzeninde bu zincir kopabiliyor (tıklama Dart'a hiç
+  // ulaşmıyor — simülatörde ölçüldü, eşin iPhone vakası). Tıklamayı KENDİ
+  // kanalımızla taşırız; Dart tarafı aynı olayı iki kaynaktan alırsa
+  // rota-dedupe ile teke indirir.
+  private var pushChannel: FlutterMethodChannel?
+  private var launchPushJson: String?
+
+  private static func pushJson(_ userInfo: [AnyHashable: Any]) -> String? {
+    guard JSONSerialization.isValidJSONObject(userInfo),
+          let data = try? JSONSerialization.data(withJSONObject: userInfo) else { return nil }
+    return String(data: data, encoding: .utf8)
+  }
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -12,7 +27,29 @@ import UserNotifications
     // böylece FirebaseMessaging.getToken() iOS'ta gerçek token üretir.
     UNUserNotificationCenter.current().delegate = self
     application.registerForRemoteNotifications()
+    // Kapalıyken bildirime tıklanarak açıldıysa payload burada gelir;
+    // Dart hazır olunca getLaunchPush ile çeker.
+    if let remote = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
+      launchPushJson = Self.pushJson(remote)
+    }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // Arka plandayken bildirime tıklama: sistemin tek güvenilir kancası.
+  override func userNotificationCenter(
+    _ center: UNUserNotificationCenter,
+    didReceive response: UNNotificationResponse,
+    withCompletionHandler completionHandler: @escaping () -> Void
+  ) {
+    let info = response.notification.request.content.userInfo
+    if let json = Self.pushJson(info) {
+      if let ch = pushChannel {
+        ch.invokeMethod("pushTapped", arguments: json)
+      } else {
+        launchPushJson = json // engine henüz yoksa açılışta teslim edilir
+      }
+    }
+    completionHandler()
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
@@ -24,8 +61,12 @@ import UserNotifications
     if let notifRegistrar = engineBridge.pluginRegistry.registrar(forPlugin: "SoulChoiceNotifications") {
       let notifChannel = FlutterMethodChannel(
         name: "com.soulchoice/notifications", binaryMessenger: notifRegistrar.messenger())
-      notifChannel.setMethodCallHandler { call, result in
+      pushChannel = notifChannel
+      notifChannel.setMethodCallHandler { [weak self] call, result in
         switch call.method {
+        case "getLaunchPush":
+          result(self?.launchPushJson)
+          self?.launchPushJson = nil
         case "clearByKey":
           let key = call.arguments as? String ?? ""
           let center = UNUserNotificationCenter.current()

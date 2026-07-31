@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -95,15 +96,31 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
     super.initState();
     // Push'a dokunma → deep link. match_id taşıyan her bildirim (seçildin,
     // yeni mesaj) doğrudan ilgili sohbeti açar.
-    FirebaseMessaging.onMessageOpenedApp.listen(_openFromPush);
+    FirebaseMessaging.onMessageOpenedApp.listen((m) => _routeFromPushData(m.data));
     FirebaseMessaging.onMessage.listen(_showInAppBanner);
     // Uygulama kapalıyken push'a dokunulup açıldıysa: sabit gecikme DEĞİL,
     // oturum yüklenene kadar bekle (31.07: 900 ms gerçek cihazda yetmiyordu —
     // currentUser null kalınca yönlendirme sessizce iptal olup feed'e düşüyordu).
     FirebaseMessaging.instance.getInitialMessage().then((m) {
       if (m == null) return;
-      _openWhenSessionReady(m);
+      _openWhenSessionReady(m.data);
     });
+    // iOS bildirim-tıklama köprüsü (01.08): FCM eklentisinin tap iletimi
+    // iOS'ta delegate kurulum zamanlamasına takılıp kopabiliyor (tıklama
+    // Dart'a hiç ulaşmıyor, kullanıcı feed'e düşüyordu). Natif AppDelegate
+    // aynı olayı kendi kanalımızdan da yollar; olay iki kaynaktan gelirse
+    // _routeFromPushData rota-dedupe ile teke indirir.
+    const bridge = MethodChannel('com.soulchoice/notifications');
+    bridge.setMethodCallHandler((call) async {
+      if (call.method == 'pushTapped' && call.arguments is String) {
+        _routeFromPushData(_bridgePushData(call.arguments as String));
+      }
+      return null;
+    });
+    bridge.invokeMethod<String>('getLaunchPush').then((json) {
+      if (json == null) return;
+      _openWhenSessionReady(_bridgePushData(json));
+    }).catchError((_) {});
     // Panel-only online sinyali — kullanıcıya görünmez (31.07).
     PresencePing.instance.start();
     // iOS rozet: uygulama açılınca sıfırla (Android'de no-op).
@@ -116,7 +133,17 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
     if (state == AppLifecycleState.resumed) NotificationCleaner.clearBadge();
   }
 
-  Future<void> _openWhenSessionReady(RemoteMessage m) async {
+  static Map<String, dynamic> _bridgePushData(String json) {
+    try {
+      final m = jsonDecode(json) as Map<String, dynamic>;
+      m.remove('aps');
+      return m;
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  Future<void> _openWhenSessionReady(Map<String, dynamic> data) async {
     // Soğuk açılış: 1) oturum diskten gelene, 2) splash yönlendirmesi bitene
     // kadar bekle. Splash sabit gecikmeyle go('/feed') yaptığı için erken
     // push edilen deep-link siliniyordu (31.07 denetim bulgusu Y1).
@@ -132,7 +159,7 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
       await Future.delayed(const Duration(milliseconds: 500));
     }
     if (!mounted) return;
-    _openFromPush(m);
+    _routeFromPushData(data);
   }
 
   void _showInAppBanner(RemoteMessage m) {
@@ -163,41 +190,53 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
     super.dispose();
   }
 
-  void _openFromPush(RemoteMessage m) {
+  void _routeFromPushData(Map<String, dynamic> data) {
     // Oturum yoksa yönlendirme yapılmaz — giriş sonrası Mesajlar'da
     // "Yeni eşleşme" rozeti zaten en üstte gösterir.
     if (Supabase.instance.client.auth.currentUser == null) return;
+    final type = data['type'] as String? ?? '';
+    // Hedef rotayı seç; en sonda tek noktadan dedupe edilerek gidilir
+    // (FCM eklentisi + natif köprü aynı tıklamayı ikisi birden iletebilir).
+    String? target;
+    var useGo = false;
     // Selfie reddi → doğrudan yeniden çekim ekranı; sebep banner'ı orada
     // (in-app listedeki routePath ile aynı rota). Onay push'u özel rota
     // istemez — normal açılış feed'e düşer.
-    if (m.data['type'] == 'selfie_rejected') {
-      ref.read(routerProvider).push('/profile/selfie');
-      return;
+    if (type == 'selfie_rejected') {
+      target = '/profile/selfie';
     }
-    final type = m.data['type'] as String? ?? '';
     // Yeni başvuru + seçim hatırlatması → başvuranlar ekranı
     // (26.07 iOS turu: feed'e düşüyordu; selection_reminder dalı 31.07 denetimi)
-    final invitationId = m.data['invitation_id'];
-    if ((type == 'new_application' || type == 'selection_reminder') &&
+    final invitationId = data['invitation_id'];
+    if (target == null &&
+        (type == 'new_application' || type == 'selection_reminder') &&
         invitationId is String &&
         invitationId.isNotEmpty) {
-      ref.read(routerProvider).push('/invitation/$invitationId/applicants');
-      return;
+      target = '/invitation/$invitationId/applicants';
     }
     // Ödeme/abonelik push'ları → abonelik ekranı (31.07 denetimi: dalı yoktu,
     // dokununca hiçbir şey olmuyordu; in-app liste zaten /subscription açıyor)
-    if (type.startsWith('premium_')) {
-      ref.read(routerProvider).push('/subscription');
-      return;
+    if (target == null && type.startsWith('premium_')) {
+      target = '/subscription';
     }
     // Askı bildirimi → askı ekranı (router guard'ı zaten oraya kilitler)
-    if (type == 'account_suspended') {
-      ref.read(routerProvider).go('/suspended');
-      return;
+    if (target == null && type == 'account_suspended') {
+      target = '/suspended';
+      useGo = true;
     }
-    final matchId = m.data['match_id'];
-    if (matchId is! String || matchId.isEmpty) return;
-    ref.read(routerProvider).push('/chat/$matchId');
+    if (target == null) {
+      final matchId = data['match_id'];
+      if (matchId is! String || matchId.isEmpty) return;
+      target = '/chat/$matchId';
+    }
+    final router = ref.read(routerProvider);
+    final loc = router.routerDelegate.currentConfiguration.uri.toString();
+    if (loc == target) return; // çift kaynak dedupe — zaten hedefteyiz
+    if (useGo) {
+      router.go(target);
+    } else {
+      router.push(target);
+    }
   }
 
   @override
@@ -228,7 +267,7 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
                     onTap: () {
                       final m = _bannerMsg!;
                       setState(() => _bannerMsg = null);
-                      _openFromPush(m);
+                      _routeFromPushData(m.data);
                     },
                     onVerticalDragEnd: (d) {
                       if ((d.primaryVelocity ?? 0) < 0) {

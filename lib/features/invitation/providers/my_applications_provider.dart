@@ -16,9 +16,11 @@ final myApplicationsListProvider =
           'owner:users!owner_id(name))')
       .eq('applicant_id', uid)
       .neq('status', 'withdrawn')
-      // 01.08 Mustafa kararı: seçilmeyen başvurunun kartı süre dolunca düşer
-      // ("seçim yapılmadı" kartı tutulmaz — sessizlik ilkesinin profile uzantısı)
+      // 01.08 Mustafa kararı: olumsuz sonuçlanan başvuru profilde tutulmaz —
+      // seçilmeyen (expired) ve reddedilen (rejected) kartlar düşer
+      // (sessizlik ilkesinin profile uzantısı)
       .neq('status', 'expired')
+      .neq('status', 'rejected')
       .order('created_at', ascending: false)
       .limit(20);
   return (rows as List)

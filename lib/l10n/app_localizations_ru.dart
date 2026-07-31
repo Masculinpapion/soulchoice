@@ -2342,5 +2342,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Согласен(на) получать новости и специальные предложения SoulChoice, в том числе рекламные, по e-mail. Отозвать согласие можно в любой момент — в настройках или письмом на support@soulchoice.app.';
 
   @override
-  String get paywall_subtitle_ios => 'Premium открывает безлимит.';
+  String get paywall_subtitle_ios =>
+      'Premium открывает безлимит. Действующая подписка распознаётся автоматически.';
 }

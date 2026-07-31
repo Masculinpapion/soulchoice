@@ -2297,5 +2297,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.';
 
   @override
-  String get paywall_subtitle_ios => 'Premium unlocks unlimited access.';
+  String get paywall_subtitle_ios =>
+      'Premium unlocks unlimited access. An existing subscription is recognized automatically.';
 }

@@ -4183,7 +4183,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywall_subtitle_ios.
   ///
   /// In en, this message translates to:
-  /// **'Premium unlocks unlimited access.'**
+  /// **'Premium unlocks unlimited access. An existing subscription is recognized automatically.'**
   String get paywall_subtitle_ios;
 }
 

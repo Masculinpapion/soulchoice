@@ -2288,5 +2288,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'SoulChoice haber ve özel tekliflerini (tanıtım dahil) e-posta ile almayı kabul ediyorum. Onayı istediğin zaman ayarlardan veya support@soulchoice.app adresine yazarak geri çekebilirsin.';
 
   @override
-  String get paywall_subtitle_ios => 'Premium sınırsızı açar.';
+  String get paywall_subtitle_ios =>
+      'Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.';
 }

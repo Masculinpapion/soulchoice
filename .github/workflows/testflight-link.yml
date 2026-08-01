@@ -35,10 +35,13 @@ jobs:
               "data": {"type": "betaGroups", "id": GROUP, "attributes": {
                   "publicLinkEnabled": True,
                   "publicLinkLimitEnabled": False,
+                  "publicLinkLimit": 10000,
               }}})
           print("patch:", r.status_code, r.text[:300])
           r.raise_for_status()
           g = requests.get(f"{API}/betaGroups/{GROUP}", headers=hdr())
           g.raise_for_status()
-          print("PUBLIC_LINK:", g.json()["data"]["attributes"].get("publicLink"))
+          a = g.json()["data"]["attributes"]
+          print("PUBLIC_LINK:", a.get("publicLink"))
+          print("LIMIT_ENABLED:", a.get("publicLinkLimitEnabled"), "LIMIT:", a.get("publicLinkLimit"))
           PY

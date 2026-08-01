@@ -151,7 +151,7 @@ class InvitationModel {
         venueLat: (json['venue_lat'] as num?)?.toDouble(),
         venueLng: (json['venue_lng'] as num?)?.toDouble(),
         eventDate: json['event_date'] != null
-            ? DateTime.parse(json['event_date'] as String)
+            ? DateTime.parse(json['event_date'] as String).toLocal()
             : null,
         cityId: json['city_id'] as String? ?? '',
         slotsTotal: json['slots_total'] as int? ?? 1,
@@ -159,8 +159,8 @@ class InvitationModel {
           (s) => s.name == json['status'],
           orElse: () => InvitationStatus.active,
         ),
-        createdAt: DateTime.parse(json['created_at'] as String),
-        expiresAt: DateTime.parse(json['expires_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+        expiresAt: DateTime.parse(json['expires_at'] as String).toLocal(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -172,7 +172,7 @@ class InvitationModel {
         'venue_name': venueName,
         'venue_lat': venueLat,
         'venue_lng': venueLng,
-        'event_date': eventDate?.toIso8601String(),
+        'event_date': eventDate?.toUtc().toIso8601String(),
         'city_id': cityId,
         'slots_total': slotsTotal,
         'status': status.name,

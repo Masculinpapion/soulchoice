@@ -93,7 +93,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     _descriptionController.text = ed['description'] as String? ?? '';
     _venueController.text = ed['venue_name'] as String? ?? '';
     final rawDate = ed['event_date'] as String?;
-    if (rawDate != null) _eventDate = DateTime.tryParse(rawDate);
+    if (rawDate != null) _eventDate = DateTime.tryParse(rawDate)?.toLocal();
   }
 
   @override

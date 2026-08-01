@@ -52,6 +52,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   Map<String, dynamic>? _matchInfo;
   String? _currentUid;
   bool _isUser1 = false;
+  // Sohbeti sildiğim an (tek taraflı) — bu andan önceki mesajlar bana gösterilmez.
+  DateTime? _myClearedAt;
   // Karşı taraf hesabını silmiş (matches.user*_id SET NULL) — yazma kapalı
   bool _otherDeleted = false;
   // Hediye ürün linki — yalnız seçilen kişiye + moderasyon onaylı (get_gift_link)
@@ -115,6 +117,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       final matchRow = await client.from('matches').select(
             'user1_id, user2_id, meeting_date, created_at, '
             'meeting_confirmed_user1, meeting_confirmed_user2, '
+            'user1_cleared_at, user2_cleared_at, '
             'invitation:invitations(id, title, venue_name, event_date, category)',
           ).eq('id', widget.matchId).maybeSingle();
       if (matchRow == null || !mounted) {
@@ -166,18 +169,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       final otherCity = otherUser?['city'] as Map<String, dynamic>?;
       final myCity = myUser?['city'] as Map<String, dynamic>?;
 
+      final clearedRaw = (_isUser1
+          ? matchRow['user1_cleared_at']
+          : matchRow['user2_cleared_at']) as String?;
+      final clearedAt =
+          clearedRaw != null ? DateTime.tryParse(clearedRaw)?.toLocal() : null;
+      final clearedChanged = clearedAt != _myClearedAt;
+
       setState(() {
+        _myClearedAt = clearedAt;
         _otherDeleted = otherUserId == null;
         _isGiftMatch = isGift;
         _matchCreatedAt =
-            matchCreated != null ? DateTime.tryParse(matchCreated) : null;
+            matchCreated != null ? DateTime.tryParse(matchCreated)?.toLocal() : null;
         _matchInfo = {
           'invitation': matchRow['invitation'],
           'other': otherUser,
           'otherUserId': otherUserId,
           'photoUrl': photoUrl,
         };
-        _meetingDate = meetDate != null ? DateTime.parse(meetDate) : null;
+        _meetingDate =
+            meetDate != null ? DateTime.parse(meetDate).toLocal() : null;
         _myConfirmation = _isUser1
             ? matchRow['meeting_confirmed_user1'] as bool?
             : matchRow['meeting_confirmed_user2'] as bool?;
@@ -187,6 +199,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         _myUtcOffset = (myCity?['utc_offset'] as num?)?.toInt();
         _otherUtcOffset = (otherCity?['utc_offset'] as num?)?.toInt();
       });
+      // Silme sınırı ilk kez öğrenildiyse geçmişi filtreyle yeniden yükle —
+      // aksi halde init'teki filtresiz yükleme eski mesajları gösterir.
+      if (clearedChanged && clearedAt != null) _loadMessages();
     } catch (_) {
       if (mounted) setState(() => _matchInfo = {});
     }
@@ -204,12 +219,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   Future<void> _loadMessages() async {
     // 24.07 denetim: hatasız try'da spinner sonsuza kalıyordu — hata durumu + retry
     try {
-      final data = await Supabase.instance.client
+      var query = Supabase.instance.client
           .from('messages')
           .select()
-          .eq('match_id', widget.matchId)
-          .order('created_at', ascending: false)
-          .limit(_pageSize);
+          .eq('match_id', widget.matchId);
+      // Tek taraflı silme: silme anından önceki geçmiş bana gösterilmez.
+      final cleared = _myClearedAt;
+      if (cleared != null) {
+        query = query.gt('created_at', cleared.toUtc().toIso8601String());
+      }
+      final data =
+          await query.order('created_at', ascending: false).limit(_pageSize);
       if (!mounted) return;
       final msgs = (data as List)
           .map((r) => MessageModel.fromJson(r))
@@ -652,9 +672,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     }
   }
 
+  // Normal sohbette "Sil" (01.08 Mustafa kararı): tek taraflı — benim geçmişim
+  // kalıcı temizlenir (cleared_at), karşı tarafın kopyası durur; yeni mesaj
+  // gelirse sohbet sıfırdan görünür. Sunucudan mesaj silinmez (20.07 kalıcılık
+  // kararıyla uyumlu).
+  Future<void> _clearChat() async {
+    try {
+      await Supabase.instance.client
+          .rpc('clear_chat', params: {'p_match_id': widget.matchId});
+      ref.invalidate(matchesProvider);
+      if (mounted) context.go('/messages');
+    } catch (_) {
+      if (mounted) {
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.error_generic,
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
+      }
+    }
+  }
+
   // Silinmiş kullanıcı sohbeti: karşı taraf yok, match satırının kimseye
-  // değeri kalmadı — gerçek silme (29.07 Mustafa kararı). Normal sohbetlerde
-  // silme YOK (20.07 kararı: sohbetler kalıcı, tek taraflı gizleme var).
+  // değeri kalmadı — gerçek silme (29.07 Mustafa kararı).
   Future<void> _deleteChat() async {
     try {
       await Supabase.instance.client
@@ -725,7 +765,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final invTitle = inv?['title'] as String? ?? '';
     final invVenue = inv?['venue_name'] as String? ?? '';
     final rawDate = inv?['event_date'] as String?;
-    final invDate = rawDate != null ? DateTime.tryParse(rawDate) : null;
+    final invDate = rawDate != null ? DateTime.tryParse(rawDate)?.toLocal() : null;
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
@@ -746,7 +786,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               // sessizce no-op oluyordu — yerine tek net aksiyon: Sohbeti sil.
               onBlock: _otherDeleted ? null : _block,
               onHide: _otherDeleted ? null : _hideChat,
-              onDelete: _otherDeleted ? _deleteChat : null,
+              // Sil her sohbette var: normalde tek taraflı temizlik (clear_chat),
+              // karşı taraf hesabını silmişse match'in gerçek silinmesi.
+              onDelete: _otherDeleted ? _deleteChat : _clearChat,
+              deleteConfirmBody: _otherDeleted
+                  ? null
+                  : AppLocalizations.of(context)!.chat_clear_confirm_body,
               currentUserGender: _currentUserGender(),
             ),
             // Event badge — davet bilgisi özeti
@@ -1128,6 +1173,8 @@ class _ChatAppBar extends StatelessWidget {
   final VoidCallback? onBlock;
   final VoidCallback? onHide;
   final VoidCallback? onDelete;
+  /// Sil onay diyaloğu gövdesi; null ise varsayılan (silinmiş-hesap) metni.
+  final String? deleteConfirmBody;
   final String currentUserGender;
   const _ChatAppBar({
     required this.otherName,
@@ -1139,6 +1186,7 @@ class _ChatAppBar extends StatelessWidget {
     this.onBlock,
     this.onHide,
     this.onDelete,
+    this.deleteConfirmBody,
     this.currentUserGender = 'other',
   });
 
@@ -1270,7 +1318,8 @@ class _ChatAppBar extends StatelessWidget {
                             ),
                           ),
                           content: Text(
-                            AppLocalizations.of(context)!.chat_delete_confirm_body,
+                            deleteConfirmBody ??
+                                AppLocalizations.of(context)!.chat_delete_confirm_body,
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               color: Colors.white.withOpacity(0.65),

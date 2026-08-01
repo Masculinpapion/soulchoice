@@ -57,9 +57,9 @@ class UserModel {
             json['subscription_status'] as String? ?? 'free',
         banned: json['banned'] as bool? ?? false,
         warningCount: json['warning_count'] as int? ?? 0,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
         lastActiveAt: json['last_active_at'] != null
-            ? DateTime.parse(json['last_active_at'] as String)
+            ? DateTime.parse(json['last_active_at'] as String).toLocal()
             : null,
       );
 

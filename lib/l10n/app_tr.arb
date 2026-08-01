@@ -900,6 +900,7 @@
   "chat_hide_conversation": "Sohbeti Gizle",
   "chat_delete_conversation": "Sohbeti Sil",
   "chat_delete_confirm_body": "Bu kullanıcı hesabını silmiş. Sohbet ve geçmişi kalıcı olarak silinecek.",
+  "chat_clear_confirm_body": "Sohbet geçmişi kalıcı olarak silinecek.",
   "chat_delete": "Sil",
   "chat_hide": "Gizle",
   "chat_block_and_close": "Engelle ve Kapat",

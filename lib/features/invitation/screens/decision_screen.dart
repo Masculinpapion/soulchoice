@@ -75,7 +75,8 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
       final rawEvent = data['event_date'] as String?;
       setState(() {
         _invitationTitle = data['title'] as String?;
-        _eventDate = rawEvent != null ? DateTime.tryParse(rawEvent) : null;
+        _eventDate =
+            rawEvent != null ? DateTime.tryParse(rawEvent)?.toLocal() : null;
       });
     }
   }

@@ -24,8 +24,8 @@ class MessageModel {
         senderId: json['sender_id'] as String?,
         content: json['content'] as String,
         readAt: json['read_at'] != null
-            ? DateTime.parse(json['read_at'] as String)
+            ? DateTime.parse(json['read_at'] as String).toLocal()
             : null,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       );
 }

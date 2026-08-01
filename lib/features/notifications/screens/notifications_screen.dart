@@ -63,8 +63,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             value: uid,
           ),
           callback: (_) {
-            _localItems = null; // lokal kopya taze veriyi maskelemesin
-            ref.invalidate(notificationsProvider);
+            _refreshFromServer();
           },
         )
         .onPostgresChanges(
@@ -77,8 +76,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             value: uid,
           ),
           callback: (_) {
-            _localItems = null; // lokal kopya taze veriyi maskelemesin
-            ref.invalidate(notificationsProvider);
+            _refreshFromServer();
           },
         )
         .subscribe();
@@ -92,6 +90,18 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     super.dispose();
   }
 
+  /// Sunucudan TAZE veri gelene kadar lokal kopyayı bırakma. Aksi halde
+  /// Riverpod yenileme sırasında eski değeri gösterir, build'deki `??=` lokal
+  /// kopyayı bayat veriden yeniden tohumlar ve silinen satır "geri gelir"
+  /// (01.08 cihaz bulgusu: bildirim ancak ikinci kaydırışta gidiyordu).
+  Future<void> _refreshFromServer() async {
+    ref.invalidate(notificationsProvider);
+    try {
+      await ref.read(notificationsProvider.future);
+    } catch (_) {}
+    if (mounted) setState(() => _localItems = null);
+  }
+
   Future<void> _markAllRead() async {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
@@ -102,7 +112,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           .update({'read_at': DateTime.now().toUtc().toIso8601String()})
           .eq('user_id', uid)
           .isFilter('read_at', null);
-      ref.invalidate(notificationsProvider);
+      await _refreshFromServer();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -136,8 +146,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           .inFilter('id', ids)
           .isFilter('read_at', null);
       if (!mounted) return; // fire-and-forget: ekran kapanmış olabilir
-      setState(() => _localItems = null);
-      ref.invalidate(notificationsProvider);
+      await _refreshFromServer();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -157,8 +166,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           .from('notifications')
           .delete()
           .inFilter('id', ids);
-      ref.invalidate(notificationsProvider);
-      setState(() => _localItems = null);
+      await _refreshFromServer();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -587,9 +595,10 @@ class _NotifTile extends StatelessWidget {
       // Yeni mesajlarda ikinci satır olarak mesaj önizlemesi anlamlı
       // (isim+aksiyon zaten "mesaj gönderdi" dediği için tekrar olmaz).
       if (item.type == 'new_message' && item.body.isNotEmpty) {
-        // Gruplanmışsa: "5 новых сообщений · <son mesaj>" (temsilci en yenisi)
-        final preview = item.groupCount > 1
-            ? '${l10n.notif_grouped_messages(item.groupCount)} · ${item.body}'
+        // Gruplanmışsa ve OKUNMAMIŞ varsa: "5 новых сообщений · <son mesaj>".
+        // Tümü okunduysa sayı gösterilmez — okunmuş geçmiş "yeni" gibi sunulmaz.
+        final preview = item.groupCount > 1 && item.groupUnread > 0
+            ? '${l10n.notif_grouped_messages(item.groupUnread)} · ${item.body}'
             : item.body;
         children.addAll([
           const SizedBox(height: 3),

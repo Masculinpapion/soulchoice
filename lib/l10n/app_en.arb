@@ -921,6 +921,7 @@
   "chat_hide_conversation": "Hide chat",
   "chat_delete_conversation": "Delete chat",
   "chat_delete_confirm_body": "This user deleted their account. The chat and its history will be permanently deleted.",
+  "chat_clear_confirm_body": "The chat history will be permanently deleted.",
   "chat_delete": "Delete",
   "chat_hide": "Hide",
   "chat_block_and_close": "Block and Close",

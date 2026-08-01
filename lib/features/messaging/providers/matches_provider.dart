@@ -124,10 +124,10 @@ final matchesProvider =
       otherPhotoUrl: photoMap[otherUserId],
       lastMessage: lastMsg?['content'] as String?,
       lastMessageTime: lastMsg != null
-          ? DateTime.parse(lastMsg['created_at'] as String)
+          ? DateTime.parse(lastMsg['created_at'] as String).toLocal()
           : null,
       unreadCount: unreadCountMap[matchId] ?? 0,
-      createdAt: DateTime.parse(m['created_at'] as String),
+      createdAt: DateTime.parse(m['created_at'] as String).toLocal(),
     );
   }
   final result = seen.values.toList();

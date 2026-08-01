@@ -20,6 +20,10 @@ class NotificationItem {
   final List<String> groupIds;
   final int groupCount;
 
+  /// Gruptaki okunmamış bildirim adedi. Etikette "N новых" yalnız bunu
+  /// gösterir — okunmuş geçmiş, yeni mesaj varmış gibi sunulmaz.
+  final int groupUnread;
+
   const NotificationItem({
     required this.id,
     required this.type,
@@ -33,6 +37,7 @@ class NotificationItem {
     this.actorGender,
     this.groupIds = const [],
     this.groupCount = 1,
+    this.groupUnread = 0,
   });
 
   List<String> get allIds => groupIds.isEmpty ? [id] : groupIds;
@@ -45,7 +50,8 @@ class NotificationItem {
         body: json['body'] as String,
         payload: (json['payload'] as Map<String, dynamic>?) ?? {},
         isRead: json['read_at'] != null,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+        groupUnread: json['read_at'] != null ? 0 : 1,
       );
 
   NotificationItem copyWithActor({
@@ -66,12 +72,14 @@ class NotificationItem {
         actorGender: actorGender,
         groupIds: groupIds,
         groupCount: groupCount,
+        groupUnread: groupUnread,
       );
 
   NotificationItem copyGrouped({
     required List<String> groupIds,
     required int groupCount,
     required bool isRead,
+    required int groupUnread,
   }) =>
       NotificationItem(
         id: id,
@@ -86,6 +94,7 @@ class NotificationItem {
         actorGender: actorGender,
         groupIds: groupIds,
         groupCount: groupCount,
+        groupUnread: groupUnread,
       );
 
   String get routePath {
@@ -223,6 +232,7 @@ List<NotificationItem> _groupMessages(List<NotificationItem> items) {
         groupIds: [...rep.allIds, item.id],
         groupCount: rep.groupCount + 1,
         isRead: rep.isRead && item.isRead,
+        groupUnread: rep.groupUnread + (item.isRead ? 0 : 1),
       );
     }
   }

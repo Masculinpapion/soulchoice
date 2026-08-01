@@ -900,6 +900,7 @@
   "chat_hide_conversation": "Скрыть чат",
   "chat_delete_conversation": "Удалить чат",
   "chat_delete_confirm_body": "Этот пользователь удалил аккаунт. Чат и его история будут удалены навсегда.",
+  "chat_clear_confirm_body": "История переписки будет удалена без возможности восстановления.",
   "chat_delete": "Удалить",
   "chat_hide": "Скрыть",
   "chat_block_and_close": "Заблокировать и закрыть",

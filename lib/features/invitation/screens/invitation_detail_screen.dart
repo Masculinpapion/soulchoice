@@ -135,7 +135,7 @@ class _InvitationDetailScreenState
               myAppAsync.asData?.value?['status'] as String?;
           final venueName = inv['venue_name'] as String?;
           final eventDate = inv['event_date'] != null
-              ? DateTime.parse(inv['event_date'] as String)
+              ? DateTime.parse(inv['event_date'] as String).toLocal()
               : null;
           final heroH = MediaQuery.of(context).size.height * 0.60;
 

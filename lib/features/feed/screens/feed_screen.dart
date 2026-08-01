@@ -1310,7 +1310,13 @@ class InvitationCard extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(28),
-          child: Stack(
+          child: LayoutBuilder(builder: (context, cardBox) {
+            // Dar ekranlı cihazlarda (ör. 360×800dp Realme, 01.08 bulgusu) karta
+            // kalan yükseklik azalıyor ve alt blok yüzü kapatıyordu. Kart kendi
+            // yüksekliğini ölçer: < 360dp ise kompakt mod (sıkı dolgular).
+            // S24/iPhone gibi onaylı cihazlarda compact devreye girmez.
+            final compact = cardBox.maxHeight < 360;
+            return Stack(
             fit: StackFit.expand,
             children: [
               // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
@@ -1441,7 +1447,7 @@ class InvitationCard extends StatelessWidget {
 
               // 4. Alt içerik — timer + meta + başlık + full-width CTA
               Positioned(
-                bottom: 18,
+                bottom: compact ? 12 : 18,
                 left: 16,
                 right: 16,
                 child: Column(
@@ -1479,19 +1485,24 @@ class InvitationCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: compact ? 5 : 8),
                     // Mono caps meta: "SALI · 20:30 · SMOLENSKAYA"
+                    // maxLines 1: uzun mekân adı 2. satıra katlanıp yüzü
+                    // kapatıyordu (01.08 Realme bulgusu) — her cihazda tek satır.
                     if (eventDate != null)
                       Text(
                         _metaLabel(l10n, eventDate!),
                         style: const TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w500, color: Colors.white60, letterSpacing: 0.7),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    const SizedBox(height: 5),
-                    // Fraunces italic başlık
+                    SizedBox(height: compact ? 3 : 5),
+                    // Fraunces italic başlık — 2 satır: 3. satır yüz alanına
+                    // taşıyordu, detay ekranında zaten tam görünür.
                     Text(
                       title,
                       style: const TextStyle(fontFamily: 'Fraunces', fontStyle: FontStyle.italic, fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white, height: 1.05, letterSpacing: -0.3),
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (isOwner && applicationCount > 0) ...[
@@ -1502,13 +1513,13 @@ class InvitationCard extends StatelessWidget {
                         onTap: onCtaTap,
                       ),
                     ],
-                    const SizedBox(height: 12),
+                    SizedBox(height: compact ? 8 : 12),
                     // Full-width gradient CTA
                     GestureDetector(
                       onTap: onCtaTap ?? onTap,
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        padding: EdgeInsets.symmetric(vertical: compact ? 11 : 13),
                         decoration: BoxDecoration(
                           // Başvurulmuş kartta gradient söner — durum "beklemede"
                           gradient: (!isOwner && appliedByMe)
@@ -1563,7 +1574,8 @@ class InvitationCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
+          );
+          }),
         ),
       ),
     );

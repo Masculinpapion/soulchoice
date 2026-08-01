@@ -2011,6 +2011,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu kullanıcı hesabını silmiş. Sohbet ve geçmişi kalıcı olarak silinecek.';
 
   @override
+  String get chat_clear_confirm_body =>
+      'Sohbet geçmişi kalıcı olarak silinecek.';
+
+  @override
   String get chat_delete => 'Sil';
 
   @override

@@ -2057,6 +2057,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Этот пользователь удалил аккаунт. Чат и его история будут удалены навсегда.';
 
   @override
+  String get chat_clear_confirm_body =>
+      'История переписки будет удалена без возможности восстановления.';
+
+  @override
   String get chat_delete => 'Удалить';
 
   @override

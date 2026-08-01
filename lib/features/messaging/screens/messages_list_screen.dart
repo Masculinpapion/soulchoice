@@ -104,13 +104,21 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
 // Matches Tab
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _MatchesTab extends ConsumerWidget {
+class _MatchesTab extends ConsumerStatefulWidget {
   const _MatchesTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Sohbetler kalıcıdır (20.07.2026): kullanıcı gizlemedikçe/engellemedikçe
-    // hiçbir sohbet listeden düşmez — arşiv konsepti iptal edildi
+  ConsumerState<_MatchesTab> createState() => _MatchesTabState();
+}
+
+class _MatchesTabState extends ConsumerState<_MatchesTab> {
+  // Kaydırarak silinenler: taze veri gelene kadar bayat provider verisi
+  // dismissed satırı yeniden inşa etmesin (bildirimlerdeki "iki kez sil"
+  // hatasının aynısını burada baştan önler — 01.08).
+  final Set<String> _removedMatchIds = {};
+
+  @override
+  Widget build(BuildContext context) {
     final listAsync = ref.watch(matchesProvider);
 
     return listAsync.when(
@@ -131,7 +139,10 @@ class _MatchesTab extends ConsumerWidget {
           ],
         ),
       ),
-      data: (matches) {
+      data: (rawMatches) {
+        final matches = rawMatches
+            .where((m) => !_removedMatchIds.contains(m.matchId))
+            .toList();
         if (matches.isEmpty) return const _EmptyState();
         return RefreshIndicator(
           color: AuroraTheme.auroraRed,
@@ -143,15 +154,101 @@ class _MatchesTab extends ConsumerWidget {
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
             itemCount: matches.length,
-            itemBuilder: (ctx, i) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _MatchTile(match: matches[i], locale: ref.watch(localeProvider)?.languageCode ?? 'tr'),
-            ),
+            itemBuilder: (ctx, i) {
+              final m = matches[i];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                // Sola kaydır → sil (tek taraflı clear_chat; onay diyaloğu ile)
+                child: Dismissible(
+                  key: ValueKey('match-${m.matchId}'),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 22),
+                    decoration: BoxDecoration(
+                      color: AuroraTheme.auroraRed.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(Icons.delete_forever_outlined,
+                        color: Colors.white, size: 26),
+                  ),
+                  confirmDismiss: (_) => _confirmClearChat(ctx),
+                  onDismissed: (_) async {
+                    setState(() => _removedMatchIds.add(m.matchId));
+                    try {
+                      await Supabase.instance.client.rpc('clear_chat',
+                          params: {'p_match_id': m.matchId});
+                      ref.invalidate(matchesProvider);
+                      await ref.read(matchesProvider.future);
+                    } catch (_) {
+                      // Silme sunucuya işlenemedi — satırı geri getir
+                      ref.invalidate(matchesProvider);
+                    } finally {
+                      if (mounted) {
+                        setState(() => _removedMatchIds.remove(m.matchId));
+                      }
+                    }
+                  },
+                  child: _MatchTile(
+                      match: m,
+                      locale:
+                          ref.watch(localeProvider)?.languageCode ?? 'tr'),
+                ),
+              );
+            },
           ),
         );
       },
     );
   }
+}
+
+/// Sola kaydırmada silme onayı — chat içi "Удалить чат" diyaloğuyla aynı dil.
+Future<bool> _confirmClearChat(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: const Color(0xFF14121E),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Text(
+        l10n.chat_delete_conversation,
+        style: const TextStyle(
+          fontFamily: 'Fraunces',
+          fontStyle: FontStyle.italic,
+          color: Colors.white,
+          fontSize: 20,
+        ),
+      ),
+      content: Text(
+        l10n.chat_clear_confirm_body,
+        style: TextStyle(
+          fontFamily: 'Manrope',
+          color: Colors.white.withOpacity(0.65),
+          fontSize: 14,
+          height: 1.5,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text(l10n.btn_cancel,
+              style: const TextStyle(
+                  fontFamily: 'JetBrainsMono', color: Colors.white54)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: Text(l10n.chat_delete,
+              style: const TextStyle(
+                fontFamily: 'JetBrainsMono',
+                color: AuroraTheme.auroraRed,
+                fontWeight: FontWeight.w700,
+              )),
+        ),
+      ],
+    ),
+  );
+  return ok ?? false;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

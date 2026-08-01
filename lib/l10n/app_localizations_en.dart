@@ -2021,6 +2021,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This user deleted their account. The chat and its history will be permanently deleted.';
 
   @override
+  String get chat_clear_confirm_body =>
+      'The chat history will be permanently deleted.';
+
+  @override
   String get chat_delete => 'Delete';
 
   @override

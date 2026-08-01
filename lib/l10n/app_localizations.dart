@@ -3718,6 +3718,12 @@ abstract class AppLocalizations {
   /// **'This user deleted their account. The chat and its history will be permanently deleted.'**
   String get chat_delete_confirm_body;
 
+  /// No description provided for @chat_clear_confirm_body.
+  ///
+  /// In en, this message translates to:
+  /// **'The chat history will be permanently deleted.'**
+  String get chat_clear_confirm_body;
+
   /// No description provided for @chat_delete.
   ///
   /// In en, this message translates to:

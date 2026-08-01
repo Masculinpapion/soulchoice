@@ -29,11 +29,11 @@ class ApplicationModel {
           orElse: () => ApplicationStatus.pending,
         ),
         selectedAt: json['selected_at'] != null
-            ? DateTime.parse(json['selected_at'] as String)
+            ? DateTime.parse(json['selected_at'] as String).toLocal()
             : null,
         respondedAt: json['responded_at'] != null
-            ? DateTime.parse(json['responded_at'] as String)
+            ? DateTime.parse(json['responded_at'] as String).toLocal()
             : null,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
       );
 }

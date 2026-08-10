@@ -284,7 +284,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                 // dönüyordu (yalancı CTA) — kaldırıldı. Başvuru
                                 // davet kartında; profil salt inceleme yüzeyi.
                                 if (!isOwnProfile) {
-                                  return const SizedBox.shrink();
+                                  return const _ProfileEndMark();
                                 }
                                 return _EditorialCTA(
                                   label: l10n.profile_view_cta_edit,
@@ -859,6 +859,34 @@ class _DotIndicator extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Editorial Section Header
 // ─────────────────────────────────────────────────────────────────────────────
+// Profil sonu imzası — salt-inceleme profilinde (CTA'sız durum) içeriğin
+// bittiğini gösteren editoryal kapanış çizgisi
+class _ProfileEndMark extends StatelessWidget {
+  const _ProfileEndMark();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: Center(
+          child: Container(
+            width: 72,
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AuroraTheme.auroraRed.withOpacity(0.0),
+                  AuroraTheme.auroraRed.withOpacity(0.55),
+                  AuroraTheme.auroraBlue.withOpacity(0.55),
+                  AuroraTheme.auroraBlue.withOpacity(0.0),
+                ],
+                stops: const [0.0, 0.3, 0.7, 1.0],
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
 class _EditSectionHeader extends StatelessWidget {
   final String label;
   const _EditSectionHeader({required this.label});

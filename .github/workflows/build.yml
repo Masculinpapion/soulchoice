@@ -101,17 +101,10 @@ jobs:
       # ELLE yükleme yapılmaz: 01.08'de elle konan APK versionCode=2 ile
       # üretilmişti ve RuStore sürümü kurulu cihazlara "downgrade" diye
       # REDDEDİLİYORDU. CI run numarası monoton arttığı için sıra hep doğru.
-      - name: Publish APK to landing download page
-        if: github.ref == 'refs/heads/main'
-        run: |
-          install -m 600 /dev/null /tmp/tw_key
-          echo "${{ secrets.TIMEWEB_SSH_KEY }}" > /tmp/tw_key
-          scp -o StrictHostKeyChecking=no -i /tmp/tw_key \
-            build/app/outputs/flutter-apk/app-release.apk \
-            root@89.169.1.127:/var/www/soulchoice/download/soulchoice.apk.new
-          ssh -o StrictHostKeyChecking=no -i /tmp/tw_key root@89.169.1.127 \
-            'mv /var/www/soulchoice/download/soulchoice.apk.new /var/www/soulchoice/download/soulchoice.apk'
-          rm -f /tmp/tw_key
+      # "Publish APK to landing download page" adımı KALDIRILDI (11.08.2026):
+      # /download/soulchoice.apk 01.08'den beri GitHub CDN'e 302 atıyor (origin
+      # 69MB'ı asla servis etmez) — scp artık ölü yüktü ve eşzamanlı iki CI
+      # koşusu aynı .new dosyasında yarışınca job'ı kırıyordu (10.08 gecesi).
 
   deploy-functions:
     needs: build-debug

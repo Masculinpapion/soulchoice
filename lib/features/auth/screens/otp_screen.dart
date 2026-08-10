@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/auth/otp_autofill.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -39,9 +40,31 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   void initState() {
     super.initState();
     _startResendTimer();
+    _listenForSms();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNodes[0].requestFocus();
     });
+  }
+
+  /// Android SMS Retriever: hash'li SMS düşünce kodu kutulara dağıtıp doğrular.
+  /// iOS/GMS'siz cihazda sessizce null döner, elle giriş akışı aynen kalır.
+  Future<void> _listenForSms() async {
+    final code = await OtpAutofill.waitForSmsCode();
+    if (!mounted || code == null) return;
+    _applyCode(code);
+  }
+
+  /// Otomatik doldurma (Retriever) ve iOS klavye önerisi/yapıştırma gibi çok
+  /// haneli girişleri tek noktadan işler: 4 haneyi kutulara dağıt + doğrula.
+  void _applyCode(String digits) {
+    final code = digits.replaceAll(RegExp(r'\D'), '');
+    if (code.length < _codeLength) return;
+    for (var i = 0; i < _codeLength; i++) {
+      _controllers[i].text = code[i];
+    }
+    _focusNodes[_codeLength - 1].requestFocus();
+    setState(() {});
+    _verify();
   }
 
   void _startResendTimer() {
@@ -122,10 +145,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   Future<void> _resend({String channel = 'sms'}) async {
     try {
+      // SMS kanalında Retriever hash'i yeniden gönderilir + dinleyici tazelenir
+      // (sistem dinleme penceresi ~5 dk — her gönderimde yeniden kurulmalı).
+      final appSignature =
+          channel == 'sms' ? await OtpAutofill.appSignature() : null;
       await Supabase.instance.client.functions.invoke(
         'send-call-otp',
-        body: {'phone': widget.phone, 'channel': channel},
+        body: {
+          'phone': widget.phone,
+          'channel': channel,
+          if (appSignature != null) 'app_signature': appSignature,
+        },
       );
+      if (channel == 'sms') _listenForSms();
       if (mounted) {
         setState(() {
           _channel = channel;
@@ -144,6 +176,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   void dispose() {
+    OtpAutofill.stopListening();
     for (final c in _controllers) c.dispose();
     for (final f in _focusNodes) f.dispose();
     super.dispose();
@@ -255,6 +288,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                               controller: _controllers[i],
                               focusNode: _focusNodes[i],
                               onChanged: (val) {
+                                // iOS klavye önerisi (oneTimeCode) / yapıştırma
+                                // tek kutuya 4 haneyi basar — dağıt ve doğrula.
+                                if (val.length > 1) {
+                                  _applyCode(val);
+                                  return;
+                                }
                                 if (val.length == 1 && i < _codeLength - 1) {
                                   _focusNodes[i + 1].requestFocus();
                                 } else if (val.isEmpty && i > 0) {
@@ -447,7 +486,13 @@ class _OtpBoxState extends State<_OtpBox> {
             child: TextField(
               controller: widget.controller,
               focusNode: widget.focusNode,
-              maxLength: 1,
+              // maxLength YOK: iOS kod önerisi/yapıştırma 4 haneyi tek kutuya
+              // basabilmeli (üstteki onChanged dağıtır); rakam dışı zaten süzülür.
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(4),
+              ],
+              autofillHints: const [AutofillHints.oneTimeCode],
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               style: const TextStyle(

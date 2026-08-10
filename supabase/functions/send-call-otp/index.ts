@@ -25,8 +25,15 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    const { phone, channel } = await req.json()
+    const { phone, channel, app_signature } = await req.json()
     if (!phone) return new Response(JSON.stringify({ error: 'phone required' }), { status: 400, headers: CORS })
+    // Android SMS Retriever hash'i: istemci kendi imza hash'ini gönderir (Play/
+    // RuStore/debug sertifikaları farklı → hash sabitlenemez). Sıkı format
+    // kontrolü, SMS metnine serbest string enjeksiyonunu engeller.
+    const appHash =
+      typeof app_signature === 'string' && /^[A-Za-z0-9+/]{11}$/.test(app_signature)
+        ? app_signature
+        : null
     // Kanal seçimi: yeni app sürümleri channel:'sms' gönderir (birincil kanal).
     // Parametresiz istekler = SAHADAKİ ESKİ BUILD'LER → çağrı (UI'ları çağrıya
     // göre yazılmış; varsayılanı sms yapmak sürüm çakışması yaratır).
@@ -64,9 +71,13 @@ serve(async (req) => {
       const buf = new Uint32Array(1)
       crypto.getRandomValues(buf)
       code = String(1000 + (buf[0] % 9000))
+      // Hash SMS'in SON satırına eklenir (Retriever şartı); hash'siz istemciler
+      // eski metni aynen alır.
+      const smsText = 'SoulChoice: код подтверждения ' + code +
+        (appHash ? '\n' + appHash : '')
       const url = 'https://sms.ru/sms/send?api_id=' + SMS_RU_API_KEY +
         '&to=' + encodeURIComponent(phone) +
-        '&msg=' + encodeURIComponent('SoulChoice: код подтверждения ' + code) + '&json=1'
+        '&msg=' + encodeURIComponent(smsText) + '&json=1'
       const res = await fetch(url)
       const data = await res.json()
       const smsInfo = data.sms ? (Object.values(data.sms)[0] as { status?: string } | undefined) : undefined

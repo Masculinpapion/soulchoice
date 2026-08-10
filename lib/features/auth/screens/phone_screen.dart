@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     show FunctionException, Supabase;
 import 'package:url_launcher/url_launcher.dart';
+import '../../../core/auth/otp_autofill.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -47,11 +48,18 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     final phone = '$_countryCode$rawPhone';
     setState(() => _isLoading = true);
     try {
+      // Android'de SMS Retriever hash'i istekle gider; sunucu SMS sonuna
+      // ekler ve kod otomatik dolar. iOS/GMS'siz cihazlarda null → hash'siz SMS.
+      final appSignature = await OtpAutofill.appSignature();
       final response = await Supabase.instance.client.functions.invoke(
         'send-call-otp',
         // channel parametresiz istekleri backend eski build uyumu için çağrıya
         // yönlendirir — SMS birincil kanal burada açıkça istenir.
-        body: {'phone': phone, 'channel': 'sms'},
+        body: {
+          'phone': phone,
+          'channel': 'sms',
+          if (appSignature != null) 'app_signature': appSignature,
+        },
       );
       final data = response.data as Map<String, dynamic>?;
       if (data?['success'] == true) {

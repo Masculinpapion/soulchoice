@@ -32,6 +32,9 @@ dependencies:
   # Local auth (FaceID/TouchID)
   local_auth: ^2.3.0
 
+  # SMS OTP auto-fill (Android SMS Retriever; hash'i istemci gönderir)
+  smart_auth: ^3.0.0
+
   # Phone number validation
   phone_numbers_parser: ^9.0.21
 

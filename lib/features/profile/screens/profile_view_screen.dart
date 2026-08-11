@@ -894,9 +894,10 @@ class _EditSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
+          // D — Rafine İmza (12.08): kısa, radius'lu, zarif
           Container(
-            width: 40,
-            height: 1,
+            width: 14,
+            height: 2,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -904,9 +905,10 @@ class _EditSectionHeader extends StatelessWidget {
                   AuroraTheme.auroraBlue.withOpacity(0.6),
                 ],
               ),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Text(
             label,
             style: TextStyle(

@@ -144,7 +144,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
   }
 
+  // Art arda dokunuşlar çoklu istek atıp kullanıcıyı kendi eliyle
+  // "too_soon"a düşürüyordu (11.08 denetim) — istek sürerken kilitli.
+  bool _resendBusy = false;
+
   Future<void> _resend({String channel = 'sms'}) async {
+    if (_resendBusy) return;
+    _resendBusy = true;
     try {
       // SMS kanalında Retriever hash'i yeniden gönderilir + dinleyici tazelenir
       // (sistem dinleme penceresi ~5 dk — her gönderimde yeniden kurulmalı).
@@ -173,6 +179,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       if (mounted) {
         setState(() => _error = AppLocalizations.of(context)!.error_generic);
       }
+    } finally {
+      _resendBusy = false;
     }
   }
 

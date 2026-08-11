@@ -97,6 +97,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       return;
     }
     final status = await _requestPermission(_currentStep);
+    if (!mounted) return; // izin diyaloğu açıkken ekran kapanmış olabilir (11.08)
     final granted = status.isGranted || status.isLimited;
     setState(() => _results[_currentStep] = granted);
     if (granted) {

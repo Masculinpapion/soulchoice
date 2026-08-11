@@ -127,7 +127,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - **Push l10n ALICININ dilinde (✅ 15.07):** `users.locale` (app dil ayarından senkron) + send-notification sunucu şablonları (selected/new_application/new_message/selection_reminder); istemcinin gönderdiği metin yalnız fallback. Eski "gönderenin dili" kalıbı kapandı.
 - **Yeni mesaj push'u İÇERİK TAŞIMAZ (✅ 15.07, Mustafa kararı):** kilit ekranı gizliliği — başlık gönderen adı, gövde sabit "Yeni mesaj/Новое сообщение"; sunucu şablonu eski istemcilerin gönderdiği içeriği de ezer.
 - **In-app bildirim metinleri `type`'a göre render-time l10n üretilir (RU/EN/TR).** DB'deki title/body yalnız fallback/kayıttır. ✅ _(ADIM 1'de "sabit TR" sanılmıştı — ekran zaten lokalize)_
-- Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅ İstisna: selfie onay/red push'ları hesap-durumu (işlemsel) bildirimidir — ayrı tercih kategorisi yoktur, her zaman gönderilir (16.07).
+- Push'lar kullanıcının bildirim tercihlerine ve sessiz saatlere saygılıdır. ✅ İstisna (REVİZE 31.07, belgeye işlenişi 11.08): yalnız SERVİS bildirimleri (premium_* ve account_suspended — para/hesap durumu, ФЗ-38) tercih ve sessiz-saat kapısına takılmaz. Selfie onay/red DAHİL geri kalan her şey sessiz saatlere TABİDİR — selfie push'u gece 03:00'te gidebiliyordu, 31.07'de bilinçli olarak kapı arkasına alındı (kod: send-notification isService).
 
 ## 10. Kayıt ve doğrulama
 

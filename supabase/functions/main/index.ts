@@ -105,7 +105,9 @@ Deno.serve(async (req: Request) => {
   const servicePath = `/home/deno/functions/${service_name}`
   console.error(`serving the request with ${servicePath}`)
   const memoryLimitMb = 150
-  const workerTimeoutMs = 1 * 60 * 1000
+  // 11.08: 60 sn worker ömrü, istek ortasında "early termination" ile 500
+  // üretiyordu (OTP vakası) — 5 dk'ya çıkarıldı, kill sıklığı 5x azalır.
+  const workerTimeoutMs = 5 * 60 * 1000
   const noModuleCache = false
   const importMapPath = null
   const envVarsObj = Deno.env.toObject()

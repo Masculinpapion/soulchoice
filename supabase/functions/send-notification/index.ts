@@ -216,13 +216,16 @@ serve(async (req) => {
       }
     }
     // 26.07 çift-push koruması (31.07: artık TÜM türler için — selfie/premium
-    // çift gidebiliyordu): 8 sn pencerede aynı (alıcı, tip, ref) ikinci kez
+    // çift gidebiliyordu): aynı (alıcı, tip, ref) kısa pencerede ikinci kez
     // gönderilmez. push_log yoksa/hata olursa dedupe atlanır — push göndermek
     // dedupe'tan her zaman önceliklidir.
+    // 11.08 denetim: pencere 8sn→2sn. Amaç yalnız eski-istemci+sunucu AYNI
+    // olayı çift göndermesin (aynı anda düşer); 8 sn, aynı sohbette art arda
+    // yazılan FARKLI mesajların push'unu yutuyordu.
     try {
       const dedupRef = String(data?.match_id ?? data?.invitation_id ?? '')
       const dup = await db.queryObject(
-        "SELECT 1 FROM push_log WHERE user_id = $1 AND type = $2 AND ref = $3 AND sent_at > now() - interval '8 seconds' LIMIT 1",
+        "SELECT 1 FROM push_log WHERE user_id = $1 AND type = $2 AND ref = $3 AND sent_at > now() - interval '2 seconds' LIMIT 1",
         [user_id, notifType, dedupRef]
       )
       if (dup.rows.length > 0) {

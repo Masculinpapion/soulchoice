@@ -249,7 +249,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
       ),
       initialEntryMode: TimePickerEntryMode.input,
     );
-    if (pickedTime == null) return;
+    if (pickedTime == null || !mounted) return;
     setState(() {
       _eventDate = DateTime(
         pickedDate.year,

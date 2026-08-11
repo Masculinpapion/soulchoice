@@ -75,8 +75,6 @@
   },
   "perm_notification_title": "Allow notifications",
   "perm_notification_desc": "Required to notify you of new messages when selected",
-  "perm_location_title": "Share your location",
-  "perm_location_desc": "We need your location to show nearby invitations",
   "perm_photos_title": "Access photo gallery",
   "perm_photos_desc": "Required to add photos to your profile",
   "perm_grant": "Allow",
@@ -278,6 +276,13 @@
   "create_inv_title_ph_gift_req": "e.g. I love surprises",
   "create_inv_datetime_placeholder": "Select date & time",
   "decision_selected_title": "Match Confirmation",
+  "decision_selected_body_request": "You selected {name} for your \"{title}\" request.\nWould you like to confirm this match?",
+  "@decision_selected_body_request": {
+    "placeholders": {
+      "name": {},
+      "title": {}
+    }
+  },
   "decision_selected_body": "You selected {name} for your \"{title}\" invitation.\nWould you like to confirm this match?",
   "@decision_selected_body": {
     "placeholders": {
@@ -342,6 +347,7 @@
   "inv_detail_selected_btn": "Selected — Make your decision",
   "inv_detail_accepted_chat_btn": "✓ Accepted · Open chat",
   "inv_detail_apply_sent_title": "Application Sent",
+  "inv_detail_apply_sent_body_request": "Wait for the request owner to make their choice",
   "inv_detail_apply_sent_body": "Wait for the invitation owner to make their choice",
   "inv_detail_error": "Error: {error}",
   "inv_detail_retry": "Retry",
@@ -453,6 +459,7 @@
   "selfie_reason_mismatch": "Doesn't match your profile photos",
   "selfie_reason_multiple_people": "Someone else in frame — take it alone",
   "profile_my_applications": "My applications",
+  "app_status_closed": "CLOSED",
   "app_status_pending": "PENDING",
   "app_status_accepted": "ACCEPTED",
   "paywall_premium_active": "Premium is active — enjoy! 🎉",
@@ -900,7 +907,7 @@
   "chat_hide_conversation": "Hide chat",
   "chat_delete_conversation": "Delete chat",
   "chat_delete_confirm_body": "This user deleted their account. The chat and its history will be permanently deleted.",
-  "chat_clear_confirm_body": "The chat history will be permanently deleted.",
+  "chat_clear_confirm_body": "The chat history will be permanently deleted only on your side. The other person will still see the chat.",
   "chat_delete": "Delete",
   "chat_hide": "Hide",
   "chat_block_and_close": "Block and Close",

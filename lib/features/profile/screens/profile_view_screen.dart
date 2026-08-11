@@ -2067,15 +2067,23 @@ class _MyApplicationsSectionState
                   (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
               final title = inv?['title'] as String? ?? '—';
               final status = a['status'] as String? ?? 'pending';
-              // Olumsuz sonuçlar (expired/rejected/kapanmış ilanda pending)
-              // provider'da elenir (01.08 kararı) — kalan: kabul + beklemede.
-              final (chipText, chipColor) = switch (status) {
-                'accepted' => (
-                    l10n.app_status_accepted,
-                    const Color(0xFF34C759)
-                  ),
-                _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
-              };
+              // 11.08 REVİZE (Mustafa): olumsuz sonuç gizlenmez — kart kalır,
+              // rozet nötr gri "ЗАВЕРШЕНО" olur (açık "reddedildin" YOK,
+              // sessiz kaybolma da YOK). Kapanmış ilanda pending de aynı
+              // nötr duruma düşer.
+              final invClosed = inv == null || inv['status'] == 'closed';
+              final finished = status == 'rejected' ||
+                  status == 'expired' ||
+                  (status == 'pending' && invClosed);
+              final (chipText, chipColor) = finished
+                  ? (l10n.app_status_closed, const Color(0xFF9A9AAB))
+                  : switch (status) {
+                      'accepted' => (
+                          l10n.app_status_accepted,
+                          const Color(0xFF34C759)
+                        ),
+                      _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
+                    };
               return InkWell(
                 onTap: inv == null
                     ? null

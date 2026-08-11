@@ -75,8 +75,6 @@
   },
   "perm_notification_title": "Разрешить уведомления",
   "perm_notification_desc": "Нужно, чтобы уведомлять тебя о новых сообщениях при выборе",
-  "perm_location_title": "Поделиться геолокацией",
-  "perm_location_desc": "Нам нужна твоя геолокация, чтобы показывать ближайшие приглашения",
   "perm_photos_title": "Доступ к галерее фото",
   "perm_photos_desc": "Нужно для добавления фотографий в профиль",
   "perm_grant": "Разрешить",
@@ -278,6 +276,13 @@
   "create_inv_title_ph_gift_req": "Напр.: Люблю сюрпризы",
   "create_inv_datetime_placeholder": "Выбрать дату и время",
   "decision_selected_title": "Подтверждение выбора",
+  "decision_selected_body_request": "Ты выбираешь {name} для запроса \"{title}\".\nПодтвердить совпадение?",
+  "@decision_selected_body_request": {
+    "placeholders": {
+      "name": {},
+      "title": {}
+    }
+  },
   "decision_selected_body": "Ты выбираешь {name} для приглашения \"{title}\".\nПодтвердить совпадение?",
   "@decision_selected_body": {
     "placeholders": {
@@ -342,6 +347,7 @@
   "inv_detail_selected_btn": "Выбрали — Прими решение",
   "inv_detail_accepted_chat_btn": "✓ Принято · Открыть чат",
   "inv_detail_apply_sent_title": "Заявка отправлена",
+  "inv_detail_apply_sent_body_request": "Жди, пока владелец запроса сделает выбор",
   "inv_detail_apply_sent_body": "Жди, пока владелец приглашения сделает выбор",
   "inv_detail_error": "Ошибка: {error}",
   "inv_detail_retry": "Повторить",
@@ -443,6 +449,7 @@
   "selfie_reason_mismatch": "Не совпадает с фото профиля",
   "selfie_reason_multiple_people": "В кадре кто-то ещё — сделай селфи в одиночку",
   "profile_my_applications": "Мои заявки",
+  "app_status_closed": "ЗАВЕРШЕНО",
   "app_status_pending": "ОЖИДАЕТ",
   "app_status_accepted": "ПРИНЯТА",
   "paywall_premium_active": "Premium активен — пользуйся! 🎉",
@@ -855,7 +862,7 @@
   "chat_hide_conversation": "Скрыть чат",
   "chat_delete_conversation": "Удалить чат",
   "chat_delete_confirm_body": "Этот пользователь удалил аккаунт. Чат и его история будут удалены навсегда.",
-  "chat_clear_confirm_body": "История переписки будет удалена без возможности восстановления.",
+  "chat_clear_confirm_body": "История переписки будет удалена только у тебя, без возможности восстановления. Собеседник продолжит видеть чат.",
   "chat_delete": "Удалить",
   "chat_hide": "Скрыть",
   "chat_block_and_close": "Заблокировать и закрыть",

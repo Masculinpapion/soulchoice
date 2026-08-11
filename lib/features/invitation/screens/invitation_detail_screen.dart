@@ -1472,7 +1472,11 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        AppLocalizations.of(context)!.inv_detail_apply_sent_body,
+                        widget.isRequestFlow
+                            ? AppLocalizations.of(context)!
+                                .inv_detail_apply_sent_body_request
+                            : AppLocalizations.of(context)!
+                                .inv_detail_apply_sent_body,
                         style: TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 12,

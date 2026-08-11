@@ -48,11 +48,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         title: l.perm_notification_title,
         description: l.perm_notification_desc,
       ),
-      _PermissionStep(
-        emoji: '📍',
-        title: l.perm_location_title,
-        description: l.perm_location_desc,
-      ),
+      // 11.08: konum adımı KALDIRILDI — kod hiçbir yerde konum okumuyor
+      // (feed şehir seçimiyle çalışır); ölü izin = mağaza gizlilik riski.
       _PermissionStep(
         emoji: '📷',
         title: l.perm_photos_title,
@@ -77,14 +74,12 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       case 0:
         return Permission.notification.request();
       case 1:
-        return Permission.locationWhenInUse.request();
-      case 2:
         final status = await Permission.photos.request();
         if (status.isDenied || status.isPermanentlyDenied) {
           return Permission.storage.request();
         }
         return status;
-      case 3:
+      case 2:
         return Permission.camera.request();
       default:
         return PermissionStatus.denied;

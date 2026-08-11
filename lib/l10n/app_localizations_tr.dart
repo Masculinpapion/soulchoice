@@ -211,13 +211,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Seçildiğinde yeni mesajları bildirebilmek için gerekli';
 
   @override
-  String get perm_location_title => 'Konumunu paylaş';
-
-  @override
-  String get perm_location_desc =>
-      'Yakındaki davetleri göstermek için konumuna ihtiyacımız var';
-
-  @override
   String get perm_photos_title => 'Fotoğraf galerisine eriş';
 
   @override
@@ -791,6 +784,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get decision_selected_title => 'Eşleşme Onayı';
 
   @override
+  String decision_selected_body_request(Object name, Object title) {
+    return '$name adlı kişiyi \"$title\" isteğin için seçtin.\nBu eşleşmeyi onaylamak ister misin?';
+  }
+
+  @override
   String decision_selected_body(String name, String title) {
     return '$name adlı kişiyi \"$title\" davetin için seçtin.\nBu eşleşmeyi onaylamak ister misin?';
   }
@@ -938,6 +936,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get inv_detail_apply_sent_title => 'Başvuru Gönderildi';
+
+  @override
+  String get inv_detail_apply_sent_body_request =>
+      'İstek sahibinin seçim yapmasını bekle';
 
   @override
   String get inv_detail_apply_sent_body =>
@@ -1125,6 +1127,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_my_applications => 'Başvurularım';
+
+  @override
+  String get app_status_closed => 'TAMAMLANDI';
 
   @override
   String get app_status_pending => 'BEKLİYOR';
@@ -1912,7 +1917,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get chat_clear_confirm_body =>
-      'Sohbet geçmişi kalıcı olarak silinecek.';
+      'Sohbet geçmişi yalnızca senin tarafında kalıcı olarak silinecek. Karşı taraf sohbeti görmeye devam eder.';
 
   @override
   String get chat_delete => 'Sil';

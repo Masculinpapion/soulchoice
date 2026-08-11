@@ -75,8 +75,6 @@
   },
   "perm_notification_title": "Bildirimlere izin ver",
   "perm_notification_desc": "Seçildiğinde yeni mesajları bildirebilmek için gerekli",
-  "perm_location_title": "Konumunu paylaş",
-  "perm_location_desc": "Yakındaki davetleri göstermek için konumuna ihtiyacımız var",
   "perm_photos_title": "Fotoğraf galerisine eriş",
   "perm_photos_desc": "Profiline fotoğraf eklemek için gerekli",
   "perm_grant": "İzin ver",
@@ -278,6 +276,13 @@
   "create_inv_title_ph_gift_req": "Örn: Sürprizleri severim",
   "create_inv_datetime_placeholder": "Tarih ve saat seç",
   "decision_selected_title": "Eşleşme Onayı",
+  "decision_selected_body_request": "{name} adlı kişiyi \"{title}\" isteğin için seçtin.\nBu eşleşmeyi onaylamak ister misin?",
+  "@decision_selected_body_request": {
+    "placeholders": {
+      "name": {},
+      "title": {}
+    }
+  },
   "decision_selected_body": "{name} adlı kişiyi \"{title}\" davetin için seçtin.\nBu eşleşmeyi onaylamak ister misin?",
   "@decision_selected_body": {
     "placeholders": {
@@ -342,6 +347,7 @@
   "inv_detail_selected_btn": "Seçildin — Kararını ver",
   "inv_detail_accepted_chat_btn": "✓ Kabul edildi · Sohbeti aç",
   "inv_detail_apply_sent_title": "Başvuru Gönderildi",
+  "inv_detail_apply_sent_body_request": "İstek sahibinin seçim yapmasını bekle",
   "inv_detail_apply_sent_body": "Davetiye sahibinin seçim yapmasını bekle",
   "inv_detail_error": "Hata: {error}",
   "inv_detail_retry": "Tekrar dene",
@@ -443,6 +449,7 @@
   "selfie_reason_mismatch": "Profil fotoğraflarıyla eşleşmiyor",
   "selfie_reason_multiple_people": "Kadrajda başka biri var — tek başına çek",
   "profile_my_applications": "Başvurularım",
+  "app_status_closed": "TAMAMLANDI",
   "app_status_pending": "BEKLİYOR",
   "app_status_accepted": "KABUL",
   "paywall_premium_active": "Premium aktif — keyfini çıkar! 🎉",
@@ -855,7 +862,7 @@
   "chat_hide_conversation": "Sohbeti Gizle",
   "chat_delete_conversation": "Sohbeti Sil",
   "chat_delete_confirm_body": "Bu kullanıcı hesabını silmiş. Sohbet ve geçmişi kalıcı olarak silinecek.",
-  "chat_clear_confirm_body": "Sohbet geçmişi kalıcı olarak silinecek.",
+  "chat_clear_confirm_body": "Sohbet geçmişi yalnızca senin tarafında kalıcı olarak silinecek. Karşı taraf sohbeti görmeye devam eder.",
   "chat_delete": "Sil",
   "chat_hide": "Gizle",
   "chat_block_and_close": "Engelle ve Kapat",

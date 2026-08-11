@@ -212,13 +212,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Required to notify you of new messages when selected';
 
   @override
-  String get perm_location_title => 'Share your location';
-
-  @override
-  String get perm_location_desc =>
-      'We need your location to show nearby invitations';
-
-  @override
   String get perm_photos_title => 'Access photo gallery';
 
   @override
@@ -793,6 +786,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decision_selected_title => 'Match Confirmation';
 
   @override
+  String decision_selected_body_request(Object name, Object title) {
+    return 'You selected $name for your \"$title\" request.\nWould you like to confirm this match?';
+  }
+
+  @override
   String decision_selected_body(String name, String title) {
     return 'You selected $name for your \"$title\" invitation.\nWould you like to confirm this match?';
   }
@@ -940,6 +938,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inv_detail_apply_sent_title => 'Application Sent';
+
+  @override
+  String get inv_detail_apply_sent_body_request =>
+      'Wait for the request owner to make their choice';
 
   @override
   String get inv_detail_apply_sent_body =>
@@ -1128,6 +1130,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_my_applications => 'My applications';
+
+  @override
+  String get app_status_closed => 'CLOSED';
 
   @override
   String get app_status_pending => 'PENDING';
@@ -1922,7 +1927,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chat_clear_confirm_body =>
-      'The chat history will be permanently deleted.';
+      'The chat history will be permanently deleted only on your side. The other person will still see the chat.';
 
   @override
   String get chat_delete => 'Delete';

@@ -211,13 +211,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Нужно, чтобы уведомлять тебя о новых сообщениях при выборе';
 
   @override
-  String get perm_location_title => 'Поделиться геолокацией';
-
-  @override
-  String get perm_location_desc =>
-      'Нам нужна твоя геолокация, чтобы показывать ближайшие приглашения';
-
-  @override
   String get perm_photos_title => 'Доступ к галерее фото';
 
   @override
@@ -793,6 +786,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get decision_selected_title => 'Подтверждение выбора';
 
   @override
+  String decision_selected_body_request(Object name, Object title) {
+    return 'Ты выбираешь $name для запроса \"$title\".\nПодтвердить совпадение?';
+  }
+
+  @override
   String decision_selected_body(String name, String title) {
     return 'Ты выбираешь $name для приглашения \"$title\".\nПодтвердить совпадение?';
   }
@@ -950,6 +948,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inv_detail_apply_sent_title => 'Заявка отправлена';
+
+  @override
+  String get inv_detail_apply_sent_body_request =>
+      'Жди, пока владелец запроса сделает выбор';
 
   @override
   String get inv_detail_apply_sent_body =>
@@ -1140,6 +1142,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_my_applications => 'Мои заявки';
+
+  @override
+  String get app_status_closed => 'ЗАВЕРШЕНО';
 
   @override
   String get app_status_pending => 'ОЖИДАЕТ';
@@ -1959,7 +1964,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chat_clear_confirm_body =>
-      'История переписки будет удалена без возможности восстановления.';
+      'История переписки будет удалена только у тебя, без возможности восстановления. Собеседник продолжит видеть чат.';
 
   @override
   String get chat_delete => 'Удалить';

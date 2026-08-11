@@ -34,6 +34,8 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
   String? _applicantId;
   String? _applicantName;
   String? _invitationTitle;
+  // 11.08: istek akışında 'davet' dili kalmıştı — metin türe göre seçilir
+  bool _isRequestFlow = false;
   // Kabul anında match.meeting_date'e kopyalanır — buluşma anketi + arşiv
   // mekaniğini besler (product-logic §7).
   DateTime? _eventDate;
@@ -68,12 +70,13 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
   Future<void> _loadInvitationTitle() async {
     final data = await Supabase.instance.client
         .from('invitations')
-        .select('title, event_date')
+        .select('title, event_date, flow_type')
         .eq('id', widget.invitationId)
         .maybeSingle();
     if (mounted && data != null) {
       final rawEvent = data['event_date'] as String?;
       setState(() {
+        _isRequestFlow = data['flow_type'] == 'request';
         _invitationTitle = data['title'] as String?;
         _eventDate =
             rawEvent != null ? DateTime.tryParse(rawEvent)?.toLocal() : null;
@@ -285,9 +288,11 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      AppLocalizations.of(
-                        context,
-                      )!.decision_selected_body(name, title),
+                      _isRequestFlow
+                          ? AppLocalizations.of(context)!
+                              .decision_selected_body_request(name, title)
+                          : AppLocalizations.of(context)!
+                              .decision_selected_body(name, title),
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 16,

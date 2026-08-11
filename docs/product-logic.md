@@ -57,14 +57,14 @@ Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında ka
 active (6/12/24/48 saat — sahibi seçer)
   └─ süre dolunca → selecting (+48 saat sabit seçim penceresi)
         └─ pencere dolunca → closed
-              └─ match'i YOKSA saatlik temizlikte kalıcı silinir (başvurularıyla)
+              └─ match'i YOKSA 30 gün sonra temizlikte kalıcı silinir (başvurularıyla; 11.08 — profildeki ЗАВЕРШЕНО kartı bu süre görünür)
               └─ match'i VARSA silinmez (sohbet başlığı verisi yaşar)
 ```
 
 - Geçişler saatlik cron'la olur; saate yuvarlanır. ✅
 - `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
 - **Kapanan (`closed`) ilanlarda seçilmeyen bekleyen başvurular saatlik temizlikte `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). ✅ 15.07
-- **Profil "Başvurularım" olumsuz sonucu HİÇ göstermez (KARAR Mustafa 01.08):** seçilmeyen (`expired` / kapanmış ilanda pending) VE reddedilen (`rejected`) başvuruların kartı profilden tamamen düşer — yalnız "Beklemede" ve "Kabul edildi" görünür. Sessizlik ilkesinin profile uzantısı. ✅ 01.08
+- **REVİZE (Mustafa 11.08): olumsuz sonuç GİZLENMEZ, nötr gösterilir.** Eski 01.08 kuralı (kart tamamen düşer) "seçtiklerimiz nereye kayboluyor?" sorununu doğurdu. Yeni akış: seçilmeyen (`expired`/kapanmış ilanda `pending`) ve reddedilen (`rejected`) kart profilde KALIR, rozet gri **ЗАВЕРШЕНО/TAMAMLANDI** olur — açık "reddedildin" YOK (sessizlik korunur), sessiz kaybolma da YOK. `withdrawn` (kullanıcının kendi eylemi) gizli kalır. Kart ömrü = ilan ömrü: **kapalı ilan artık 30 gün saklanır** (cleanup cron'a 30 gün eşiği, 11.08; match'li ilana yine dokunulmaz), sonra kart ilanla birlikte sessizce düşer. ✅ 11.08
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
 ## 5. Limitler, filtreler ve Premium

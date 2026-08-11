@@ -478,18 +478,6 @@ abstract class AppLocalizations {
   /// **'Required to notify you of new messages when selected'**
   String get perm_notification_desc;
 
-  /// No description provided for @perm_location_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Share your location'**
-  String get perm_location_title;
-
-  /// No description provided for @perm_location_desc.
-  ///
-  /// In en, this message translates to:
-  /// **'We need your location to show nearby invitations'**
-  String get perm_location_desc;
-
   /// No description provided for @perm_photos_title.
   ///
   /// In en, this message translates to:
@@ -1528,6 +1516,12 @@ abstract class AppLocalizations {
   /// **'Match Confirmation'**
   String get decision_selected_title;
 
+  /// No description provided for @decision_selected_body_request.
+  ///
+  /// In en, this message translates to:
+  /// **'You selected {name} for your \"{title}\" request.\nWould you like to confirm this match?'**
+  String decision_selected_body_request(Object name, Object title);
+
   /// No description provided for @decision_selected_body.
   ///
   /// In en, this message translates to:
@@ -1809,6 +1803,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Application Sent'**
   String get inv_detail_apply_sent_title;
+
+  /// No description provided for @inv_detail_apply_sent_body_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the request owner to make their choice'**
+  String get inv_detail_apply_sent_body_request;
 
   /// No description provided for @inv_detail_apply_sent_body.
   ///
@@ -2127,6 +2127,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My applications'**
   String get profile_my_applications;
+
+  /// No description provided for @app_status_closed.
+  ///
+  /// In en, this message translates to:
+  /// **'CLOSED'**
+  String get app_status_closed;
 
   /// No description provided for @app_status_pending.
   ///
@@ -3535,7 +3541,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_clear_confirm_body.
   ///
   /// In en, this message translates to:
-  /// **'The chat history will be permanently deleted.'**
+  /// **'The chat history will be permanently deleted only on your side. The other person will still see the chat.'**
   String get chat_clear_confirm_body;
 
   /// No description provided for @chat_delete.

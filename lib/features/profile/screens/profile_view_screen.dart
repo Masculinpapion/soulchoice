@@ -1966,11 +1966,53 @@ class _SubscriptionEntryCard extends StatelessWidget {
 // Başvurularım — başvuranın akıbet takibi (🟠2, 15.07). Boşsa hiç görünmez.
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _MyApplicationsSection extends ConsumerWidget {
+class _MyApplicationsSection extends ConsumerStatefulWidget {
   const _MyApplicationsSection();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MyApplicationsSection> createState() =>
+      _MyApplicationsSectionState();
+}
+
+class _MyApplicationsSectionState
+    extends ConsumerState<_MyApplicationsSection> {
+  RealtimeChannel? _channel;
+
+  @override
+  void initState() {
+    super.initState();
+    // Başvuru akıbeti ANLIK yansımalı (11.08 bulgusu: karşı taraf kabul etti,
+    // kart uzun süre ОЖИДАЕТ kaldı). Profil tab'da canlı kaldığı için tek
+    // fetch bayatlıyordu. Filtre YOK bilerek: realtime olayları RLS'e tabi —
+    // bu kullanıcıya yalnız (a) kendi başvuruları, (b) kendi davetlerine
+    // gelen başvurular düşer. (a) bu bölümü, (b) üstteki "Davetiyem"
+    // kartının başvuru sayacını tazeler (desen: notifications_screen).
+    final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
+    if (uid.isEmpty) return;
+    _channel = Supabase.instance.client
+        .channel('my_apps:$uid')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'applications',
+          callback: (_) {
+            ref.invalidate(myApplicationsListProvider);
+            ref.invalidate(myActiveInvitationsProvider);
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final appsAsync = ref.watch(myApplicationsListProvider);
     final apps = appsAsync.asData?.value ?? [];

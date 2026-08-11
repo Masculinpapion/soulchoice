@@ -457,7 +457,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           controller: _nameController,
                           style: _fieldStyle,
                           decoration: InputDecoration(
-                            labelText: l10n.profile_setup_name_label,
+                            hintText: l10n.profile_setup_name_label,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -466,7 +466,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           keyboardType: TextInputType.number,
                           style: _fieldStyle,
                           decoration: InputDecoration(
-                            labelText: l10n.profile_setup_age_label(
+                            hintText: l10n.profile_setup_age_label(
                               AppConstants.minAge,
                               AppConstants.maxAge,
                             ),
@@ -537,7 +537,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           controller: _jobController,
                           style: _fieldStyle,
                           decoration: InputDecoration(
-                            labelText: l10n.profile_setup_job_label,
+                            hintText: l10n.profile_setup_job_label,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -545,7 +545,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           controller: _educationController,
                           style: _fieldStyle,
                           decoration: InputDecoration(
-                            labelText: l10n.profile_setup_education_label,
+                            hintText: l10n.profile_setup_education_label,
                           ),
                         ),
                         const SizedBox(height: 28),

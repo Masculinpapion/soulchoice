@@ -406,7 +406,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                         maxLength: 60,
                         style: _bodyLargeStyle,
                         decoration: InputDecoration(
-                          labelText: l10n.create_inv_title_label,
+                          hintText: l10n.create_inv_title_label,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -432,7 +432,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                           controller: _venueController,
                           style: _bodyLargeStyle,
                           decoration: InputDecoration(
-                            labelText: l10n.create_inv_venue_label,
+                            hintText: l10n.create_inv_venue_label,
                             prefixIcon: Icon(
                               Icons.location_on_outlined,
                               color: AuroraTheme.textMuted,

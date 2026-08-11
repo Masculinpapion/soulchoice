@@ -519,7 +519,7 @@ class _StepNameAge extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(
+                hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_name_label,
               ),
@@ -536,7 +536,7 @@ class _StepNameAge extends StatelessWidget {
               initialValue: age?.toString(),
               onChanged: (v) => onAgeChanged(int.tryParse(v)),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!
+                hintText: AppLocalizations.of(context)!
                     .profile_setup_age_label(
                       AppConstants.minAge,
                       AppConstants.maxAge,
@@ -1037,7 +1037,7 @@ class _StepJobEducation extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(
+                hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_job_label,
               ),
@@ -1052,7 +1052,7 @@ class _StepJobEducation extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(
+                hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_education_label,
               ),

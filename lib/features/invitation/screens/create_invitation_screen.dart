@@ -965,7 +965,6 @@ class _StepTitle extends StatelessWidget {
           maxLength: 60,
           style: _feedCardTitleStyle.copyWith(fontSize: 20),
           decoration: InputDecoration(
-            labelText: AppLocalizations.of(context)!.create_inv_title_label,
             hintText: _ph(AppLocalizations.of(context)!),
           ),
         ),
@@ -1135,7 +1134,6 @@ class _StepDescription extends StatelessWidget {
               autocorrect: false,
               scrollPadding: const EdgeInsets.only(bottom: 120),
               decoration: InputDecoration(
-                labelText: l10n.create_inv_gift_url_label,
                 hintText: l10n.create_inv_gift_url_hint,
                 prefixIcon: Icon(Icons.link_rounded, color: AuroraTheme.textMuted),
               ),
@@ -1268,7 +1266,6 @@ class _StepVenue extends StatelessWidget {
             controller: controller,
             style: _bodyLargeStyle,
             decoration: InputDecoration(
-              labelText: l10n.create_inv_venue_label,
               hintText: _placeholder(l10n),
               prefixIcon: Icon(
                 Icons.location_on_outlined,

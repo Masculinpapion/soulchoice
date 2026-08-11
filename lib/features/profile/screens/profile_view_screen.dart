@@ -2067,12 +2067,17 @@ class _MyApplicationsSectionState
                   (inv?['owner'] as Map<String, dynamic>?)?['name'] as String?;
               final title = inv?['title'] as String? ?? '—';
               final status = a['status'] as String? ?? 'pending';
-              // NİHAİ (Mustafa 11.08): pano yalnız canlı süreci gösterir —
-              // provider kapalı ilan/olumsuz sonucu zaten eler; kalan iki durum.
+              // NİHAİ (Mustafa 11.08): kart ömrü = ilan ömrü (kapanınca düşer,
+              // provider eler). Canlı pencerede: kabul yeşil, red gri ЗАВЕРШЕНО
+              // (boş umut yerine sıradakine geçsin), kalan sarı Bekliyor.
               final (chipText, chipColor) = switch (status) {
                 'accepted' => (
                     l10n.app_status_accepted,
                     const Color(0xFF34C759)
+                  ),
+                'rejected' => (
+                    l10n.app_status_closed,
+                    const Color(0xFF9A9AAB)
                   ),
                 _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
               };

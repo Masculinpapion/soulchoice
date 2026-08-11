@@ -1132,6 +1132,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_my_applications => 'My applications';
 
   @override
+  String get app_status_closed => 'CLOSED';
+
+  @override
   String get app_status_pending => 'PENDING';
 
   @override

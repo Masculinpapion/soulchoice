@@ -64,7 +64,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - Geçişler saatlik cron'la olur; saate yuvarlanır. ✅
 - `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
 - **Kapanan (`closed`) ilanlarda seçilmeyen bekleyen başvurular saatlik temizlikte `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). ✅ 15.07
-- **NİHAİ KARAR (Mustafa 11.08 gece): Profil "Başvurularım" = ANLIK DURUM PANOSU.** Süreç canlıyken (ilan `active`/`selecting`) yalnız "Beklemede" ve "Kabul edildi" görünür; **ilan kapanınca kart durumu ne olursa olsun düşer — kabul dahil** (ilişki zaten Mesajlar'da yaşar). `rejected`/`expired`/`withdrawn` her zaman gizli (sessizlik ilkesi). Aynı gece kısa süre denenen "gri ЗАВЕРШЕНО + 30 gün saklama" tasarımı İPTAL — cleanup cron 15.07 orijinal davranışına (kapalı+match'siz ilan hemen silinir) geri döndürüldü. ✅ 11.08
+- **NİHAİ KARAR (Mustafa 11.08 gece): Profil "Başvurularım" = ANLIK DURUM PANOSU; kart ömrü = ilan ömrü.** İlan canlıyken (`active`/`selecting`): "Beklemede" (sarı), "Kabul edildi" (yeşil), **reddedilen gri "ЗАВЕРШЕНО/TAMAMLANDI"** — açık "reddedildin" yazmaz ama kullanıcı boş yere umutlanmayıp sıradakine geçer; detay ekranı pasif butonu da aynı etiketi gösterir. **İlan kapanınca kart durumu ne olursa olsun düşer — kabul dahil** (ilişki Mesajlar'da). `withdrawn`/`expired` gizli. 30 gün saklama fikri aynı gece İPTAL — cleanup cron 15.07 orijinali (kapalı+match'siz hemen silinir). ✅ 11.08
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
 ## 5. Limitler, filtreler ve Premium

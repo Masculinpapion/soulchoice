@@ -1129,6 +1129,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_my_applications => 'Başvurularım';
 
   @override
+  String get app_status_closed => 'TAMAMLANDI';
+
+  @override
   String get app_status_pending => 'BEKLİYOR';
 
   @override

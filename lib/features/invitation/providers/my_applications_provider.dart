@@ -2,10 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Kullanıcının kendi başvuruları — profildeki "Başvurularım" bölümü.
-/// NİHAİ KURAL (Mustafa 11.08 gece): burası ANLIK DURUM PANOSU — süreç
-/// canlıyken (ilan active/selecting) Bekliyor/Kabul görünür; ilan kapanınca
-/// kart DURUMU NE OLURSA OLSUN düşer (kabul dahil — ilişki Mesajlar'da).
-/// rejected/expired/withdrawn her zaman gizli (sessizlik ilkesi).
+/// NİHAİ KURAL (Mustafa 11.08 gece): burası ANLIK DURUM PANOSU — kart ömrü
+/// = ilan ömrü. İlan canlıyken (active/selecting): Bekliyor/Kabul, reddedilen
+/// ise gri ЗАВЕРШЕНО (boş umut yerine sıradakine geçsin). İlan kapanınca kart
+/// durumu ne olursa olsun düşer (kabul dahil — ilişki Mesajlar'da).
+/// withdrawn (kendi eylemi) ve expired (zaten kapalı ilanda) gizli.
 final myApplicationsListProvider =
     FutureProvider.autoDispose<List<Map<String, dynamic>>>((ref) async {
   final uid = Supabase.instance.client.auth.currentUser?.id;
@@ -17,7 +18,6 @@ final myApplicationsListProvider =
           'owner:users!owner_id(name))')
       .eq('applicant_id', uid)
       .neq('status', 'withdrawn')
-      .neq('status', 'rejected')
       .neq('status', 'expired')
       .order('created_at', ascending: false)
       .limit(20);

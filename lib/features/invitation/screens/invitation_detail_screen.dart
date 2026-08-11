@@ -1638,10 +1638,12 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
           onPressed: _openChat,
           highlight: true);
     }
-    if (status == 'rejected' || status == 'expired') {
-      // 11.08 Mustafa kararı: sessizlik korunur ("Beklemede") ama AKSİYONSUZ —
-      // "geri çek" reddedileni withdrawn→pending zinciriyle tekrar listeye
-      // sokabiliyordu (sunucu tarafı da trigger'la kapalı).
+    if (status == 'rejected') {
+      // NİHAİ (Mustafa 11.08 gece): reddedilen net görsün, umutlanmasın —
+      // profildeki gri ЗАВЕРШЕНО rozetiyle tutarlı, aksiyonsuz.
+      return _AuroraCTA(label: l10n.app_status_closed, onPressed: null);
+    }
+    if (status == 'expired') {
       return _AuroraCTA(
           label: l10n.inv_detail_status_awaiting, onPressed: null);
     }

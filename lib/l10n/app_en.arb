@@ -981,6 +981,8 @@
     }
   },
   "profile_inv_expired": "Expired",
+  "profile_inv_selecting_left": "choosing: {h}h",
+  "@profile_inv_selecting_left": {"placeholders": {"h": {"type": "int"}}},
   "profile_inv_hours_left": "{h}h left",
   "@profile_inv_hours_left": {
     "placeholders": {

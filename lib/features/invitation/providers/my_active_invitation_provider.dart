@@ -9,15 +9,19 @@ final myActiveInvitationsProvider =
   final uid = Supabase.instance.client.auth.currentUser?.id;
   if (uid == null) return const [];
 
+  // 11.08 denetim (kritik): 'selecting' fazı (süre doldu → 48 sa seçim
+  // penceresi, cron) görünmüyordu — sahibi kendi ilanına ulaşamıyor, pencere
+  // sessizce kapanıyordu. active(+süresi geçmemiş) VEYA selecting listelenir.
+  final nowIso = DateTime.now().toUtc().toIso8601String();
   final rows = await Supabase.instance.client
       .from('invitations')
       .select(
           'id, category, venue_name, title, expires_at, status, flow_type, city_id, '
+          'selection_deadline, '
           'city:cities(name, name_ru, name_tr, name_en), '
           'owner:users!owner_id(id, name, age, photos:user_photos(url, is_primary, is_selfie, order_index))')
       .eq('owner_id', uid)
-      .eq('status', 'active')
-      .gt('expires_at', DateTime.now().toUtc().toIso8601String())
+      .or('and(status.eq.active,expires_at.gt.$nowIso),status.eq.selecting')
       .order('created_at', ascending: false);
 
   if (rows.isEmpty) return const [];

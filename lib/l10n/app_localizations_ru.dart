@@ -2204,6 +2204,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_inv_expired => 'Истекло';
 
   @override
+  String profile_inv_selecting_left(int h) {
+    return 'выбор: $hч';
+  }
+
+  @override
   String profile_inv_hours_left(int h) {
     return '$hч осталось';
   }

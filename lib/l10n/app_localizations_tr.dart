@@ -2150,6 +2150,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_inv_expired => 'Süresi doldu';
 
   @override
+  String profile_inv_selecting_left(int h) {
+    return 'seçim: ${h}sa';
+  }
+
+  @override
   String profile_inv_hours_left(int h) {
     return '${h}sa kaldı';
   }

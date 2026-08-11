@@ -953,6 +953,7 @@
   "profile_inv_create_cta": "+ Создать приглашение",
   "profile_inv_applicants": "{count, plural, one{{count} заявка} few{{count} заявки} many{{count} заявок} other{{count} заявки}}",
   "profile_inv_expired": "Истекло",
+  "profile_inv_selecting_left": "выбор: {h}ч",
   "profile_inv_hours_left": "{h}ч осталось",
   "profile_inv_minutes_left": "{m}мин",
   "sub_title": "Подписка",

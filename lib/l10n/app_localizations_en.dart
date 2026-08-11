@@ -2160,6 +2160,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_inv_expired => 'Expired';
 
   @override
+  String profile_inv_selecting_left(int h) {
+    return 'choosing: ${h}h';
+  }
+
+  @override
   String profile_inv_hours_left(int h) {
     return '${h}h left';
   }

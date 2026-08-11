@@ -3952,6 +3952,12 @@ abstract class AppLocalizations {
   /// **'Expired'**
   String get profile_inv_expired;
 
+  /// No description provided for @profile_inv_selecting_left.
+  ///
+  /// In en, this message translates to:
+  /// **'choosing: {h}h'**
+  String profile_inv_selecting_left(int h);
+
   /// No description provided for @profile_inv_hours_left.
   ///
   /// In en, this message translates to:

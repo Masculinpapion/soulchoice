@@ -1704,8 +1704,14 @@ class _MyInvitationSection extends ConsumerWidget {
             final photoUrl = inv['owner_photo_url'] as String?;
             final categoryKey = inv['category'] as String?;
             final title = (inv['title'] as String?)?.trim() ?? '';
-            final expiresAt =
-                DateTime.parse(inv['expires_at'] as String).toLocal();
+            // selecting fazında (11.08): geri sayım seçim penceresine göre —
+            // sahibi başvuranları hâlâ değerlendirebilir, kart kaybolmaz.
+            final isSelecting = inv['status'] == 'selecting';
+            final deadlineRaw = isSelecting
+                ? (inv['selection_deadline'] as String? ??
+                    inv['expires_at'] as String)
+                : inv['expires_at'] as String;
+            final expiresAt = DateTime.parse(deadlineRaw).toLocal();
             final remaining = expiresAt.difference(DateTime.now());
 
             return Material(
@@ -1809,7 +1815,7 @@ class _MyInvitationSection extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${l10n.profile_inv_applicants(count)} · ${_remainingLabel(remaining, l10n)}',
+                              '${l10n.profile_inv_applicants(count)} · ${isSelecting ? l10n.profile_inv_selecting_left(remaining.inHours.clamp(0, 999)) : _remainingLabel(remaining, l10n)}',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.7),
                                 fontSize: 11,

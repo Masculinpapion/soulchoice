@@ -27,3 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash tests/security/smoke.sh
+
+  # 12.08: durum-makinesi mantık testleri (kart yaşam döngüsü, feed gizleme,
+  # chat dedupe) — 11-12.08 hata sınıflarının regresyon kilidi.
+  flutter-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter test

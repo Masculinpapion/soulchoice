@@ -1144,9 +1144,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_my_applications => 'Мои заявки';
 
   @override
-  String get app_status_closed => 'ЗАВЕРШЕНО';
-
-  @override
   String get app_status_pending => 'ОЖИДАЕТ';
 
   @override

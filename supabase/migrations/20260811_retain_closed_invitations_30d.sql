@@ -1,9 +1,8 @@
--- 11.08.2026 — Mustafa kararı: kapalı ilan HEMEN silinmez, 30 gün saklanır.
--- Sebep: başvuranın profilindeki kart CASCADE ile 1 saat içinde yok oluyordu
--- ("seçtiğimiz kişiler nereye kayboluyor?"). Yeni akış: seçilmeyen başvuru
--- kartı nötr "ЗАВЕРШЕНО" rozetiyle 30 gün görünür, sonra ilanla birlikte
--- sessizce düşer. Feed etkilenmez (yalnız active listelenir); match'i olan
--- ilana yine ASLA dokunulmaz. Eski davranış: 20260715_cleanup_closed_invitations.sql
+-- 11.08.2026 — İPTAL EDİLDİ (aynı gece, Mustafa nihai kararı).
+-- Kısa süreliğine 30 gün saklama denendi (ЗАВЕРШЕНО kartı için); nihai karar:
+-- profildeki "Başvurularım" ANLIK PANO — ilan kapanınca kart düşer, saklamaya
+-- gerek yok. Aşağıdaki tanım 15.07 orijinal davranışın aynısıdır (hemen silme);
+-- prod'a yeniden uygulandı. Match'li ilana yine ASLA dokunulmaz.
 create or replace function public.cleanup_closed_invitations()
 returns integer language plpgsql security definer set search_path = public, pg_temp as $fn$
 declare n integer;
@@ -11,7 +10,6 @@ begin
   with del as (
     delete from public.invitations i
     where i.status = 'closed'
-      and i.expires_at < now() - interval '30 days'
       and not exists (select 1 from public.matches m where m.invitation_id = i.id)
     returning 1
   )

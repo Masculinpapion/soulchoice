@@ -2128,12 +2128,6 @@ abstract class AppLocalizations {
   /// **'My applications'**
   String get profile_my_applications;
 
-  /// No description provided for @app_status_closed.
-  ///
-  /// In en, this message translates to:
-  /// **'CLOSED'**
-  String get app_status_closed;
-
   /// No description provided for @app_status_pending.
   ///
   /// In en, this message translates to:

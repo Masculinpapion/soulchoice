@@ -27,6 +27,14 @@ serve(async (req) => {
   try {
     const { phone, channel, app_signature } = await req.json()
     if (!phone) return new Response(JSON.stringify({ error: 'phone required' }), { status: 400, headers: CORS })
+    // 11.08: kayıt yalnız +7 (ürün kuralı; istemci zaten yalnız +7 üretir).
+    // Mağaza inceleme robotları rastgele yabancı numara deniyor, SMS.ru
+    // "маршрут yok" diyor ve 500 sms_failed sanılıyordu — artık SMS.ru'ya
+    // hiç gitmeden temiz 400 dönülür; SMS_FAILED alarmı da kirlenmez.
+    const cleanedPhone = String(phone).replace(/[\s\-()]/g, '')
+    if (!/^\+7\d{10}$/.test(cleanedPhone)) {
+      return new Response(JSON.stringify({ error: 'unsupported_region' }), { status: 400, headers: CORS })
+    }
     // Android SMS Retriever hash'i: istemci kendi imza hash'ini gönderir (Play/
     // RuStore/debug sertifikaları farklı → hash sabitlenemez). Sıkı format
     // kontrolü, SMS metnine serbest string enjeksiyonunu engeller.

@@ -103,6 +103,19 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
       // ── Applicant photos (up to 4 pending applicants) ─────────────────────
       final apps = (row['applications'] as List<dynamic>?) ?? [];
+
+      // 11.08 (Mustafa bulgusu): KABUL edilmiş başvuran kartı feed'de tekrar
+      // görmez — "Хочу прийти" ölü mekanikti (§13), ilişki Mesajlar'a taşındı.
+      // İlan diğer kullanıcılara görünmeye devam eder (§83: kabul ilanı
+      // kapatmaz). pending/selected/rejected kartı GÖRMEYE DEVAM EDER:
+      // selected'da karar bekleniyor, rejected'ı gizlemek sessizlik ilkesini
+      // deler (red sinyali sızar). applicant-id kontrolü kendi kartımı korur.
+      final acceptedByMe = currentUserId != null &&
+          apps.cast<Map<String, dynamic>>().any((a) =>
+              a['status'] == 'accepted' &&
+              (a['applicant'] as Map<String, dynamic>?)?['id'] ==
+                  currentUserId);
+      if (acceptedByMe) return null;
       final pendingApps = apps
           .cast<Map<String, dynamic>>()
           .where((a) => a['status'] == 'pending')

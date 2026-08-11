@@ -86,6 +86,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - Red → başvurana bildirim (§9). ✅
 - Başvuran istediği an geri çekebilir (`withdrawn`). ✅
 - Başvuran yalnız kendi başvurusunu `withdrawn`, sahibi yalnız `accepted`/`rejected` yapabilir (RLS). ✅
+- **Kabul edilen başvuran ilan kartını feed'de artık GÖRMEZ (11.08, Mustafa bulgusu):** "Хочу прийти" onun için ölü mekanikti (§13) — ilişki Mesajlar'a taşınmıştır. İlan diğer adaylara görünmeye devam eder (yukarıdaki serbest seçim kuralı değişmez). `pending`/`selected`/`rejected` görünürlüğü AYNEN kalır: selected'da başvuranın kararı bekleniyor, rejected'ı gizlemek sessizlik ilkesini deler (red sinyali sızar). ✅ 11.08
 - `slots_total` kolonu legacy'dir, uygulanmaz (§11).
 
 ## 7. Sohbet yaşam döngüsü

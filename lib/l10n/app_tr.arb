@@ -120,6 +120,8 @@
   "feed_tab_invitations": "Davetiyeler",
   "feed_tab_requests": "İstekler",
   "feed_city_name_moscow": "Moskova",
+  "discover_type_invitation": "DAVET",
+  "discover_type_request": "İSTEK",
   "discover_title": "Keşfet",
   "discover_filter_all": "Tümü",
   "discover_empty_title": "Henüz aktif davetiye yok",

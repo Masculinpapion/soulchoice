@@ -311,6 +311,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get feed_city_name_moscow => 'Moskova';
 
   @override
+  String get discover_type_invitation => 'DAVET';
+
+  @override
+  String get discover_type_request => 'İSTEK';
+
+  @override
   String get discover_title => 'Keşfet';
 
   @override

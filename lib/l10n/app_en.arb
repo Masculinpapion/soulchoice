@@ -120,6 +120,8 @@
   "feed_tab_invitations": "Invitations",
   "feed_tab_requests": "Requests",
   "feed_city_name_moscow": "Moscow",
+  "discover_type_invitation": "INVITE",
+  "discover_type_request": "REQUEST",
   "discover_title": "Discover",
   "discover_filter_all": "All",
   "discover_empty_title": "No active invitations yet",

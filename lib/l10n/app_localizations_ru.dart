@@ -312,6 +312,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get feed_city_name_moscow => 'Москва';
 
   @override
+  String get discover_type_invitation => 'ПРИГЛАШЕНИЕ';
+
+  @override
+  String get discover_type_request => 'ЗАПРОС';
+
+  @override
   String get discover_title => 'Обзор';
 
   @override

@@ -664,6 +664,18 @@ abstract class AppLocalizations {
   /// **'Moscow'**
   String get feed_city_name_moscow;
 
+  /// No description provided for @discover_type_invitation.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE'**
+  String get discover_type_invitation;
+
+  /// No description provided for @discover_type_request.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUEST'**
+  String get discover_type_request;
+
   /// No description provided for @discover_title.
   ///
   /// In en, this message translates to:

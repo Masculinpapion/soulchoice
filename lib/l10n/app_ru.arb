@@ -120,6 +120,8 @@
   "feed_tab_invitations": "Приглашения",
   "feed_tab_requests": "Запросы",
   "feed_city_name_moscow": "Москва",
+  "discover_type_invitation": "ПРИГЛАШЕНИЕ",
+  "discover_type_request": "ЗАПРОС",
   "discover_title": "Обзор",
   "discover_filter_all": "Все",
   "discover_empty_title": "Пока нет активных приглашений",

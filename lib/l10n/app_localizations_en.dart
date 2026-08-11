@@ -313,12 +313,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feed_city_name_moscow => 'Moscow';
 
   @override
-  String get discover_type_invitation => 'INVITE';
-
-  @override
-  String get discover_type_request => 'REQUEST';
-
-  @override
   String get discover_title => 'Discover';
 
   @override
@@ -884,6 +878,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inv_detail_day_sun => 'Sun';
+
+  @override
+  String get inv_detail_section_request => 'REQUEST';
 
   @override
   String get inv_detail_section_invitation => 'INVITATION';

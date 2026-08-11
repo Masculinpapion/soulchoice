@@ -664,18 +664,6 @@ abstract class AppLocalizations {
   /// **'Moscow'**
   String get feed_city_name_moscow;
 
-  /// No description provided for @discover_type_invitation.
-  ///
-  /// In en, this message translates to:
-  /// **'INVITE'**
-  String get discover_type_invitation;
-
-  /// No description provided for @discover_type_request.
-  ///
-  /// In en, this message translates to:
-  /// **'REQUEST'**
-  String get discover_type_request;
-
   /// No description provided for @discover_title.
   ///
   /// In en, this message translates to:
@@ -1701,6 +1689,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sun'**
   String get inv_detail_day_sun;
+
+  /// No description provided for @inv_detail_section_request.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUEST'**
+  String get inv_detail_section_request;
 
   /// No description provided for @inv_detail_section_invitation.
   ///

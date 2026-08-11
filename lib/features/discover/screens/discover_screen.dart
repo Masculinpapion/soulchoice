@@ -297,37 +297,10 @@ class _DiscoverCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        // 11.08 (Mustafa bulgusu): karışık akışta tür belirsizdi —
-                        // meta satırının başında feed sekme renkleriyle tür etiketi
-                        // (davet=kırmızı, istek=mavi); yeni görsel öğe eklenmedi.
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: inv.flowType ==
-                                        InvitationFlowType.request
-                                    ? AppLocalizations.of(context)!
-                                        .discover_type_request
-                                    : AppLocalizations.of(context)!
-                                        .discover_type_invitation,
-                                style: TextStyle(
-                                  color: (inv.flowType ==
-                                              InvitationFlowType.request
-                                          ? AuroraTheme.auroraBlue
-                                          : AuroraTheme.auroraRed)
-                                      .withOpacity(0.95),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              TextSpan(
-                                text: ' · ' +
-                                    (inv.cityName?.isNotEmpty == true
-                                        ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: locale)}'
-                                        : timeago.format(inv.createdAt,
-                                            locale: locale)),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          inv.cityName?.isNotEmpty == true
+                              ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: locale)}'
+                              : timeago.format(inv.createdAt, locale: locale),
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,

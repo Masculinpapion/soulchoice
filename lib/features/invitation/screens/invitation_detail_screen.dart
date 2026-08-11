@@ -356,7 +356,14 @@ class _InvitationDetailScreenState
                               (inv['description'] as String)
                                   .isNotEmpty) ...[
                             const SizedBox(height: 28),
-                            _SectionHeader(label: AppLocalizations.of(context)!.inv_detail_section_invitation),
+                            _SectionHeader(
+                                // 11.08 Mustafa kararı: tür ayrımı kartta değil
+                                // burada — istek akışında başlık "ЗАПРОС/İSTEK"
+                                label: inv['flow_type'] == 'request'
+                                    ? AppLocalizations.of(context)!
+                                        .inv_detail_section_request
+                                    : AppLocalizations.of(context)!
+                                        .inv_detail_section_invitation),
                             const SizedBox(height: 12),
                             IntrinsicHeight(
                               child: Row(

@@ -933,8 +933,11 @@ class _EditBio extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // D — Rafine İmza (12.08): çubuk yalnız ilk satır boyunda
             Container(
               width: 2,
+              height: 26,
+              margin: const EdgeInsets.only(top: 3),
               decoration: BoxDecoration(
                 gradient: AuroraTheme.redBlueGradient,
                 borderRadius: BorderRadius.circular(2),

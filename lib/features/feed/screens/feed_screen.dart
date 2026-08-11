@@ -39,8 +39,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     if (!mounted) return;
     ref.invalidate(invitationsProvider);
     // Çan rozeti bayat kalmasın — uygulama açıkken gelen bildirim sayıya
-    // yansımıyordu (31.07 denetimi)
-    ref.invalidate(unreadNotificationCountProvider);
+    // yansımıyordu (31.07 denetimi). 11.08: türetilmiş sayaç değil KAYNAK
+    // invalidate edilmeli — öncekisi no-op'tu, rozet yine bayat kalıyordu.
+    ref.invalidate(notificationsProvider);
   }
 
   @override

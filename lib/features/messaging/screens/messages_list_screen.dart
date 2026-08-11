@@ -22,13 +22,25 @@ class MessagesListScreen extends ConsumerStatefulWidget {
       _MessagesListScreenState();
 }
 
-class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
+class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
+    with WidgetsBindingObserver {
   RealtimeChannel? _channel;
+  bool _channelDropped = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _subscribeRealtime();
+  }
+
+  // Arka plandan dönüşte liste tazelenir — soket sessizce koptuysa realtime
+  // olayları kaçmış olabilir (11.08 denetim; chat_screen deseniyle aynı).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      ref.invalidate(matchesProvider);
+    }
   }
 
   void _subscribeRealtime() {
@@ -50,11 +62,23 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen> {
           table: 'matches',
           callback: (_) => ref.invalidate(matchesProvider),
         )
-        .subscribe();
+        .subscribe((status, [_]) {
+          // Kopma sonrası yeniden bağlanınca kaçan olaylar telafi edilir.
+          if (status == RealtimeSubscribeStatus.channelError ||
+              status == RealtimeSubscribeStatus.timedOut ||
+              status == RealtimeSubscribeStatus.closed) {
+            _channelDropped = true;
+          } else if (status == RealtimeSubscribeStatus.subscribed &&
+              _channelDropped) {
+            _channelDropped = false;
+            if (mounted) ref.invalidate(matchesProvider);
+          }
+        });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (_channel != null) {
       _channel!.unsubscribe();
       Supabase.instance.client.removeChannel(_channel!);

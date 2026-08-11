@@ -13,6 +13,7 @@ import '../../../shared/widgets/gradient_italic_title.dart';
 import '../providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
+import '../../../core/services/notification_cleaner.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -22,8 +23,10 @@ class NotificationsScreen extends ConsumerStatefulWidget {
       _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
+    with WidgetsBindingObserver {
   RealtimeChannel? _channel;
+  bool _channelDropped = false;
   List<NotificationItem>? _localItems; // dismiss için lokal kopya
   bool _isMarkingAll = false;
   bool _refreshedOnOpen = false;
@@ -31,6 +34,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _subscribeRealtime();
   }
 
@@ -79,11 +83,29 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             _refreshFromServer();
           },
         )
-        .subscribe();
+        .subscribe((status, [_]) {
+          // Kopma sonrası yeniden bağlanınca kaçan bildirimler telafi edilir
+          // (11.08 denetim; chat_screen deseniyle aynı).
+          if (status == RealtimeSubscribeStatus.channelError ||
+              status == RealtimeSubscribeStatus.timedOut ||
+              status == RealtimeSubscribeStatus.closed) {
+            _channelDropped = true;
+          } else if (status == RealtimeSubscribeStatus.subscribed &&
+              _channelDropped) {
+            _channelDropped = false;
+            if (mounted) _refreshFromServer();
+          }
+        });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) _refreshFromServer();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (_channel != null) {
       Supabase.instance.client.removeChannel(_channel!);
     }
@@ -113,6 +135,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           .eq('user_id', uid)
           .isFilter('read_at', null);
       await _refreshFromServer();
+      // iOS simge rozeti bir sonraki push'a kadar eski sayıda kalıyordu (11.08)
+      NotificationCleaner.clearBadge();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -147,6 +171,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           .isFilter('read_at', null);
       if (!mounted) return; // fire-and-forget: ekran kapanmış olabilir
       await _refreshFromServer();
+      NotificationCleaner.clearBadge();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

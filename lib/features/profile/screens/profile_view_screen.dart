@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../data/models/invitation_model.dart';
 import '../../../core/utils/guard_errors.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
@@ -1624,26 +1625,12 @@ class _MyInvitationSection extends ConsumerWidget {
   }
 
   String _category(String? key, AppLocalizations l10n) {
-    switch (key) {
-      case 'food':
-        return l10n.category_food;
-      case 'bar':
-        return l10n.category_bar;
-      case 'concert':
-        return l10n.category_concert;
-      case 'travel':
-        return l10n.category_travel;
-      case 'culture':
-        return l10n.category_culture;
-      case 'cinema':
-        return l10n.category_cinema;
-      case 'theater':
-        return l10n.category_theater;
-      case 'coffee':
-        return l10n.category_coffee;
-      default:
-        return key ?? '';
+    // 12.08 (Evelina testi bulgusu): eksik yerel switch 'sport/gift/walk/
+    // karaoke'yi ham anahtar sızdırıyordu — TEK kaynak modeldeki labelFor.
+    for (final c in InvitationCategory.values) {
+      if (c.name == key) return c.labelFor(l10n);
     }
+    return key ?? '';
   }
 
   @override

@@ -368,15 +368,19 @@ class _InvitationDetailScreenState
                             IntrinsicHeight(
                               child: Row(
                                 crossAxisAlignment:
-                                    CrossAxisAlignment.stretch,
+                                    CrossAxisAlignment.start,
                                 children: [
+                                  // D (12.08): çubuk yalnız ilk satır boyunda
                                   Container(
                                     width: 2,
+                                    height: 24,
+                                    margin:
+                                        const EdgeInsets.only(top: 2),
                                     decoration: BoxDecoration(
                                       gradient:
                                           AuroraTheme.redBlueGradient,
                                       borderRadius:
-                                          BorderRadius.circular(1),
+                                          BorderRadius.circular(2),
                                     ),
                                   ),
                                   const SizedBox(width: 14),
@@ -802,9 +806,9 @@ class _CountdownStrip extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Sol 3px gradient çizgi
+                // Sol gradient kenar (D 12.08: incelt)
                 Container(
-                  width: 3,
+                  width: 2,
                   decoration: BoxDecoration(
                     gradient:
                         isClosed ? null : AuroraTheme.redBlueGradient,
@@ -898,14 +902,16 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
+          // D — Rafine İmza (12.08): kısa, radius'lu, zarif
           Container(
-            width: 40,
-            height: 1,
+            width: 14,
+            height: 2,
             decoration: BoxDecoration(
               gradient: AuroraTheme.redBlueGradient,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Text(
             label,
             style: TextStyle(

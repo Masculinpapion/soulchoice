@@ -931,7 +931,7 @@ class _EditBio extends StatelessWidget {
   @override
   Widget build(BuildContext context) => IntrinsicHeight(
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 2,

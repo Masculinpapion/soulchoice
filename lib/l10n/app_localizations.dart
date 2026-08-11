@@ -1888,6 +1888,12 @@ abstract class AppLocalizations {
   /// **'✓ Accepted'**
   String get inv_detail_accepted_btn;
 
+  /// No description provided for @inv_detail_accepted_chat_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'✓ Accepted · Open chat'**
+  String get inv_detail_accepted_chat_btn;
+
   /// No description provided for @inv_detail_apply_sent_title.
   ///
   /// In en, this message translates to:

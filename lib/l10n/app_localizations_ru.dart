@@ -993,6 +993,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_accepted_btn => '✓ Принято';
 
   @override
+  String get inv_detail_accepted_chat_btn => '✓ Принято · Открыть чат';
+
+  @override
   String get inv_detail_apply_sent_title => 'Заявка отправлена';
 
   @override

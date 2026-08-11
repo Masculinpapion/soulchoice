@@ -362,6 +362,7 @@
   "inv_detail_withdrawing": "İptal ediliyor...",
   "inv_detail_selected_btn": "Seçildin — Kararını ver",
   "inv_detail_accepted_btn": "✓ Kabul edildi",
+  "inv_detail_accepted_chat_btn": "✓ Kabul edildi · Sohbeti aç",
   "inv_detail_apply_sent_title": "Başvuru Gönderildi",
   "inv_detail_apply_sent_body": "Davetiye sahibinin seçim yapmasını bekle",
   "inv_detail_error": "Hata: {error}",

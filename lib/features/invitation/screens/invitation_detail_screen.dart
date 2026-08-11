@@ -1560,6 +1560,30 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     }
   }
 
+  Future<void> _openChat() async {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid == null) return;
+    try {
+      final row = await Supabase.instance.client
+          .from('matches')
+          .select('id')
+          .eq('invitation_id', widget.invitationId)
+          .eq('user2_id', uid)
+          .order('created_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      if (!mounted) return;
+      final matchId = row?['id'] as String?;
+      if (matchId != null) {
+        context.push('/chat/$matchId');
+      } else {
+        context.push('/messages');
+      }
+    } catch (_) {
+      if (mounted) context.push('/messages');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -1596,9 +1620,11 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       );
     }
     if (status == 'accepted') {
+      // 11.08 (Mustafa, seçenek A): kabul sonrası buton ölü durmaz — sohbete
+      // götürür. Match yoksa (engelleme ile silinmiş olabilir) Mesajlar'a düşer.
       return _AuroraCTA(
-          label: l10n.inv_detail_accepted_btn,
-          onPressed: null,
+          label: l10n.inv_detail_accepted_chat_btn,
+          onPressed: _openChat,
           highlight: true);
     }
     return _AuroraCTA(

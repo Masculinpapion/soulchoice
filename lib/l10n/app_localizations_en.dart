@@ -984,6 +984,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_accepted_btn => '✓ Accepted';
 
   @override
+  String get inv_detail_accepted_chat_btn => '✓ Accepted · Open chat';
+
+  @override
   String get inv_detail_apply_sent_title => 'Application Sent';
 
   @override

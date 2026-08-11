@@ -362,6 +362,7 @@
   "inv_detail_withdrawing": "Cancelling...",
   "inv_detail_selected_btn": "Selected — Make your decision",
   "inv_detail_accepted_btn": "✓ Accepted",
+  "inv_detail_accepted_chat_btn": "✓ Accepted · Open chat",
   "inv_detail_apply_sent_title": "Application Sent",
   "inv_detail_apply_sent_body": "Wait for the invitation owner to make their choice",
   "inv_detail_error": "Error: {error}",

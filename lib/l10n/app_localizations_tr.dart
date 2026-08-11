@@ -982,6 +982,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_accepted_btn => '✓ Kabul edildi';
 
   @override
+  String get inv_detail_accepted_chat_btn => '✓ Kabul edildi · Sohbeti aç';
+
+  @override
   String get inv_detail_apply_sent_title => 'Başvuru Gönderildi';
 
   @override

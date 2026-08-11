@@ -13,6 +13,14 @@
 		<string>tr</string>
 		<string>de</string>
 	</array>
+	<!-- 11.08: konum İZNİ İSTENMİYOR (onboarding'den kaldırıldı) ama
+	     permission_handler binary'de konum API referansı taşıdığından Apple
+	     ITMS-90683 ile açıklama metnini şart koşuyor (build 176 maili).
+	     Kalıcı temizlik post-launch: Podfile PERMISSION_LOCATION=0 -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SoulChoice does not track your location. This permission is never requested; the text is required by a system library reference.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>SoulChoice не отслеживает геопозицию. Разрешение не запрашивается; текст требуется из-за системной библиотеки.</string>
 	<key>CFBundleDisplayName</key>
 	<string>SoulChoice</string>
 	<key>CFBundleExecutable</key>

@@ -60,7 +60,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
           'channel': 'sms',
           if (appSignature != null) 'app_signature': appSignature,
         },
-      );
+        // Edge cold-start askıda kalırsa kullanıcı sonsuz spinner'da
+        // kalmasın — süre dolunca bağlantı hatası + tekrar dene (11.08).
+      ).timeout(const Duration(seconds: 20));
       final data = response.data as Map<String, dynamic>?;
       if (data?['success'] == true) {
         if (mounted) context.go('/auth/otp', extra: phone);

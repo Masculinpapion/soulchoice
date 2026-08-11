@@ -88,7 +88,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       final response = await Supabase.instance.client.functions.invoke(
         'verify-call-otp',
         body: {'phone': widget.phone, 'code': _otp},
-      );
+        // Sonsuz spinner önlemi — phone_screen ile aynı gerekçe (11.08).
+      ).timeout(const Duration(seconds: 20));
 
       final data = response.data as Map<String, dynamic>?;
       if (data == null || data['access_token'] == null) {
@@ -156,7 +157,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           'channel': channel,
           if (appSignature != null) 'app_signature': appSignature,
         },
-      );
+        // Sonsuz bekleme önlemi — phone_screen ile aynı gerekçe (11.08).
+      ).timeout(const Duration(seconds: 20));
       if (channel == 'sms') _listenForSms();
       if (mounted) {
         setState(() {

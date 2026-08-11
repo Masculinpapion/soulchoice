@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../logic/application_card_rules.dart';
 
 /// Kullanıcının kendi başvuruları — profildeki "Başvurularım" bölümü.
 /// NİHAİ KURAL (Mustafa 11.08 gece): burası ANLIK DURUM PANOSU — kart ömrü
@@ -23,10 +24,14 @@ final myApplicationsListProvider =
       .limit(20);
   return (rows as List)
       .cast<Map<String, dynamic>>()
-      // İlan kapandıysa/silindiyse kart düşer — pano yalnız canlı süreci gösterir
+      // İlan kapandıysa/silindiyse kart düşer — pano yalnız canlı süreci
+      // gösterir. Kural tek kaynakta: application_card_rules.dart (test edilir).
       .where((a) {
         final inv = a['invitation'] as Map<String, dynamic>?;
-        return inv != null && inv['status'] != 'closed';
+        return isMyApplicationCardVisible(
+          applicationStatus: a['status'] as String? ?? 'pending',
+          invitationStatus: inv?['status'] as String?,
+        );
       })
       .toList();
 });

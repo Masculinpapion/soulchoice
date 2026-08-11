@@ -4,6 +4,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../logic/feed_visibility_rules.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
   if (city == null) return null;
@@ -106,16 +107,16 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
       // 11.08 (Mustafa bulgusu): KABUL edilmiş başvuran kartı feed'de tekrar
       // görmez — "Хочу прийти" ölü mekanikti (§13), ilişki Mesajlar'a taşındı.
-      // İlan diğer kullanıcılara görünmeye devam eder (§83: kabul ilanı
-      // kapatmaz). pending/selected/rejected kartı GÖRMEYE DEVAM EDER:
-      // selected'da karar bekleniyor, rejected'ı gizlemek sessizlik ilkesini
-      // deler (red sinyali sızar). applicant-id kontrolü kendi kartımı korur.
-      final acceptedByMe = currentUserId != null &&
-          apps.cast<Map<String, dynamic>>().any((a) =>
-              a['status'] == 'accepted' &&
-              (a['applicant'] as Map<String, dynamic>?)?['id'] ==
-                  currentUserId);
-      if (acceptedByMe) return null;
+      // İlan diğer kullanıcılara görünmeye devam eder. pending/selected/
+      // rejected kartı GÖRMEYE DEVAM EDER (rejected'ı gizlemek sessizlik
+      // ilkesini deler). Kural tek kaynakta: feed_visibility_rules.dart.
+      if (hideInvitationFromViewer(
+        applications: apps.cast<Map<String, dynamic>>(),
+        viewerId: currentUserId,
+        ownerId: row['owner_id'] as String?,
+      )) {
+        return null;
+      }
       final pendingApps = apps
           .cast<Map<String, dynamic>>()
           .where((a) => a['status'] == 'pending')

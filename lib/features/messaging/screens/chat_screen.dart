@@ -12,6 +12,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../features/profile/providers/profile_provider.dart';
+import '../logic/chat_message_dedupe.dart';
 import '../providers/matches_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../../discover/providers/discover_provider.dart';
@@ -460,10 +461,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           callback: (payload) {
             final newMsg = MessageModel.fromJson(payload.newRecord);
             // Dedupe emniyeti: rejoin-reload ile aynı mesajın insert olayı
-            // yarışabilir — id listede varsa ekleme (11.08).
-            if (newMsg.senderId != _currentUid &&
-                mounted &&
-                !_messages.any((m) => m.id == newMsg.id)) {
+            // yarışabilir — id listede varsa ekleme (11.08). Kural tek
+            // kaynakta: chat_message_dedupe.dart (test edilir).
+            if (mounted &&
+                shouldAppendRealtimeMessage(
+                  currentUid: _currentUid,
+                  senderId: newMsg.senderId,
+                  messageId: newMsg.id,
+                  existingIds: _messages.map((m) => m.id),
+                )) {
               setState(() => _messages.add(newMsg));
               _scrollToBottom();
               _markRead();

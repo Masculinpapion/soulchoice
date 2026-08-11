@@ -30,6 +30,20 @@ export const USER_SUBSCRIPTION_STATUSES = new Set(['free', 'active'])
 // selfie_status — kod yüzeylerinde geçen değerler
 export const SELFIE_STATUSES = new Set(['none', 'pending', 'approved', 'rejected'])
 
+/** applications.status İSTEMCİ geçiş sözleşmesi (product-logic §5-§6 + 11.08
+ *  block_withdraw kararı). service_role/cron muaf — bu tablo yalnız anon/
+ *  authenticated'ın yapabileceği geçişleri tanımlar. Kaynak SQL:
+ *  20260724_reapply_after_withdraw.sql + 20260811_block_withdraw_after_decision.sql.
+ *  Testi: tests/edge/state_transitions_contract_test.ts (SQL ile tutarlılık). */
+export const CLIENT_APPLICATION_TRANSITIONS: Record<string, string[]> = {
+  pending: ['accepted', 'rejected', 'withdrawn'], // sahibi karar / başvuran çeker
+  withdrawn: ['pending'], // yeniden-başvuru — YALNIZ aktif ilanda (trigger)
+  rejected: [], // 11.08: rejected→withdrawn→pending zinciri kapatıldı
+  expired: [],  // 11.08: aynı engel
+  accepted: [], // kabul kalıcıdır (product-logic §6)
+  selected: [], // legacy, hiç kullanılmıyor (§11)
+}
+
 /** Edge-fonksiyon kaynaklarında geçen herhangi bir status literalinin
  *  üyeliğini test etmek için birleşik küme. Tablolar arası karışıklığı
  *  yakalamaz (v1 sınırı) ama yazım hatası / bilinmeyen değer sınıfını yakalar. */

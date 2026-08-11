@@ -1627,6 +1627,13 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
           onPressed: _openChat,
           highlight: true);
     }
+    if (status == 'rejected' || status == 'expired') {
+      // 11.08 Mustafa kararı: sessizlik korunur ("Beklemede") ama AKSİYONSUZ —
+      // "geri çek" reddedileni withdrawn→pending zinciriyle tekrar listeye
+      // sokabiliyordu (sunucu tarafı da trigger'la kapalı).
+      return _AuroraCTA(
+          label: l10n.inv_detail_status_awaiting, onPressed: null);
+    }
     return _AuroraCTA(
       label: _loading ? l10n.inv_detail_withdrawing : l10n.inv_detail_withdraw_btn,
       icon: Icons.undo_rounded,

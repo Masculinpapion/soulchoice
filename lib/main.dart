@@ -22,6 +22,7 @@ import 'core/providers/locale_provider.dart';
 import 'core/services/push_token.dart';
 import 'core/services/presence_ping.dart';
 import 'core/services/notification_cleaner.dart';
+import 'core/services/error_reporter.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
@@ -41,9 +42,14 @@ Future<void> main() async {
   if (!kIsWeb) {
     await Firebase.initializeApp();
 
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    FlutterError.onError = (details) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+      // Nöbetçi Kovan (12.08): sessiz hatalar sunucuya da düşer
+      ErrorReporter.report(details.exception, screen: 'flutter_error');
+    };
     PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      ErrorReporter.report(error, screen: 'platform_error');
       return true;
     };
 
@@ -73,6 +79,7 @@ Future<void> main() async {
     url: SupabaseConstants.supabaseUrl,
     anonKey: SupabaseConstants.supabaseAnonKey,
   );
+  unawaited(ErrorReporter.init());
 
   if (!kIsWeb) {
     savePushToken();

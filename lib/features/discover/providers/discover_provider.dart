@@ -46,7 +46,9 @@ final discoverProvider =
         '*, '
         'city:cities(name, name_ru, name_tr, name_en), '
         'owner:users(id, name, age, gender, subscription_status, is_deleted, '
-        'photos:user_photos(url, is_primary, is_selfie, order_index))',
+        'photos:user_photos(url, is_primary, is_selfie, order_index)), '
+        // RLS: başkasının kartında yalnız KENDİ başvurum döner (11.08)
+        'applications(status, applicant_id)',
       );
 
   query = query
@@ -78,6 +80,14 @@ final discoverProvider =
   final list = rows.map((row) {
     final ownerRow = row['owner'] as Map<String, dynamic>?;
     if (ownerRow?['is_deleted'] == true) return null;
+
+    // 11.08 (feed'le aynı kural, product-logic §6): kabul edilmiş başvuran
+    // ilanı Keşfet'te de görmez — ilişki Mesajlar'a taşındı.
+    final apps = (row['applications'] as List<dynamic>?) ?? const [];
+    final acceptedByMe = currentUserId != null &&
+        apps.cast<Map<String, dynamic>>().any((a) =>
+            a['status'] == 'accepted' && a['applicant_id'] == currentUserId);
+    if (acceptedByMe) return null;
 
     // Yaş aralığı tercihi (product-logic §5): aralık dışı ilan sahibini gösterme
     final ownerAge = ownerRow?['age'] as int?;

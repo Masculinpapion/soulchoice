@@ -27,6 +27,11 @@ class GuardError {
     if (s.contains('INVITATION_NOT_OPEN')) {
       return GuardError(l10n.err_invitation_closed);
     }
+    if (s.contains('INVALID_STATUS_TRANSITION')) {
+      // Reddedilen kullanıcı karta tekrar başvurursa sunucu bunu atar;
+      // sessizlik ilkesi gereği nötr "davet kapalı" mesajı (11.08 denetim).
+      return GuardError(l10n.err_invitation_closed);
+    }
     if (s.contains('ACTIVE_INVITATION_LIMIT')) {
       return GuardError(l10n.err_active_invitation_limit);
     }

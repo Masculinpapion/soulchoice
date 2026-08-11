@@ -2,18 +2,59 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../providers/applications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
 
-class ApplicantsScreen extends ConsumerWidget {
+class ApplicantsScreen extends ConsumerStatefulWidget {
   final String invitationId;
   const ApplicantsScreen({super.key, required this.invitationId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ApplicantsScreen> createState() => _ApplicantsScreenState();
+}
+
+class _ApplicantsScreenState extends ConsumerState<ApplicantsScreen> {
+  RealtimeChannel? _channel;
+  String get invitationId => widget.invitationId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sahibi ekranda değerlendirirken gelen YENİ başvuru anlık düşsün —
+    // profil deseniyle aynı (11.08 denetim). RLS: sahibe kendi ilanının
+    // başvuruları döner; ilan-id elle süzülür.
+    _channel = Supabase.instance.client
+        .channel('applicants:$invitationId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'applications',
+          callback: (payload) {
+            final rec = payload.newRecord.isNotEmpty
+                ? payload.newRecord
+                : payload.oldRecord;
+            if (mounted && rec['invitation_id'] == invitationId) {
+              ref.invalidate(applicantsProvider(invitationId));
+            }
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final async = ref.watch(applicantsProvider(invitationId));
 

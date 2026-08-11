@@ -51,9 +51,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nav_profile => 'Profil';
 
   @override
-  String get nav_notifications => 'Bildirimler';
-
-  @override
   String get btn_continue => 'Devam';
 
   @override
@@ -72,25 +69,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get btn_save => 'Kaydet';
 
   @override
-  String get btn_delete => 'Sil';
-
-  @override
-  String get btn_confirm => 'Onayla';
-
-  @override
   String get btn_reject => 'Reddet';
 
   @override
   String get btn_try_again => 'Tekrar dene';
-
-  @override
-  String get empty_no_invitations => 'Henüz aktif davet yok';
-
-  @override
-  String get empty_no_messages => 'Henüz mesajın yok';
-
-  @override
-  String get empty_no_notifications => 'Henüz bildirimin yok';
 
   @override
   String get error_generic => 'Bir hata oluştu';
@@ -103,9 +85,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings_notifications => 'Bildirimler';
-
-  @override
-  String get settings_account => 'Hesap';
 
   @override
   String get settings_logout => 'Çıkış yap';
@@ -161,15 +140,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notif_pref_all_read => 'Tüm bildirimler okundu';
-
-  @override
-  String get settings_do_not_disturb => 'Gece sessizliği';
-
-  @override
-  String get settings_active_devices => 'Aktif cihazlar';
-
-  @override
-  String get settings_download_data => 'Verilerimi indir';
 
   @override
   String get phone_title => 'Telefon numaranı gir';
@@ -344,9 +314,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get discover_title => 'Keşfet';
 
   @override
-  String get discover_all_invitations_label => 'TÜM AKTİF DAVETİYELER';
-
-  @override
   String get discover_filter_all => 'Tümü';
 
   @override
@@ -374,18 +341,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get applicants_select_btn => 'Seç';
-
-  @override
-  String get applicants_error_already_matched =>
-      'Bu davetiye zaten eşleştirildi';
-
-  @override
-  String get applicants_error_not_authorized => 'Yetkilendirme hatası';
-
-  @override
-  String applicants_error_generic(String message) {
-    return 'Hata: $message';
-  }
 
   @override
   String get create_inv_step_flow_type => 'Davetiye türü';
@@ -430,9 +385,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_btn_publish => 'Yayınla';
-
-  @override
-  String get create_inv_btn_update => 'Güncelle';
 
   @override
   String get edit_inv_title => 'Davetiyeyi düzenle';
@@ -926,16 +878,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inv_detail_day_sun => 'Paz';
 
   @override
-  String get inv_detail_directions => 'Yol tarifi';
-
-  @override
   String get inv_detail_section_invitation => 'DAVETİYE';
 
   @override
   String get inv_detail_section_details => 'DETAYLAR';
-
-  @override
-  String get inv_detail_section_host => 'DAVETÇİ';
 
   @override
   String get inv_detail_host_label => 'Davetiye sahibi';
@@ -951,9 +897,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get inv_detail_loading => 'Yükleniyor...';
-
-  @override
-  String get inv_detail_error_label => 'Hata';
 
   @override
   String get inv_detail_apply_invite => 'Gelmek isterim';
@@ -986,9 +929,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get inv_detail_selected_btn => 'Seçildin — Kararını ver';
-
-  @override
-  String get inv_detail_accepted_btn => '✓ Kabul edildi';
 
   @override
   String get inv_detail_accepted_chat_btn => '✓ Kabul edildi · Sohbeti aç';
@@ -1058,12 +998,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu alışveriş SoulChoice dışında, üçüncü taraf mağazada gerçekleşir; sorumluluk kullanıcılara aittir.';
 
   @override
-  String get notif_selected_push_title => 'Seçildin! 🎉';
-
-  @override
-  String get notif_selected_push_body => 'Sohbet açıldı — tanışmaya başla';
-
-  @override
   String get chat_deleted_user_info =>
       'Bu kullanıcı hesabını sildi. Artık mesaj gönderemezsin.';
 
@@ -1100,12 +1034,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get messages_title => 'Mesajlar';
-
-  @override
-  String get messages_tab_active => 'Aktif';
-
-  @override
-  String get messages_tab_past => 'Geçmiş';
 
   @override
   String get messages_connection_error => 'Bağlantı hatası';
@@ -1202,12 +1130,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get app_status_accepted => 'KABUL';
 
   @override
-  String get app_status_rejected => 'SEÇİLMEDİ';
-
-  @override
-  String get app_status_expired => 'SEÇİM YAPILMADI';
-
-  @override
   String get paywall_premium_active => 'Premium aktif — keyfini çıkar! 🎉';
 
   @override
@@ -1216,9 +1138,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Seçim penceren yakında kapanıyor — başvuranlara bir göz at.';
-
-  @override
-  String get messages_empty_past => 'Geçmiş sohbet yok';
 
   @override
   String get messages_empty_active => 'Henüz sohbet yok';
@@ -1259,10 +1178,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get photo_upload_primary_badge => 'Ana';
-
-  @override
-  String get photo_upload_permission_error =>
-      'Galeri izni gerekli. Lütfen ayarlardan izin ver.';
 
   @override
   String photo_upload_pick_error(String error) {
@@ -1359,9 +1274,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_btn_next => 'İleri';
 
   @override
-  String get profile_setup_btn_add_photos => 'Fotoğraf ekle';
-
-  @override
   String get profile_setup_name_question => 'Adın ne?';
 
   @override
@@ -1371,9 +1283,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String profile_setup_age_label(int min, int max) {
     return 'Yaş ($min-$max)';
   }
-
-  @override
-  String get profile_setup_gender_title => 'Cinsiyet';
 
   @override
   String get profile_setup_gender_female => 'Kadın';
@@ -1417,9 +1326,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profile_setup_job_title => 'Meslek ve Eğitim';
-
-  @override
-  String get profile_setup_job_subtitle => 'İsteğe bağlı';
 
   @override
   String get profile_setup_job_label => 'Meslek';
@@ -1557,9 +1463,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_view_cta_edit => 'Profili Düzenle';
 
   @override
-  String get profile_view_cta_come => 'Gelmek isterim';
-
-  @override
   String get profile_view_action_block => 'Kullanıcıyı engelle';
 
   @override
@@ -1689,10 +1592,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Aktif davetiyeler ve başvurular silinecek';
 
   @override
-  String get delete_account_warn_phone =>
-      'Aynı telefon numarasıyla yeniden kayıt olamazsın';
-
-  @override
   String get delete_account_checkbox =>
       'Evet, hesabımı kalıcı olarak silmek istiyorum';
 
@@ -1719,14 +1618,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_about_subtitle => 'Premium sosyal davetiye uygulaması.';
 
   @override
-  String get settings_share_subject => 'SoulChoice Veri Dışa Aktarma';
-
-  @override
-  String settings_error(String error) {
-    return 'Hata: $error';
-  }
-
-  @override
   String get settings_quiet_hours_title => 'Gece sessizliği';
 
   @override
@@ -1750,9 +1641,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_privacy_section => 'GİZLİLİK VE GÜVENLİK';
 
   @override
-  String get settings_blocked_users => 'Engellenenler';
-
-  @override
   String get settings_location_permission => 'Konum izni';
 
   @override
@@ -1772,9 +1660,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings_selfie_pending => 'Selfie inceleniyor';
-
-  @override
-  String get settings_selfie_approved => 'Doğrulanmış hesap';
 
   @override
   String get settings_selfie_rejected => 'Selfie reddedildi — yeniden yükle';
@@ -2039,9 +1924,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_block => 'Engelle';
 
   @override
-  String get chat_open => 'Sohbet açık';
-
-  @override
   String get chat_hide_confirm_body =>
       'Bu sohbet listenden kalkacak. Karşı taraf sohbeti görmeye devam eder; yeni mesaj gelirse sohbet geri gelir.';
 
@@ -2124,17 +2006,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywall_price => '1000₽ / ay';
 
   @override
-  String get paywall_cta => 'Devam et';
-
-  @override
   String get paywall_cancel_anytime => 'İstediğin zaman iptal edebilirsin.';
-
-  @override
-  String get paywall_coming_soon =>
-      'Ödeme sistemi yakında — ИП kuruluşu bekleniyor.';
-
-  @override
-  String get paywall_close => 'Kapat';
 
   @override
   String get profile_inv_section => 'DAVETLERİM';

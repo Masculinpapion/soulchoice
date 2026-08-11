@@ -172,12 +172,6 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get nav_profile;
 
-  /// No description provided for @nav_notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get nav_notifications;
-
   /// No description provided for @btn_continue.
   ///
   /// In en, this message translates to:
@@ -214,18 +208,6 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get btn_save;
 
-  /// No description provided for @btn_delete.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get btn_delete;
-
-  /// No description provided for @btn_confirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm'**
-  String get btn_confirm;
-
   /// No description provided for @btn_reject.
   ///
   /// In en, this message translates to:
@@ -237,24 +219,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get btn_try_again;
-
-  /// No description provided for @empty_no_invitations.
-  ///
-  /// In en, this message translates to:
-  /// **'No active invitations yet'**
-  String get empty_no_invitations;
-
-  /// No description provided for @empty_no_messages.
-  ///
-  /// In en, this message translates to:
-  /// **'No messages yet'**
-  String get empty_no_messages;
-
-  /// No description provided for @empty_no_notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'No notifications yet'**
-  String get empty_no_notifications;
 
   /// No description provided for @error_generic.
   ///
@@ -279,12 +243,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications'**
   String get settings_notifications;
-
-  /// No description provided for @settings_account.
-  ///
-  /// In en, this message translates to:
-  /// **'Account'**
-  String get settings_account;
 
   /// No description provided for @settings_logout.
   ///
@@ -393,24 +351,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All notifications read'**
   String get notif_pref_all_read;
-
-  /// No description provided for @settings_do_not_disturb.
-  ///
-  /// In en, this message translates to:
-  /// **'Do not disturb'**
-  String get settings_do_not_disturb;
-
-  /// No description provided for @settings_active_devices.
-  ///
-  /// In en, this message translates to:
-  /// **'Active devices'**
-  String get settings_active_devices;
-
-  /// No description provided for @settings_download_data.
-  ///
-  /// In en, this message translates to:
-  /// **'Download my data'**
-  String get settings_download_data;
 
   /// No description provided for @phone_title.
   ///
@@ -730,12 +670,6 @@ abstract class AppLocalizations {
   /// **'Discover'**
   String get discover_title;
 
-  /// No description provided for @discover_all_invitations_label.
-  ///
-  /// In en, this message translates to:
-  /// **'ALL ACTIVE INVITATIONS'**
-  String get discover_all_invitations_label;
-
   /// No description provided for @discover_filter_all.
   ///
   /// In en, this message translates to:
@@ -789,24 +723,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select'**
   String get applicants_select_btn;
-
-  /// No description provided for @applicants_error_already_matched.
-  ///
-  /// In en, this message translates to:
-  /// **'This invitation is already matched'**
-  String get applicants_error_already_matched;
-
-  /// No description provided for @applicants_error_not_authorized.
-  ///
-  /// In en, this message translates to:
-  /// **'Authorization error'**
-  String get applicants_error_not_authorized;
-
-  /// No description provided for @applicants_error_generic.
-  ///
-  /// In en, this message translates to:
-  /// **'Error: {message}'**
-  String applicants_error_generic(String message);
 
   /// No description provided for @create_inv_step_flow_type.
   ///
@@ -891,12 +807,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Publish'**
   String get create_inv_btn_publish;
-
-  /// No description provided for @create_inv_btn_update.
-  ///
-  /// In en, this message translates to:
-  /// **'Update'**
-  String get create_inv_btn_update;
 
   /// No description provided for @edit_inv_title.
   ///
@@ -1780,12 +1690,6 @@ abstract class AppLocalizations {
   /// **'Sun'**
   String get inv_detail_day_sun;
 
-  /// No description provided for @inv_detail_directions.
-  ///
-  /// In en, this message translates to:
-  /// **'Directions'**
-  String get inv_detail_directions;
-
   /// No description provided for @inv_detail_section_invitation.
   ///
   /// In en, this message translates to:
@@ -1797,12 +1701,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DETAILS'**
   String get inv_detail_section_details;
-
-  /// No description provided for @inv_detail_section_host.
-  ///
-  /// In en, this message translates to:
-  /// **'HOST'**
-  String get inv_detail_section_host;
 
   /// No description provided for @inv_detail_host_label.
   ///
@@ -1833,12 +1731,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading...'**
   String get inv_detail_loading;
-
-  /// No description provided for @inv_detail_error_label.
-  ///
-  /// In en, this message translates to:
-  /// **'Error'**
-  String get inv_detail_error_label;
 
   /// No description provided for @inv_detail_apply_invite.
   ///
@@ -1899,12 +1791,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected — Make your decision'**
   String get inv_detail_selected_btn;
-
-  /// No description provided for @inv_detail_accepted_btn.
-  ///
-  /// In en, this message translates to:
-  /// **'✓ Accepted'**
-  String get inv_detail_accepted_btn;
 
   /// No description provided for @inv_detail_accepted_chat_btn.
   ///
@@ -2020,18 +1906,6 @@ abstract class AppLocalizations {
   /// **'This purchase happens outside SoulChoice, in a third-party store; users are responsible.'**
   String get chat_gift_disclaimer;
 
-  /// No description provided for @notif_selected_push_title.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re selected! 🎉'**
-  String get notif_selected_push_title;
-
-  /// No description provided for @notif_selected_push_body.
-  ///
-  /// In en, this message translates to:
-  /// **'Chat is open — say hello'**
-  String get notif_selected_push_body;
-
   /// No description provided for @chat_deleted_user_info.
   ///
   /// In en, this message translates to:
@@ -2097,18 +1971,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Messages'**
   String get messages_title;
-
-  /// No description provided for @messages_tab_active.
-  ///
-  /// In en, this message translates to:
-  /// **'Active'**
-  String get messages_tab_active;
-
-  /// No description provided for @messages_tab_past.
-  ///
-  /// In en, this message translates to:
-  /// **'Past'**
-  String get messages_tab_past;
 
   /// No description provided for @messages_connection_error.
   ///
@@ -2272,18 +2134,6 @@ abstract class AppLocalizations {
   /// **'ACCEPTED'**
   String get app_status_accepted;
 
-  /// No description provided for @app_status_rejected.
-  ///
-  /// In en, this message translates to:
-  /// **'NOT SELECTED'**
-  String get app_status_rejected;
-
-  /// No description provided for @app_status_expired.
-  ///
-  /// In en, this message translates to:
-  /// **'NO SELECTION'**
-  String get app_status_expired;
-
   /// No description provided for @paywall_premium_active.
   ///
   /// In en, this message translates to:
@@ -2301,12 +2151,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your selection window closes soon — take a look at your applicants.'**
   String get notif_type_selection_reminder_body;
-
-  /// No description provided for @messages_empty_past.
-  ///
-  /// In en, this message translates to:
-  /// **'No past chats'**
-  String get messages_empty_past;
 
   /// No description provided for @messages_empty_active.
   ///
@@ -2379,12 +2223,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Main'**
   String get photo_upload_primary_badge;
-
-  /// No description provided for @photo_upload_permission_error.
-  ///
-  /// In en, this message translates to:
-  /// **'Gallery permission required. Please allow from settings.'**
-  String get photo_upload_permission_error;
 
   /// No description provided for @photo_upload_pick_error.
   ///
@@ -2548,12 +2386,6 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get profile_setup_btn_next;
 
-  /// No description provided for @profile_setup_btn_add_photos.
-  ///
-  /// In en, this message translates to:
-  /// **'Add photos'**
-  String get profile_setup_btn_add_photos;
-
   /// No description provided for @profile_setup_name_question.
   ///
   /// In en, this message translates to:
@@ -2571,12 +2403,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Age ({min}-{max})'**
   String profile_setup_age_label(int min, int max);
-
-  /// No description provided for @profile_setup_gender_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Gender'**
-  String get profile_setup_gender_title;
 
   /// No description provided for @profile_setup_gender_female.
   ///
@@ -2661,12 +2487,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Work & Education'**
   String get profile_setup_job_title;
-
-  /// No description provided for @profile_setup_job_subtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Optional'**
-  String get profile_setup_job_subtitle;
 
   /// No description provided for @profile_setup_job_label.
   ///
@@ -2920,12 +2740,6 @@ abstract class AppLocalizations {
   /// **'Edit Profile'**
   String get profile_view_cta_edit;
 
-  /// No description provided for @profile_view_cta_come.
-  ///
-  /// In en, this message translates to:
-  /// **'I want to come'**
-  String get profile_view_cta_come;
-
   /// No description provided for @profile_view_action_block.
   ///
   /// In en, this message translates to:
@@ -3166,12 +2980,6 @@ abstract class AppLocalizations {
   /// **'Your active invitations and applications will be deleted'**
   String get delete_account_warn_invitations;
 
-  /// No description provided for @delete_account_warn_phone.
-  ///
-  /// In en, this message translates to:
-  /// **'You cannot re-register with the same phone number'**
-  String get delete_account_warn_phone;
-
   /// No description provided for @delete_account_checkbox.
   ///
   /// In en, this message translates to:
@@ -3220,18 +3028,6 @@ abstract class AppLocalizations {
   /// **'Premium social invitation app.'**
   String get settings_about_subtitle;
 
-  /// No description provided for @settings_share_subject.
-  ///
-  /// In en, this message translates to:
-  /// **'SoulChoice Data Export'**
-  String get settings_share_subject;
-
-  /// No description provided for @settings_error.
-  ///
-  /// In en, this message translates to:
-  /// **'Error: {error}'**
-  String settings_error(String error);
-
   /// No description provided for @settings_quiet_hours_title.
   ///
   /// In en, this message translates to:
@@ -3274,12 +3070,6 @@ abstract class AppLocalizations {
   /// **'PRIVACY & SECURITY'**
   String get settings_privacy_section;
 
-  /// No description provided for @settings_blocked_users.
-  ///
-  /// In en, this message translates to:
-  /// **'Blocked'**
-  String get settings_blocked_users;
-
   /// No description provided for @settings_location_permission.
   ///
   /// In en, this message translates to:
@@ -3321,12 +3111,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selfie under review'**
   String get settings_selfie_pending;
-
-  /// No description provided for @settings_selfie_approved.
-  ///
-  /// In en, this message translates to:
-  /// **'Verified account'**
-  String get settings_selfie_approved;
 
   /// No description provided for @settings_selfie_rejected.
   ///
@@ -3772,12 +3556,6 @@ abstract class AppLocalizations {
   /// **'Block'**
   String get chat_block;
 
-  /// No description provided for @chat_open.
-  ///
-  /// In en, this message translates to:
-  /// **'Chat open'**
-  String get chat_open;
-
   /// No description provided for @chat_hide_confirm_body.
   ///
   /// In en, this message translates to:
@@ -3916,29 +3694,11 @@ abstract class AppLocalizations {
   /// **'1000₽ / month'**
   String get paywall_price;
 
-  /// No description provided for @paywall_cta.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get paywall_cta;
-
   /// No description provided for @paywall_cancel_anytime.
   ///
   /// In en, this message translates to:
   /// **'You can cancel any time.'**
   String get paywall_cancel_anytime;
-
-  /// No description provided for @paywall_coming_soon.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment system coming soon — awaiting IP registration.'**
-  String get paywall_coming_soon;
-
-  /// No description provided for @paywall_close.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get paywall_close;
 
   /// No description provided for @profile_inv_section.
   ///

@@ -44,6 +44,7 @@ değiştirenler tek listeyle sorulur."
 | C7 | Onboarding yarıda kalma | **KARAR (öneri uygulandı = değişiklik yok):** yumuşak tamamlama kartı kalır; selfie kapısı çekirdek aksiyonları zaten kilitliyor, zorunlu akış drop-off'u artırır. |
 | C8 | Ölü mekanikler (meeting_reminder/feedback_request tipleri, match şablonu, DecisionScreen+'selected') | **BACKLOG (post-launch, checklist Z):** kullanıcı görmüyor; store inceleme dönemi kod churn'üne değmez. |
 | C9 | Moderasyon aksiyonları bildirimsiz | **BACKLOG (post-launch, checklist Z ile birlikte; C1 kararına bağlı).** |
+| C10 | Oturum ortasında banlanan kullanıcı önce nötr "tekrar giriş yap" görüyor; "askıya alındı + destek" ekranını ancak yeniden login denemesinde görüyor (signedOut event'i sebep ayırt etmiyor) | **BACKLOG (post-launch, 11.08 Mustafa kararı):** ban nadir + kullanıcı sonunda doğru ekrana ulaşıyor; fix = signedOut anında suspended kontrolü. |
 
 ## D. Doğrulanan SAĞLAM alanlar (özet)
 

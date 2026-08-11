@@ -50,9 +50,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nav_profile => 'Profile';
 
   @override
-  String get nav_notifications => 'Notifications';
-
-  @override
   String get btn_continue => 'Continue';
 
   @override
@@ -71,25 +68,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get btn_save => 'Save';
 
   @override
-  String get btn_delete => 'Delete';
-
-  @override
-  String get btn_confirm => 'Confirm';
-
-  @override
   String get btn_reject => 'Reject';
 
   @override
   String get btn_try_again => 'Try again';
-
-  @override
-  String get empty_no_invitations => 'No active invitations yet';
-
-  @override
-  String get empty_no_messages => 'No messages yet';
-
-  @override
-  String get empty_no_notifications => 'No notifications yet';
 
   @override
   String get error_generic => 'Something went wrong';
@@ -102,9 +84,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_notifications => 'Notifications';
-
-  @override
-  String get settings_account => 'Account';
 
   @override
   String get settings_logout => 'Log out';
@@ -161,15 +140,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notif_pref_all_read => 'All notifications read';
-
-  @override
-  String get settings_do_not_disturb => 'Do not disturb';
-
-  @override
-  String get settings_active_devices => 'Active devices';
-
-  @override
-  String get settings_download_data => 'Download my data';
 
   @override
   String get phone_title => 'Enter your phone number';
@@ -346,9 +316,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get discover_title => 'Discover';
 
   @override
-  String get discover_all_invitations_label => 'ALL ACTIVE INVITATIONS';
-
-  @override
   String get discover_filter_all => 'All';
 
   @override
@@ -376,18 +343,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get applicants_select_btn => 'Select';
-
-  @override
-  String get applicants_error_already_matched =>
-      'This invitation is already matched';
-
-  @override
-  String get applicants_error_not_authorized => 'Authorization error';
-
-  @override
-  String applicants_error_generic(String message) {
-    return 'Error: $message';
-  }
 
   @override
   String get create_inv_step_flow_type => 'Invitation type';
@@ -432,9 +387,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_inv_btn_publish => 'Publish';
-
-  @override
-  String get create_inv_btn_update => 'Update';
 
   @override
   String get edit_inv_title => 'Edit invitation';
@@ -928,16 +880,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inv_detail_day_sun => 'Sun';
 
   @override
-  String get inv_detail_directions => 'Directions';
-
-  @override
   String get inv_detail_section_invitation => 'INVITATION';
 
   @override
   String get inv_detail_section_details => 'DETAILS';
-
-  @override
-  String get inv_detail_section_host => 'HOST';
 
   @override
   String get inv_detail_host_label => 'Invitation host';
@@ -953,9 +899,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inv_detail_loading => 'Loading...';
-
-  @override
-  String get inv_detail_error_label => 'Error';
 
   @override
   String get inv_detail_apply_invite => 'I want to come';
@@ -988,9 +931,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inv_detail_selected_btn => 'Selected — Make your decision';
-
-  @override
-  String get inv_detail_accepted_btn => '✓ Accepted';
 
   @override
   String get inv_detail_accepted_chat_btn => '✓ Accepted · Open chat';
@@ -1060,12 +1000,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This purchase happens outside SoulChoice, in a third-party store; users are responsible.';
 
   @override
-  String get notif_selected_push_title => 'You\'re selected! 🎉';
-
-  @override
-  String get notif_selected_push_body => 'Chat is open — say hello';
-
-  @override
   String get chat_deleted_user_info =>
       'This user deleted their account. You can no longer send messages.';
 
@@ -1102,12 +1036,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messages_title => 'Messages';
-
-  @override
-  String get messages_tab_active => 'Active';
-
-  @override
-  String get messages_tab_past => 'Past';
 
   @override
   String get messages_connection_error => 'Connection error';
@@ -1205,12 +1133,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get app_status_accepted => 'ACCEPTED';
 
   @override
-  String get app_status_rejected => 'NOT SELECTED';
-
-  @override
-  String get app_status_expired => 'NO SELECTION';
-
-  @override
   String get paywall_premium_active => 'Premium is active — enjoy! 🎉';
 
   @override
@@ -1220,9 +1142,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Your selection window closes soon — take a look at your applicants.';
-
-  @override
-  String get messages_empty_past => 'No past chats';
 
   @override
   String get messages_empty_active => 'No chats yet';
@@ -1264,10 +1183,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get photo_upload_primary_badge => 'Main';
-
-  @override
-  String get photo_upload_permission_error =>
-      'Gallery permission required. Please allow from settings.';
 
   @override
   String photo_upload_pick_error(String error) {
@@ -1364,9 +1279,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_btn_next => 'Next';
 
   @override
-  String get profile_setup_btn_add_photos => 'Add photos';
-
-  @override
   String get profile_setup_name_question => 'What\'s your name?';
 
   @override
@@ -1376,9 +1288,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String profile_setup_age_label(int min, int max) {
     return 'Age ($min-$max)';
   }
-
-  @override
-  String get profile_setup_gender_title => 'Gender';
 
   @override
   String get profile_setup_gender_female => 'Female';
@@ -1422,9 +1331,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_setup_job_title => 'Work & Education';
-
-  @override
-  String get profile_setup_job_subtitle => 'Optional';
 
   @override
   String get profile_setup_job_label => 'Occupation';
@@ -1563,9 +1469,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_view_cta_edit => 'Edit Profile';
 
   @override
-  String get profile_view_cta_come => 'I want to come';
-
-  @override
   String get profile_view_action_block => 'Block user';
 
   @override
@@ -1698,10 +1601,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your active invitations and applications will be deleted';
 
   @override
-  String get delete_account_warn_phone =>
-      'You cannot re-register with the same phone number';
-
-  @override
   String get delete_account_checkbox =>
       'Yes, I want to permanently delete my account';
 
@@ -1728,14 +1627,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_about_subtitle => 'Premium social invitation app.';
 
   @override
-  String get settings_share_subject => 'SoulChoice Data Export';
-
-  @override
-  String settings_error(String error) {
-    return 'Error: $error';
-  }
-
-  @override
   String get settings_quiet_hours_title => 'Night quiet hours';
 
   @override
@@ -1759,9 +1650,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_privacy_section => 'PRIVACY & SECURITY';
 
   @override
-  String get settings_blocked_users => 'Blocked';
-
-  @override
   String get settings_location_permission => 'Location permission';
 
   @override
@@ -1781,9 +1669,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_selfie_pending => 'Selfie under review';
-
-  @override
-  String get settings_selfie_approved => 'Verified account';
 
   @override
   String get settings_selfie_rejected => 'Selfie rejected — re-upload';
@@ -2049,9 +1934,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_block => 'Block';
 
   @override
-  String get chat_open => 'Chat open';
-
-  @override
   String get chat_hide_confirm_body =>
       'This chat leaves your list. The other person still sees it; it returns when a new message arrives.';
 
@@ -2133,17 +2015,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywall_price => '1000₽ / month';
 
   @override
-  String get paywall_cta => 'Continue';
-
-  @override
   String get paywall_cancel_anytime => 'You can cancel any time.';
-
-  @override
-  String get paywall_coming_soon =>
-      'Payment system coming soon — awaiting IP registration.';
-
-  @override
-  String get paywall_close => 'Close';
 
   @override
   String get profile_inv_section => 'MY CARDS';

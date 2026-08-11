@@ -50,9 +50,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get nav_profile => 'Профиль';
 
   @override
-  String get nav_notifications => 'Уведомления';
-
-  @override
   String get btn_continue => 'Продолжить';
 
   @override
@@ -71,25 +68,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get btn_save => 'Сохранить';
 
   @override
-  String get btn_delete => 'Удалить';
-
-  @override
-  String get btn_confirm => 'Подтвердить';
-
-  @override
   String get btn_reject => 'Отклонить';
 
   @override
   String get btn_try_again => 'Повторить';
-
-  @override
-  String get empty_no_invitations => 'Пока нет активных приглашений';
-
-  @override
-  String get empty_no_messages => 'Пока нет сообщений';
-
-  @override
-  String get empty_no_notifications => 'Пока нет уведомлений';
 
   @override
   String get error_generic => 'Произошла ошибка';
@@ -102,9 +84,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_notifications => 'Уведомления';
-
-  @override
-  String get settings_account => 'Аккаунт';
 
   @override
   String get settings_logout => 'Выйти';
@@ -160,15 +139,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notif_pref_all_read => 'Все уведомления прочитаны';
-
-  @override
-  String get settings_do_not_disturb => 'Не беспокоить';
-
-  @override
-  String get settings_active_devices => 'Активные устройства';
-
-  @override
-  String get settings_download_data => 'Загрузить мои данные';
 
   @override
   String get phone_title => 'Введи свой\nномер телефона';
@@ -345,9 +315,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get discover_title => 'Обзор';
 
   @override
-  String get discover_all_invitations_label => 'ВСЕ АКТИВНЫЕ ПРИГЛАШЕНИЯ';
-
-  @override
   String get discover_filter_all => 'Все';
 
   @override
@@ -375,17 +342,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get applicants_select_btn => 'Выбрать';
-
-  @override
-  String get applicants_error_already_matched => 'Это приглашение уже совпало';
-
-  @override
-  String get applicants_error_not_authorized => 'Ошибка авторизации';
-
-  @override
-  String applicants_error_generic(String message) {
-    return 'Ошибка: $message';
-  }
 
   @override
   String get create_inv_step_flow_type => 'Тип приглашения';
@@ -431,9 +387,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_btn_publish => 'Опубликовать';
-
-  @override
-  String get create_inv_btn_update => 'Обновить';
 
   @override
   String get edit_inv_title => 'Редактировать приглашение';
@@ -933,16 +886,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get inv_detail_day_sun => 'Вс';
 
   @override
-  String get inv_detail_directions => 'Маршрут';
-
-  @override
   String get inv_detail_section_invitation => 'ПРИГЛАШЕНИЕ';
 
   @override
   String get inv_detail_section_details => 'ДЕТАЛИ';
-
-  @override
-  String get inv_detail_section_host => 'ОРГАНИЗАТОР';
 
   @override
   String get inv_detail_host_label => 'Организатор приглашения';
@@ -958,9 +905,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inv_detail_loading => 'Загрузка...';
-
-  @override
-  String get inv_detail_error_label => 'Ошибка';
 
   @override
   String get inv_detail_apply_invite => 'Хочу прийти';
@@ -997,9 +941,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get inv_detail_selected_btn => 'Выбрали — Прими решение';
-
-  @override
-  String get inv_detail_accepted_btn => '✓ Принято';
 
   @override
   String get inv_detail_accepted_chat_btn => '✓ Принято · Открыть чат';
@@ -1069,12 +1010,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Покупка происходит вне SoulChoice, в стороннем магазине; ответственность несут пользователи.';
 
   @override
-  String get notif_selected_push_title => 'Тебя выбрали! 🎉';
-
-  @override
-  String get notif_selected_push_body => 'Чат открыт — поздоровайся';
-
-  @override
   String get chat_deleted_user_info =>
       'Аккаунт этого пользователя удалён. Отправка сообщений больше недоступна.';
 
@@ -1111,12 +1046,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messages_title => 'Сообщения';
-
-  @override
-  String get messages_tab_active => 'Активные';
-
-  @override
-  String get messages_tab_past => 'Прошлые';
 
   @override
   String get messages_connection_error => 'Ошибка подключения';
@@ -1216,12 +1145,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get app_status_accepted => 'ПРИНЯТА';
 
   @override
-  String get app_status_rejected => 'НЕ ВЫБРАНА';
-
-  @override
-  String get app_status_expired => 'ВЫБОР НЕ СДЕЛАН';
-
-  @override
   String get paywall_premium_active => 'Premium активен — пользуйся! 🎉';
 
   @override
@@ -1230,9 +1153,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Окно выбора скоро закроется — загляни в заявки.';
-
-  @override
-  String get messages_empty_past => 'Прошлых чатов нет';
 
   @override
   String get messages_empty_active => 'Пока нет чатов';
@@ -1274,10 +1194,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get photo_upload_primary_badge => 'Главное';
-
-  @override
-  String get photo_upload_permission_error =>
-      'Необходим доступ к галерее. Пожалуйста, разреши в настройках.';
 
   @override
   String photo_upload_pick_error(String error) {
@@ -1374,9 +1290,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_btn_next => 'Далее';
 
   @override
-  String get profile_setup_btn_add_photos => 'Добавить фото';
-
-  @override
   String get profile_setup_name_question => 'Как тебя зовут?';
 
   @override
@@ -1386,9 +1299,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String profile_setup_age_label(int min, int max) {
     return 'Возраст ($min-$max)';
   }
-
-  @override
-  String get profile_setup_gender_title => 'Пол';
 
   @override
   String get profile_setup_gender_female => 'Женский';
@@ -1433,9 +1343,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profile_setup_job_title => 'Работа и образование';
-
-  @override
-  String get profile_setup_job_subtitle => 'Необязательно';
 
   @override
   String get profile_setup_job_label => 'Профессия';
@@ -1578,9 +1485,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_view_cta_edit => 'Редактировать профиль';
 
   @override
-  String get profile_view_cta_come => 'Хочу прийти';
-
-  @override
   String get profile_view_action_block => 'Заблокировать пользователя';
 
   @override
@@ -1716,10 +1620,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Твои активные приглашения и заявки будут удалены';
 
   @override
-  String get delete_account_warn_phone =>
-      'Ты не сможешь снова зарегистрироваться с тем же номером телефона';
-
-  @override
   String get delete_account_checkbox =>
       'Да, я хочу безвозвратно удалить свой аккаунт';
 
@@ -1748,14 +1648,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Премиум-приложение для социальных приглашений.';
 
   @override
-  String get settings_share_subject => 'Экспорт данных SoulChoice';
-
-  @override
-  String settings_error(String error) {
-    return 'Ошибка: $error';
-  }
-
-  @override
   String get settings_quiet_hours_title => 'Ночная тишина';
 
   @override
@@ -1779,9 +1671,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_privacy_section => 'КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ';
 
   @override
-  String get settings_blocked_users => 'Чёрный список';
-
-  @override
   String get settings_location_permission => 'Разрешение геолокации';
 
   @override
@@ -1802,9 +1691,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_selfie_pending => 'Селфи на проверке';
-
-  @override
-  String get settings_selfie_approved => 'Аккаунт верифицирован';
 
   @override
   String get settings_selfie_rejected => 'Селфи отклонено — загрузи снова';
@@ -2085,9 +1971,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_block => 'Заблокировать';
 
   @override
-  String get chat_open => 'Чат открыт';
-
-  @override
   String get chat_hide_confirm_body =>
       'Чат исчезнет из твоего списка. Собеседник продолжит его видеть; при новом сообщении чат вернётся.';
 
@@ -2175,17 +2058,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywall_price => '1000₽ / месяц';
 
   @override
-  String get paywall_cta => 'Продолжить';
-
-  @override
   String get paywall_cancel_anytime => 'Отменить можно в любой момент.';
-
-  @override
-  String get paywall_coming_soon =>
-      'Платёжная система скоро — ждём регистрацию ИП.';
-
-  @override
-  String get paywall_close => 'Закрыть';
 
   @override
   String get profile_inv_section => 'МОИ ПРИГЛАШЕНИЯ';

@@ -60,6 +60,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get btn_cancel => 'İptal';
 
   @override
+  String get discard_changes_title => 'Değişiklikler kaydedilmedi';
+
+  @override
+  String get discard_changes_stay => 'Kal';
+
+  @override
+  String get discard_changes_leave => 'Kaydetmeden çık';
+
+  @override
   String get btn_save => 'Kaydet';
 
   @override

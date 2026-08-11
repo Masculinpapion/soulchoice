@@ -59,6 +59,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get btn_cancel => 'Отмена';
 
   @override
+  String get discard_changes_title => 'Изменения не сохранены';
+
+  @override
+  String get discard_changes_stay => 'Остаться';
+
+  @override
+  String get discard_changes_leave => 'Выйти без сохранения';
+
+  @override
   String get btn_save => 'Сохранить';
 
   @override

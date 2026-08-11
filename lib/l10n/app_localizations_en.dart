@@ -59,6 +59,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get btn_cancel => 'Cancel';
 
   @override
+  String get discard_changes_title => 'Unsaved changes';
+
+  @override
+  String get discard_changes_stay => 'Stay';
+
+  @override
+  String get discard_changes_leave => 'Leave without saving';
+
+  @override
   String get btn_save => 'Save';
 
   @override

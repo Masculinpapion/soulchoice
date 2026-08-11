@@ -190,6 +190,24 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get btn_cancel;
 
+  /// No description provided for @discard_changes_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get discard_changes_title;
+
+  /// No description provided for @discard_changes_stay.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get discard_changes_stay;
+
+  /// No description provided for @discard_changes_leave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving'**
+  String get discard_changes_leave;
+
   /// No description provided for @btn_save.
   ///
   /// In en, this message translates to:

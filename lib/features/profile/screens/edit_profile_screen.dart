@@ -71,6 +71,67 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   int _maxAge = 60;
   bool _isSaving = false;
   bool _isLoading = true;
+  // Kaydedilmemiş değişiklik koruması (11.08 Mustafa kararı): baseline
+  // yükleme sonrası alınır; geri çıkışta fark varsa onay sorulur.
+  String? _baseline;
+
+  String _stateSignature() => [
+    _nameController.text,
+    _ageController.text,
+    _bioController.text,
+    _jobController.text,
+    _educationController.text,
+    _gender ?? '',
+    _cityId ?? '',
+    (_interests.toList()..sort()).join(','),
+    (_prompts.entries.map((e) => '${e.key}=${e.value}').toList()..sort()).join(
+      '|',
+    ),
+    '$_minAge-$_maxAge',
+  ].join('§');
+
+  bool get _isDirty => _baseline != null && _baseline != _stateSignature();
+
+  Future<void> _handleExit() async {
+    if (!_isDirty) {
+      context.pop();
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          l10n.discard_changes_title,
+          style: const TextStyle(
+            fontFamily: 'Manrope',
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              l10n.discard_changes_stay,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              l10n.discard_changes_leave,
+              style: const TextStyle(color: Color(0xFFFF6B81)),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (leave == true && mounted) context.pop();
+  }
 
   static const _allInterestKeys = [
     'art',
@@ -152,6 +213,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _maxAge = row['max_age'] as int? ?? 60;
         _isLoading = false;
       });
+      _baseline = _stateSignature();
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -216,10 +278,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final error = _validate(l10n);
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: AuroraTheme.auroraRed,
-        ),
+        SnackBar(content: Text(error), backgroundColor: AuroraTheme.auroraRed),
       );
       return;
     }
@@ -253,19 +312,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           .eq('id', uid);
 
       if (_prompts.isNotEmpty) {
-        await client.from('user_prompts').upsert(
-          _prompts.entries
-              .where((e) => e.value.trim().isNotEmpty)
-              .map(
-                (e) => {
-                  'user_id': uid,
-                  'question_key': e.key,
-                  'answer': e.value.trim(),
-                },
-              )
-              .toList(),
-          onConflict: 'user_id,question_key',
-        );
+        await client
+            .from('user_prompts')
+            .upsert(
+              _prompts.entries
+                  .where((e) => e.value.trim().isNotEmpty)
+                  .map(
+                    (e) => {
+                      'user_id': uid,
+                      'question_key': e.key,
+                      'answer': e.value.trim(),
+                    },
+                  )
+                  .toList(),
+              onConflict: 'user_id,question_key',
+            );
       }
 
       if (mounted) {
@@ -282,7 +343,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              AppLocalizations.of(context)!.profile_setup_error(AppLocalizations.of(context)!.error_generic),
+              AppLocalizations.of(context)!.profile_setup_error(
+                AppLocalizations.of(context)!.error_generic,
+              ),
             ),
             backgroundColor: AuroraTheme.auroraRed,
           ),
@@ -348,249 +411,258 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
       );
     }
-    return ScScaffold(
-      backgroundColor: AuroraTheme.bgDeep,
-      body: AmbientBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 24, 4),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new,
-                        color: AuroraTheme.textPrimary,
-                      ),
-                      onPressed: () => context.pop(),
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        l10n.settings_edit_profile,
-                        style: _screenTitleStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleExit();
+      },
+      child: ScScaffold(
+        backgroundColor: AuroraTheme.bgDeep,
+        body: AmbientBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 24, 4),
+                  child: Row(
                     children: [
-                      // ── İsim + yaş ──
-                      _sectionLabel(l10n.profile_setup_step_name_age),
-                      TextField(
-                        controller: _nameController,
-                        style: _fieldStyle,
-                        decoration: InputDecoration(
-                          labelText: l10n.profile_setup_name_label,
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: AuroraTheme.textPrimary,
                         ),
+                        onPressed: _handleExit,
                       ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _ageController,
-                        keyboardType: TextInputType.number,
-                        style: _fieldStyle,
-                        decoration: InputDecoration(
-                          labelText: l10n.profile_setup_age_label(
-                            AppConstants.minAge,
-                            AppConstants.maxAge,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-
-                      // ── Cinsiyet (salt-okunur) ──
-                      _sectionLabel(l10n.profile_setup_step_gender),
-                      _GenderBadge(
-                        label: _gender == 'female'
-                            ? l10n.profile_setup_gender_female
-                            : l10n.profile_setup_gender_male,
-                        icon: _gender == 'female' ? Icons.female : Icons.male,
-                      ),
-                      const SizedBox(height: 28),
-
-                      // ── Şehir ──
-                      _sectionLabel(l10n.profile_setup_step_city),
-                      GlassCard(
-                        onTap: _pickCity,
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              color: AuroraTheme.textMuted,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _cityName.isNotEmpty
-                                    ? _cityName
-                                    : l10n.profile_setup_city_search,
-                                style: _fieldStyle.copyWith(
-                                  color: _cityName.isNotEmpty
-                                      ? AuroraTheme.textPrimary
-                                      : AuroraTheme.textMuted,
-                                ),
-                              ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: AuroraTheme.textMuted,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-
-                      // ── Bio ──
-                      _sectionLabel(l10n.profile_setup_step_bio),
-                      TextField(
-                        controller: _bioController,
-                        maxLength: AppConstants.maxBioLength,
-                        maxLines: 5,
-                        style: _fieldStyle,
-                        decoration: InputDecoration(
-                          hintText: l10n.profile_setup_bio_hint,
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // ── İş + eğitim ──
-                      _sectionLabel(l10n.profile_setup_step_job_edu),
-                      TextField(
-                        controller: _jobController,
-                        style: _fieldStyle,
-                        decoration: InputDecoration(
-                          labelText: l10n.profile_setup_job_label,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextField(
-                        controller: _educationController,
-                        style: _fieldStyle,
-                        decoration: InputDecoration(
-                          labelText: l10n.profile_setup_education_label,
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-
-                      // ── İlgi alanları ──
-                      _sectionLabel(l10n.profile_setup_step_interests),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _allInterestKeys.map((interest) {
-                          final isSelected = _interests.contains(interest);
-                          return FilterChip(
-                            label: Text(_interestLabel(interest, l10n)),
-                            selected: isSelected,
-                            onSelected: (_) => setState(() {
-                              isSelected
-                                  ? _interests.remove(interest)
-                                  : _interests.add(interest);
-                            }),
-                            backgroundColor: AuroraTheme.glassBg,
-                            selectedColor: AuroraTheme.auroraRed.withValues(
-                              alpha: 0.2,
-                            ),
-                            checkmarkColor: AuroraTheme.auroraRed,
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AuroraTheme.auroraRed
-                                  : AuroraTheme.glassBorder,
-                            ),
-                            labelStyle: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.05,
-                              color: isSelected
-                                  ? AuroraTheme.auroraRed
-                                  : AuroraTheme.textSecondary,
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 28),
-
-                      // ── Sorular ──
-                      _sectionLabel(l10n.profile_setup_step_prompts),
-                      ..._getPromptQuestions(l10n).entries.map(
-                        (e) => Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(e.value, style: _promptQuestionStyle),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                style: _fieldStyle,
-                                initialValue: _prompts[e.key] ?? '',
-                                onChanged: (v) => _prompts[e.key] = v,
-                                decoration: InputDecoration(
-                                  hintText:
-                                      l10n.profile_setup_prompts_answer_hint,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // ── Yaş aralığı ──
-                      _sectionLabel(l10n.profile_setup_step_age_range),
-                      Center(
+                      const SizedBox(width: 4),
+                      Expanded(
                         child: Text(
-                          l10n.profile_setup_age_range_value(_minAge, _maxAge),
-                          style: const TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: AuroraTheme.textPrimary,
-                            letterSpacing: -0.1,
-                          ),
+                          l10n.settings_edit_profile,
+                          style: _screenTitleStyle,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      RangeSlider(
-                        values: RangeValues(
-                          _minAge.toDouble(),
-                          _maxAge.toDouble(),
-                        ),
-                        min: 21,
-                        max: 60,
-                        divisions: 39,
-                        activeColor: AuroraTheme.auroraRed,
-                        inactiveColor: AuroraTheme.glassBorder,
-                        labels: RangeLabels('$_minAge', '$_maxAge'),
-                        onChanged: (v) => setState(() {
-                          _minAge = v.start.round();
-                          _maxAge = v.end.round();
-                        }),
                       ),
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                // Üst 12px: klavye açıkken buton içeriğe yapışmasın (13.07).
-                padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                child: ScButton(
-                  label: l10n.btn_save,
-                  onPressed: _isSaving ? null : _save,
-                  isLoading: _isSaving,
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── İsim + yaş ──
+                        _sectionLabel(l10n.profile_setup_step_name_age),
+                        TextField(
+                          controller: _nameController,
+                          style: _fieldStyle,
+                          decoration: InputDecoration(
+                            labelText: l10n.profile_setup_name_label,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _ageController,
+                          keyboardType: TextInputType.number,
+                          style: _fieldStyle,
+                          decoration: InputDecoration(
+                            labelText: l10n.profile_setup_age_label(
+                              AppConstants.minAge,
+                              AppConstants.maxAge,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── Cinsiyet (salt-okunur) ──
+                        _sectionLabel(l10n.profile_setup_step_gender),
+                        _GenderBadge(
+                          label: _gender == 'female'
+                              ? l10n.profile_setup_gender_female
+                              : l10n.profile_setup_gender_male,
+                          icon: _gender == 'female' ? Icons.female : Icons.male,
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── Şehir ──
+                        _sectionLabel(l10n.profile_setup_step_city),
+                        GlassCard(
+                          onTap: _pickCity,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on_outlined,
+                                color: AuroraTheme.textMuted,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  _cityName.isNotEmpty
+                                      ? _cityName
+                                      : l10n.profile_setup_city_search,
+                                  style: _fieldStyle.copyWith(
+                                    color: _cityName.isNotEmpty
+                                        ? AuroraTheme.textPrimary
+                                        : AuroraTheme.textMuted,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: AuroraTheme.textMuted,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── Bio ──
+                        _sectionLabel(l10n.profile_setup_step_bio),
+                        TextField(
+                          controller: _bioController,
+                          maxLength: AppConstants.maxBioLength,
+                          maxLines: 5,
+                          style: _fieldStyle,
+                          decoration: InputDecoration(
+                            hintText: l10n.profile_setup_bio_hint,
+                            alignLabelWithHint: true,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // ── İş + eğitim ──
+                        _sectionLabel(l10n.profile_setup_step_job_edu),
+                        TextField(
+                          controller: _jobController,
+                          style: _fieldStyle,
+                          decoration: InputDecoration(
+                            labelText: l10n.profile_setup_job_label,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _educationController,
+                          style: _fieldStyle,
+                          decoration: InputDecoration(
+                            labelText: l10n.profile_setup_education_label,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── İlgi alanları ──
+                        _sectionLabel(l10n.profile_setup_step_interests),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _allInterestKeys.map((interest) {
+                            final isSelected = _interests.contains(interest);
+                            return FilterChip(
+                              label: Text(_interestLabel(interest, l10n)),
+                              selected: isSelected,
+                              onSelected: (_) => setState(() {
+                                isSelected
+                                    ? _interests.remove(interest)
+                                    : _interests.add(interest);
+                              }),
+                              backgroundColor: AuroraTheme.glassBg,
+                              selectedColor: AuroraTheme.auroraRed.withValues(
+                                alpha: 0.2,
+                              ),
+                              checkmarkColor: AuroraTheme.auroraRed,
+                              side: BorderSide(
+                                color: isSelected
+                                    ? AuroraTheme.auroraRed
+                                    : AuroraTheme.glassBorder,
+                              ),
+                              labelStyle: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.05,
+                                color: isSelected
+                                    ? AuroraTheme.auroraRed
+                                    : AuroraTheme.textSecondary,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── Sorular ──
+                        _sectionLabel(l10n.profile_setup_step_prompts),
+                        ..._getPromptQuestions(l10n).entries.map(
+                          (e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(e.value, style: _promptQuestionStyle),
+                                const SizedBox(height: 8),
+                                TextFormField(
+                                  style: _fieldStyle,
+                                  initialValue: _prompts[e.key] ?? '',
+                                  onChanged: (v) => _prompts[e.key] = v,
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        l10n.profile_setup_prompts_answer_hint,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // ── Yaş aralığı ──
+                        _sectionLabel(l10n.profile_setup_step_age_range),
+                        Center(
+                          child: Text(
+                            l10n.profile_setup_age_range_value(
+                              _minAge,
+                              _maxAge,
+                            ),
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AuroraTheme.textPrimary,
+                              letterSpacing: -0.1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        RangeSlider(
+                          values: RangeValues(
+                            _minAge.toDouble(),
+                            _maxAge.toDouble(),
+                          ),
+                          min: 21,
+                          max: 60,
+                          divisions: 39,
+                          activeColor: AuroraTheme.auroraRed,
+                          inactiveColor: AuroraTheme.glassBorder,
+                          labels: RangeLabels('$_minAge', '$_maxAge'),
+                          onChanged: (v) => setState(() {
+                            _minAge = v.start.round();
+                            _maxAge = v.end.round();
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  // Üst 12px: klavye açıkken buton içeriğe yapışmasın (13.07).
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                  child: ScButton(
+                    label: l10n.btn_save,
+                    onPressed: _isSaving ? null : _save,
+                    isLoading: _isSaving,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -609,9 +681,7 @@ class _GenderBadge extends StatelessWidget {
     decoration: BoxDecoration(
       color: AuroraTheme.auroraRed.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(
-        color: AuroraTheme.auroraRed.withValues(alpha: 0.45),
-      ),
+      border: Border.all(color: AuroraTheme.auroraRed.withValues(alpha: 0.45)),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,

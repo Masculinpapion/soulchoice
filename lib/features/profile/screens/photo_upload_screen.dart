@@ -54,6 +54,55 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   bool _isLoading = false;
 
   int get _filledCount => _photos.where((p) => !p.isEmpty).length;
+
+  // Kaydedilmemiş değişiklik: yeni seçilen lokal foto VEYA silinen/yeri
+  // değişen remote foto (11.08 Mustafa kararı — sessiz emek kaybı önlenir).
+  bool get _isDirty {
+    if (_photos.any((p) => p.isLocal)) return true;
+    final cur = _photos
+        .where((p) => p.isRemote)
+        .map((p) => p.remoteId)
+        .join(',');
+    final orig = _originalRemotePhotos.map((p) => p.remoteId).join(',');
+    return cur != orig;
+  }
+
+  Future<void> _handleExit() async {
+    void goBack() =>
+        context.canPop() ? context.pop() : context.go('/profile/setup');
+    if (!_isDirty) {
+      goBack();
+      return;
+    }
+    final l10n = AppLocalizations.of(context)!;
+    final leave = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(l10n.discard_changes_title,
+            style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.discard_changes_stay,
+                style: const TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.discard_changes_leave,
+                style: const TextStyle(color: Color(0xFFFF6B81))),
+          ),
+        ],
+      ),
+    );
+    if (leave == true && mounted) goBack();
+  }
   bool get _canSave =>
       widget.isEditing ? _filledCount > 0 : _filledCount >= AppConstants.minPhotos;
 
@@ -312,6 +361,16 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleExit();
+      },
+      child: _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
@@ -330,9 +389,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                         // Onboarding go() zinciriyle gelinir; pop edilecek şey
                         // yokken geri oku ölüydü (31.07 Y4) — sihirbazda bir
                         // adım geri: profil kurulumuna dön.
-                        onPressed: () => context.canPop()
-                            ? context.pop()
-                            : context.go('/profile/setup'),
+                        onPressed: _handleExit,
                         padding: EdgeInsets.zero,
                         alignment: Alignment.centerLeft,
                       ),

@@ -82,6 +82,9 @@ serve(async (req) => {
       const data = await res.json()
       const smsInfo = data.sms ? (Object.values(data.sms)[0] as { status?: string } | undefined) : undefined
       if (data.status !== 'OK' || smsInfo?.status !== 'OK') {
+        // 11.08: ret SEBEBİ loglanır — 19:38-19:58 vakasında 12 ardışık ret
+        // yaşandı ama sebep görünmüyordu (SMS.ru limit mi, rota mı, bakiye mi).
+        console.error('send-call-otp SMS_FAILED ' + JSON.stringify(data))
         return new Response(JSON.stringify({ error: 'sms_failed', detail: data }), { status: 500, headers: CORS })
       }
     } else {

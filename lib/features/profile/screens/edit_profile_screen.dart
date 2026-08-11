@@ -12,6 +12,7 @@ import '../providers/profile_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../../discover/providers/discover_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 // Tek sayfa profil düzenleme — kayıt sihirbazı (ProfileSetupScreen) yalnız
 // ilk kurulumda kullanılır. Burada kullanıcı tüm alanlarını görür, istediğini
@@ -277,9 +278,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     final error = _validate(l10n);
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), backgroundColor: AuroraTheme.auroraRed),
-      );
+      showAuroraErrorSnack(context, error);
       return;
     }
 
@@ -341,13 +340,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.profile_setup_error(
-                AppLocalizations.of(context)!.error_generic,
-              ),
+          auroraSnackBar(
+            AppLocalizations.of(context)!.profile_setup_error(
+              AppLocalizations.of(context)!.error_generic,
             ),
-            backgroundColor: AuroraTheme.auroraRed,
           ),
         );
       }

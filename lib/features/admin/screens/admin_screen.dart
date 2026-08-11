@@ -7,6 +7,7 @@ import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -525,9 +526,9 @@ class _ReportsTabState extends State<_ReportsTab> {
     await Supabase.instance.client
         .from('users')
         .update({'banned': true}).eq('id', userId);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(AppLocalizations.of(context)!.admin_user_banned),
-      backgroundColor: AuroraTheme.auroraRed,
+    ScaffoldMessenger.of(context).showSnackBar(auroraSnackBar(
+      AppLocalizations.of(context)!.admin_user_banned,
+      icon: Icons.block_outlined,
     ));
   }
 

@@ -86,6 +86,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_notifications => 'Уведомления';
 
   @override
+  String get settings_language_section => 'ЯЗЫК';
+
+  @override
+  String get settings_notifications_section => 'УВЕДОМЛЕНИЯ';
+
+  @override
   String get settings_logout => 'Выйти';
 
   @override
@@ -1141,7 +1147,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'В кадре кто-то ещё — сделай селфи в одиночку';
 
   @override
-  String get profile_my_applications => 'Мои заявки';
+  String get profile_my_applications => 'МОИ ЗАЯВКИ';
 
   @override
   String get app_status_closed => 'ЗАВЕРШЕНО';
@@ -1659,7 +1665,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings_quiet_hours_title => 'Ночная тишина';
 
   @override
-  String get settings_quiet_active => 'Активно';
+  String get settings_quiet_active => 'Включить';
 
   @override
   String get settings_quiet_start => 'Начало';
@@ -1677,9 +1683,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings_privacy_section => 'КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ';
-
-  @override
-  String get settings_location_permission => 'Разрешение геолокации';
 
   @override
   String get settings_camera_permission => 'Разрешение камеры';

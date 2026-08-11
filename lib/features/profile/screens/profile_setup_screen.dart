@@ -13,6 +13,7 @@ import '../providers/profile_provider.dart';
 import '../../../core/services/push_token.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 // 7-step profile setup wizard
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -175,47 +176,28 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (_step == 0) {
       if (_nameController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.profile_setup_validation_name),
-            backgroundColor: AuroraTheme.auroraRed,
-          ),
-        );
+        showAuroraErrorSnack(context, l10n.profile_setup_validation_name);
         return;
       }
       if (_age == null ||
           _age! < AppConstants.minAge ||
           _age! > AppConstants.maxAge) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              l10n.profile_setup_validation_age(
-                AppConstants.minAge,
-                AppConstants.maxAge,
-              ),
-            ),
-            backgroundColor: AuroraTheme.auroraRed,
+        showAuroraErrorSnack(
+          context,
+          l10n.profile_setup_validation_age(
+            AppConstants.minAge,
+            AppConstants.maxAge,
           ),
         );
         return;
       }
     }
     if (_step == 1 && (_gender == null || _gender!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.profile_setup_validation_gender),
-          backgroundColor: AuroraTheme.auroraRed,
-        ),
-      );
+      showAuroraErrorSnack(context, l10n.profile_setup_validation_gender);
       return;
     }
     if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.profile_setup_validation_city),
-          backgroundColor: AuroraTheme.auroraRed,
-        ),
-      );
+      showAuroraErrorSnack(context, l10n.profile_setup_validation_city);
       return;
     }
     if (_step < _stepCount - 1) {
@@ -296,13 +278,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.profile_setup_error(AppLocalizations.of(context)!.error_generic),
-            ),
-            backgroundColor: AuroraTheme.auroraRed,
-          ),
+        showAuroraErrorSnack(
+          context,
+          AppLocalizations.of(context)!
+              .profile_setup_error(AppLocalizations.of(context)!.error_generic),
         );
         setState(() => _isSaving = false);
       }

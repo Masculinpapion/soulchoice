@@ -12,6 +12,7 @@ import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 // Tek sayfa davet düzenleme — sihirbaz YOK. Kullanıcı tüm alanları görür,
 // istediğini değiştirir, tek "Kaydet" ile çıkar. Süre (expires_at) burada
@@ -154,23 +155,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     final l10n = AppLocalizations.of(context)!;
     final error = _validate(l10n);
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error,
-            style: const TextStyle(
-              fontFamily: 'Manrope',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          backgroundColor: AuroraTheme.auroraRed,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(auroraSnackBar(error));
       return;
     }
 
@@ -209,12 +194,8 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.error_generic),
-            backgroundColor: AuroraTheme.auroraRed,
-          ),
-        );
+        showAuroraErrorSnack(
+            context, AppLocalizations.of(context)!.error_generic);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

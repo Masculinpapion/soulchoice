@@ -14,6 +14,7 @@ import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 // Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
 const _displayMediumStyle = TextStyle(
@@ -332,23 +333,7 @@ class _CreateInvitationScreenState
     final l10n = AppLocalizations.of(context)!;
     final error = _validateCurrentStep(l10n);
     if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error,
-            style: const TextStyle(
-              fontFamily: 'Manrope',
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          backgroundColor: AuroraTheme.auroraRed,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(auroraSnackBar(error));
       return;
     }
     if (_step < _stepCount - 1) {
@@ -480,43 +465,13 @@ class _CreateInvitationScreenState
         }
         final isLimitError =
             e is PostgrestException && e.message == 'ACTIVE_INVITATION_LIMIT';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            backgroundColor: AuroraTheme.bgDeep,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: AuroraTheme.auroraRed.withOpacity(0.4)),
-            ),
-            content: Row(
-              children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: AuroraTheme.auroraRed,
-                  size: 18,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    guard?.message ??
-                        (isLimitError
-                            ? AppLocalizations.of(
-                                context,
-                              )!.create_inv_error_active_limit
-                            : AppLocalizations.of(
-                                context,
-                              )!.create_inv_error_publish(AppLocalizations.of(context)!.error_generic)),
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
-                      fontSize: 13,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        showAuroraErrorSnack(
+          context,
+          guard?.message ??
+              (isLimitError
+                  ? AppLocalizations.of(context)!.create_inv_error_active_limit
+                  : AppLocalizations.of(context)!.create_inv_error_publish(
+                      AppLocalizations.of(context)!.error_generic)),
         );
       }
     } finally {

@@ -15,6 +15,7 @@ import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
 import '../../../core/services/native_uploader.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 // Her slot ya boş, ya yeni local bytes, ya da mevcut uzak fotoğraf
 class _PhotoEntry {
@@ -173,11 +174,10 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       setState(() => _photos[index] = _PhotoEntry.local(croppedBytes));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.photo_upload_pick_error(AppLocalizations.of(context)!.error_generic)),
-          backgroundColor: AuroraTheme.auroraRed,
-        ),
+      showAuroraErrorSnack(
+        context,
+        AppLocalizations.of(context)!
+            .photo_upload_pick_error(AppLocalizations.of(context)!.error_generic),
       );
     }
   }
@@ -348,10 +348,10 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
             .catchError((_) {});
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(AppLocalizations.of(context)!.photo_upload_error(AppLocalizations.of(context)!.error_generic)),
-              backgroundColor: AuroraTheme.auroraRed),
+        showAuroraErrorSnack(
+          context,
+          AppLocalizations.of(context)!
+              .photo_upload_error(AppLocalizations.of(context)!.error_generic),
         );
       }
     } finally {
@@ -671,14 +671,11 @@ class _CropScreenState extends State<_CropScreen> {
                 } else if (result is CropFailure) {
                   if (mounted) {
                     setState(() => _isCropping = false);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        // Ham exception metni kullanıcıya sızdırılmaz (31.07)
-                        content: Text(AppLocalizations.of(context)!
-                            .photo_crop_error(
-                                AppLocalizations.of(context)!.error_generic)),
-                        backgroundColor: AuroraTheme.auroraRed,
-                      ),
+                    // Ham exception metni kullanıcıya sızdırılmaz (31.07)
+                    showAuroraErrorSnack(
+                      context,
+                      AppLocalizations.of(context)!.photo_crop_error(
+                          AppLocalizations.of(context)!.error_generic),
                     );
                   }
                 }

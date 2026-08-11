@@ -141,7 +141,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'v${info.version} (${info.buildNumber})',
+              // Build numarası kullanıcıya gösterilmez (12.08) — teşhis için
+              // gerekirse mağaza sürümü + Crashlytics yeter.
+              'v${info.version}',
               style: const TextStyle(
                 fontFamily: 'JetBrainsMono',
                 color: Colors.white38,
@@ -627,7 +629,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const SizedBox(height: 16),
                     // Dil
                     _Section(
-                      title: l10n.settings_language,
+                      title: l10n.settings_language_section,
                       items: [
                         _SettingsTile(
                           icon: Icons.language_outlined,
@@ -640,7 +642,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     const SizedBox(height: 16),
                     // Bildirimler
                     _Section(
-                      title: l10n.settings_notifications,
+                      title: l10n.settings_notifications_section,
                       items: [
                         _SettingsTile(
                           icon: Icons.notifications_active_outlined,
@@ -654,11 +656,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     _Section(
                       title: l10n.settings_privacy_section,
                       items: [
-                        _SettingsTile(
-                          icon: Icons.location_on_outlined,
-                          label: l10n.settings_location_permission,
-                          onTap: () => openAppSettings(),
-                        ),
+                        // Konum satırı kaldırıldı (12.08): uygulama konum izni
+                        // istemiyor (manifest'te yok) — satır ölü mekanikti.
                         _SettingsTile(
                           icon: Icons.camera_alt_outlined,
                           label: l10n.settings_camera_permission,

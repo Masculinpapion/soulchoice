@@ -87,6 +87,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_notifications => 'Bildirimler';
 
   @override
+  String get settings_language_section => 'DİL';
+
+  @override
+  String get settings_notifications_section => 'BİLDİRİMLER';
+
+  @override
   String get settings_logout => 'Çıkış yap';
 
   @override
@@ -1126,7 +1132,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kadrajda başka biri var — tek başına çek';
 
   @override
-  String get profile_my_applications => 'Başvurularım';
+  String get profile_my_applications => 'BAŞVURULARIM';
 
   @override
   String get app_status_closed => 'TAMAMLANDI';
@@ -1629,7 +1635,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings_quiet_hours_title => 'Gece sessizliği';
 
   @override
-  String get settings_quiet_active => 'Aktif';
+  String get settings_quiet_active => 'Etkinleştir';
 
   @override
   String get settings_quiet_start => 'Başlangıç';
@@ -1647,9 +1653,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settings_privacy_section => 'GİZLİLİK VE GÜVENLİK';
-
-  @override
-  String get settings_location_permission => 'Konum izni';
 
   @override
   String get settings_camera_permission => 'Kamera izni';

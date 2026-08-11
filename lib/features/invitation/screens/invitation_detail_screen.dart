@@ -15,6 +15,7 @@ import '../providers/my_applications_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 import '../../../core/services/photo_focus.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
@@ -1507,11 +1508,11 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
           WidgetsBinding.instance
               .addPostFrameCallback((_) => guard.navigate(context));
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(guard?.message ??
-                  AppLocalizations.of(context)!.inv_detail_error(AppLocalizations.of(context)!.error_generic)),
-              backgroundColor: AuroraTheme.auroraRed),
+        showAuroraErrorSnack(
+          context,
+          guard?.message ??
+              AppLocalizations.of(context)!
+                  .inv_detail_error(AppLocalizations.of(context)!.error_generic),
         );
       }
     } finally {
@@ -1568,8 +1569,10 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       widget.onApplied();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.inv_detail_error(AppLocalizations.of(context)!.error_generic)), backgroundColor: AuroraTheme.auroraRed),
+        showAuroraErrorSnack(
+          context,
+          AppLocalizations.of(context)!
+              .inv_detail_error(AppLocalizations.of(context)!.error_generic),
         );
       }
     } finally {

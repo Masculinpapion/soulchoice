@@ -21,6 +21,7 @@ import '../../feed/providers/invitations_provider.dart';
 import '../../discover/providers/discover_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/services/photo_focus.dart';
+import '../../../shared/widgets/aurora_snackbar.dart';
 
 class ProfileViewScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -1305,17 +1306,16 @@ class _ActionSheet extends StatelessWidget {
         'blocked_id': targetUserId,
       });
       onBlocked?.call();
-      messenger.showSnackBar(SnackBar(
-        content: Text(l10n.profile_view_blocked_snack(
-            targetName ?? l10n.profile_view_anonymous_user, targetGender)),
-        backgroundColor: const Color(0xFF10B981),
+      messenger.showSnackBar(auroraSnackBar(
+        l10n.profile_view_blocked_snack(
+            targetName ?? l10n.profile_view_anonymous_user, targetGender),
+        accentColor: const Color(0xFF10B981),
+        icon: Icons.check_rounded,
       ));
       router.pop();
     } catch (_) {
       // 24.07 kuralı: başarısız engelleme başarı gibi kapanmasın
-      messenger.showSnackBar(SnackBar(
-          content: Text(l10n.error_generic),
-          backgroundColor: AuroraTheme.auroraRed));
+      messenger.showSnackBar(auroraSnackBar(l10n.error_generic));
     }
   }
 
@@ -1642,7 +1642,8 @@ class _MyInvitationSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.profile_inv_section, style: AuroraTheme.monoLabel),
+        // 12.08: tüm profil bölüm başlıkları tek desen (D — Rafine İmza)
+        _EditSectionHeader(label: l10n.profile_inv_section),
         const SizedBox(height: 14),
         asyncInv.when(
           loading: () => Container(

@@ -112,9 +112,11 @@ class AppTheme {
           entryModeIconColor: AppColors.textSecondary,
         ),
         snackBarTheme: SnackBarThemeData(
-          // Nötr bilgi mesajı: koyu cam + ince kenarlık. Anlam taşıyan
-          // mesajlar dolgu rengini kendi verir (yeşil=başarı, kırmızı=hata) —
-          // ev deseni bu; mor varyantlar denendi ve reddedildi (30.07).
+          // Nötr bilgi mesajı: koyu cam + ince kenarlık. 12.08 kararı: renkli
+          // DOLGU tamamen emekli — hata/başarı anlamı auroraSnackBar'ın kenar
+          // + ikon vurgusuyla verilir (shared/widgets/aurora_snackbar.dart).
+          // Mor varyantlar 30.07'de reddedilmişti; kırmızı/yeşil dolgu da
+          // 12.08'de kaldırıldı.
           backgroundColor: const Color(0xFF15111C),
           contentTextStyle:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),

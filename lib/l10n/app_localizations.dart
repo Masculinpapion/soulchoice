@@ -244,6 +244,18 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get settings_notifications;
 
+  /// No description provided for @settings_language_section.
+  ///
+  /// In en, this message translates to:
+  /// **'LANGUAGE'**
+  String get settings_language_section;
+
+  /// No description provided for @settings_notifications_section.
+  ///
+  /// In en, this message translates to:
+  /// **'NOTIFICATIONS'**
+  String get settings_notifications_section;
+
   /// No description provided for @settings_logout.
   ///
   /// In en, this message translates to:
@@ -2125,7 +2137,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_my_applications.
   ///
   /// In en, this message translates to:
-  /// **'My applications'**
+  /// **'MY APPLICATIONS'**
   String get profile_my_applications;
 
   /// No description provided for @app_status_closed.
@@ -3049,7 +3061,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_quiet_active.
   ///
   /// In en, this message translates to:
-  /// **'Active'**
+  /// **'Enable'**
   String get settings_quiet_active;
 
   /// No description provided for @settings_quiet_start.
@@ -3081,12 +3093,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PRIVACY & SECURITY'**
   String get settings_privacy_section;
-
-  /// No description provided for @settings_location_permission.
-  ///
-  /// In en, this message translates to:
-  /// **'Location permission'**
-  String get settings_location_permission;
 
   /// No description provided for @settings_camera_permission.
   ///

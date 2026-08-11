@@ -86,6 +86,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_notifications => 'Notifications';
 
   @override
+  String get settings_language_section => 'LANGUAGE';
+
+  @override
+  String get settings_notifications_section => 'NOTIFICATIONS';
+
+  @override
   String get settings_logout => 'Log out';
 
   @override
@@ -1129,7 +1135,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Someone else in frame — take it alone';
 
   @override
-  String get profile_my_applications => 'My applications';
+  String get profile_my_applications => 'MY APPLICATIONS';
 
   @override
   String get app_status_closed => 'CLOSED';
@@ -1638,7 +1644,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_quiet_hours_title => 'Night quiet hours';
 
   @override
-  String get settings_quiet_active => 'Active';
+  String get settings_quiet_active => 'Enable';
 
   @override
   String get settings_quiet_start => 'Start';
@@ -1656,9 +1662,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings_privacy_section => 'PRIVACY & SECURITY';
-
-  @override
-  String get settings_location_permission => 'Location permission';
 
   @override
   String get settings_camera_permission => 'Camera permission';

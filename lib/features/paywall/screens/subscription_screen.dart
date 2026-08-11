@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/gradient_italic_title.dart';
 
 /// Profil → Abonelik (F2-2: en fazla 2 tıkla iptal).
 /// Veri kaynağı: manage-subscription edge fn. iOS'ta ödeme başlatan aksiyonlar
@@ -189,7 +190,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final l10n = AppLocalizations.of(context)!;
     final sub = _data?['subscription'] as Map<String, dynamic>?;
     final premiumUntil = _data?['premium_until'] as String?;
-    final payments = (_data?['payments'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    // 12.08 (Mustafa kararı): yarıda bırakılan ödeme denemeleri 48 saat sonra
+    // listeden düşer — sonsuz "bekliyor" satırları geçmişi çöpe çeviriyordu.
+    // Kayıtlar DB'de durur (mutabakat etkilenmez), yalnız ekranda süzülür.
+    final payments = ((_data?['payments'] as List?)?.cast<Map<String, dynamic>>() ?? [])
+        .where((p) {
+          final s = p['status'] as String?;
+          if (s == 'paid' || s == 'refunded') return true;
+          final created =
+              DateTime.tryParse((p['created_at'] as String?) ?? '')?.toUtc();
+          return created != null &&
+              DateTime.now().toUtc().difference(created) <
+                  const Duration(hours: 48);
+        })
+        .toList();
     final status = sub?['status'] as String?;
     final premiumActive = premiumUntil != null &&
         (DateTime.tryParse(premiumUntil)?.isAfter(DateTime.now()) ?? false);
@@ -210,16 +224,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       icon: const Icon(Icons.arrow_back_ios_new,
                           color: Colors.white, size: 18),
                     ),
-                    Text(
-                      l10n.sub_title,
-                      style: const TextStyle(
-                        fontFamily: 'Fraunces',
-                        fontStyle: FontStyle.italic,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
+                    // 12.08: alt ekran başlıkları tek desen (gradyan italik)
+                    GradientItalicTitle(l10n.sub_title, fontSize: 22),
                   ],
                 ),
               ),

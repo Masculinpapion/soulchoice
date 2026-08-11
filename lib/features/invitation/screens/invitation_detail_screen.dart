@@ -1271,21 +1271,28 @@ class _AuroraCTA extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
+  // Olumlu sonuç durumları (ör. "Принято"): tıklanmaz ama gri-disabled değil,
+  // aura gradient'iyle gösterilir.
+  final bool highlight;
 
   const _AuroraCTA(
-      {required this.label, required this.onPressed, this.icon});
+      {required this.label,
+      required this.onPressed,
+      this.icon,
+      this.highlight = false});
 
   @override
   Widget build(BuildContext context) {
+    final vivid = onPressed != null || highlight;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: onPressed != null
+        gradient: vivid
             ? AuroraTheme.redBlueGradient
             : const LinearGradient(
                 colors: [Color(0xFF444444), Color(0xFF333333)]),
         borderRadius: BorderRadius.circular(100),
-        boxShadow: onPressed != null
+        boxShadow: vivid
             ? [
                 BoxShadow(
                   color: AuroraTheme.auroraRed.withOpacity(0.45),
@@ -1589,7 +1596,10 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       );
     }
     if (status == 'accepted') {
-      return _AuroraCTA(label: l10n.inv_detail_accepted_btn, onPressed: null);
+      return _AuroraCTA(
+          label: l10n.inv_detail_accepted_btn,
+          onPressed: null,
+          highlight: true);
     }
     return _AuroraCTA(
       label: _loading ? l10n.inv_detail_withdrawing : l10n.inv_detail_withdraw_btn,

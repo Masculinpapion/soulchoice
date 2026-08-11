@@ -14,6 +14,7 @@ import '../../../shared/widgets/ambient_background.dart';
 import '../providers/profile_provider.dart';
 import '../../invitation/providers/my_active_invitation_provider.dart';
 import '../../messaging/providers/matches_provider.dart';
+import '../../invitation/logic/application_card_rules.dart';
 import '../../invitation/providers/my_applications_provider.dart';
 import '../../invitation/providers/applications_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
@@ -2062,16 +2063,20 @@ class _MyApplicationsSectionState
               // NİHAİ (Mustafa 11.08): kart ömrü = ilan ömrü (kapanınca düşer,
               // provider eler). Canlı pencerede: kabul yeşil, red gri ЗАВЕРШЕНО
               // (boş umut yerine sıradakine geçsin), kalan sarı Bekliyor.
-              final (chipText, chipColor) = switch (status) {
-                'accepted' => (
+              // status→rozet eşlemesi tek kaynakta: application_card_rules.dart.
+              final (chipText, chipColor) = switch (applicationChipKind(status)) {
+                ApplicationChipKind.accepted => (
                     l10n.app_status_accepted,
                     const Color(0xFF34C759)
                   ),
-                'rejected' => (
+                ApplicationChipKind.completed => (
                     l10n.app_status_closed,
                     const Color(0xFF9A9AAB)
                   ),
-                _ => (l10n.app_status_pending, const Color(0xFFFFC02D)),
+                ApplicationChipKind.pending => (
+                    l10n.app_status_pending,
+                    const Color(0xFFFFC02D)
+                  ),
               };
               return InkWell(
                 onTap: inv == null

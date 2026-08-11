@@ -237,7 +237,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           .reversed
           .toList();
       setState(() {
-        _messages.addAll(msgs);
+        // 11.08: append değil DEĞİŞTİR — rejoin-backfill (31.07) bu fonksiyonu
+        // tekrar çağırınca sayfa üst üste binip her mesajı çiftliyordu
+        // (iOS'ta app arka plandan dönünce kanal düşüp yeniden bağlanıyor).
+        _messages
+          ..clear()
+          ..addAll(msgs);
         _hasMore = data.length == _pageSize;
         _loading = false;
         _loadError = false;
@@ -405,7 +410,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           ),
           callback: (payload) {
             final newMsg = MessageModel.fromJson(payload.newRecord);
-            if (newMsg.senderId != _currentUid && mounted) {
+            // Dedupe emniyeti: rejoin-reload ile aynı mesajın insert olayı
+            // yarışabilir — id listede varsa ekleme (11.08).
+            if (newMsg.senderId != _currentUid &&
+                mounted &&
+                !_messages.any((m) => m.id == newMsg.id)) {
               setState(() => _messages.add(newMsg));
               _scrollToBottom();
               _markRead();

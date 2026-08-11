@@ -79,9 +79,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     NotificationCleaner.clearForChat(widget.matchId);
     WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
-    _loadMessages();
+    _initLoad();
     _subscribeRealtime();
-    _loadMatchInfo();
     _loadGiftLink();
     // 24.07: cinsiyetli RU metinleri — provider soğukken 'other'a (eril)
     // düşüyordu (Natalia dialog vakası); cinsiyet bir kez yüklenip saklanır.
@@ -89,6 +88,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   String _myGender = 'other';
+  // İlk yükleme cleared_at öğrenilmeden yapılmaz — temizlenen geçmiş bir an
+  // için filtresiz görünüyordu (11.08 denetim bulgusu).
+  bool _initialLoadDone = false;
+
+  Future<void> _initLoad() async {
+    await _loadMatchInfo();
+    if (!mounted) return;
+    _initialLoadDone = true;
+    await _loadMessages();
+  }
 
   Future<void> _loadMyGender() async {
     final uid = _currentUid;
@@ -121,7 +130,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             'invitation:invitations(id, title, venue_name, event_date, category)',
           ).eq('id', widget.matchId).maybeSingle();
       if (matchRow == null || !mounted) {
-        if (mounted) setState(() => _matchInfo = {});
+        // Match yok (engellenmiş/silinmiş ya da geçersiz deep-link): input'u
+        // kilitle — kullanıcı var olmayan sohbete yazamasın (11.08 denetim).
+        if (mounted) {
+          setState(() {
+            _matchInfo = {};
+            _otherDeleted = true;
+          });
+        }
         return;
       }
 
@@ -199,9 +215,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         _myUtcOffset = (myCity?['utc_offset'] as num?)?.toInt();
         _otherUtcOffset = (otherCity?['utc_offset'] as num?)?.toInt();
       });
-      // Silme sınırı ilk kez öğrenildiyse geçmişi filtreyle yeniden yükle —
-      // aksi halde init'teki filtresiz yükleme eski mesajları gösterir.
-      if (clearedChanged && clearedAt != null) _loadMessages();
+      // Silme sınırı SONRADAN değiştiyse (başka cihazdan clear) yeniden yükle;
+      // ilk açılışta _initLoad zaten cleared_at'i bekleyip filtreli yüklüyor.
+      if (clearedChanged && clearedAt != null && _initialLoadDone) {
+        _loadMessages();
+      }
     } catch (_) {
       if (mounted) setState(() => _matchInfo = {});
     }
@@ -352,6 +370,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     );
   }
 
+  // Rejoin/resume tamamlaması: yüklü pencereyi BOZMADAN yalnız yeni mesajları
+  // ekler. Tam reload sayfalanmış geçmişi atıp okuma konumunu kaybettiriyordu
+  // ve en alta zorluyordu (11.08 denetim bulgusu).
+  Future<void> _backfillNewMessages() async {
+    if (_messages.isEmpty) return _loadMessages();
+    try {
+      final newest = _messages.last.createdAt;
+      final data = await Supabase.instance.client
+          .from('messages')
+          .select()
+          .eq('match_id', widget.matchId)
+          .gt('created_at', newest.toUtc().toIso8601String())
+          .order('created_at', ascending: true)
+          .limit(100);
+      if (!mounted) return;
+      final fresh = (data as List)
+          .map((r) => MessageModel.fromJson(r))
+          .where((m) => !_messages.any((e) => e.id == m.id))
+          .toList();
+      if (fresh.isNotEmpty) {
+        setState(() => _messages.addAll(fresh));
+        _loadReactions();
+      }
+    } catch (_) {
+      // Bir sonraki olayda/açılışta telafi edilir.
+    }
+  }
+
   Future<void> _loadMoreMessages() async {
     if (_messages.isEmpty || _loadingMore || !_hasMore) return;
     setState(() => _loadingMore = true);
@@ -393,6 +439,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           .eq('match_id', widget.matchId)
           .or('sender_id.neq.${_currentUid ?? ''},sender_id.is.null')
           .isFilter('read_at', null);
+      // Okundu yazıldıktan sonra sohbet listesi rozeti bayat kalmasın —
+      // liste realtime'ı read_at UPDATE'ini dinlemiyor (11.08 denetim).
+      if (mounted) ref.invalidate(matchesProvider);
     } catch (_) {/* sessiz */}
   }
 
@@ -463,6 +512,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
             });
           },
         )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.delete,
+          schema: 'public',
+          table: 'matches',
+          callback: (payload) {
+            // Karşı taraf engellerse match silinir — açık ekranda kullanıcı
+            // boşluğa yazmaya devam etmesin (11.08 denetim). DELETE olayında
+            // yalnız PK gelir; filtre yerine elle karşılaştırılır.
+            if (mounted && payload.oldRecord['id'] == widget.matchId) {
+              setState(() => _otherDeleted = true);
+            }
+          },
+        )
         .subscribe((status, [_]) {
           // 31.07 denetimi: kanal kopunca gelen mesajlar kalıcı kayboluyordu
           // (rejoin sonrası backfill yok). Kopma sonrası yeniden bağlanınca
@@ -475,7 +537,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               _channelDropped) {
             _channelDropped = false;
             if (mounted) {
-              _loadMessages();
+              _backfillNewMessages();
               _markRead();
             }
           }
@@ -488,7 +550,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Kilit/arka plandan dönüşte socket sessizce kopmuş olabilir — tazele.
     if (state == AppLifecycleState.resumed && mounted) {
-      _loadMessages();
+      _backfillNewMessages();
       _markRead();
     }
   }
@@ -568,14 +630,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollToBottom();
 
     try {
-      await Supabase.instance.client.from('messages').insert({
-        'match_id': widget.matchId,
-        'sender_id': _currentUid,
-        'content': text,
-      });
+      final row = await Supabase.instance.client
+          .from('messages')
+          .insert({
+            'match_id': widget.matchId,
+            'sender_id': _currentUid,
+            'content': text,
+          })
+          .select()
+          .single();
       // Push sunucudan gider: trg_notify_new_message → pg_net → send-notification
       // (26.07 madde X). İstemci push'u kaldırıldı — insert başarılıysa bu try
       // artık başka nedenle düşüp mesajı "gönderilemedi" diye silemez.
+      // Geçici id gerçek DB id'siyle değiştirilir — tmp_ id'li mesaja anında
+      // tepki eklemek FK hatasıyla sessizce kayboluyordu (11.08 denetim).
+      if (mounted) {
+        setState(() {
+          final idx = _messages.indexWhere((m) => m.id == tmpId);
+          if (idx != -1) _messages[idx] = MessageModel.fromJson(row);
+        });
+      }
     } catch (e) {
       if (mounted) {
         setState(() =>
@@ -666,6 +740,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     try {
       await Supabase.instance.client
           .rpc('hide_chat', params: {'p_match_id': widget.matchId});
+      if (!mounted) return;
       // Liste tazelenmezse gizlenen sohbet görünmeye devam eder
       // (_deleteChat'teki 29.07 fix'inin atlanmış ikizi — 31.07 denetimi).
       ref.invalidate(matchesProvider);
@@ -689,6 +764,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     try {
       await Supabase.instance.client
           .rpc('clear_chat', params: {'p_match_id': widget.matchId});
+      if (!mounted) return;
       ref.invalidate(matchesProvider);
       if (mounted) context.go('/messages');
     } catch (_) {
@@ -710,6 +786,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           .from('matches')
           .delete()
           .eq('id', widget.matchId);
+      if (!mounted) return;
       // Liste önbelleği tazelenmezse silinen sohbet satırı görünmeye devam
       // ediyor (29.07 cihaz bulgusu) — dönmeden önce invalidate.
       ref.invalidate(matchesProvider);
@@ -739,6 +816,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         }, onConflict: 'blocker_id,blocked_id'),
         client.from('matches').delete().eq('id', widget.matchId),
       ]);
+      if (!mounted) return;
       // Engellenen kişi tüm yüzeylerden anında düşsün (31.07 denetimi):
       // sohbet listesi + feed + keşfet; başvuranlar ekranı zaten yeniden yüklenir.
       ref.invalidate(matchesProvider);

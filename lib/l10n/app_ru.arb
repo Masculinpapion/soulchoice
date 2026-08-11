@@ -957,6 +957,8 @@
   "profile_inv_hours_left": "{h}ч осталось",
   "profile_inv_minutes_left": "{m}мин",
   "sub_title": "Подписка",
+  "sub_status_pending": "Ожидает оплаты",
+  "paywall_processing": "Платёж обрабатывается — премиум активируется в течение пары минут",
   "sub_status_active": "Активна",
   "sub_status_cancelled": "Отменена",
   "sub_status_past_due": "Проблема с оплатой",

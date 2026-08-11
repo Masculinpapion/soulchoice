@@ -2168,6 +2168,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sub_title => 'Abonelik';
 
   @override
+  String get sub_status_pending => 'Ödeme bekleniyor';
+
+  @override
+  String get paywall_processing =>
+      'Ödeme işleniyor — premium birkaç dakika içinde aktifleşecek';
+
+  @override
   String get sub_status_active => 'Aktif';
 
   @override

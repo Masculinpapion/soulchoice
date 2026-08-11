@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/platform_x.dart';
 import 'package:go_router/go_router.dart';
@@ -8,16 +9,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../profile/providers/profile_provider.dart';
 
-class PaywallScreen extends StatefulWidget {
+class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
 
   @override
-  State<PaywallScreen> createState() => _PaywallScreenState();
+  ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
 }
 
-class _PaywallScreenState extends State<PaywallScreen>
+class _PaywallScreenState extends ConsumerState<PaywallScreen>
     with WidgetsBindingObserver {
+  // Ödeme linki gerçekten açıldı mı — açılmadıysa resume'da ne polling
+  // ne "işleniyor" mesajı gerekir (11.08 denetim).
+  bool _checkoutLaunched = false;
   // Sunucu bayrağı gelene kadar platform varsayılanı: iOS'ta CTA gizli
   // (App Store External Purchase entitlement onayına kadar), Android'de açık.
   late String _mode = isIOSDevice ? 'hidden' : 'link';
@@ -58,6 +63,7 @@ class _PaywallScreenState extends State<PaywallScreen>
   }
 
   Future<void> _checkPremiumAfterReturn() async {
+    if (!_checkoutLaunched) return;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
     // Webhook redirect'ten birkaç saniye sonra işleyebilir → 2 deneme
@@ -74,6 +80,9 @@ class _PaywallScreenState extends State<PaywallScreen>
                 (DateTime.tryParse(until)?.isAfter(DateTime.now()) ?? false));
         if (active) {
           if (!mounted) return;
+          _checkoutLaunched = false;
+          // Premium'u gösteren tüm yüzeyler tazelensin (11.08 denetim)
+          ref.invalidate(userProfileProvider(uid));
           _snack(AppLocalizations.of(context)!.paywall_premium_active);
           if (context.canPop()) context.pop();
           return;
@@ -81,6 +90,11 @@ class _PaywallScreenState extends State<PaywallScreen>
       } catch (_) {}
       await Future.delayed(const Duration(seconds: 4));
       if (!mounted) return;
+    }
+    // Webhook henüz işlemedi: kullanıcı sessizlikte bırakılmaz, tekrar
+    // ödeme denemesin (11.08 denetim).
+    if (mounted) {
+      _snack(AppLocalizations.of(context)!.paywall_processing);
     }
   }
 
@@ -143,6 +157,7 @@ class _PaywallScreenState extends State<PaywallScreen>
       mode: LaunchMode.externalApplication,
     );
     if (!launched) throw Exception('launch_failed');
+    _checkoutLaunched = true;
   }
 
   // KARAR 1: tek seferlik 30 gün — mevcut F1 akışı aynen

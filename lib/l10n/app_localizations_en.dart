@@ -2178,6 +2178,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sub_title => 'Subscription';
 
   @override
+  String get sub_status_pending => 'Awaiting payment';
+
+  @override
+  String get paywall_processing =>
+      'Payment is processing — premium will activate within a couple of minutes';
+
+  @override
   String get sub_status_active => 'Active';
 
   @override

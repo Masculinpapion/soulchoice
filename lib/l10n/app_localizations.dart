@@ -3976,6 +3976,18 @@ abstract class AppLocalizations {
   /// **'Subscription'**
   String get sub_title;
 
+  /// No description provided for @sub_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get sub_status_pending;
+
+  /// No description provided for @paywall_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment is processing — premium will activate within a couple of minutes'**
+  String get paywall_processing;
+
   /// No description provided for @sub_status_active.
   ///
   /// In en, this message translates to:

@@ -2222,6 +2222,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sub_title => 'Подписка';
 
   @override
+  String get sub_status_pending => 'Ожидает оплаты';
+
+  @override
+  String get paywall_processing =>
+      'Платёж обрабатывается — премиум активируется в течение пары минут';
+
+  @override
   String get sub_status_active => 'Активна';
 
   @override

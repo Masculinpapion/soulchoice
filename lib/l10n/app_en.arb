@@ -1000,6 +1000,8 @@
     }
   },
   "sub_title": "Subscription",
+  "sub_status_pending": "Awaiting payment",
+  "paywall_processing": "Payment is processing — premium will activate within a couple of minutes",
   "sub_status_active": "Active",
   "sub_status_cancelled": "Cancelled",
   "sub_status_past_due": "Payment issue",

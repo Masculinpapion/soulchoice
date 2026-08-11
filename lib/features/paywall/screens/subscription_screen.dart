@@ -308,7 +308,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             const SizedBox(height: 16),
             _GradientButton(
               label: l10n.sub_get_premium,
-              onTap: () => context.push('/paywall'),
+              // Paywall'dan dönüşte ekran bayat kalmasın (11.08 denetim)
+              onTap: () => context.push('/paywall').then((_) => _refresh()),
             ),
           ],
           const SizedBox(height: 4),
@@ -326,15 +327,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final isActive = status == 'active';
     final isPastDue = status == 'past_due';
     final isCancelled = status == 'cancelled';
+    // 11.08 denetim: pending_binding hiçbir dala düşmeyip yanlışlıkla
+    // "İptal edildi" görünüyordu ve hiçbir aksiyon butonu kalmıyordu.
+    final isPending = status == 'pending_binding';
 
     final statusLabel = isActive
         ? l10n.sub_status_active
         : isPastDue
             ? l10n.sub_status_past_due
-            : l10n.sub_status_cancelled;
+            : isPending
+                ? l10n.sub_status_pending
+                : l10n.sub_status_cancelled;
     final statusColor = isActive
         ? const Color(0xFF6EE7A0)
-        : isPastDue
+        : (isPastDue || isPending)
             ? const Color(0xFFFFB020)
             : AuroraTheme.textMuted;
 
@@ -406,10 +412,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               isLoading: _busy,
               onTap: () => _action('resume'),
             )
-          else if (isCancelled && !premiumActive && _mode == 'link')
+          else if ((isPending || (isCancelled && !premiumActive)) &&
+              _mode == 'link')
             _GradientButton(
               label: l10n.sub_get_premium,
-              onTap: () => context.push('/paywall'),
+              onTap: () => context.push('/paywall').then((_) => _refresh()),
             ),
         ],
       ),

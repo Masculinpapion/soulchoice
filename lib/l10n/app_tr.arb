@@ -957,6 +957,8 @@
   "profile_inv_hours_left": "{h}sa kaldı",
   "profile_inv_minutes_left": "{m}dk",
   "sub_title": "Abonelik",
+  "sub_status_pending": "Ödeme bekleniyor",
+  "paywall_processing": "Ödeme işleniyor — premium birkaç dakika içinde aktifleşecek",
   "sub_status_active": "Aktif",
   "sub_status_cancelled": "İptal edildi",
   "sub_status_past_due": "Ödeme sorunu",

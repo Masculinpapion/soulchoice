@@ -1259,14 +1259,6 @@ class InvitationCard extends StatelessWidget {
     this.appliedByMe = false,
   });
 
-  String _formatTimer(Duration d) {
-    if (d.isNegative) return '00:00:00';
-    final h = d.inHours.toString().padLeft(2, '0');
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$h:$m:$s';
-  }
-
   String _metaLabel(AppLocalizations l10n, DateTime dt) {
     final days = [
       l10n.inv_detail_weekday_mon_full.toUpperCase(),
@@ -1471,15 +1463,7 @@ class InvitationCard extends StatelessWidget {
                             children: [
                               const _PulsingDot(),
                               const SizedBox(width: 5),
-                              Text(
-                                _formatTimer(timeRemaining),
-                                style: TextStyle(
-                                  fontFamily: 'JetBrainsMono',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white.withOpacity(0.85),
-                                ),
-                              ),
+                              _TickingTimer(remaining: timeRemaining),
                             ],
                           ),
                         ),
@@ -1988,6 +1972,64 @@ class _CardFallbackGradient extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Pulsing Dot — timer pill için animasyonlu kırmızı nokta
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Saniyede bir işleyen geri sayım — rozet saniye gösterip 30 sn'lik feed
+// yenilemesine takılı kalıyordu (11.08); deadline sabitlenir, tik lokaldir.
+class _TickingTimer extends StatefulWidget {
+  final Duration remaining;
+  const _TickingTimer({required this.remaining});
+
+  @override
+  State<_TickingTimer> createState() => _TickingTimerState();
+}
+
+class _TickingTimerState extends State<_TickingTimer> {
+  late DateTime _deadline;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _sync();
+    _timer = Timer.periodic(
+        const Duration(seconds: 1), (_) => setState(() {}));
+  }
+
+  void _sync() => _deadline = DateTime.now().add(widget.remaining);
+
+  @override
+  void didUpdateWidget(_TickingTimer old) {
+    super.didUpdateWidget(old);
+    if (old.remaining != widget.remaining) _sync();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _fmt(Duration d) {
+    if (d.isNegative) return '00:00:00';
+    final h = d.inHours.toString().padLeft(2, '0');
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$h:$m:$s';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _fmt(_deadline.difference(DateTime.now())),
+      style: TextStyle(
+        fontFamily: 'JetBrainsMono',
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: Colors.white.withOpacity(0.85),
+      ),
+    );
+  }
+}
 
 class _PulsingDot extends StatefulWidget {
   const _PulsingDot();

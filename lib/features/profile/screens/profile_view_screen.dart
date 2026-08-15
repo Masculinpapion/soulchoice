@@ -1693,7 +1693,6 @@ class _MyInvitationSection extends ConsumerWidget {
     Map<String, dynamic> inv,
   ) {
     final id = inv['id'] as String;
-            final isRequest = (inv['flow_type'] as String?) == 'request';
             final count = inv['application_count'] as int? ?? 0;
             final photoUrl = inv['owner_photo_url'] as String?;
             final categoryKey = inv['category'] as String?;
@@ -1782,14 +1781,18 @@ class _MyInvitationSection extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                Icon(
-                                  isRequest
-                                      ? Icons.explore_rounded
-                                      : Icons.wine_bar_rounded,
-                                  size: 13,
-                                  color: isRequest
-                                      ? const Color(0xFF2D7FFF)
-                                      : const Color(0xFFFF2D55),
+                                // Kategori ikonu — kartın kendi kategorisi
+                                // (sabit şarap/pusula yerine, 15.08 kararı)
+                                Text(
+                                  InvitationCategory.values
+                                      .firstWhere(
+                                        (c) => c.name == categoryKey,
+                                        orElse: () =>
+                                            InvitationCategory.food,
+                                      )
+                                      .emoji,
+                                  style: const TextStyle(
+                                      fontSize: 12, height: 1.0),
                                 ),
                               ],
                             ),

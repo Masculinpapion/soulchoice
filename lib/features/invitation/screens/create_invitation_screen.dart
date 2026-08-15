@@ -101,14 +101,14 @@ class _CreateInvitationScreenState
   // Hediye teslimi için sabit "etkinlik saati" doğaya aykırı → tarih opsiyonel
   bool get _isGift => _category == InvitationCategory.gift;
 
-  int get _stepCount => _isTravel ? 6 : 7;
+  int get _stepCount => 7;
 
   List<String> _getSteps(AppLocalizations l10n) => [
     l10n.create_inv_step_flow_type,
     l10n.create_inv_step_category,
     l10n.create_inv_step_title,
     l10n.create_inv_step_description,
-    if (!_isTravel) l10n.create_inv_step_venue,
+    l10n.create_inv_step_venue,
     l10n.create_inv_step_datetime,
     l10n.create_inv_step_duration,
   ];
@@ -133,12 +133,11 @@ class _CreateInvitationScreenState
       category: _category,
       giftUrlController: _giftUrlController,
     ),
-    if (!_isTravel)
-      _StepVenue(
-        controller: _venueController,
-        category: _category,
-        flowType: _flowType,
-      ),
+    _StepVenue(
+      controller: _venueController,
+      category: _category,
+      flowType: _flowType,
+    ),
     _StepDateTime(
       date: _eventDate,
       onSelected: (d) => setState(() => _eventDate = d),
@@ -312,14 +311,12 @@ class _CreateInvitationScreenState
           }
         }
       case 4:
-        if (_isTravel) {
-          if (_eventDate == null) return l10n.create_inv_validation_date;
-        } else if (_venueController.text.trim().isEmpty) {
+        if (_venueController.text.trim().isEmpty) {
           return l10n.create_inv_validation_venue;
         }
       case 5:
         // Hediye'de tarih opsiyonel (teslim buluşması için sabit saat gerekmez)
-        if (!_isTravel && !_isGift && _eventDate == null)
+        if (!_isGift && _eventDate == null)
           return l10n.create_inv_validation_date;
     }
     return null;
@@ -398,7 +395,7 @@ class _CreateInvitationScreenState
     setState(() => _isPublishing = true);
     try {
       final client = Supabase.instance.client;
-      final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
+      final venueFormatted = (_venueController.text.trim().isEmpty)
           ? null
           : _venueController.text
                 .trim()

@@ -113,7 +113,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     if (_isTravel && _descriptionController.text.trim().isEmpty) {
       return l10n.create_inv_validation_description_travel;
     }
-    if (!_isTravel && _venueController.text.trim().isEmpty) {
+    if (_venueController.text.trim().isEmpty) {
       return l10n.create_inv_validation_venue;
     }
     if (_eventDate == null) return l10n.create_inv_validation_date;
@@ -162,7 +162,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     setState(() => _isSaving = true);
     try {
       final client = Supabase.instance.client;
-      final venueFormatted = (_isTravel || _venueController.text.trim().isEmpty)
+      final venueFormatted = (_venueController.text.trim().isEmpty)
           ? null
           : _venueController.text
                 .trim()
@@ -406,8 +406,8 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // ── Mekân (travel'da yok) ──
-                      if (!_isTravel) ...[
+                      // ── Mekân — her kategoride (travel'da destinasyon) ──
+                      ...[
                         _sectionLabel(l10n.create_inv_step_venue),
                         TextField(
                           controller: _venueController,

@@ -49,3 +49,29 @@ ApplicationChipKind applicationChipKind(String applicationStatus) =>
       'rejected' => ApplicationChipKind.completed,
       _ => ApplicationChipKind.pending,
     };
+
+/// Panodaki kart SIRASI (Mustafa 16.08): önce yeşil Kabul (aksiyon: sohbete
+/// geç), sonra sarı Bekliyor, en sonda gri ЗАВЕРШЕНО; aynı grup içinde
+/// yeniden→eskiye (created_at DESC — yeniden başvuruda DB trigger'ı
+/// created_at'i sıfırlar: 20260816_reapply_resets_created_at.sql).
+int applicationCardSortRank(String applicationStatus) =>
+    switch (applicationChipKind(applicationStatus)) {
+      ApplicationChipKind.accepted => 0,
+      ApplicationChipKind.pending => 1,
+      ApplicationChipKind.completed => 2,
+    };
+
+/// Sıralayıcı: rank ASC, sonra createdAt DESC (null en sona).
+int compareMyApplicationCards({
+  required String statusA,
+  required DateTime? createdA,
+  required String statusB,
+  required DateTime? createdB,
+}) {
+  final r = applicationCardSortRank(statusA).compareTo(applicationCardSortRank(statusB));
+  if (r != 0) return r;
+  if (createdA == null && createdB == null) return 0;
+  if (createdA == null) return 1;
+  if (createdB == null) return -1;
+  return createdB.compareTo(createdA);
+}

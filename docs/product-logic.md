@@ -65,6 +65,7 @@ active (6/12/24/48 saat — sahibi seçer)
 - `active` boyunca başvuru alır VE sahibi kabul verebilir; `selecting`'de yeni başvuru kapanır, seçim sürer. ✅
 - **Kapanan (`closed`) ilanlarda seçilmeyen bekleyen başvurular saatlik temizlikte `expired` yapılır; detayda "seçim yapılmadı" görünür; başvurana bildirim GÖNDERİLMEZ — bilinçli sessizlik** (reddedilme hissi yaratmamak için). ✅ 15.07
 - **NİHAİ KARAR (Mustafa 11.08 gece): Profil "Başvurularım" = ANLIK DURUM PANOSU; kart ömrü = ilan ömrü.** İlan canlıyken (`active`/`selecting`): "Beklemede" (sarı), "Kabul edildi" (yeşil), **reddedilen gri "ЗАВЕРШЕНО/TAMAMLANDI"** — açık "reddedildin" yazmaz ama kullanıcı boş yere umutlanmayıp sıradakine geçer; detay ekranı pasif butonu da aynı etiketi gösterir. **İlan kapanınca kart durumu ne olursa olsun düşer — kabul dahil** (ilişki Mesajlar'da). `withdrawn`/`expired` gizli. 30 gün saklama fikri aynı gece İPTAL — cleanup cron 15.07 orijinali (kapalı+match'siz hemen silinir). ✅ 11.08
+- **Pano sırası (Mustafa 16.08): Kabul → Bekliyor → ЗАВЕРШЕНО; grup içinde yeniden→eskiye.** Yeniden başvuru (`withdrawn→pending`) = YENİ başvuru: DB trigger `trg_reset_created_at_on_reapply` `created_at`'i sıfırlar (`20260816_reapply_resets_created_at.sql`); sahip tarafındaki kuyrukta da (created_at ASC) yeniden başvuran sona gider. Kural kodu: `application_card_rules.dart` (`compareMyApplicationCards`, testli). ✅ 16.08
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
 
 ## 5. Limitler, filtreler ve Premium

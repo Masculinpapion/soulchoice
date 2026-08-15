@@ -99,4 +99,41 @@ void main() {
       expect(applicationChipKind('selected'), ApplicationChipKind.pending);
     });
   });
+
+  group('compareMyApplicationCards — pano sırası (Mustafa 16.08)', () {
+    final t1 = DateTime.utc(2026, 8, 16, 10);
+    final t2 = DateTime.utc(2026, 8, 16, 12); // daha yeni
+
+    test('Kabul her zaman Bekliyor\'un önünde (tarihi eski olsa bile)', () {
+      expect(
+        compareMyApplicationCards(
+            statusA: 'accepted', createdA: t1, statusB: 'pending', createdB: t2),
+        lessThan(0),
+      );
+    });
+
+    test('ЗАВЕРШЕНО (rejected) her zaman en sonda', () {
+      expect(
+        compareMyApplicationCards(
+            statusA: 'rejected', createdA: t2, statusB: 'pending', createdB: t1),
+        greaterThan(0),
+      );
+    });
+
+    test('aynı grupta yeni başvuru önde (created_at DESC)', () {
+      expect(
+        compareMyApplicationCards(
+            statusA: 'pending', createdA: t2, statusB: 'pending', createdB: t1),
+        lessThan(0),
+      );
+    });
+
+    test('created_at null olan grup içinde en sona düşer', () {
+      expect(
+        compareMyApplicationCards(
+            statusA: 'pending', createdA: null, statusB: 'pending', createdB: t1),
+        greaterThan(0),
+      );
+    });
+  });
 }

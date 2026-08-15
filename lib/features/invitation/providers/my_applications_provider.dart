@@ -33,5 +33,13 @@ final myApplicationsListProvider =
           invitationStatus: inv?['status'] as String?,
         );
       })
-      .toList();
+      .toList()
+    // Sıra (16.08): Kabul → Bekliyor → ЗАВЕРШЕНО; grup içinde yeniden→eskiye.
+    // Kural tek kaynakta: application_card_rules.dart (test edilir).
+    ..sort((a, b) => compareMyApplicationCards(
+          statusA: a['status'] as String? ?? 'pending',
+          createdA: DateTime.tryParse(a['created_at'] as String? ?? ''),
+          statusB: b['status'] as String? ?? 'pending',
+          createdB: DateTime.tryParse(b['created_at'] as String? ?? ''),
+        ));
 });

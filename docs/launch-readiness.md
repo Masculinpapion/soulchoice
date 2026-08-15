@@ -1,7 +1,14 @@
 # SoulChoice — LAUNCH READINESS TABLOSU
 
 > Tek kaynak. Her düzeltme sonrası güncellenir. Skorlar denetim kanıtına dayanır, pohpohlama yok.
-> **Son güncelleme: 15.07.2026 — Altyapı eşiği de GEÇİLDİ (off-site immutable + restore provası); 5/7 eşikte, genel %92**
+> **Son güncelleme: 16.08.2026 — 7/7 kategori EŞİKTE, genel ≈%94. Teknik/ürün tarafı LAUNCH-HAZIR; kalan kapılar mağazalarda (Apple review, Play tester sayısı).**
+
+## MAĞAZA DURUMU (16.08.2026)
+| Mağaza | Durum | Bizde kalan iş |
+|---|---|---|
+| **RuStore** | ✅ **YAYINDA** — 1.0.0(708), onay 14.08, 5,0★ | Yok (sonraki build yalnız Mustafa komutuyla) |
+| **Google Play** | 🟢 Kapalı test CANLI (724); tester 2/12 | 12 tester → 14 gün sayacı → üretim başvurusu |
+| **App Store** | 🟡 "Waiting for Review" (resubmit 15.08 03:02, 4.3(b) sonrası 14.08 görüşme + yeni vitrin) | Demo sahneyi canlı tut (uzatıldı → 20.08 14:37 MSK) |
 
 ## LAUNCH ONAY KURALI
 Genel yüzde bilgi amaçlıdır. **Asıl kapı: HER kategori kendi eşiğini geçmeli (AND).**
@@ -14,12 +21,12 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 | 2 | **Güvenlik** | 92% | **92%** | ✅ | Hacker affetmez; kullanıcı+yasal risk |
 | 3 | **Para yolu** | 93% | **92%** | ✅ | Para hatası = itibar + iade felaketi |
 | 4 | Ölçeklenme/Altyapı | 72% | 72% | ✅ | Tek sunucu MVP tamam, ama veri kaybı/kör uçuş olmaz |
-| 5 | UX dayanıklılık | 83% | 85% | 🟡 -2 | İlk izlenim; beyaz ekran = silme |
-| 6 | **Store hazırlık** | 86% | **90%** | 🟡 -4 | Apple/Google reddi = launch yok |
+| 5 | UX dayanıklılık | 85% | 85% | ✅ | İlk izlenim; beyaz ekran = silme |
+| 6 | **Store hazırlık** | 91% | **90%** | ✅ | Apple/Google reddi = launch yok (RuStore yayında; Apple kararı dış kapı) |
 | 7 | Ürün olgunluk | 75% | 75% | ✅ | "Yeterince iyi" launch olur; mükemmel şart değil |
 
-**GENEL LAUNCH-READINESS: %92** (ağırlıklı: güvenlik+para+store çift ağırlık)
-**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → bugün **5/7 hazır** (Kod, Para, Güvenlik, Ürün, Altyapı). Kalan: UX -2, Store -4
+**GENEL LAUNCH-READINESS: ≈%94** (ağırlıklı: güvenlik+para+store çift ağırlık; bilgi amaçlı)
+**LAUNCH-ONAY EŞİĞİ: 7/7 kategori yeşil** → **16.08: 7/7 HAZIR.** Kalan engeller bizim kontrolümüz dışında: Apple review kararı + Play 12-tester/14-gün kuralı. Post-launch backlog: OTP cold-start 500 + istemci timeout, onboarding fark-anlatımı, retention nudge.
 
 ---
 
@@ -43,17 +50,17 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 - [x] İzleme/alarm (+6) — **KAPANDI 14.07** (Telegram bot `soulchoice_alerts_bot`: sunucu-içi 15dk disk/yedek/web/functions/container + 08:05 UTC billing denetimi, `/root/monitoring/`; dış-uptime GitHub Actions 10dk `soulchoice-ops/uptime.yml`; token GPG'li `soulchoice-secrets` + GHA secrets, git'te düz metin yok; test alarmı cihazda kanıtlı)
 - [x] Restore provası (+2) — **KAPANDI 15.07**: ayrı test container'da bucket'tan indir→GPG çöz→doğrula. DB dump canlıyla BİREBİR eşleşti (users99/inv65/matches3), storage tar xattr (content-type/cache-control) korundu. Ops panel Veri & Yedek sekmesi gerçek veriyle (agent /api/backup/stats + last-restore-drill damgası) — off-site AKTİF + restore yeşil. Alarm off-site yükleme başarısızlığını kapsıyor (checks.sh offsite kontrolü).
 
-### 🟡 UX dayanıklılık (83% → hedef 85%, açık -2)
+### ✅ UX dayanıklılık (85% → hedef 85% — EŞİK GEÇİLDİ 27.07)
 - [x] Offline soğuk açılış — splash sonsuz takılıyordu (+6) — **KAPANDI 13.07** (timeout+fallback, offline'da feed'e geçiyor, online regresyon temiz)
-- [ ] Yavaş-ağ her ekran + boş cevap durumu — derin test sürüyor (+2)
+- [x] Yavaş-ağ her ekran + boş cevap durumu (+2) — **KAPANDI 27.07**: TAM E2E turu Android (S24) + iOS (10/10 cihaz kanıtlı); keşfet boş-durum yenileme, Seç kurtarma, deep-link düzeltmeleri `d317f96`+`5cfe1cc`; 01-02.08 test günü 6 düzeltme `800a3f5`; klavye-CTA standardizasyonu 10 ekran. Post-launch backlog: OTP cold-start 500 + istemci timeout (memory'de).
 - [x] Uç durumlar (+5) — **KAPANDI 15.07**: 'Silinen kullanıcı' modeli (karşı taraf sohbeti korur, S24 cihaz kanıtlı) + dolmuş davette pending→expired + 'seçim yapılmadı' gösterimi + premium grace-period zaten sağlamdı
 - [x] Geri-dönüşsüz anlar (+2) — **KAPANDI 15.07**: hesap silme (onaylı ekran + artık gerçekten çalışıyor), engelleme (onay dialoglu), sohbet 'sil'→tek-taraflı 'gizle' (WhatsApp standardı, net onay metni, geri-dönüşü var)
 
-### 🟡 Store hazırlık (86% → hedef 90%, açık -4)
+### ✅ Store hazırlık (91% → hedef 90% — EŞİK GEÇİLDİ 16.07; RuStore YAYINDA 14.08)
 - [x] Store incelemeci demo girişi (+1) — **KAPANDI 15.07** (+7 000 000-00-01/1234, tahsis-edilemez blok, ALLOW_TEST_OTP kapılı, docs/store-review-demo.md; içinde örnek sohbet fikstürü)
 - [x] Android WRITE_EXTERNAL_STORAGE gereksiz izin (+2) — **KAPANDI 14.07** (manifest'ten kaldırıldı, commit b1fc88188, iki CI yeşil; hiçbir paket kullanmıyordu)
-- [ ] Store ekran görüntüleri (C) — cihazda çekilecek (+3)
-- [ ] Store metinleri (D) onayı (+2)
+- [x] Store ekran görüntüleri (C) (+3) — **KAPANDI 16.07** (21 kare RU/TR/EN `FINAL_SPEC/screenshots/`, tek tek Mustafa onaylı) + iOS 6.9" premium set 15.08 (7 kare, ASC'de)
+- [x] Store metinleri (D) (+2) — **KAPANDI 16.07** (`FINAL_SPEC/store_listing.md`, fiyat cümleleri çıkarıldı — 3.1.1); RuStore 708 yayında, Play kapalı test 724, ASC metinleri kayıtlı
 
 ### ✅ Ürün olgunluk (75% → hedef 75% — EŞİK GEÇİLDİ 15.07)
 - [x] Ürün-mantığı denetimi (+3) — **15.07**: docs/product-logic.md TEK KAYNAK (v1.4); kabul akışı kırığı (RLS sessiz yutma — başvuran seçildiğini HİÇ öğrenemiyordu) + kabul bildirimi + başvuru kurallarının sunucuda zorlanması (premium bypass kapandı) + yaş filtresi bağlandı + çift yönlü engelleme + buluşma anketi/arşiv canlandı + mark-read düzeldi
@@ -63,6 +70,12 @@ Sebep: güvenlik %89 "neredeyse" değildir; hacker o %11'den girer.
 ---
 
 ## KAPANIŞ GÜNLÜĞÜ
+- 16.08.2026 — **7/7 eşik.** Dış-uptime yanlış alarmı kök sebepli kapandı (DDoS-Guard↔Azure; iki katmanlı probe `soulchoice-ops` b5158f8); Başvurularım sırası + yeniden-başvuru created_at trigger'ı `15aef27` (prod'da); Apple demo sahnesi 20.08'e uzatıldı.
+- 15.08.2026 — Play kapalı test 724 yayında; App Store resubmit (yeni vitrin + ASC cevabı + demo sahne); RuStore 708 5,0★.
+- 14.08.2026 — **RuStore 1.0.0(708) ONAYLANDI, YAYINDA.** Apple 4.3(b) telefon görüşmesi (RU) yapıldı, resubmit yolu açık.
+- 01.08.2026 — İlk sistematik güvenlik denetimi (40+ bulgu) + backlog KAPANDI; iade akışı canlı; CI test kapısı.
+- 26-27.07.2026 — TAM E2E Android+iOS kapandı (cihaz kanıtlı) → UX %83→%85 ✅ EŞİK.
+- 16.07.2026 — Store kareleri (C) + metinleri (D) onaylandı → Store %86→%91 ✅ EŞİK.
 - 01.08.2026 — **31.07 denetim backlog'u kapandı + otomatik test kapısı kuruldu:** iade akışı CANLI (E2E kanıtlı — test gerçek bir kısıt hatasını yakaladı: 'cancelled' çift L), billing-cron 60sn sınırı, fiyat tek kaynak, photoFocus RPC, CI keystore secret, RLS baseline (63 politika). `Tests` workflow: 12 unit + DB sözleşme + 13 yüzeyli güvenlik smoke (kanaryalı), her push + günlük cron. iOS paywall Seçenek A metni (Mustafa onayı).
 - 26.07.2026 — **iOS TAM E2E turu KAPANDI (10/10 adım cihaz kanıtlı):** sıfırdan kayıt→selfie onay push→bildirim bataryası 4/4→davet/başvuru/seçim/çift yönlü chat+push (kilit ekranı + deep-link dahil)→GDPR silme (sıfır kalıntı)→gerçek SMS ile dönüş. 4 bulgu fix'i `d317f96`: keşfet boş-durum yenileme, Seç ağ-kopuşu kurtarma, emoji rozet iOS hizası (yeni TestFlight build'inde görsel teyit bekliyor), new_application push deep-link. Not: Natalia Wi-Fi'ında aralıklı APNs gecikmesi görüldü (uygulama dışı, LTE'de sorunsuz). Artık iki platformda da çalışmayan kullanıcı-görünür mekanizma yok.
 - 15.07.2026 — Off-site immutable yedek (Yandex Object Lock 14g) + restore provası (DB canlıyla eşleşti + xattr korundu) + ops panel Veri&Yedek gerçek veri + alarm off-site kapsama → Altyapı %61→%72 ✅ EŞİK, genel %89→%92

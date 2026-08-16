@@ -54,7 +54,7 @@ Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında ka
 ## 4. İlan yaşam döngüsü ve süreler
 
 ```
-active (6/12/24/48 saat — sahibi seçer)
+active (6/12/24/48 saat — sahibi seçer; ASLA plandan sonra bitmez, bkz. süre kuralı)
   └─ süre dolunca → selecting (+48 saat sabit seçim penceresi)
         └─ pencere dolunca → closed
               └─ match'i YOKSA saatlik temizlikte kalıcı silinir (başvurularıyla)
@@ -67,6 +67,8 @@ active (6/12/24/48 saat — sahibi seçer)
 - **NİHAİ KARAR (Mustafa 11.08 gece): Profil "Başvurularım" = ANLIK DURUM PANOSU; kart ömrü = ilan ömrü.** İlan canlıyken (`active`/`selecting`): "Beklemede" (sarı), "Kabul edildi" (yeşil), **reddedilen gri "ЗАВЕРШЕНО/TAMAMLANDI"** — açık "reddedildin" yazmaz ama kullanıcı boş yere umutlanmayıp sıradakine geçer; detay ekranı pasif butonu da aynı etiketi gösterir. **İlan kapanınca kart durumu ne olursa olsun düşer — kabul dahil** (ilişki Mesajlar'da). `withdrawn`/`expired` gizli. 30 gün saklama fikri aynı gece İPTAL — cleanup cron 15.07 orijinali (kapalı+match'siz hemen silinir). ✅ 11.08
 - **Pano sırası (Mustafa 16.08): Kabul → Bekliyor → ЗАВЕРШЕНО; grup içinde yeniden→eskiye.** Yeniden başvuru (`withdrawn→pending`) = YENİ başvuru: DB trigger `trg_reset_created_at_on_reapply` `created_at`'i sıfırlar (`20260816_reapply_resets_created_at.sql`); sahip tarafındaki kuyrukta da (created_at ASC) yeniden başvuran sona gider. Kural kodu: `application_card_rules.dart` (`compareMyApplicationCards`, testli). ✅ 16.08
 - `event_date` (buluşmanın gerçek tarihi) opsiyoneldir, en erken +2 saat; sohbette etkinlik rozeti olur. ✅
+- **Süre kuralı (Mustafa 17.08): başvurular her zaman plandan ÖNCE kapanır — `expires_at ≤ event_date − 1 saat`.** Süre adımında plandan sonra biten seçenekler soluk ("Plandan sonra biter"); tıklanınca seçilmez, uyarı: "Bu süre planınla uyuşmuyor — planın N saat sonra. Daha kısa bir süre seç." En uzun seçenek bile aşıyorsa dinamik **"Plana kadar (N sa)"** kartı gelir ve yakın planda önseçilidir (aynı-gün planlar böylece ilk kez tutarlı). Tarih değişince seçim plana uydurulur. DB güvenlik ağı: `trg_clamp_expires_before_event` (`20260817_expires_before_event.sql`) sessiz kırpar. Hediye (tarihsiz) muaf. ✅ 17.08 (`64d931d`)
+- **Zorunlu alanlar (Mustafa 17.08): boş/yarım kart yok** — her adımın "İleri"si o adımı doğrular: kategori, başlık, **açıklama (her kategoride ≥10 karakter; seyahatte destinasyon)**, mekan, tarih (hediyede opsiyonel), plana uyan süre. Düzenleme ekranı aynı kuralları uygular. ✅ 17.08
 
 ## 5. Limitler, filtreler ve Premium
 

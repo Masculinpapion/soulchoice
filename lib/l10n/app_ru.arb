@@ -204,6 +204,7 @@
   "create_inv_venue_ph_culture": "Название места",
   "create_inv_venue_ph_travel": "Город или страна",
   "create_inv_venue_ph_gift": "Где встретимся?",
+  "create_inv_validation_description": "Опиши план одним предложением — не меньше 10 символов",
   "create_inv_validation_description_travel": "Напиши, куда хочешь поехать",
   "create_inv_venue_question_gift_invite": "Где хочешь передать подарок?",
   "create_inv_venue_question_gift_request": "Где хочешь получить подарок?",

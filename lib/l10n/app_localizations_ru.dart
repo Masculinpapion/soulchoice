@@ -527,6 +527,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Где встретимся?';
 
   @override
+  String get create_inv_validation_description =>
+      'Опиши план одним предложением — не меньше 10 символов';
+
+  @override
   String get create_inv_validation_description_travel =>
       'Напиши, куда хочешь поехать';
 

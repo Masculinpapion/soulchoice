@@ -338,6 +338,10 @@ class _CreateInvitationScreenState
         if (_isTravel && _descriptionController.text.trim().isEmpty) {
           return l10n.create_inv_validation_description_travel;
         }
+        // Boş açıklamalı kart yok (Mustafa kararı 17.08): her kategoride en az 10 karakter
+        if (_descriptionController.text.trim().length < 10) {
+          return l10n.create_inv_validation_description;
+        }
         // Hediye ürün alanı açıklama adımında: link ise beyaz liste zorunlu,
         // düz metin (ürün adı) serbest
         if (_isGift) {

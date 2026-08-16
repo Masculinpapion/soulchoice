@@ -1072,6 +1072,12 @@ abstract class AppLocalizations {
   /// **'Where shall we meet?'**
   String get create_inv_venue_ph_gift;
 
+  /// No description provided for @create_inv_validation_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your plan in a sentence — at least 10 characters'**
+  String get create_inv_validation_description;
+
   /// No description provided for @create_inv_validation_description_travel.
   ///
   /// In en, this message translates to:

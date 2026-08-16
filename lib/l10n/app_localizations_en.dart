@@ -528,6 +528,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Where shall we meet?';
 
   @override
+  String get create_inv_validation_description =>
+      'Describe your plan in a sentence — at least 10 characters';
+
+  @override
   String get create_inv_validation_description_travel =>
       'Please write where you want to go';
 

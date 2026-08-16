@@ -526,6 +526,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_venue_ph_gift => 'Nerede buluşalım?';
 
   @override
+  String get create_inv_validation_description =>
+      'Planı bir cümleyle anlat — en az 10 karakter';
+
+  @override
   String get create_inv_validation_description_travel =>
       'Nereye gitmek istediğini yazmalısın';
 

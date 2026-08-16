@@ -113,6 +113,9 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     if (_isTravel && _descriptionController.text.trim().isEmpty) {
       return l10n.create_inv_validation_description_travel;
     }
+    if (_descriptionController.text.trim().length < 10) {
+      return l10n.create_inv_validation_description;
+    }
     if (_venueController.text.trim().isEmpty) {
       return l10n.create_inv_validation_venue;
     }

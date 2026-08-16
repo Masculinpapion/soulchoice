@@ -97,6 +97,39 @@ class _CreateInvitationScreenState
   int _expiryHours = 24;
   bool _isPublishing = false;
 
+  /// Süre adımı: başvurular her zaman plandan ÖNCE kapanır (mekanik: süre
+  /// dolunca seçim penceresi → sohbet → buluşma). Sınır = plan − 1 saat.
+  /// `_kUntilPlan` (0) = "Plana kadar" dinamik seçeneği (yakın planlar için).
+  static const int _kUntilPlan = 0;
+  static const Duration _kPlanBuffer = Duration(hours: 1);
+  static const List<int> _kDurationOptions = [48, 24, 12, 6];
+
+  DateTime? get _expiryLimit => _eventDate?.subtract(_kPlanBuffer);
+
+  bool _fitsPlan(int hours) {
+    final lim = _expiryLimit;
+    if (lim == null || hours == _kUntilPlan) return true;
+    return !DateTime.now().add(Duration(hours: hours)).isAfter(lim);
+  }
+
+  /// Tarih değişince seçili süreyi plana uydur: uyuyorsa dokunma; uymuyorsa
+  /// uyan en uzun sabit seçenek; hiçbiri uymuyorsa "Plana kadar".
+  void _reconcileExpiry() {
+    if (_expiryHours == _kUntilPlan) {
+      if (!_fitsPlan(48)) return; // yakın plan: "Plana kadar" hâlâ geçerli
+      _expiryHours = 24; // plan uzaklaştı, seçenek kayboldu → varsayılan
+      return;
+    }
+    if (_fitsPlan(_expiryHours)) return;
+    for (final h in _kDurationOptions) {
+      if (_fitsPlan(h)) {
+        _expiryHours = h;
+        return;
+      }
+    }
+    _expiryHours = _kUntilPlan;
+  }
+
   bool get _isTravel => _category == InvitationCategory.travel;
   // Hediye teslimi için sabit "etkinlik saati" doğaya aykırı → tarih opsiyonel
   bool get _isGift => _category == InvitationCategory.gift;
@@ -140,10 +173,14 @@ class _CreateInvitationScreenState
     ),
     _StepDateTime(
       date: _eventDate,
-      onSelected: (d) => setState(() => _eventDate = d),
+      onSelected: (d) => setState(() {
+        _eventDate = d;
+        _reconcileExpiry();
+      }),
     ),
     _StepDuration(
       selected: _expiryHours,
+      eventDate: _eventDate,
       onSelected: (h) => setState(() => _expiryHours = h),
     ),
   ];
@@ -318,8 +355,32 @@ class _CreateInvitationScreenState
         // Hediye'de tarih opsiyonel (teslim buluşması için sabit saat gerekmez)
         if (!_isGift && _eventDate == null)
           return l10n.create_inv_validation_date;
+      case 6:
+        if (!_fitsPlan(_expiryHours)) {
+          return l10n.create_inv_duration_conflict(
+              _hoursUntil(_eventDate!, DateTime.now()));
+        }
     }
     return null;
+  }
+
+  /// Başvuru kapanışı: seçilen süre, ama asla plan − 1 saatten geç değil.
+  DateTime _computeExpiresAt() {
+    final now = DateTime.now();
+    final lim = _expiryLimit;
+    DateTime expires = (_expiryHours == _kUntilPlan && lim != null)
+        ? lim
+        : now.add(Duration(hours: _expiryHours == _kUntilPlan ? 24 : _expiryHours));
+    if (lim != null && expires.isAfter(lim)) expires = lim;
+    // Sınır geçmişe düştüyse (kullanıcı ekranda uzun bekledi) en az 30 dk açık kalsın,
+    // ama planı asla geçmesin.
+    final floor = now.add(const Duration(minutes: 30));
+    if (expires.isBefore(floor)) {
+      expires = (_eventDate != null && _eventDate!.isBefore(floor))
+          ? _eventDate!
+          : floor;
+    }
+    return expires;
   }
 
   Future<void> _next() async {
@@ -427,10 +488,7 @@ class _CreateInvitationScreenState
             : _fixCase(_descriptionController.text),
         'venue_name': venueFormatted,
         'event_date': _eventDate?.toUtc().toIso8601String(),
-        'expires_at': DateTime.now()
-            .toUtc()
-            .add(Duration(hours: _expiryHours))
-            .toIso8601String(),
+        'expires_at': _computeExpiresAt().toUtc().toIso8601String(),
         'city_id': cityId,
         'slots_total': 1,
         'status': 'active',
@@ -1235,13 +1293,32 @@ class _StepVenue extends StatelessWidget {
 // Step: Duration
 // ─────────────────────────────────────────────────────────────────────────────
 
+/// Kaç saat sonra: tam saat varsa "3", 1 saatten azsa "<1".
+String _hoursUntil(DateTime target, DateTime now) {
+  final m = target.difference(now).inMinutes;
+  if (m < 60) return '<1';
+  return (m ~/ 60).toString();
+}
+
 class _StepDuration extends StatelessWidget {
   final int selected;
+  final DateTime? eventDate;
   final ValueChanged<int> onSelected;
 
-  const _StepDuration({required this.selected, required this.onSelected});
+  const _StepDuration({
+    required this.selected,
+    required this.eventDate,
+    required this.onSelected,
+  });
 
-  List<(int, String, String)> _options(AppLocalizations l10n) => [
+  static const int _kUntilPlan = _CreateInvitationScreenState._kUntilPlan;
+  static const Duration _kPlanBuffer = _CreateInvitationScreenState._kPlanBuffer;
+
+  List<(int, String, String)> _options(AppLocalizations l10n, bool showUntilPlan,
+      String hoursToLimit) => [
+    if (showUntilPlan)
+      (_kUntilPlan, l10n.create_inv_duration_until_plan,
+          l10n.create_inv_duration_until_plan_desc(hoursToLimit)),
     (6, l10n.create_inv_duration_6h, l10n.create_inv_duration_6h_desc),
     (12, l10n.create_inv_duration_12h, l10n.create_inv_duration_12h_desc),
     (24, l10n.create_inv_duration_24h, l10n.create_inv_duration_24h_desc),
@@ -1251,6 +1328,13 @@ class _StepDuration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final lim = eventDate?.subtract(_kPlanBuffer);
+    bool fits(int h) =>
+        lim == null || h == _kUntilPlan || !now.add(Duration(hours: h)).isAfter(lim);
+    // En uzun sabit seçenek bile plandan sonra bitiyorsa "Plana kadar" göster.
+    final showUntilPlan = lim != null && !fits(48);
+    final hoursToLimit = lim == null ? '' : _hoursUntil(lim, now);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -1261,68 +1345,84 @@ class _StepDuration extends StatelessWidget {
           const SizedBox(height: 8),
           Text(l10n.create_inv_duration_subtitle, style: _bodyMediumStyle),
           const SizedBox(height: 32),
-          ..._options(l10n).map(
-            (opt) => Padding(
+          ..._options(l10n, showUntilPlan, hoursToLimit).map((opt) {
+            final ok = fits(opt.$1);
+            final isSel = selected == opt.$1;
+            return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: GestureDetector(
-                onTap: () => onSelected(opt.$1),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: selected == opt.$1
-                        ? AuroraTheme.redBlueGradient
-                        : null,
-                    color: selected == opt.$1 ? null : AuroraTheme.glassBg,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: selected == opt.$1
-                          ? Colors.transparent
-                          : AuroraTheme.glassBorder,
+                onTap: () {
+                  if (ok) {
+                    onSelected(opt.$1);
+                    return;
+                  }
+                  // Plandan sonra biten süre: seçilmez, kullanıcı yönlendirilir.
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(auroraSnackBar(
+                        l10n.create_inv_duration_conflict(
+                            _hoursUntil(eventDate!, now))));
+                },
+                child: Opacity(
+                  opacity: ok ? 1 : 0.45,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
                     ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(opt.$2, style: _titleStyle),
-                            const SizedBox(height: 2),
-                            Text(
-                              opt.$3,
-                              style: _bodyMediumStyle.copyWith(
-                                color: selected == opt.$1
-                                    ? AuroraTheme.textPrimary.withOpacity(0.75)
-                                    : AuroraTheme.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
+                    decoration: BoxDecoration(
+                      gradient: isSel ? AuroraTheme.redBlueGradient : null,
+                      color: isSel ? null : AuroraTheme.glassBg,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSel
+                            ? Colors.transparent
+                            : AuroraTheme.glassBorder,
                       ),
-                      if (selected == opt.$1)
-                        ShaderMask(
-                          blendMode: BlendMode.srcIn,
-                          shaderCallback: (b) => selected == opt.$1
-                              ? const LinearGradient(
-                                  colors: [Colors.white, Colors.white],
-                                ).createShader(b)
-                              : AuroraTheme.redBlueGradient.createShader(b),
-                          child: const Icon(
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(opt.$2, style: _titleStyle),
+                              const SizedBox(height: 2),
+                              Text(
+                                opt.$3,
+                                style: _bodyMediumStyle.copyWith(
+                                  color: isSel
+                                      ? AuroraTheme.textPrimary.withOpacity(0.75)
+                                      : AuroraTheme.textSecondary,
+                                ),
+                              ),
+                              if (!ok) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  l10n.create_inv_duration_after_plan,
+                                  style: _bodyMediumStyle.copyWith(
+                                    fontSize: 12,
+                                    color: AuroraTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        if (isSel)
+                          const Icon(
                             Icons.check_circle,
                             color: Colors.white,
                             size: 22,
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );

@@ -470,6 +470,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_duration_48h_desc => 'Long-term — 2 days';
 
   @override
+  String get create_inv_duration_until_plan => 'Until the plan';
+
+  @override
+  String create_inv_duration_until_plan_desc(String hours) {
+    return 'Closes 1 hour before the plan — $hours h';
+  }
+
+  @override
+  String get create_inv_duration_after_plan => 'Ends after the plan';
+
+  @override
+  String create_inv_duration_conflict(String hours) {
+    return 'This duration doesn\'t match your plan — it\'s in $hours h. Pick a shorter one.';
+  }
+
+  @override
   String get create_inv_datetime_question => 'When?';
 
   @override

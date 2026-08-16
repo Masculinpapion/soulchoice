@@ -469,6 +469,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_duration_48h_desc => 'Долгосрочное — 2 дня';
 
   @override
+  String get create_inv_duration_until_plan => 'До плана';
+
+  @override
+  String create_inv_duration_until_plan_desc(String hours) {
+    return 'Закроется за 1 час до плана — $hours ч';
+  }
+
+  @override
+  String get create_inv_duration_after_plan => 'Закончится после плана';
+
+  @override
+  String create_inv_duration_conflict(String hours) {
+    return 'Этот срок не совпадает с твоим планом — план через $hours ч. Выбери срок покороче.';
+  }
+
+  @override
   String get create_inv_datetime_question => 'Когда?';
 
   @override

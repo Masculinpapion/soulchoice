@@ -687,11 +687,9 @@ class _InvitationDetailScreenState
                                 } catch (e) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text(AppLocalizations.of(context)!.error_generic),
-                                      backgroundColor:
-                                          AuroraTheme.auroraRed,
-                                    ));
+                                        .showSnackBar(auroraSnackBar(
+                                            AppLocalizations.of(context)!
+                                                .error_generic));
                                   }
                                 }
                               }

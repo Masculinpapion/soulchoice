@@ -964,6 +964,30 @@ abstract class AppLocalizations {
   /// **'Long-term — 2 days'**
   String get create_inv_duration_48h_desc;
 
+  /// No description provided for @create_inv_duration_until_plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Until the plan'**
+  String get create_inv_duration_until_plan;
+
+  /// No description provided for @create_inv_duration_until_plan_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Closes 1 hour before the plan — {hours} h'**
+  String create_inv_duration_until_plan_desc(String hours);
+
+  /// No description provided for @create_inv_duration_after_plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends after the plan'**
+  String get create_inv_duration_after_plan;
+
+  /// No description provided for @create_inv_duration_conflict.
+  ///
+  /// In en, this message translates to:
+  /// **'This duration doesn\'t match your plan — it\'s in {hours} h. Pick a shorter one.'**
+  String create_inv_duration_conflict(String hours);
+
   /// No description provided for @create_inv_datetime_question.
   ///
   /// In en, this message translates to:

@@ -468,6 +468,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_duration_48h_desc => 'Uzun vadeli — 2 gün';
 
   @override
+  String get create_inv_duration_until_plan => 'Plana kadar';
+
+  @override
+  String create_inv_duration_until_plan_desc(String hours) {
+    return 'Plandan 1 saat önce kapanır — $hours sa';
+  }
+
+  @override
+  String get create_inv_duration_after_plan => 'Plandan sonra biter';
+
+  @override
+  String create_inv_duration_conflict(String hours) {
+    return 'Bu süre planınla uyuşmuyor — planın $hours saat sonra. Daha kısa bir süre seç.';
+  }
+
+  @override
   String get create_inv_datetime_question => 'Ne zaman?';
 
   @override

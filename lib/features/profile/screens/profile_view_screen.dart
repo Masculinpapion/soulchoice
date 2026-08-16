@@ -781,37 +781,12 @@ class _HeroSectionState extends State<_HeroSection> {
                   ),
                 ),
 
-                // Meta row: city · job · education
+                // Meta row: city · job · education — her ekran genişliğinde
+                // düzgün: sığarsa tek satır, gerekirse hafif küçülür, çok uzunsa
+                // alt satıra geçer ama ayraç noktası asla satır sonunda asılı kalmaz.
                 if (metaItems.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 10,
-                    runSpacing: 4,
-                    children: [
-                      for (int i = 0; i < metaItems.length; i++) ...[
-                        if (i > 0)
-                          Container(
-                            width: 3,
-                            height: 3,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.4),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        Text(
-                          metaItems[i].toUpperCase(),
-                          style: TextStyle(
-                            fontFamily: 'JetBrainsMono',
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.16 * 11,
-                            color: Colors.white.withOpacity(0.78),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                  _MetaLine(items: metaItems),
                 ],
               ],
             ),
@@ -2153,5 +2128,99 @@ class _MyApplicationsSectionState
         const SizedBox(height: 18),
       ],
     );
+  }
+}
+
+
+/// Profil başlığı meta satırı: "ŞEHİR · MESLEK · OKUL".
+///
+/// Kural (Mustafa 17.08): dar ekranlarda (iPhone 17 402pt, Android 360dp) satır
+/// kırılıp "·" satır sonunda asılı kalıyordu. Şimdi:
+///  1) doğal genişlik sığıyorsa → tek satır, olduğu gibi;
+///  2) %28'e kadar küçültme yetiyorsa → tek satır, FittedBox ile orantılı küçük;
+///  3) daha uzunsa → Wrap; nokta bir sonraki kelimeye YAPIŞIK taşınır (asılı kalmaz).
+class _MetaLine extends StatelessWidget {
+  final List<String> items;
+  const _MetaLine({required this.items});
+
+  static const double _minScale = 0.72;
+  static const double _gap = 10;
+  static const double _dot = 3;
+
+  TextStyle get _style => TextStyle(
+        fontFamily: 'JetBrainsMono',
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.16 * 11,
+        color: Colors.white.withOpacity(0.78),
+      );
+
+  Widget _dotWidget() => Container(
+        width: _dot,
+        height: _dot,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.4),
+          shape: BoxShape.circle,
+        ),
+      );
+
+  double _naturalWidth(BuildContext context) {
+    double w = 0;
+    for (var i = 0; i < items.length; i++) {
+      final tp = TextPainter(
+        text: TextSpan(text: items[i].toUpperCase(), style: _style),
+        textDirection: TextDirection.ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      w += tp.width;
+      if (i > 0) w += _gap + _dot + _gap;
+    }
+    return w;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, c) {
+      final maxW = c.maxWidth;
+      final natural = _naturalWidth(context);
+      final texts = [for (final t in items) Text(t.toUpperCase(), style: _style)];
+
+      if (natural <= maxW || natural * _minScale <= maxW) {
+        // Tek satır: sığıyorsa birebir, sığmıyorsa en fazla %28 küçülterek.
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < items.length; i++) ...[
+                if (i > 0) ...[
+                  const SizedBox(width: _gap),
+                  _dotWidget(),
+                  const SizedBox(width: _gap),
+                ],
+                texts[i],
+              ],
+            ],
+          ),
+        );
+      }
+      // Çok uzun: alt satıra geç, nokta kelimeyle birlikte taşınsın.
+      return Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: _gap,
+        runSpacing: 4,
+        children: [
+          for (var i = 0; i < items.length; i++)
+            if (i == 0)
+              texts[i]
+            else
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [_dotWidget(), const SizedBox(width: _gap), texts[i]],
+              ),
+        ],
+      );
+    });
   }
 }

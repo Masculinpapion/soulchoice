@@ -318,7 +318,9 @@ class _InvitationDetailScreenState
                                       if (venueName != null) venueName,
                                       if (eventDate != null)
                                         _formatDate(context, eventDate),
-                                    ].join(' · '),
+                                    ].join(' ·\u00A0'), // nokta sonraki kelimeye yapışık: satır sonunda asılı kalmaz
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontFamily: 'JetBrainsMono',
                                       fontSize: 11,

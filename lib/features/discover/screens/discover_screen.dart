@@ -301,6 +301,8 @@ class _DiscoverCard extends StatelessWidget {
                           inv.cityName?.isNotEmpty == true
                               ? '${inv.cityName} · ${timeago.format(inv.createdAt, locale: locale)}'
                               : timeago.format(inv.createdAt, locale: locale),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: 'JetBrainsMono',
                             fontSize: 9,

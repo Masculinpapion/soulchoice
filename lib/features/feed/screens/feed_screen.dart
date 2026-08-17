@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatf
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -142,6 +143,15 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
         setState(() => _selectedCityName = null);
       }
     });
+    // 17.08 — Kompakt feed (kısa ekranlar): header sabit ölçülü (hikâye
+    // şeridi + sekmeler + chip bandı + başlık ≈ 338pt), kart kalan yüksekliği
+    // alır. iPhone SE (667pt) / iPhone 8 Plus (736pt) / Android 360×640-720dp
+    // sınıfında karta ~240pt kalıyor → kart kareleşiyor, yüz kesiliyor
+    // (Mustafa bulgusu, SE simülatörü). <760pt'de header dolguları sıkılır,
+    // karta ~+56pt döner; kart genişliği ise _InvitationList içinde ölçülen
+    // yükseklikten adaptif hesaplanır. ≥760pt (S24 780dp, iPhone 17 852pt,
+    // Realme 800dp) cihazlarda hiçbir ölçü değişmez.
+    final compact = MediaQuery.sizeOf(context).height < 760;
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
@@ -152,20 +162,23 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 cityName: _selectedCityId == null ? AppLocalizations.of(context)!.feed_all_cities : (_selectedCityName ?? AppLocalizations.of(context)!.feed_city_name_moscow),
                 onCityTap: _showCityPicker,
                 onNotificationTap: () => context.push('/notifications'),
+                compact: compact,
               ),
               _StoryBar(
                 flowType: _tabController.index == 0
                     ? InvitationFlowType.invite
                     : InvitationFlowType.request,
                 cityId: _selectedCityId,
+                compact: compact,
               ),
-              _TabBar(controller: _tabController),
+              _TabBar(controller: _tabController, compact: compact),
               _CategoryChips(
                 selected: _selectedCategory,
                 onSelected: (c) => setState(() {
                   _selectedCategory = _selectedCategory == c ? null : c;
                 }),
                 onClearFilter: () => setState(() => _selectedCategory = null),
+                compact: compact,
               ),
               Expanded(
                 child: TabBarView(
@@ -175,11 +188,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                       flowType: InvitationFlowType.invite,
                       category: _selectedCategory,
                       cityId: _selectedCityId,
+                      compact: compact,
                     ),
                     _InvitationList(
                       flowType: InvitationFlowType.request,
                       category: _selectedCategory,
                       cityId: _selectedCityId,
+                      compact: compact,
                     ),
                   ],
                 ),
@@ -200,14 +215,17 @@ class _Header extends ConsumerWidget {
   final String cityName;
   final VoidCallback onCityTap;
   final VoidCallback onNotificationTap;
+  final bool compact;
 
-  const _Header({required this.cityName, required this.onCityTap, required this.onNotificationTap});
+  const _Header({required this.cityName, required this.onCityTap, required this.onNotificationTap, this.compact = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 12, 4),
+      padding: compact
+          ? const EdgeInsets.fromLTRB(16, 6, 12, 2)
+          : const EdgeInsets.fromLTRB(16, 10, 12, 4),
       child: Row(
         children: [
           // Logo — gradient shimmer
@@ -331,10 +349,14 @@ class _GlassPill extends StatelessWidget {
 class _StoryBar extends ConsumerWidget {
   final InvitationFlowType flowType;
   final String? cityId;
-  const _StoryBar({required this.flowType, this.cityId});
+  final bool compact;
+  const _StoryBar({required this.flowType, this.cityId, this.compact = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Kompakt: etiket satırı ~17 + boşluk 8 + avatar 56 + boşluk 6 + isim ~13
+    // ≈ 100 → 106 (6pt pay; SE'de 100 taşıyordu, 17.08 kanıtlı).
+    final barHeight = compact ? 106.0 : 118.0;
     final filter = InvitationFilter(flowType: flowType, cityId: cityId);
     final async = ref.watch(invitationsProvider(filter));
 
@@ -356,12 +378,12 @@ class _StoryBar extends ConsumerWidget {
     ];
     if (invitations.isEmpty) {
       // Yükleme sırasında yüksekliği koru — layout zıplamasını engelle
-      if (async.isLoading) return const SizedBox(height: 118);
+      if (async.isLoading) return SizedBox(height: barHeight);
       return const SizedBox.shrink();
     }
 
     return SizedBox(
-      height: 118,
+      height: barHeight,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -406,7 +428,7 @@ class _StoryBar extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: compact ? 8 : 10),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -427,6 +449,7 @@ class _StoryBar extends ConsumerWidget {
                       photoUrl: inv.ownerPhotoUrl,
                       label: storyLabel,
                       isLive: isLive,
+                      size: compact ? 56 : 66,
                     ),
                   ),
                 );
@@ -443,8 +466,9 @@ class _StoryAvatar extends StatelessWidget {
   final String? photoUrl;
   final String label;
   final bool isLive;
+  final double size;
   const _StoryAvatar(
-      {required this.photoUrl, required this.label, this.isLive = false});
+      {required this.photoUrl, required this.label, this.isLive = false, this.size = 66});
 
   @override
   Widget build(BuildContext context) {
@@ -455,8 +479,8 @@ class _StoryAvatar extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Container(
-              width: 66,
-              height: 66,
+              width: size,
+              height: size,
               padding: const EdgeInsets.all(3),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -523,7 +547,7 @@ class _StoryAvatar extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 7),
+        SizedBox(height: size < 66 ? 6 : 7),
         Text(
           label,
           style: TextStyle(
@@ -588,7 +612,8 @@ class _AvatarFallback extends StatelessWidget {
 
 class _TabBar extends StatefulWidget {
   final TabController controller;
-  const _TabBar({required this.controller});
+  final bool compact;
+  const _TabBar({required this.controller, this.compact = false});
 
   @override
   State<_TabBar> createState() => _TabBarState();
@@ -612,8 +637,11 @@ class _TabBarState extends State<_TabBar> {
   @override
   Widget build(BuildContext context) {
     final isInvite = widget.controller.index == 0;
+    final compact = widget.compact;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      padding: compact
+          ? const EdgeInsets.fromLTRB(16, 6, 16, 4)
+          : const EdgeInsets.fromLTRB(16, 10, 16, 8),
       child: Row(
         children: [
           Expanded(
@@ -623,6 +651,7 @@ class _TabBarState extends State<_TabBar> {
                 label: AppLocalizations.of(context)!.feed_tab_invitations,
                 color: AuroraTheme.auroraRed,
                 active: isInvite,
+                height: compact ? 40 : 46,
               ),
             ),
           ),
@@ -634,6 +663,7 @@ class _TabBarState extends State<_TabBar> {
                 label: AppLocalizations.of(context)!.feed_tab_requests,
                 color: AuroraTheme.auroraBlue,
                 active: !isInvite,
+                height: compact ? 40 : 46,
               ),
             ),
           ),
@@ -647,17 +677,19 @@ class _AuroraPillTab extends StatelessWidget {
   final String label;
   final Color color;
   final bool active;
+  final double height;
 
   const _AuroraPillTab({
     required this.label,
     required this.color,
     required this.active,
+    this.height = 46,
   });
 
   @override
   Widget build(BuildContext context) {
-    const h = 46.0;
-    const radius = 23.0;
+    final h = height;
+    final radius = h / 2;
     final dark = Color.lerp(color, Colors.black, 0.40)!;
     final darkEdge = Color.lerp(color, Colors.black, 0.26)!;
 
@@ -782,22 +814,26 @@ class _CategoryChips extends StatelessWidget {
   final InvitationCategory? selected;
   final ValueChanged<InvitationCategory> onSelected;
   final VoidCallback onClearFilter;
+  final bool compact;
 
   const _CategoryChips({
     required this.selected,
     required this.onSelected,
     required this.onClearFilter,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     // Hale bandı: pill boyu aynen (38); band içi 12px hava — seçili chip
     // ışıması band içinde söner, sekmelere/kartlara taşmaz (geçişte patlama yok).
+    // Kompakt (kısa ekran): band 8px — ışıma blur'u 12, hâlâ band içinde kalır.
+    final band = compact ? 8.0 : 12.0;
     return SizedBox(
-      height: 62,
+      height: 38 + band * 2,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        padding: EdgeInsets.fromLTRB(16, band, 16, band),
         children: [
           // Tümü chip
           Padding(
@@ -929,9 +965,10 @@ class _InvitationList extends ConsumerStatefulWidget {
   final InvitationFlowType flowType;
   final InvitationCategory? category;
   final String? cityId;
+  final bool compact;
 
   const _InvitationList(
-      {required this.flowType, required this.category, this.cityId});
+      {required this.flowType, required this.category, this.cityId, this.compact = false});
 
   @override
   ConsumerState<_InvitationList> createState() => _InvitationListState();
@@ -943,7 +980,18 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
   bool _ringInitialized = false;
 
   void _onPageScroll() {
-    if (mounted) setState(() => _currentPage = _pageController.page ?? 0);
+    if (!mounted) return;
+    // Controller değişince (adaptif genişlik) yeni controller canlı PageView'a
+    // layout sırasında attach olur → viewportFraction= → notify → buraya düşer;
+    // build/layout fazında setState yasak (AppMetrica'ya hata düşüyordu, 17.08).
+    // O durumda kare sonuna ertele; normal kaydırmada anında güncelle.
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _currentPage = _pageController.page ?? _currentPage);
+      });
+      return;
+    }
+    setState(() => _currentPage = _pageController.page ?? 0);
   }
 
   @override
@@ -951,6 +999,33 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     super.initState();
     _pageController = PageController(viewportFraction: 0.72);
     _pageController.addListener(_onPageScroll);
+  }
+
+  // 17.08 — Adaptif kart genişliği (kısa ekran fix'i). Kart yüksekliği ekrana
+  // göre değişir; genişlik sabit 0.72 kalınca kısa ekranlarda kart kareleşir.
+  // Hedef en/boy 0.77 (iPhone 17'de onaylı oran); TAVAN 0.72 = carousel-v1
+  // sabiti → yüksek ekranlarda (S24, iPhone 17, Realme 800dp) hesap 0.72'ye
+  // clamp'lenir, hiçbir şey değişmez; taban 0.56 (tablet/çok kısa ekran).
+  // Build içinde çağrılır: PageView kurulmadan ÖNCE controller değişir,
+  // görsel zıplama olmaz; eski controller kare bitince serbest bırakılır.
+  void _syncViewportFraction(double listHeight) {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width <= 0 || !listHeight.isFinite) return;
+    final titleRow = widget.compact ? 24.0 : 34.0; // "GÜNÜN DAVETİYELERİ" satırı
+    final cardH = listHeight - titleRow;
+    final target = ((cardH * 0.77) + 16) / width; // 16 = kartın yatay dolgusu 8+8
+    // ≥0.70 çıkan her cihaz (S24 0.725, iPhone 17 0.717, Realme 0.767) aynen
+    // 0.72'de kalır — onaylı cihazlarda 1-2pt'lik sapma bile olmasın; yalnız
+    // gerçekten kısa ekranlar (SE 0.65, 8 Plus 0.63, 360×640 0.60) daralır.
+    final f = target >= 0.70 ? 0.72 : target.clamp(0.56, 0.70);
+    if ((f - _pageController.viewportFraction).abs() < 0.005) return;
+    final old = _pageController;
+    old.removeListener(_onPageScroll);
+    // Mevcut sayfayı koru: ilk build'de 0 (sonra _initRing ortalar), canlı
+    // değişimde (ör. hikâye şeridi sekmeye göre daralınca) kart zıplamaz.
+    _pageController = PageController(viewportFraction: f, initialPage: _currentPage.round())
+      ..addListener(_onPageScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
   }
 
   // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
@@ -1025,7 +1100,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
         await ref.read(invitationsProvider(filter).future);
       },
       child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
+        builder: (context, constraints) {
+          _syncViewportFraction(constraints.maxHeight);
+          return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: SizedBox(
             height: constraints.maxHeight,
@@ -1123,7 +1200,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              padding: widget.compact
+                  ? const EdgeInsets.fromLTRB(16, 6, 16, 4)
+                  : const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 children: [
                   Text(
@@ -1208,7 +1287,8 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       },
     ),
           ),
-        ),
+        );
+        },
       ),
     );
   }

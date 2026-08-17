@@ -13,6 +13,8 @@ import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../shared/widgets/aurora_snackbar.dart';
+import '../logic/gift_link_rules.dart';
+import '../widgets/gift_url_field.dart';
 
 // Tek sayfa davet düzenleme — sihirbaz YOK. Kullanıcı tüm alanları görür,
 // istediğini değiştirir, tek "Kaydet" ile çıkar. Süre (expires_at) burada
@@ -71,10 +73,15 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _venueController = TextEditingController();
+  // Hediye: ürün linki/adı — ayrı tabloda (invitation_gift_links), sahibi
+  // get_own_gift_link RPC ile okur; kaydette upsert/sil (17.08: create'te vardı,
+  // edit'te eksikti — Mustafa bulgusu).
+  final _giftUrlController = TextEditingController();
   DateTime? _eventDate;
   bool _isSaving = false;
 
   bool get _isTravel => _category == InvitationCategory.travel;
+  bool get _isGift => _category == InvitationCategory.gift;
 
   @override
   void initState() {
@@ -95,6 +102,22 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     _venueController.text = ed['venue_name'] as String? ?? '';
     final rawDate = ed['event_date'] as String?;
     if (rawDate != null) _eventDate = DateTime.tryParse(rawDate)?.toLocal();
+    if (_isGift) _loadGiftLink(ed['id'] as String);
+  }
+
+  Future<void> _loadGiftLink(String invitationId) async {
+    try {
+      final rows = await Supabase.instance.client
+          .rpc('get_own_gift_link', params: {'p_invitation_id': invitationId});
+      final list = (rows as List?) ?? const [];
+      if (list.isEmpty || !mounted) return;
+      final url = (list.first as Map)['url'] as String? ?? '';
+      if (url.isNotEmpty && _giftUrlController.text.isEmpty) {
+        _giftUrlController.text = url;
+      }
+    } catch (_) {
+      // Sessiz: link okunamazsa alan boş kalır, kullanıcı yeniden yazabilir.
+    }
   }
 
   @override
@@ -102,6 +125,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _venueController.dispose();
+    _giftUrlController.dispose();
     super.dispose();
   }
 
@@ -116,10 +140,15 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
     if (_descriptionController.text.trim().length < 10) {
       return l10n.create_inv_validation_description;
     }
+    if (_isGift) {
+      final err = validateGiftField(_giftUrlController.text, l10n);
+      if (err != null) return err;
+    }
     if (_venueController.text.trim().isEmpty) {
       return l10n.create_inv_validation_venue;
     }
-    if (_eventDate == null) return l10n.create_inv_validation_date;
+    // Hediye'de tarih opsiyonel (create ile aynı kural; 17.08 asimetri fix'i)
+    if (!_isGift && _eventDate == null) return l10n.create_inv_validation_date;
     return null;
   }
 
@@ -188,6 +217,21 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
             'event_date': _eventDate?.toUtc().toIso8601String(),
           })
           .eq('id', editId);
+
+      // Hediye linki: dolu → upsert (trigger 'pending'e çeker, moderasyona düşer);
+      // boş ya da kategori hediye dışına çıktı → satırı sil.
+      final giftText = _giftUrlController.text.trim();
+      if (_isGift && giftText.isNotEmpty) {
+        await client.from('invitation_gift_links').upsert({
+          'invitation_id': editId,
+          'url': giftText,
+        }, onConflict: 'invitation_id');
+      } else {
+        await client
+            .from('invitation_gift_links')
+            .delete()
+            .eq('invitation_id', editId);
+      }
 
       if (mounted) {
         ref.invalidate(invitationDetailProvider(editId));
@@ -407,6 +451,12 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                           alignLabelWithHint: true,
                         ),
                       ),
+                      // ── Hediye: ürün linki veya adı (create ile aynı alan) ──
+                      if (_isGift) ...[
+                        const SizedBox(height: 16),
+                        _sectionLabel(l10n.create_inv_gift_url_label),
+                        GiftUrlField(controller: _giftUrlController),
+                      ],
                       const SizedBox(height: 20),
 
                       // ── Mekân — her kategoride (travel'da destinasyon) ──

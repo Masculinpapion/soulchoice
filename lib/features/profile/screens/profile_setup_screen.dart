@@ -327,7 +327,15 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         ),
       );
     }
-    return ScScaffold(
+    // Sistem geri tuşu / iOS kenar-kaydırma = uygulama-içi ok ile AYNI davranış:
+    // adım >0 iken bir adım geri (form kaybolmaz); 0. adımda mevcut davranış.
+    // (17.08 Mustafa bulgusu: Android geri tuşu dolu formu kapatıp ana sayfaya atıyordu.)
+    return PopScope(
+      canPop: _step == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
@@ -453,6 +461,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 }

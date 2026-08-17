@@ -1117,8 +1117,80 @@ abstract class AppLocalizations {
   /// No description provided for @create_inv_gift_url_invalid.
   ///
   /// In en, this message translates to:
-  /// **'Known stores only: goldapple, wildberries, ozon, market.yandex, lamoda, letoile'**
+  /// **'We don\'t recognise this store. Link Ozon, Wildberries, Yandex Market, Gold Apple, DNS… or just type the product name.'**
   String get create_inv_gift_url_invalid;
+
+  /// No description provided for @create_inv_gift_url_invalid_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name must be 2–200 characters.'**
+  String get create_inv_gift_url_invalid_text;
+
+  /// No description provided for @gift_stores_link.
+  ///
+  /// In en, this message translates to:
+  /// **'Known stores'**
+  String get gift_stores_link;
+
+  /// No description provided for @gift_stores_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Known stores'**
+  String get gift_stores_title;
+
+  /// No description provided for @gift_stores_intro.
+  ///
+  /// In en, this message translates to:
+  /// **'A product link must be from one of these stores (subdomains included). No link? Just type the product name.'**
+  String get gift_stores_intro;
+
+  /// No description provided for @gift_stores_group_marketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketplaces'**
+  String get gift_stores_group_marketplace;
+
+  /// No description provided for @gift_stores_group_beauty.
+  ///
+  /// In en, this message translates to:
+  /// **'Beauty & fragrance'**
+  String get gift_stores_group_beauty;
+
+  /// No description provided for @gift_stores_group_fashion.
+  ///
+  /// In en, this message translates to:
+  /// **'Fashion'**
+  String get gift_stores_group_fashion;
+
+  /// No description provided for @gift_stores_group_electronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics & appliances'**
+  String get gift_stores_group_electronics;
+
+  /// No description provided for @gift_stores_group_telecom.
+  ///
+  /// In en, this message translates to:
+  /// **'Telecom stores'**
+  String get gift_stores_group_telecom;
+
+  /// No description provided for @gift_stores_group_jewelry.
+  ///
+  /// In en, this message translates to:
+  /// **'Jewelry'**
+  String get gift_stores_group_jewelry;
+
+  /// No description provided for @gift_stores_group_books.
+  ///
+  /// In en, this message translates to:
+  /// **'Books & hobby'**
+  String get gift_stores_group_books;
+
+  /// No description provided for @gift_stores_group_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Kids, home & flowers'**
+  String get gift_stores_group_home;
 
   /// No description provided for @create_inv_venue_subtitle_gift.
   ///

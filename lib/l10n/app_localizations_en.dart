@@ -556,7 +556,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get create_inv_gift_url_invalid =>
-      'Known stores only: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
+      'We don\'t recognise this store. Link Ozon, Wildberries, Yandex Market, Gold Apple, DNS… or just type the product name.';
+
+  @override
+  String get create_inv_gift_url_invalid_text =>
+      'Product name must be 2–200 characters.';
+
+  @override
+  String get gift_stores_link => 'Known stores';
+
+  @override
+  String get gift_stores_title => 'Known stores';
+
+  @override
+  String get gift_stores_intro =>
+      'A product link must be from one of these stores (subdomains included). No link? Just type the product name.';
+
+  @override
+  String get gift_stores_group_marketplace => 'Marketplaces';
+
+  @override
+  String get gift_stores_group_beauty => 'Beauty & fragrance';
+
+  @override
+  String get gift_stores_group_fashion => 'Fashion';
+
+  @override
+  String get gift_stores_group_electronics => 'Electronics & appliances';
+
+  @override
+  String get gift_stores_group_telecom => 'Telecom stores';
+
+  @override
+  String get gift_stores_group_jewelry => 'Jewelry';
+
+  @override
+  String get gift_stores_group_books => 'Books & hobby';
+
+  @override
+  String get gift_stores_group_home => 'Kids, home & flowers';
 
   @override
   String get create_inv_venue_subtitle_gift =>

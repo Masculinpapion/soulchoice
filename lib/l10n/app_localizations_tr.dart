@@ -554,7 +554,45 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_gift_url_invalid =>
-      'Yalnız tanınan mağaza linkleri: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
+      'Bu mağazayı tanımıyoruz. Ozon, Wildberries, Яндекс Маркет, Золотое Яблоко, DNS… linki ver ya da ürünün adını yaz.';
+
+  @override
+  String get create_inv_gift_url_invalid_text =>
+      'Ürün adı 2–200 karakter olmalı.';
+
+  @override
+  String get gift_stores_link => 'Tanınan mağazalar';
+
+  @override
+  String get gift_stores_title => 'Tanınan mağazalar';
+
+  @override
+  String get gift_stores_intro =>
+      'Ürün linki yalnız bu mağazalardan olabilir (alt sayfaları dahil). Link bulamazsan ürünün adını yazman yeterli.';
+
+  @override
+  String get gift_stores_group_marketplace => 'Marketplace';
+
+  @override
+  String get gift_stores_group_beauty => 'Kozmetik & parfüm';
+
+  @override
+  String get gift_stores_group_fashion => 'Moda';
+
+  @override
+  String get gift_stores_group_electronics => 'Elektronik & ev aletleri';
+
+  @override
+  String get gift_stores_group_telecom => 'Telekom mağazaları';
+
+  @override
+  String get gift_stores_group_jewelry => 'Takı';
+
+  @override
+  String get gift_stores_group_books => 'Kitap & hobi';
+
+  @override
+  String get gift_stores_group_home => 'Çocuk, ev & çiçek';
 
   @override
   String get create_inv_venue_subtitle_gift =>

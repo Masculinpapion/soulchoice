@@ -15,6 +15,8 @@ import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../shared/widgets/aurora_snackbar.dart';
+import '../logic/gift_link_rules.dart';
+import '../widgets/gift_url_field.dart';
 
 // Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
 const _displayMediumStyle = TextStyle(
@@ -314,19 +316,6 @@ class _CreateInvitationScreenState
     super.dispose();
   }
 
-  // Hediye ürün linki beyaz listesi (DB trigger ile aynı liste — bu istemci
-  // tarafı yalnız erken/nazik UX; asıl zorlama enforce_gift_link trigger'ında).
-  static const _giftUrlWhitelist = {
-    'goldapple.ru', 'wildberries.ru', 'ozon.ru',
-    'market.yandex.ru', 'lamoda.ru', 'letoile.ru',
-  };
-  bool _isWhitelistedGiftUrl(String url) {
-    final m = RegExp(r'^https?://([^/?#]+)').firstMatch(url.toLowerCase());
-    if (m == null) return false;
-    final host = m.group(1)!.replaceFirst(RegExp(r'^www\.'), '');
-    return _giftUrlWhitelist.contains(host);
-  }
-
   String? _validateCurrentStep(AppLocalizations l10n) {
     switch (_step) {
       case 1:
@@ -344,12 +333,10 @@ class _CreateInvitationScreenState
         }
         // Hediye ürün alanı açıklama adımında: link ise beyaz liste zorunlu,
         // düz metin (ürün adı) serbest
+        // (kural + mağaza listesi tek kaynak: logic/gift_link_rules.dart)
         if (_isGift) {
-          final g = _giftUrlController.text.trim();
-          final isLink = RegExp(r'^https?://', caseSensitive: false).hasMatch(g);
-          if (g.isNotEmpty && isLink && !_isWhitelistedGiftUrl(g)) {
-            return l10n.create_inv_gift_url_invalid;
-          }
+          final err = validateGiftField(_giftUrlController.text, l10n);
+          if (err != null) return err;
         }
       case 4:
         if (_venueController.text.trim().isEmpty) {
@@ -542,7 +529,15 @@ class _CreateInvitationScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final steps = _getSteps(l10n);
-    return ScScaffold(
+    // Sistem geri tuşu / iOS kenar-kaydırma = uygulama-içi ok ile AYNI davranış:
+    // adım >0 iken bir adım geri (form kaybolmaz); 0. adımda mevcut davranış.
+    // (17.08 Mustafa bulgusu: Android geri tuşu dolu formu kapatıp ana sayfaya atıyordu.)
+    return PopScope(
+      canPop: _step == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: ScScaffold(
       backgroundColor: AuroraTheme.bgDeep,
       body: AmbientBackground(
         child: SafeArea(
@@ -611,6 +606,7 @@ class _CreateInvitationScreenState
           ),
         ),
       ),
+    ),
     );
   }
 }
@@ -1141,32 +1137,7 @@ class _StepDescription extends StatelessWidget {
           // için burada; yalnız seçilen kişi görür, onaya tabi.
           if (category == InvitationCategory.gift && giftUrlController != null) ...[
             const SizedBox(height: 20),
-            TextField(
-              controller: giftUrlController,
-              style: _bodyLargeStyle,
-              keyboardType: TextInputType.url,
-              autocorrect: false,
-              scrollPadding: const EdgeInsets.only(bottom: 120),
-              decoration: InputDecoration(
-                hintText: l10n.create_inv_gift_url_hint,
-                prefixIcon: Icon(Icons.link_rounded, color: AuroraTheme.textMuted),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.lock_outline_rounded,
-                    size: 14, color: AuroraTheme.textMuted),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.create_inv_gift_url_helper,
-                    style: _bodyMediumStyle.copyWith(fontSize: 12),
-                  ),
-                ),
-              ],
-            ),
+            GiftUrlField(controller: giftUrlController!),
           ],
         ],
       ),

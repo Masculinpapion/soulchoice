@@ -556,7 +556,45 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get create_inv_gift_url_invalid =>
-      'Только известные магазины: goldapple, wildberries, ozon, market.yandex, lamoda, letoile';
+      'Этот магазин мы не знаем. Дай ссылку на Ozon, Wildberries, Яндекс Маркет, Золотое Яблоко, DNS… или просто напиши название товара.';
+
+  @override
+  String get create_inv_gift_url_invalid_text =>
+      'Название товара — от 2 до 200 символов.';
+
+  @override
+  String get gift_stores_link => 'Известные магазины';
+
+  @override
+  String get gift_stores_title => 'Известные магазины';
+
+  @override
+  String get gift_stores_intro =>
+      'Ссылка на товар может быть только из этих магазинов (включая их поддомены). Если ссылки нет — достаточно написать название товара.';
+
+  @override
+  String get gift_stores_group_marketplace => 'Маркетплейсы';
+
+  @override
+  String get gift_stores_group_beauty => 'Косметика и парфюмерия';
+
+  @override
+  String get gift_stores_group_fashion => 'Мода';
+
+  @override
+  String get gift_stores_group_electronics => 'Электроника и техника';
+
+  @override
+  String get gift_stores_group_telecom => 'Салоны связи';
+
+  @override
+  String get gift_stores_group_jewelry => 'Украшения';
+
+  @override
+  String get gift_stores_group_books => 'Книги и хобби';
+
+  @override
+  String get gift_stores_group_home => 'Дети, дом и цветы';
 
   @override
   String get create_inv_venue_subtitle_gift =>

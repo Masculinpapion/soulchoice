@@ -1,6 +1,28 @@
 # Hukuki Görevler ve Kayıtlar (RU Uyumluluk)
 
-## Marka Tescili — Роспатент/ФИПС — BAŞVURULDU, HARÇ BEKLİYOR (18.07.2026)
+## Marka Tescili — Роспатент/ФИПС — HARÇLAR ÖDENDİ ✅ (17.08.2026), inceleme sürüyor
+
+**17.08.2026 — 4 harç ödendi (Точка, ИП Аладаг Мустафа, платёжные поручения №5–8, toplam 55 000 ₽):**
+
+| Заявка | Пункт | Сумма | УИН | П/п |
+|---|---|---|---|---|
+| 2026781417 (SoulChoice-001) | 2.1 | 7 000 ₽ | 16801000000135912464 | №5 |
+| 2026781417 (SoulChoice-001) | 2.4 | 20 500 ₽ | 16801000000135912510 | №6 |
+| 2026781420 (SoulChoice-002) | 2.1 | 7 000 ₽ | 16801000000135694335 | №7 |
+| 2026781420 (SoulChoice-002) | 2.4 | 20 500 ₽ | 16801000000135694343 | №8 |
+
+Получатель: Межрегиональное операционное УФК (Роспатент), ИНН 7730176088, КПП 773001001, счёт 03100643000000019500, БИК 024501901, ЕКС 40102810045370000002, КБК 16811505020016000140, ОКТМО 45318000, статус плательщика 08. Dekontlar + tahakkuk PDF'leri: `~/Desktop/FIPS-пошлины/`.
+
+**Kaynak belgeler:** ФИПС «Уведомление о результатах проверки пошлины» — 002: 30.06.2026 (TMA260537887), 001: 07.07.2026 (TMA260557316): harç alınmamış, bildirimden 2 ay içinde öde → **son tarihler 002 = 30.08.2026, 001 = 07.09.2026** (gecikme ≤1 ay: ×2). Ödeme süre içinde yapıldı.
+
+**Kabin:** АРМ «Регистратор» → https://kpsrtz.fips.ru/User/Login (Госуслуги + КриптоПро ЭЦП plug-in; yalnız Chromium-Gost). `new.fips.ru/office` ayrı servis, ilgisiz.
+
+**Kalan:**
+- [ ] 18–19.08: Точка'da №6–8 «Оплачено» olunca kaşeli PDF'lerle kabinde «Создать → Документ об уплате пошлины» (başvuru başına 1 belge, ЭЦП ile gönder) — tavsiye, zorunlu değil (УИН otomatik eşleşir)
+- [ ] ~24.08: kabinde harç kabulü / inceleme durumu kontrolü; yoksa helpdesk@rupto.ru
+- [ ] Formal → esas inceleme sonucu (aylar); WIPO/Madrid ertelenmiş
+
+### Tarihçe — BAŞVURULDU, HARÇ BEKLİYOR (18.07.2026)
 
 SoulChoice marka başvuruları АРМ «Регистратор» üzerinden yapıldı (Haziran 2026,
 Наталья Бердова ile birlikte yürütülüyor):

@@ -1073,6 +1073,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'This user deleted their account. You can no longer send messages.';
 
   @override
+  String get chat_blocked_banner => 'This chat is closed';
+
+  @override
+  String get chat_safety_notice =>
+      'Don\'t send money or gifts before meeting in person. SoulChoice never asks for transfers.';
+
+  @override
   String get chat_meeting_question => 'Did your meeting happen?';
 
   @override
@@ -1174,6 +1181,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get err_account_suspended => 'Your account is suspended.';
 
   @override
+  String get err_gift_invitation_cooldown =>
+      'Too many gift invitations — try again in a few days';
+
+  @override
+  String get err_invitation_locked_has_applications =>
+      'Category can\'t be changed: there are applications';
+
+  @override
+  String get err_contact_info_not_allowed =>
+      'Links, phone numbers and messenger handles aren\'t allowed in text';
+
+  @override
+  String get err_match_blocked => 'Action unavailable';
+
+  @override
   String get selfie_reason_face_unclear => 'Face not clearly visible';
 
   @override
@@ -1214,6 +1236,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Your selection window closes soon — take a look at your applicants.';
+
+  @override
+  String get notif_type_invitation_updated_title => 'Invitation updated';
+
+  @override
+  String get notif_type_invitation_updated_body =>
+      'The host changed the invitation details';
 
   @override
   String get messages_empty_active => 'No chats yet';
@@ -1572,6 +1601,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get report_why => 'Why are you reporting?';
+
+  @override
+  String get report_reason_fraud => 'Fraud / asking for money';
 
   @override
   String get report_reason_inappropriate => 'Inappropriate content / photo';

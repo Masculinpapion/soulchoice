@@ -2032,6 +2032,18 @@ abstract class AppLocalizations {
   /// **'This user deleted their account. You can no longer send messages.'**
   String get chat_deleted_user_info;
 
+  /// No description provided for @chat_blocked_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'This chat is closed'**
+  String get chat_blocked_banner;
+
+  /// No description provided for @chat_safety_notice.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t send money or gifts before meeting in person. SoulChoice never asks for transfers.'**
+  String get chat_safety_notice;
+
   /// No description provided for @chat_meeting_question.
   ///
   /// In en, this message translates to:
@@ -2200,6 +2212,30 @@ abstract class AppLocalizations {
   /// **'Your account is suspended.'**
   String get err_account_suspended;
 
+  /// No description provided for @err_gift_invitation_cooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many gift invitations — try again in a few days'**
+  String get err_gift_invitation_cooldown;
+
+  /// No description provided for @err_invitation_locked_has_applications.
+  ///
+  /// In en, this message translates to:
+  /// **'Category can\'t be changed: there are applications'**
+  String get err_invitation_locked_has_applications;
+
+  /// No description provided for @err_contact_info_not_allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Links, phone numbers and messenger handles aren\'t allowed in text'**
+  String get err_contact_info_not_allowed;
+
+  /// No description provided for @err_match_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Action unavailable'**
+  String get err_match_blocked;
+
   /// No description provided for @selfie_reason_face_unclear.
   ///
   /// In en, this message translates to:
@@ -2277,6 +2313,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your selection window closes soon — take a look at your applicants.'**
   String get notif_type_selection_reminder_body;
+
+  /// No description provided for @notif_type_invitation_updated_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation updated'**
+  String get notif_type_invitation_updated_title;
+
+  /// No description provided for @notif_type_invitation_updated_body.
+  ///
+  /// In en, this message translates to:
+  /// **'The host changed the invitation details'**
+  String get notif_type_invitation_updated_body;
 
   /// No description provided for @messages_empty_active.
   ///
@@ -2925,6 +2973,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Why are you reporting?'**
   String get report_why;
+
+  /// No description provided for @report_reason_fraud.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraud / asking for money'**
+  String get report_reason_fraud;
 
   /// No description provided for @report_reason_inappropriate.
   ///

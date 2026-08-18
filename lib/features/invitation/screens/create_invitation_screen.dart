@@ -1249,8 +1249,11 @@ class _StepVenue extends StatelessWidget {
           const SizedBox(height: 32),
           TextField(
             controller: controller,
+            // DB sınırı invitations.venue_name ≤ 80 (18.08); sayaç gizli
+            maxLength: 80,
             style: _bodyLargeStyle,
             decoration: InputDecoration(
+              counterText: '',
               hintText: _placeholder(l10n),
               prefixIcon: Icon(
                 Icons.location_on_outlined,

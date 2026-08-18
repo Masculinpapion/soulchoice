@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/notification_cleaner.dart';
 import '../../../core/utils/guard_errors.dart';
@@ -57,6 +58,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   DateTime? _myClearedAt;
   // Karşı taraf hesabını silmiş (matches.user*_id SET NULL) — yazma kapalı
   bool _otherDeleted = false;
+  // 18.08 anti-fraud: engel = bayrak (matches.blocked_at), match SİLİNMEZ —
+  // kanıt kalır; iki taraf için de yazma kapalı, karşı tarafta salt-okunur.
+  bool _blocked = false;
+  // Güvenlik şeridi ("para gönderme") — match başına bir kez, kapatınca
+  // SharedPreferences'ta kalıcı. Yüklenene dek gösterilmez (flaş olmasın).
+  bool _safetyDismissed = true;
+  static const _safetyPrefPrefix = 'chat_safety_dismissed_';
   // Hediye ürün linki — yalnız seçilen kişiye + moderasyon onaylı (get_gift_link)
   String? _giftUrl;
   // Tarihsiz gift buluşma anketi için: gift match'te meeting_date null olabilir
@@ -83,6 +91,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _initLoad();
     _subscribeRealtime();
     _loadGiftLink();
+    _loadSafetyDismissed();
     // 24.07: cinsiyetli RU metinleri — provider soğukken 'other'a (eril)
     // düşüyordu (Natalia dialog vakası); cinsiyet bir kez yüklenip saklanır.
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadMyGender());
@@ -121,13 +130,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     } catch (_) {}
   }
 
+  Future<void> _loadSafetyDismissed() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final dismissed =
+          prefs.getBool('$_safetyPrefPrefix${widget.matchId}') ?? false;
+      if (mounted) setState(() => _safetyDismissed = dismissed);
+    } catch (_) {}
+  }
+
+  Future<void> _dismissSafetyNotice() async {
+    setState(() => _safetyDismissed = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('$_safetyPrefPrefix${widget.matchId}', true);
+    } catch (_) {}
+  }
+
   Future<void> _loadMatchInfo() async {
     final client = Supabase.instance.client;
     try {
       final matchRow = await client.from('matches').select(
             'user1_id, user2_id, meeting_date, created_at, '
             'meeting_confirmed_user1, meeting_confirmed_user2, '
-            'user1_cleared_at, user2_cleared_at, '
+            'user1_cleared_at, user2_cleared_at, blocked_by, blocked_at, '
             'invitation:invitations(id, title, venue_name, event_date, category)',
           ).eq('id', widget.matchId).maybeSingle();
       if (matchRow == null || !mounted) {
@@ -196,6 +222,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       setState(() {
         _myClearedAt = clearedAt;
         _otherDeleted = otherUserId == null;
+        _blocked = matchRow['blocked_at'] != null;
         _isGiftMatch = isGift;
         _matchCreatedAt =
             matchCreated != null ? DateTime.tryParse(matchCreated)?.toLocal() : null;
@@ -607,7 +634,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   Future<void> _sendMessage() async {
-    if (_otherDeleted) return;
+    if (_otherDeleted || _blocked) return;
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
     // Soğuk açılışta initState oturumdan önce koşmuş olabilir — göndermeden
@@ -660,7 +687,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       if (mounted) {
         setState(() =>
             _messages.removeWhere((m) => m.id == optimistic.id));
-        // Bilinen guard hatası (örn. ACCOUNT_SUSPENDED) lokalize gösterilir
+        // Bilinen guard hatası (örn. ACCOUNT_SUSPENDED, MATCH_BLOCKED) lokalize
         final guard = await GuardError.resolve(context, e);
         if (!mounted) return;
         if (guard != null) {
@@ -673,6 +700,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );
+        // Karşı taraf bu sırada engellediyse bayrağı tazele → input kapanır
+        if (e.toString().contains('MATCH_BLOCKED')) _loadMatchInfo();
       }
     }
   }
@@ -815,13 +844,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final invitationId = inv?['id'] as String?;
     final client = Supabase.instance.client;
     try {
+      // 18.08 anti-fraud: match SİLİNMEZ, bayraklanır (blocked_at; blocked_by'ı
+      // sunucu auth.uid() ile doldurur, bir kez, geri alınamaz) — mesajlar
+      // şikayet kanıtı olarak kalır; trigger iki tarafa da yazmayı kapatır.
       await Future.wait([
         client.from('blocks').upsert({
           'blocker_id': _currentUid,
           'blocked_id': otherUid,
         }, onConflict: 'blocker_id,blocked_id'),
-        client.from('matches').delete().eq('id', widget.matchId),
+        client.from('matches').update({
+          'blocked_at': DateTime.now().toUtc().toIso8601String(),
+        }).eq('id', widget.matchId),
       ]);
+      // Engelleyenin listesinden düşsün (tek-taraflı gizleme, best-effort —
+      // liste zaten blocked_by == ben filtresiyle gizler).
+      try {
+        await client.rpc('hide_chat', params: {'p_match_id': widget.matchId});
+      } catch (_) {}
       if (!mounted) return;
       // Engellenen kişi tüm yüzeylerden anında düşsün (31.07 denetimi):
       // sohbet listesi + feed + keşfet; başvuranlar ekranı zaten yeniden yüklenir.
@@ -831,8 +870,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     } catch (_) {
       // 24.07 denetim: engelleme başarısızsa "engellendi" gibi çıkıp gitme
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(AppLocalizations.of(context)!.error_generic)));
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.error_generic,
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
       }
       return;
     }
@@ -842,6 +884,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     } else {
       context.pop();
     }
+  }
+
+  // Şikayet: bağlam olarak match id gider (reports.match_id) — ops panelinde
+  // yazışma kanıtıyla birlikte incelenir (18.08).
+  void _report() {
+    final otherUid = _matchInfo?['otherUserId'] as String?;
+    if (otherUid == null) return;
+    context.push('/report/$otherUid?match=${widget.matchId}');
   }
 
   @override
@@ -877,7 +927,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   context.canPop() ? context.pop() : context.go('/messages'),
               // Silinmiş kullanıcıda Engelle anlamsız (hedef hesap yok) ve
               // sessizce no-op oluyordu — yerine tek net aksiyon: Sohbeti sil.
-              onBlock: _otherDeleted ? null : _block,
+              // Engellenmiş sohbette ikinci engel anlamsız (bayrak tek seferlik)
+              onBlock: (_otherDeleted || _blocked) ? null : _block,
+              onReport: _otherDeleted ? null : _report,
               onHide: _otherDeleted ? null : _hideChat,
               // Sil her sohbette var: normalde tek taraflı temizlik (clear_chat),
               // karşı taraf hesabını silmişse match'in gerçek silinmesi.
@@ -900,6 +952,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                 onYes: () => _confirmAttendance(true),
                 onNo: () => _confirmAttendance(false),
               ),
+
+            // Güvenlik şeridi (18.08 anti-fraud): ilk açılışta, kapatılana dek
+            if (!_safetyDismissed && !_otherDeleted && !_blocked)
+              _SafetyNoticeBanner(onDismiss: _dismissSafetyNotice),
 
             // Messages
             Expanded(
@@ -990,9 +1046,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                         ),
             ),
 
-            // Input bar (partner hesabı durdukça hep açık — sohbetler kalıcı)
+            // Input bar (partner hesabı durdukça hep açık — sohbetler kalıcı;
+            // engellenmişse iki tarafta da kapalı, sakin "kapalı" şeridi)
             if (_otherDeleted)
-              const _DeletedUserBanner()
+              _FooterNoticeBanner(
+                icon: Icons.person_off_outlined,
+                text: AppLocalizations.of(context)!.chat_deleted_user_info,
+              )
+            else if (_blocked)
+              _FooterNoticeBanner(
+                icon: Icons.lock_outline_rounded,
+                text: AppLocalizations.of(context)!.chat_blocked_banner,
+              )
             else
               _InputBar(
                 controller: _messageController,
@@ -1006,11 +1071,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Deleted User Banner — input bar yerine gösterilir, yazma kapalı
+// Footer Notice Banner — input bar yerine gösterilir, yazma kapalı
+// (silinmiş kullanıcı / engellenmiş sohbet)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _DeletedUserBanner extends StatelessWidget {
-  const _DeletedUserBanner();
+class _FooterNoticeBanner extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _FooterNoticeBanner({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) => Container(
@@ -1025,12 +1093,11 @@ class _DeletedUserBanner extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.person_off_outlined,
-                size: 16, color: AuroraTheme.textMuted),
+            Icon(icon, size: 16, color: AuroraTheme.textMuted),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                AppLocalizations.of(context)!.chat_deleted_user_info,
+                text,
                 style: TextStyle(
                   fontFamily: 'JetBrainsMono',
                   fontSize: 11,
@@ -1152,6 +1219,64 @@ class _GiftLinkCard extends StatelessWidget {
 // Attendance Banner
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Safety Notice Banner — "para/hediye gönderme" tek satırlık cam şerit,
+// kapatılabilir; _AttendanceBanner ile aynı cam desen (18.08 anti-fraud)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SafetyNoticeBanner extends StatelessWidget {
+  final VoidCallback onDismiss;
+  const _SafetyNoticeBanner({required this.onDismiss});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+              decoration: BoxDecoration(
+                color: AuroraTheme.auroraBlue.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AuroraTheme.auroraBlue.withOpacity(0.35)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(Icons.shield_outlined,
+                      size: 16, color: AuroraTheme.auroraBlue),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context)!.chat_safety_notice,
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 12,
+                        height: 1.35,
+                        color: Colors.white.withOpacity(0.85),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(
+                    onTap: onDismiss,
+                    behavior: HitTestBehavior.opaque,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(Icons.close_rounded,
+                          size: 16, color: Colors.white.withOpacity(0.6)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
 class _AttendanceBanner extends StatelessWidget {
   final VoidCallback onYes;
   final VoidCallback onNo;
@@ -1264,6 +1389,7 @@ class _ChatAppBar extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onBack;
   final VoidCallback? onBlock;
+  final VoidCallback? onReport;
   final VoidCallback? onHide;
   final VoidCallback? onDelete;
   /// Sil onay diyaloğu gövdesi; null ise varsayılan (silinmiş-hesap) metni.
@@ -1277,6 +1403,7 @@ class _ChatAppBar extends StatelessWidget {
     this.isLoading = false,
     required this.onBack,
     this.onBlock,
+    this.onReport,
     this.onHide,
     this.onDelete,
     this.deleteConfirmBody,
@@ -1387,7 +1514,7 @@ class _ChatAppBar extends StatelessWidget {
                   ],
                 ),
               )),
-              if (onBlock != null || onDelete != null)
+              if (onBlock != null || onDelete != null || onReport != null)
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   color: const Color(0xFF14121E),
@@ -1395,7 +1522,9 @@ class _ChatAppBar extends StatelessWidget {
                   shadowColor: Colors.black54,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   onSelected: (val) {
-                    if (val == 'delete') {
+                    if (val == 'report') {
+                      onReport?.call();
+                    } else if (val == 'delete') {
                       showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -1546,6 +1675,20 @@ class _ChatAppBar extends StatelessWidget {
                           Icon(Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.6), size: 18),
                           const SizedBox(width: 10),
                           Text(AppLocalizations.of(context)!.chat_hide_conversation,
+                              style: TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                              )),
+                        ]),
+                      ),
+                    if (onReport != null)
+                      PopupMenuItem(
+                        value: 'report',
+                        child: Row(children: [
+                          const Icon(Icons.flag_outlined, color: AuroraTheme.auroraGold, size: 18),
+                          const SizedBox(width: 10),
+                          Text(AppLocalizations.of(context)!.profile_view_action_report,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,
@@ -1966,7 +2109,10 @@ class _InputBar extends StatelessWidget {
                     color: Colors.white,
                   ),
                   maxLines: null,
+                  // DB sınırı messages.content ≤ 2000 (18.08); sayaç gizli
+                  maxLength: 2000,
                   decoration: InputDecoration(
+                    counterText: '',
                     hintText: AppLocalizations.of(context)!.chat_input_hint,
                     hintStyle: TextStyle(
                       fontFamily: 'Manrope',

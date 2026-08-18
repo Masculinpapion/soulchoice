@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../features/feed/providers/invitations_provider.dart';
 import '../../../features/invitation/providers/invitation_provider.dart';
@@ -239,10 +240,18 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
         ref.invalidate(myActiveInvitationsProvider);
         context.pop();
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
-        showAuroraErrorSnack(
-            context, AppLocalizations.of(context)!.error_generic);
+        // Bilinen guard token'ı (INVITATION_LOCKED_HAS_APPLICATIONS,
+        // CONTACT_INFO_NOT_ALLOWED, GIFT_TEXT_INVALID vb.) lokalize gösterilir
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
+        if (guard != null) {
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => guard.navigate(context));
+        }
+        showAuroraErrorSnack(context,
+            guard?.message ?? AppLocalizations.of(context)!.error_generic);
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -464,8 +473,11 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
                         _sectionLabel(l10n.create_inv_step_venue),
                         TextField(
                           controller: _venueController,
+                          // DB sınırı invitations.venue_name ≤ 80 (18.08)
+                          maxLength: 80,
                           style: _bodyLargeStyle,
                           decoration: InputDecoration(
+                            counterText: '',
                             hintText: l10n.create_inv_venue_label,
                             prefixIcon: Icon(
                               Icons.location_on_outlined,

@@ -136,6 +136,8 @@ class NotificationItem {
         return Icons.schedule_rounded;
       case 'feedback_request':
         return Icons.rate_review_rounded;
+      case 'invitation_updated':
+        return Icons.edit_calendar_rounded;
       default:
         return Icons.notifications_rounded;
     }

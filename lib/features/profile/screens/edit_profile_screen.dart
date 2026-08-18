@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -339,12 +340,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          auroraSnackBar(
-            AppLocalizations.of(context)!.profile_setup_error(
-              AppLocalizations.of(context)!.error_generic,
-            ),
-          ),
+        // Bilinen guard token'ı (CONTACT_INFO_NOT_ALLOWED vb.) lokalize gösterilir
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
+        showAuroraErrorSnack(
+          context,
+          guard?.message ??
+              AppLocalizations.of(context)!.profile_setup_error(
+                AppLocalizations.of(context)!.error_generic,
+              ),
         );
       }
     } finally {
@@ -451,8 +455,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         _sectionLabel(l10n.profile_setup_step_name_age),
                         TextField(
                           controller: _nameController,
+                          // DB sınırı users.name ≤ 30 (18.08); sayaç gizli
+                          maxLength: 30,
                           style: _fieldStyle,
                           decoration: InputDecoration(
+                            counterText: '',
                             hintText: l10n.profile_setup_name_label,
                           ),
                         ),
@@ -531,16 +538,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         _sectionLabel(l10n.profile_setup_step_job_edu),
                         TextField(
                           controller: _jobController,
+                          // DB sınırı users.job ≤ 60 (18.08); sayaç gizli
+                          maxLength: 60,
                           style: _fieldStyle,
                           decoration: InputDecoration(
+                            counterText: '',
                             hintText: l10n.profile_setup_job_label,
                           ),
                         ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _educationController,
+                          // DB sınırı users.education ≤ 60 (18.08); sayaç gizli
+                          maxLength: 60,
                           style: _fieldStyle,
                           decoration: InputDecoration(
+                            counterText: '',
                             hintText: l10n.profile_setup_education_label,
                           ),
                         ),
@@ -598,8 +611,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 TextFormField(
                                   style: _fieldStyle,
                                   initialValue: _prompts[e.key] ?? '',
+                                  // DB sınırı user_prompts.answer ≤ 150 (18.08)
+                                  maxLength: 150,
                                   onChanged: (v) => _prompts[e.key] = v,
                                   decoration: InputDecoration(
+                                    counterText: '',
                                     hintText:
                                         l10n.profile_setup_prompts_answer_hint,
                                   ),

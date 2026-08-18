@@ -38,6 +38,27 @@ class GuardError {
     if (s.contains('ACCOUNT_SUSPENDED')) {
       return GuardError(l10n.err_account_suspended, '/suspended');
     }
+    // 18.08 anti-fraud sertleştirme token'ları (20260818_antifraud_hardening.sql)
+    if (s.contains('GIFT_INVITATION_COOLDOWN')) {
+      return GuardError(l10n.err_gift_invitation_cooldown);
+    }
+    if (s.contains('INVITATION_LOCKED_HAS_APPLICATIONS')) {
+      return GuardError(l10n.err_invitation_locked_has_applications);
+    }
+    if (s.contains('CONTACT_INFO_NOT_ALLOWED')) {
+      return GuardError(l10n.err_contact_info_not_allowed);
+    }
+    if (s.contains('MATCH_BLOCKED')) {
+      return GuardError(l10n.err_match_blocked);
+    }
+    // Hediye linki trigger'ı (enforce_gift_link): beyaz liste dışı mağaza /
+    // geçersiz serbest metin (uzunluk, para-kart-СБП-sertifika kelimeleri).
+    if (s.contains('GIFT_URL_NOT_WHITELISTED')) {
+      return GuardError(l10n.create_inv_gift_url_invalid);
+    }
+    if (s.contains('GIFT_TEXT_INVALID')) {
+      return GuardError(l10n.create_inv_gift_url_invalid_text);
+    }
     return null;
   }
 

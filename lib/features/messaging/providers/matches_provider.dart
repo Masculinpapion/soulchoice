@@ -42,7 +42,7 @@ final matchesProvider =
   final data = await client
       .from('matches')
       .select('id, user1_id, user2_id, created_at, '
-          'user1_hidden_at, user2_hidden_at')
+          'user1_hidden_at, user2_hidden_at, blocked_by')
       .or('user1_id.eq.$uid,user2_id.eq.$uid')
       // Sohbetler kalıcıdır (20.07.2026 kararı) — aynı kişiyle birden fazla
       // match varsa seen.containsKey en yenisini tutar
@@ -100,6 +100,10 @@ final matchesProvider =
     final otherUserId = otherUserIds[i];
     final userRow = userMap[otherUserId];
     final lastMsg = lastMsgMap[matchId];
+
+    // 18.08 anti-fraud: engel = bayrak (match silinmez). Engelleyen listede
+    // görmez; karşı taraf görür ama sohbet salt-okunur (chat_screen kilitler).
+    if (m['blocked_by'] != null && m['blocked_by'] == uid) continue;
 
     // Tek-taraflı gizleme: benim hidden_at'imden sonra yeni mesaj yoksa gizle.
     // Yeni mesaj gelince (created_at > hidden_at) sohbet otomatik geri döner.

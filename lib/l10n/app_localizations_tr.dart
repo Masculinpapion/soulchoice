@@ -1071,6 +1071,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu kullanıcı hesabını sildi. Artık mesaj gönderemezsin.';
 
   @override
+  String get chat_blocked_banner => 'Bu sohbet kapatıldı';
+
+  @override
+  String get chat_safety_notice =>
+      'Yüz yüze buluşmadan önce para veya hediye göndermeyin. SoulChoice asla transfer istemez.';
+
+  @override
   String get chat_meeting_question => 'Buluşmanız gerçekleşti mi?';
 
   @override
@@ -1171,6 +1178,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get err_account_suspended => 'Hesabın askıya alınmış durumda.';
 
   @override
+  String get err_gift_invitation_cooldown =>
+      'Çok fazla hediye daveti — birkaç gün sonra tekrar deneyin';
+
+  @override
+  String get err_invitation_locked_has_applications =>
+      'Kategori değiştirilemez: başvurular var';
+
+  @override
+  String get err_contact_info_not_allowed =>
+      'Metinde link, telefon numarası ve mesajlaşma hesabı yasak';
+
+  @override
+  String get err_match_blocked => 'İşlem yapılamıyor';
+
+  @override
   String get selfie_reason_face_unclear => 'Yüz net görünmüyor';
 
   @override
@@ -1210,6 +1232,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Seçim penceren yakında kapanıyor — başvuranlara bir göz at.';
+
+  @override
+  String get notif_type_invitation_updated_title => 'Davet güncellendi';
+
+  @override
+  String get notif_type_invitation_updated_body =>
+      'Ev sahibi davet detaylarını değiştirdi';
 
   @override
   String get messages_empty_active => 'Henüz sohbet yok';
@@ -1566,6 +1595,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get report_why => 'Neden şikayet ediyorsun?';
+
+  @override
+  String get report_reason_fraud => 'Dolandırıcılık / para isteme';
 
   @override
   String get report_reason_inappropriate => 'Uygunsuz içerik / fotoğraf';

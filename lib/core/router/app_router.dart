@@ -247,8 +247,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/report/:userId',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (_, state) =>
-            ReportUserScreen(userId: state.pathParameters['userId'] ?? ''),
+        // ?match=<id> / ?invitation=<id>: şikayet bağlamı (18.08 anti-fraud)
+        builder: (_, state) => ReportUserScreen(
+          userId: state.pathParameters['userId'] ?? '',
+          matchId: state.uri.queryParameters['match'],
+          invitationId: state.uri.queryParameters['invitation'],
+        ),
       ),
 
       // ── Shell with bottom nav ───────────────────────────────────────────

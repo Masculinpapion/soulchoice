@@ -413,6 +413,8 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
       return l.notif_type_feedback_request_title;
     case 'selection_reminder':
       return l.notif_type_selection_reminder_title;
+    case 'invitation_updated':
+      return l.notif_type_invitation_updated_title;
     default:
       return name.isNotEmpty ? name : item.type;
   }
@@ -455,6 +457,13 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
       return l.notif_type_feedback_request_body;
     case 'selection_reminder':
       return l.notif_type_selection_reminder_body;
+    case 'invitation_updated':
+      // Sunucu gövdeye davet başlığını yazar (18.08) — selfie_rejected
+      // deseniyle lokalize metne eklenir; boşsa yalnız genel metin
+      final invTitle = item.body.trim();
+      return invTitle.isEmpty
+          ? l.notif_type_invitation_updated_body
+          : '${l.notif_type_invitation_updated_body} — «$invTitle»';
     default:
       return item.body;
   }
@@ -511,6 +520,8 @@ class _NotifTile extends StatelessWidget {
         return [AuroraTheme.auroraBlue, AuroraTheme.auroraViolet];
       case 'feedback_request':
         return [AuroraTheme.auroraViolet, const Color(0xFFA78BFA)];
+      case 'invitation_updated':
+        return [AuroraTheme.auroraGold, AuroraTheme.auroraBlue];
       default:
         return [AuroraTheme.auroraViolet, AuroraTheme.auroraBlue];
     }

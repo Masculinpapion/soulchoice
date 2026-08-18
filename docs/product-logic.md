@@ -6,6 +6,8 @@ _Sürüm: 1.9 — 16.07.2026. Sahip: Mustafa. Koddan çıkarılan fiili davranı
 
 Durum işaretleri: ✅ kodda böyle · 🔧 karar verildi, uygulanacak (launch öncesi) · 🕐 karar verildi, post-launch/uygun boşluk.
 
+_v1.10 değişiklikleri (18.08.2026): anti-fraud sertleştirme paketi — §14 (eşleşme kilidi, engelleme = kapatma+arşiv, hediye soğuması/metin filtresi, yem-değiştir kilidi, temas filtresi, selfie kapısı DB'de, no-show 24s, şikayet bağlamı). Sunucu CANLI 18.08; istemci tarafı sonraki mağaza paketinde._
+
 _v1.9 değişiklikleri: selfie onay/red artık push da gönderiyor (§9 ✅ 16.07, Mustafa kararı); red gerekçesi selfie ekranında da gösteriliyor (§9 ✅ 16.07)._
 
 _v1.1 değişiklikleri: başvuru/kabul kuralları artık sunucuda zorlanıyor (§5, §6, §10 ✅); kabul bildirimi eklendi (§9 ✅); yaş filtresi, sohbet silme, çift yönlü engelleme kararları işlendi (§5, §7 🔧)._
@@ -102,6 +104,7 @@ active (6/12/24/48 saat — sahibi seçer; ASLA plandan sonra bitmez, bkz. süre
 - **Engelleme:** match tamamen silinir → sohbet **iki taraf için de** mesajlarıyla yok olur + engel kaydı kalır. Engelleme **çift yönlü süzülür**: engellediğim + beni engelleyen kişilerin ilanları feed/keşfette görünmez (`hidden_from_feed` RPC). ✅ 15.07
 - **Sohbet menüsündeki "sil" → tek-taraflı "gizle" (WhatsApp standardı):** gizleyen kullanıcının listesinden sohbet kalkar; karşı tarafta aynen durur; mesaj geçmişi korunur (gizleme yalnız liste seviyesindedir). Gizlenen sohbete karşı taraftan **yeni mesaj gelince sohbet listeye geri döner**. Match **SİLİNMEZ** — yukarıdaki ilkeye uygun (otomatik/tek-taraflı süreç sohbeti yok etmez, yalnız listeden gizler). 🔧
 - **Engelleme** bundan ayrıdır ve mevcut haliyle kalır: match tamamen silinir, sohbet iki taraftan da gider (bu, kullanıcının bilinçli "tam kesme" aksiyonudur). ✅
+- **REVİZE 18.08 (anti-fraud, §14):** engelleme artık match'i SİLMEZ → `matches.blocked_by/blocked_at` bayrağı; sohbet iki taraf için kapanır (giriş kutusu yerine "Чат закрыт" bandı), engelleyenin listesinden düşer, karşı tarafta salt-okunur kalır; engelli çift mesaj/başvuru/seçim yapamaz (sunucu `MATCH_BLOCKED`). Eski istemcilerin "sil" akışı çalışmaya devam eder ama mesajlar silinmeden `messages_archive`'e kopyalanır (kanıt, 90 gün, yalnız ops). ✅ sunucu 18.08 · istemci sonraki paket
 - **Buluşma mekaniği:** kabul anında ilanın `event_date`'i match'in `meeting_date`'ine kopyalanır (tarih varsa); buluşma saatinden sonra (tarihsiz gift'te eşleşme+24s sonra) iki tarafa "buluşma gerçekleşti mi?" anketi çıkar. ✅ 15.07
 - **Sohbetler KALICIDIR (REVİZE KARAR 20.07.2026, Mustafa):** buluşma geçse de sohbet Mesajlar listesinde durur ve yazışma açık kalır — kullanıcı gizlemedikçe (tek-taraflı gizle) veya engellemedikçe hiçbir sohbet listeden düşmez. Eski "buluşmadan 24 saat sonra sohbet arşive iner" kuralı ve arşiv konsepti tamamen İPTAL (isArchived filtresi, arşiv banner'ı, salt-okunur kilit ve sohbet açılışındaki lazy `archived_at` yazımı kaldırıldı; hiçbir ekranın kullanmadığı ölü `archivedMatchesProvider` silindi). Davetiye kartının feed'den düşme mekaniği bundan bağımsızdır ve aynen kalır. ✅ 20.07
 - **No-show (gerçek kurulum ✅ 15.07):** anket "hayır" → `confirm_meeting` SECURITY DEFINER RPC karşı tarafın `no_show_count`'unu artırır (**RLS `auth.uid()=id` yüzünden app-side fallback hiç çalışmıyordu — kırıktı, RPC ile düzeltildi**), eşik **2 → hesap askıya alınır**. **Gift no-show maddi kayıp içerdiğinden ağırlıklı: +2 (tek gift no-show'u suspend eder)** + `no_show_reported_by` işareti + `suspension_reason='gift no-show (maddi kayıp)'`. _(not: `matches.meeting_status` kolonu hâlâ güncelleniyor değil; §11 legacy)_
@@ -164,6 +167,32 @@ active (6/12/24/48 saat — sahibi seçer; ASLA plandan sonra bitmez, bkz. süre
 | Kategori-akış iyileştirmeleri (§3.1: gift tarih opsiyonel, travel başlangıç tarihi, culture placeholder) | 🕐 uygun boşluk | açık |
 | Hediye ürün linki — güvenli görünürlük (§3.2: kolon+beyaz liste+moderasyon+get_gift_link RPC+sohbet kartı) | 🔧 tasarım onayı bekliyor | açık |
 | Legacy statü/kolon temizliği | 🕐 post-launch | açık |
+
+## 14. Anti-fraud kuralları (18.08.2026 denetimi — Mustafa kararı "hepsi çözülsün")
+
+Sunucu: `supabase/migrations/20260818_antifraud_hardening.sql` (+ `_fix1`), canlı 18.08 15:00 MSK, 12 senaryo rollback-testiyle doğrulandı. Demo/test hesapları (`is_test_user`) içerik filtresi ve soğumadan **muaf** (Apple review sahnesi etkilenmez). Tüm hata token'ları istemcide `GuardError` → aurora snackbar ile yerelleştirilir.
+
+| Kural | Nerede | Token |
+|---|---|---|
+| Eşleşmenin tarafları/daveti/kategorisi katılımcı tarafından değiştirilemez; `meeting_confirmed_*`/`no_show_reported_by` yalnız `confirm_meeting` (GUC `soulchoice.match_ok`) | trigger `prevent_matches_tamper` | (sessiz geri alma) |
+| Engelleme = bayrak (`blocked_by/blocked_at`, tek sefer, geri alınamaz); engelli çift mesaj/başvuru/seçim yapamaz | trigger `enforce_message_allowed`, `enforce_application_rules`, `match_and_select` | `MATCH_BLOCKED` |
+| Match silinirken mesajlar `messages_archive`'e (kanıt; ops `ops_report_messages(report_id)`) | trigger `archive_messages_before_match_delete` | — |
+| Hediye daveti: 7 günde en fazla 3 (silinenler dahil, `invitation_create_log`) | trigger `enforce_invitation_rules` | `GIFT_INVITATION_COOLDOWN` |
+| Hediye serbest-metin dalı: para/kart/СБП/sertifika/temas isteği yasak (yalnız ürün adı) | trigger `enforce_gift_link` | `GIFT_TEXT_INVALID` |
+| Eşleşmeye kategori kopyalanır (`matches.invitation_category`) → davet silinse de gift no-show ağırlığı 2 kalır | trigger `matches_snapshot_category` | — |
+| Başvuru varken kategori/akış değişmez; başlık/mekân/tarih/açıklama değişirse bekleyen başvuranlara `invitation_updated` bildirimi (30 dk dedupe) | trigger `enforce_invitation_rules`, `notify_invitation_updated` | `INVITATION_LOCKED_HAS_APPLICATIONS` |
+| Cinsiyet ilk kayıttan sonra kilitli (sessiz) | trigger `enforce_profile_text_rules` | — |
+| Temas filtresi (link, t.me/wa.me/vk, telegram/whatsapp, `@handle`, telefon): ad/bio/iş/eğitim, davet başlık/açıklama/mekân, prompt cevapları. Sohbet mesajları **muaf** (eşleşme sonrası iletişim meşru) | trigger'lar + `contains_contact_info()` | `CONTACT_INFO_NOT_ALLOWED` |
+| Uzunluk: ad ≤30, iş/eğitim ≤60, mekân ≤80, prompt ≤150, mesaj ≤2000 (istemci `maxLength` aynı) | CHECK | — |
+| Davet açmada selfie kapısı DB'de (başvurudaki gibi) | trigger `enforce_invitation_rules` | `SELFIE_NOT_APPROVED` |
+| No-show ihbarı: buluşma saati VE eşleşmeden ≥24 saat geçmeden kabul edilmez (tarihsiz/geri tarihli hediye eşleşmesinde anında askı silahı kapandı) | `confirm_meeting` | `meeting_not_yet` |
+| Şikayet: `match_id`/`invitation_id` bağlamı, `reported_name_snapshot`; `v_open_reports` LEFT JOIN (taraf silinse de kuyrukta kalır) + kanıt sayaçları; "Мошенничество / просьба денег" sebebi ilk sırada; sohbet menüsünden şikayet | migration + istemci | — |
+| Sohbette bir kez görünen güvenlik bandı: "buluşmadan önce para/hediye göndermeyin, SoulChoice asla transfer istemez" (kapatılabilir, cihazda hatırlanır) | istemci | — |
+
+**Bilinçli olarak YAPILMAYAN / ertelenen (18.08):**
+- Fotoğraf yayın-öncesi moderasyonu — tek moderatörle yeni kullanıcı fotoğrafı saatlerce görünmez kalır; lansman UX'i bozar. 🕐 hacim gelince.
+- `no_show_count/suspended_at/suspension_reason/warning_count` sütunlarının herkese okunur olması — mağazadaki istemciler bu sütunları select ediyor; revoke eski sürümleri kırar. 🕐 sonraki paket + `my_profile_private()` RPC.
+- Askıdaki hesabın silinip aynı numarayla temiz kayıt olması + OTP IP başına gün sınırı — edge function değişikliği/deploy gerektirir; **Apple incelemesi bitene kadar deploy YOK** (OTP kesinti riski). 🕐
 
 ## 13. Kalıcı ürün-mantığı denetimi — "Kullanıcı Kapısı" (15.07.2026, Mustafa talebi)
 

@@ -10,7 +10,16 @@ import '../../../shared/widgets/sc_scaffold.dart';
 
 class ReportUserScreen extends StatefulWidget {
   final String userId;
-  const ReportUserScreen({super.key, required this.userId});
+  // Bağlam (18.08 anti-fraud): sohbetten gelen şikayette match id, davetten
+  // gelende invitation id — ops paneli kanıtla (mesaj arşivi) birlikte görür.
+  final String? matchId;
+  final String? invitationId;
+  const ReportUserScreen({
+    super.key,
+    required this.userId,
+    this.matchId,
+    this.invitationId,
+  });
 
   @override
   State<ReportUserScreen> createState() => _ReportUserScreenState();
@@ -20,6 +29,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
   static List<String> _getReasons(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return [
+      l.report_reason_fraud,
       l.report_reason_inappropriate,
       l.report_reason_harassment,
       l.report_reason_spam,
@@ -28,7 +38,7 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
     ];
   }
 
-  static const int _otherReasonIndex = 4;
+  static const int _otherReasonIndex = 5;
 
   int? _selectedReason;
   final _descController = TextEditingController();
@@ -108,6 +118,8 @@ class _ReportUserScreenState extends State<ReportUserScreen> {
         'reason': _getReasons(context)[_selectedReason!],
         'description': _descController.text.trim(),
         'status': 'pending',
+        if (widget.matchId != null) 'match_id': widget.matchId,
+        if (widget.invitationId != null) 'invitation_id': widget.invitationId,
       });
       if (mounted) {
         _showAuroraSnack(

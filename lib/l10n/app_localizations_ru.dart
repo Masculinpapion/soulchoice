@@ -1083,6 +1083,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Аккаунт этого пользователя удалён. Отправка сообщений больше недоступна.';
 
   @override
+  String get chat_blocked_banner => 'Этот чат закрыт';
+
+  @override
+  String get chat_safety_notice =>
+      'Не переводите деньги и не отправляйте подарки до личной встречи. SoulChoice никогда не просит переводы.';
+
+  @override
   String get chat_meeting_question => 'Встреча состоялась?';
 
   @override
@@ -1185,6 +1192,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get err_account_suspended => 'Твой аккаунт приостановлен.';
 
   @override
+  String get err_gift_invitation_cooldown =>
+      'Слишком много подарочных приглашений — попробуйте через несколько дней';
+
+  @override
+  String get err_invitation_locked_has_applications =>
+      'Категорию нельзя изменить: уже есть заявки';
+
+  @override
+  String get err_contact_info_not_allowed =>
+      'Ссылки, номера телефонов и контакты мессенджеров в тексте запрещены';
+
+  @override
+  String get err_match_blocked => 'Действие недоступно';
+
+  @override
   String get selfie_reason_face_unclear => 'Лицо видно нечётко';
 
   @override
@@ -1225,6 +1247,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notif_type_selection_reminder_body =>
       'Окно выбора скоро закроется — загляни в заявки.';
+
+  @override
+  String get notif_type_invitation_updated_title => 'Приглашение изменилось';
+
+  @override
+  String get notif_type_invitation_updated_body =>
+      'Хозяин изменил детали приглашения';
 
   @override
   String get messages_empty_active => 'Пока нет чатов';
@@ -1592,6 +1621,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get report_why => 'Почему ты жалуешься?';
+
+  @override
+  String get report_reason_fraud => 'Мошенничество / просьба денег';
 
   @override
   String get report_reason_inappropriate => 'Неприемлемый контент / фото';

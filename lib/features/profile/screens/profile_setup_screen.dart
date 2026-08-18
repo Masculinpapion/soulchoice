@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/utils/guard_errors.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
@@ -278,10 +279,14 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Bilinen guard token'ı (CONTACT_INFO_NOT_ALLOWED vb.) lokalize gösterilir
+        final guard = await GuardError.resolve(context, e);
+        if (!mounted) return;
         showAuroraErrorSnack(
           context,
-          AppLocalizations.of(context)!
-              .profile_setup_error(AppLocalizations.of(context)!.error_generic),
+          guard?.message ??
+              AppLocalizations.of(context)!
+                  .profile_setup_error(AppLocalizations.of(context)!.error_generic),
         );
         setState(() => _isSaving = false);
       }
@@ -500,6 +505,8 @@ class _StepNameAge extends StatelessWidget {
             const SizedBox(height: 32),
             TextField(
               controller: nameController,
+              // DB sınırı users.name ≤ 30 (18.08); sayaç gizli
+              maxLength: 30,
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 16,
@@ -507,6 +514,7 @@ class _StepNameAge extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
+                counterText: '',
                 hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_name_label,
@@ -1018,6 +1026,8 @@ class _StepJobEducation extends StatelessWidget {
             const SizedBox(height: 32),
             TextField(
               controller: jobController,
+              // DB sınırı users.job ≤ 60 (18.08); sayaç gizli
+              maxLength: 60,
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 16,
@@ -1025,6 +1035,7 @@ class _StepJobEducation extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
+                counterText: '',
                 hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_job_label,
@@ -1033,6 +1044,8 @@ class _StepJobEducation extends StatelessWidget {
             const SizedBox(height: 20),
             TextField(
               controller: educationController,
+              // DB sınırı users.education ≤ 60 (18.08); sayaç gizli
+              maxLength: 60,
               style: TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 16,
@@ -1040,6 +1053,7 @@ class _StepJobEducation extends StatelessWidget {
                 height: 1.6,
               ),
               decoration: InputDecoration(
+                counterText: '',
                 hintText: AppLocalizations.of(
                   context,
                 )!.profile_setup_education_label,
@@ -1311,8 +1325,11 @@ class _StepPrompts extends StatelessWidget {
                         height: 1.6,
                       ),
                       initialValue: answers[e.key] ?? '',
+                      // DB sınırı user_prompts.answer ≤ 150 (18.08); sayaç gizli
+                      maxLength: 150,
                       onChanged: (v) => onAnswered(e.key, v),
                       decoration: InputDecoration(
+                        counterText: '',
                         hintText: AppLocalizations.of(
                           context,
                         )!.profile_setup_prompts_answer_hint,

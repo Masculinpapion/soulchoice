@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
     show FunctionException, Supabase;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:soulchoice/core/utils/legal_links.dart';
 import '../../../core/auth/otp_autofill.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -316,7 +317,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => launchUrl(
-                              Uri.parse('https://soulchoice.app/privacy'),
+                              LegalLinks.privacy(context),
                             ),
                         ),
                         // NBSP: '&' satır başına yetim düşmesin
@@ -331,7 +332,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => launchUrl(
-                              Uri.parse('https://soulchoice.app/terms'),
+                              LegalLinks.terms(context),
                             ),
                         ),
                       ],

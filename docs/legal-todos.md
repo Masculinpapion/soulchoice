@@ -74,3 +74,9 @@ sadece yeni kullanıcıların gördüğü kayıt tamamlama ekranı, doğru hukuk
 DB: `users.consent_given_at` + `users.consent_version` alanları eklendi
 (`supabase/migrations/20260708_consent_tracking.sql`), her onayda audit amacıyla
 dolduruluyor. Cihazda uçtan uca test edildi (buton disabled/enabled davranışı dahil).
+
+## 18.08.2026 — Hukuki metinler güncellendi + çok dilli (CANLI)
+- Privacy / Terms / Oferta yeni redaksiyon **18.08.2026** yayında: soulchoice.app/{privacy,terms,oferta}; çeviriler `/en/…` ve `/tr/…` (bilgilendirme; RU bağlayıcı), sayfa üstünde RU·EN·TR geçişi; oferta iade bölümü `#refund` çapası. Uygulama linkleri dile göre açar (`lib/core/utils/legal_links.dart`, sonraki paket).
+- **TEK KAYNAK artık repo:** `docs/legal/{privacy,terms,oferta}.html` (+ `en/`, `tr/`) — sunucuya buradan scp edilir; sunucuda `*.bak-20260818-legal` yedekleri, nginx yedeği `/root/backups/nginx-default.bak-20260818-legal`.
+- İçerik: GPS ifadesi kaldırıldı (şehir elle), veri kategorileri/alıcılar (СМС.РУ, Google FCM+Crashlytics — sınır ötesi notu, Яндекс AppMetrica+Object Storage, Банк Точка, Таймвэб), saklama süreleri (§3.1), otomatik kararlar+moderasyon (§4.1), anında silme metni, РКН №100344985; Terms 21 yaş, temas/para yasağı, hediye kuralları (§3.1), yaptırımlar/engelleme/limitler (§6.1), 7 gün bildirim; Oferta "yalnız sınırsız başvuru", grace 24s, iade prosedürü (10 gün, banka), ihlal→iade yok, cookie/üçüncü taraf cümlesi Privacy'ye yönlendirildi.
+- **Kural (Mustafa 18.08):** her ürün/kod/DB değişikliğinde `.claude/agents/legal-counsel.md` 8 soruluk kapı; gerekiyorsa metin + EN/TR birlikte güncellenir. `oferta_version` (feature_flags/consent) 2026-07-09'da bırakıldı — yeni yükümlülük yok, yalnız netleştirme; privacy için uygulama içi "güncellendi" bildirimi ayrı karar (backlog).

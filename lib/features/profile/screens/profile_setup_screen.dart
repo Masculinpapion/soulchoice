@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:soulchoice/core/utils/legal_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -1412,7 +1413,7 @@ class _StepConsent extends StatelessWidget {
               onChanged: onDataConsentChanged,
               text: l10n.profile_setup_consent_data,
               linkText: l10n.profile_setup_consent_data_link,
-              linkUrl: 'https://soulchoice.app/privacy',
+              linkUrl: LegalLinks.privacy(context).toString(),
             ),
             const SizedBox(height: 12),
             _ConsentCheckbox(

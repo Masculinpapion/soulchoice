@@ -6,6 +6,7 @@ import '../../../core/utils/platform_x.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:soulchoice/core/utils/legal_links.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -275,7 +276,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
               Padding(
                 padding: const EdgeInsets.only(left: 30, top: 4),
                 child: GestureDetector(
-                  onTap: () => launchUrl(Uri.parse('https://soulchoice.app/oferta'),
+                  onTap: () => launchUrl(LegalLinks.oferta(context),
                       mode: LaunchMode.externalApplication),
                   child: Text(
                     l10n.sub_consent_open_oferta,

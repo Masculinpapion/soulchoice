@@ -189,6 +189,8 @@ Sunucu: `supabase/migrations/20260818_antifraud_hardening.sql` (+ `_fix1`), canl
 | Şikayet: `match_id`/`invitation_id` bağlamı, `reported_name_snapshot`; `v_open_reports` LEFT JOIN (taraf silinse de kuyrukta kalır) + kanıt sayaçları; "Мошенничество / просьба денег" sebebi ilk sırada; sohbet menüsünden şikayet | migration + istemci | — |
 | Sohbette bir kez görünen güvenlik bandı: "buluşmadan önce para/hediye göndermeyin, SoulChoice asla transfer istemez" (kapatılabilir, cihazda hatırlanır) | istemci | — |
 
+**Kapanış taraması ekleri (18.08 akşam, canlı):** `20260818_otp_daily_cap.sql` — telefon başına 24 saatte 15 OTP kodu (demo numarası muaf; `call_otps` INSERT trigger'ı, aşımda kod saklanmaz → kaba-kuvvet kapanır; SMS gönderim öncesi kontrol edge tarafında Apple sonrası). `20260818_rls_exposure_fix.sql` — 18 ops görünümü (`v_*`) anon/authenticated'dan alındı; `invitations_select`/`photos_select` yalnız authenticated; `simulate_test_liveliness`/`cleanup_client_errors`/`downgrade_expired_premium`/yardımcı fonksiyonlar anon'dan alındı; users guard'a `warning_count` + BEFORE INSERT guard (ilk kayıtta is_admin/premium/selfie yazılamaz). İstemci: paywall oferta metni tıklanabilir link, onay metni "21 год". Ödeme yolu ayrı denetimde SAFE (webhook banka-doğrulamalı, idempotent).
+
 **Bilinçli olarak YAPILMAYAN / ertelenen (18.08):**
 - Fotoğraf yayın-öncesi moderasyonu — tek moderatörle yeni kullanıcı fotoğrafı saatlerce görünmez kalır; lansman UX'i bozar. 🕐 hacim gelince.
 - `no_show_count/suspended_at/suspension_reason/warning_count` sütunlarının herkese okunur olması — mağazadaki istemciler bu sütunları select ediyor; revoke eski sürümleri kırar. 🕐 sonraki paket + `my_profile_private()` RPC.

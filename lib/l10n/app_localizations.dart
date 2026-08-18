@@ -2503,7 +2503,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_setup_consent_age.
   ///
   /// In en, this message translates to:
-  /// **'I am 18 years of age or older'**
+  /// **'I am 21 years of age or older'**
   String get profile_setup_consent_age;
 
   /// No description provided for @profile_setup_consent_data.
@@ -4065,6 +4065,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel'**
   String get sub_consent;
+
+  /// No description provided for @sub_consent_open_oferta.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Offer'**
+  String get sub_consent_open_oferta;
 
   /// No description provided for @sub_subscribe_cta.
   ///

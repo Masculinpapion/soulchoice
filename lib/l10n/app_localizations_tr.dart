@@ -1339,7 +1339,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Devam etmeden önce aşağıdaki üç maddeyi onayla.';
 
   @override
-  String get profile_setup_consent_age => '18 yaşımı doldurdum';
+  String get profile_setup_consent_age => '21 yaşımı doldurdum';
 
   @override
   String get profile_setup_consent_data =>
@@ -2229,6 +2229,9 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get sub_consent =>
       'Oferta koşullarını kabul ediyor, abonelik iptal edilene kadar her 30 günde bir 1 000 ₽ otomatik çekilmesine onay veriyorum';
+
+  @override
+  String get sub_consent_open_oferta => 'Oferta\'yı aç';
 
   @override
   String get sub_subscribe_cta => 'Abone ol — 1000 ₽/ay';

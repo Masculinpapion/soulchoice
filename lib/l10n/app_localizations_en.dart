@@ -1344,7 +1344,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Before continuing, please confirm the three items below.';
 
   @override
-  String get profile_setup_consent_age => 'I am 18 years of age or older';
+  String get profile_setup_consent_age => 'I am 21 years of age or older';
 
   @override
   String get profile_setup_consent_data =>
@@ -2239,6 +2239,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sub_consent =>
       'I agree to the Offer terms and authorize automatic charges of 1,000 ₽ every 30 days until I cancel';
+
+  @override
+  String get sub_consent_open_oferta => 'Open the Offer';
 
   @override
   String get sub_subscribe_cta => 'Subscribe — 1000 ₽/month';

@@ -270,6 +270,23 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
                   ],
                 ),
               ),
+              // 18.08: oferta metni tıklanabilir değildi (yasal UX) — kullanıcı kabul
+              // ettiği belgeyi uygulama içinden açabilmeli.
+              Padding(
+                padding: const EdgeInsets.only(left: 30, top: 4),
+                child: GestureDetector(
+                  onTap: () => launchUrl(Uri.parse('https://soulchoice.app/oferta'),
+                      mode: LaunchMode.externalApplication),
+                  child: Text(
+                    l10n.sub_consent_open_oferta,
+                    style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 12.5,
+                        decoration: TextDecoration.underline,
+                        color: AuroraTheme.auroraBlue),
+                  ),
+                ),
+              ),
               if (sheetError != null) ...[
                 const SizedBox(height: 12),
                 Row(

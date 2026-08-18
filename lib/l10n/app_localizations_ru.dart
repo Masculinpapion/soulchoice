@@ -1355,7 +1355,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Прежде чем продолжить, подтверди три пункта ниже.';
 
   @override
-  String get profile_setup_consent_age => 'Мне исполнилось 18 лет';
+  String get profile_setup_consent_age => 'Мне исполнился 21 год';
 
   @override
   String get profile_setup_consent_data =>
@@ -2284,6 +2284,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get sub_consent =>
       'Соглашаюсь с условиями Оферты и даю согласие на автоматическое списание 1 000 ₽ каждые 30 дней до отмены подписки';
+
+  @override
+  String get sub_consent_open_oferta => 'Открыть Оферту';
 
   @override
   String get sub_subscribe_cta => 'Оформить подписку — 1000 ₽/мес';

@@ -70,25 +70,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
     if (mounted) setState(() { _users = parsed; _loading = false; });
   }
 
-  Future<void> _unblock(String blockedId) async {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
 
-    setState(() => _users.removeWhere((u) => u.id == blockedId));
-
-    try {
-      await Supabase.instance.client
-          .from('blocks')
-          .delete()
-          .eq('blocker_id', uid)
-          .eq('blocked_id', blockedId);
-      // Engeli kalkan kişinin ilanları feed/keşfete anında dönsün (31.07)
-      ref.invalidate(invitationsProvider);
-      ref.invalidate(discoverProvider);
-    } catch (_) {
-      await _load();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +123,6 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
                             itemBuilder: (_, i) =>
                                 _BlockedTile(
                                   user: _users[i],
-                                  onUnblock: () => _unblock(_users[i].id),
                                 ),
                           ),
               ),
@@ -162,8 +143,8 @@ class _BlockedUser {
 
 class _BlockedTile extends StatelessWidget {
   final _BlockedUser user;
-  final VoidCallback onUnblock;
-  const _BlockedTile({required this.user, required this.onUnblock});
+  final VoidCallback? onUnblock; // 20.08: kullanılmıyor (engel kaldırma yok)
+  const _BlockedTile({required this.user, this.onUnblock});
 
   @override
   Widget build(BuildContext context) => ClipRRect(
@@ -210,20 +191,9 @@ class _BlockedTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: onUnblock,
-                  style: TextButton.styleFrom(
-                    foregroundColor: AuroraTheme.auroraRed,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                    textStyle: const TextStyle(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                  ),
-                  child: Text(AppLocalizations.of(context)!.blocked_users_unblock_btn),
-                ),
+                // 20.08 (Mustafa kararı): "Разблокировать" KALDIRILDI — engel geri
+                // alınamaz (18.08 anti-fraud: match kilidi kalıcı, engel kaldırmak
+                // kilitli sohbetle tutarsız kalıyordu). Liste salt-okunur.
               ],
             ),
           ),

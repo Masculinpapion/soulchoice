@@ -19,7 +19,8 @@ class SubscriptionScreen extends StatefulWidget {
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
 }
 
-class _SubscriptionScreenState extends State<SubscriptionScreen> {
+class _SubscriptionScreenState extends State<SubscriptionScreen>
+    with WidgetsBindingObserver {
   Map<String, dynamic>? _data;
   bool _loading = true;
   bool _loadError = false;
@@ -29,8 +30,22 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadMode();
     _refresh();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // 19.08 (Mustafa): kullanıcı bu ekrandan web'e gidip ödeme/iptal yapıp
+  // dönebilir (iOS'ta tek yol web) → resume'da durumu tazele.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_busy) _refresh();
   }
 
   Future<void> _loadMode() async {

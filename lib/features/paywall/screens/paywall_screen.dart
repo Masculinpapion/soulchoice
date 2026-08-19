@@ -64,11 +64,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
   }
 
   Future<void> _checkPremiumAfterReturn() async {
-    if (!_checkoutLaunched) return;
+    // 19.08 (Mustafa): ödeme uygulama DIŞINDAN da yapılabilir (Android kullanıcı
+    // web'den, iOS her zaman web'den). Resume'da HER ZAMAN tek sorguyla kontrol et;
+    // yalnız uygulamadan başlatılan ödemede webhook gecikmesi için 2. deneme +
+    // "işleniyor" uyarısı var.
+    final launched = _checkoutLaunched;
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
-    // Webhook redirect'ten birkaç saniye sonra işleyebilir → 2 deneme
-    for (var attempt = 0; attempt < 2; attempt++) {
+    final attempts = launched ? 2 : 1;
+    for (var attempt = 0; attempt < attempts; attempt++) {
       try {
         final row = await Supabase.instance.client
             .from('users')
@@ -89,12 +93,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
           return;
         }
       } catch (_) {}
-      await Future.delayed(const Duration(seconds: 4));
-      if (!mounted) return;
+      if (attempt + 1 < attempts) {
+        await Future.delayed(const Duration(seconds: 4));
+        if (!mounted) return;
+      }
     }
-    // Webhook henüz işlemedi: kullanıcı sessizlikte bırakılmaz, tekrar
-    // ödeme denemesin (11.08 denetim).
-    if (mounted) {
+    // Uygulamadan başlatılan ödemede webhook henüz işlemedi: kullanıcı
+    // sessizlikte bırakılmaz, tekrar ödeme denemesin (11.08 denetim).
+    // Dışarıdan ödeme yoksa (sıradan resume) sessiz kal.
+    if (launched && mounted) {
       _snack(AppLocalizations.of(context)!.paywall_processing);
     }
   }

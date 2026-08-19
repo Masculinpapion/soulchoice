@@ -334,7 +334,9 @@ const I18N = {
     code_label_call: 'Код из звонка',
     code_hint_call: 'Вам позвонит робот — отвечать не нужно. Введите последние 4 цифры входящего номера. Звонок может прийти беззвучно — проверьте пропущенные.',
     btn_call: 'Не пришло SMS? Получить код звонком',
+    btn_call_again: 'Не дозвонились? Позвонить ещё раз',
     btn_call_wait: 'Получить код звонком ({s} с)',
+    btn_call_again_wait: 'Позвонить ещё раз ({s} с)',
     btn_verify: 'Подтвердить',
     verified: '✓ Номер подтверждён',
     email_label: 'E-mail для чеков и уведомлений',
@@ -385,7 +387,9 @@ const I18N = {
     code_label_call: 'Code from the call',
     code_hint_call: 'You will get a robocall — no need to answer. Enter the last 4 digits of the incoming number. The call may be silent — check missed calls.',
     btn_call: 'No SMS? Get the code by phone call',
+    btn_call_again: 'No call? Call again',
     btn_call_wait: 'Get the code by call ({s} s)',
+    btn_call_again_wait: 'Call again ({s} s)',
     btn_verify: 'Confirm',
     verified: '✓ Number confirmed',
     email_label: 'Email for receipts and notices',
@@ -440,7 +444,7 @@ function setLang(l) {
   if (typeof applyOtpTexts === 'function') {
     applyOtpTexts();
     const b = document.getElementById('btn-call');
-    if (b && !callTimer) b.textContent = I18N[l].btn_call;
+    if (b && !callTimer) b.textContent = otpChannel === 'call' ? I18N[l].btn_call_again : I18N[l].btn_call;
   }
   // i18n fix (09.07.2026): yonetim paneli dinamik render — dil degisince yeniden ciz
   const manageStep = document.getElementById('step-manage');
@@ -486,10 +490,10 @@ function startCallCountdown(sec) {
   const tick = () => {
     if (left <= 0) {
       clearInterval(callTimer); callTimer = null;
-      b.disabled = false; b.textContent = I18N[lang].btn_call;
+      b.disabled = false; b.textContent = otpChannel === 'call' ? I18N[lang].btn_call_again : I18N[lang].btn_call;
       return;
     }
-    b.disabled = true; b.textContent = I18N[lang].btn_call_wait.replace('{s}', left);
+    b.disabled = true; b.textContent = (otpChannel === 'call' ? I18N[lang].btn_call_again_wait : I18N[lang].btn_call_wait).replace('{s}', left);
     left -= 1;
   };
   tick(); callTimer = setInterval(tick, 1000);

@@ -26,6 +26,13 @@ declare
   v_refreshed int := 0;
   v_apps      int := 0;
   v_touched   int := 0;
+  -- İçerik rotasyonu (19.08.2026): kişi başına birden çok davet varyantı
+  v_nvar      int;
+  v_cur       int;
+  v_next      int;
+  v_var       record;
+  v_evbase    timestamptz;
+  v_evdate    timestamptz;
 begin
   -- ── 1) Davet rebirth: dolan kart ANINDA yenilenir (v2 — ölü bekleme yok) ──
   for r in
@@ -84,6 +91,42 @@ begin
     delete from public.applications a
     where a.invitation_id = r.inv_id
       and a.status in ('pending', 'withdrawn', 'rejected', 'expired');
+
+    -- İÇERİK ROTASYONU (19.08.2026, Mustafa kararı): test kartı yeniden doğarken
+    -- kişinin sıradaki davet varyantını alır (kategori/başlık/açıklama/mekân/saat)
+    -- → "aynı kişi aynı kafede her gün" sahte sinyali kalkar. Varyant yoksa
+    -- (ör. Демо) içerik aynen kalır. Sıra: test_rotation_state (kişi başına seq).
+    select count(*) into v_nvar
+      from public.test_invitation_variants where owner_id = r.user_id;
+    if v_nvar > 1 then
+      select seq into v_cur from public.test_rotation_state where owner_id = r.user_id;
+      v_next := (coalesce(v_cur, 0) + 1) % v_nvar;
+      select * into v_var
+        from public.test_invitation_variants
+       where owner_id = r.user_id and seq = v_next;
+      if found then
+        -- event_date: expires+1h'den sonraki ilk "varyant saati" (MSK) — süre kuralı
+        -- expires_at ≤ event_date − 1h (17.08) korunur.
+        v_evbase := v_expires + interval '1 hour';
+        v_evdate := (date_trunc('day', v_evbase at time zone 'Europe/Moscow')
+                     + make_interval(hours => v_var.ev_hour)) at time zone 'Europe/Moscow';
+        if v_evdate < v_evbase then v_evdate := v_evdate + interval '1 day'; end if;
+
+        update public.invitations i
+           set category    = v_var.category,
+               title       = v_var.title,
+               description = v_var.description,
+               venue_name  = v_var.venue_name,
+               event_date  = v_evdate
+         where i.id = r.inv_id
+           and exists (select 1 from public.users ou
+                       where ou.id = i.owner_id and ou.is_test_user = true);  -- çifte guard
+
+        insert into public.test_rotation_state (owner_id, seq)
+        values (r.user_id, v_next)
+        on conflict (owner_id) do update set seq = excluded.seq, updated_at = now();
+      end if;
+    end if;
 
     -- 0–4 taze test başvuranı ek (aynı şehir, karşı cinsiyet, davet doğumundan sonra damga)
     n_apps := floor(random()*5)::int;

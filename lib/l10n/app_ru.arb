@@ -21,6 +21,7 @@
   "btn_reject": "Отклонить",
   "btn_try_again": "Повторить",
   "error_generic": "Произошла ошибка",
+  "chat_noshow_too_early": "Сообщить о неявке можно после времени встречи и не раньше чем через 24 часа после совпадения.",
   "settings_language": "Язык",
   "settings_language_system": "Язык системы",
   "settings_notifications": "Уведомления",

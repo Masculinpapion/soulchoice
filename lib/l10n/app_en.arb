@@ -21,6 +21,7 @@
   "btn_reject": "Reject",
   "btn_try_again": "Try again",
   "error_generic": "Something went wrong",
+  "chat_noshow_too_early": "You can report a no-show once the meeting time has passed and at least 24 hours after the match.",
   "settings_language": "Language",
   "settings_language_system": "System language",
   "settings_notifications": "Notifications",

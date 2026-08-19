@@ -78,6 +78,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get error_generic => 'Bir hata oluştu';
 
   @override
+  String get chat_noshow_too_early =>
+      'Gelmediğini, buluşma saati geçtikten ve eşleşmeden en az 24 saat sonra bildirebilirsin.';
+
+  @override
   String get settings_language => 'Dil';
 
   @override

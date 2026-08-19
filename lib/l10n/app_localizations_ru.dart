@@ -77,6 +77,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get error_generic => 'Произошла ошибка';
 
   @override
+  String get chat_noshow_too_early =>
+      'Сообщить о неявке можно после времени встречи и не раньше чем через 24 часа после совпадения.';
+
+  @override
   String get settings_language => 'Язык';
 
   @override

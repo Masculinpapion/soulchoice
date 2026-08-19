@@ -77,6 +77,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_generic => 'Something went wrong';
 
   @override
+  String get chat_noshow_too_early =>
+      'You can report a no-show once the meeting time has passed and at least 24 hours after the match.';
+
+  @override
   String get settings_language => 'Language';
 
   @override

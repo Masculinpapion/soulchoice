@@ -431,11 +431,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     setState(() => _loadingMore = true);
     try {
       final oldest = _messages.first.createdAt;
-      final data = await Supabase.instance.client
+      var moreQuery = Supabase.instance.client
           .from('messages')
           .select()
           .eq('match_id', widget.matchId)
-          .lt('created_at', oldest.toUtc().toIso8601String())
+          .lt('created_at', oldest.toUtc().toIso8601String());
+      // 20.08 (kısa tur): tek taraflı silme sınırı sayfalamada da geçerli —
+      // önceden ≥50 yeni mesaj sonrası yukarı kaydırınca silinmiş geçmiş geri geliyordu.
+      final clearedMore = _myClearedAt;
+      if (clearedMore != null) {
+        moreQuery = moreQuery.gt('created_at', clearedMore.toUtc().toIso8601String());
+      }
+      final data = await moreQuery
           .order('created_at', ascending: false)
           .limit(_pageSize);
       if (!mounted) return;
@@ -722,8 +729,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   bool get _showAttendanceBanner {
     if (_myConfirmation != null) return false;
-    // Tarihli buluşma: saatinden sonra
-    if (_meetingDate != null) return DateTime.now().isAfter(_meetingDate!);
+    // 20.08 (kısa tur): engelli eşleşmede anket yok — sunucu confirm_meeting da
+    // MATCH_BLOCKED fırlatır (engellenen, engelleyeni askıya aldıramaz).
+    if (_blocked) return false;
+    // Tarihli buluşma: saatinden sonra VE eşleşmeden 24 saat sonra — sunucu
+    // kuralıyla aynı: max(meeting_date, created_at+24h); önceden aynı-gün planda
+    // 23 saat boyunca "Bir şeyler ters gitti" görünüyordu.
+    if (_meetingDate != null) {
+      final earliest = _matchCreatedAt == null
+          ? _meetingDate!
+          : (_meetingDate!.isAfter(_matchCreatedAt!.add(const Duration(hours: 24)))
+              ? _meetingDate!
+              : _matchCreatedAt!.add(const Duration(hours: 24)));
+      return DateTime.now().isAfter(earliest);
+    }
     // Tarihsiz hediye buluşması: eşleşmeden (kabul) 24 saat sonra anket çıkar —
     // gift ilanında tarih opsiyonel olduğundan meeting_date olmayabilir, ama
     // no-show yine izlenebilmeli.
@@ -743,13 +762,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         'p_match_id': widget.matchId,
         'p_attended': attended,
       });
-    } catch (_) {
+    } catch (e) {
       // 31.07 denetimi: hata yutulup "kaydedildi" gösteriliyordu — no-show
       // sayacı hiç artmadan kullanıcı bildirdiğini sanıyordu. Hata görünür,
       // banner açık kalır, tekrar deneyebilir.
+      // 20.08: sunucu 'meeting_not_yet' (24 saat kapısı) → açıklayıcı metin.
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        final msg = e.toString().contains('meeting_not_yet')
+            ? l10n.chat_noshow_too_early
+            : l10n.error_generic;
         _showAuroraSnack(
-          AppLocalizations.of(context)!.error_generic,
+          msg,
           accentColor: AuroraTheme.auroraRed,
           icon: Icons.error_outline,
         );

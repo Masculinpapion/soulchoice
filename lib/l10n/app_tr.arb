@@ -21,6 +21,7 @@
   "btn_reject": "Reddet",
   "btn_try_again": "Tekrar dene",
   "error_generic": "Bir hata oluştu",
+  "chat_noshow_too_early": "Gelmediğini, buluşma saati geçtikten ve eşleşmeden en az 24 saat sonra bildirebilirsin.",
   "settings_language": "Dil",
   "settings_language_system": "Sistem dili",
   "settings_notifications": "Bildirimler",

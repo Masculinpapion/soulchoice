@@ -226,6 +226,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong'**
   String get error_generic;
 
+  /// No description provided for @chat_noshow_too_early.
+  ///
+  /// In en, this message translates to:
+  /// **'You can report a no-show once the meeting time has passed and at least 24 hours after the match.'**
+  String get chat_noshow_too_early;
+
   /// No description provided for @settings_language.
   ///
   /// In en, this message translates to:

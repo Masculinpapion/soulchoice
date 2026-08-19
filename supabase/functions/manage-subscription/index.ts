@@ -109,7 +109,8 @@ serve(async (req) => {
           `select amount, status, charge_type, paid_at, created_at
              from payments
             where user_id = $1
-            order by created_at desc
+              and status in ('paid', 'refunded')   -- 19.08: ödenmemiş/expired linkler geçmişte görünmesin
+            order by coalesce(paid_at, created_at) desc
             limit 12`,
           [user.id],
         )

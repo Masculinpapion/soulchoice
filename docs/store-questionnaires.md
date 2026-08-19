@@ -9,7 +9,7 @@ Mustafa'nın konsollarda dolduracağı formların hazır cevapları. Kaynak: ger
 - Kullanıcılar birbirine kişisel bilgi verebilir mi: EVET (mesajlaşma)
 - Konum paylaşımı: hassas/gerçek-zamanlı konum paylaşımı **YOK** (yalnız kullanıcının beyan ettiği şehir görünür)
 - Dijital satın alma: VAR (Premium abonelik)
-- Beklenen sonuç: **18+ / Mature** — doğrudur, itiraz etme (RU 18 yaş onayı kayıtta zaten zorunlu)
+- Beklenen sonuç: **18+ / Mature** — doğrudur, itiraz etme (kayıtta 21 yaş onayı zorunlu; mağaza derecesi 18+ kategorisi)
 
 ## 2) Google Play — Data Safety formu
 **Toplanan veriler (collected):**

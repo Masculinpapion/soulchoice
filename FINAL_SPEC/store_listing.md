@@ -22,7 +22,7 @@ SoulChoice — приложение для тех, кто выбирает жи�
 
 Как это работает:
 • Создай приглашение на реальное событие — ужин, концерт, прогулка — или откликнись на чужое
-• Приглашения живут 24 часа — только актуальные, только рядом
+• Приглашения живут до 48 часов — только актуальные, только рядом
 • Все анкеты проходят проверку по селфи — никаких фейков и старых фото
 • Владелец приглашения сам выбирает, с кем встретиться
 • После взаимного выбора открывается чат
@@ -59,7 +59,7 @@ SoulChoice is for people who choose real connection over endless swiping.
 
 How it works:
 • Create an invitation to a real event — dinner, a concert, a walk — or apply to someone else's
-• Invitations last 24 hours — only what's current, only what's nearby
+• Invitations last up to 48 hours — only what's current, only what's nearby
 • Every profile is selfie-verified — no fakes, no outdated photos
 • The invitation owner picks who to meet
 • A chat opens once you're matched
@@ -96,7 +96,7 @@ SoulChoice, sonsuz kaydırma yerine gerçek buluşmayı seçenler için.
 
 Nasıl çalışır:
 • Gerçek bir etkinliğe davetiye oluştur — akşam yemeği, konser, yürüyüş — ya da birinin davetiyesine başvur
-• Davetiyeler 24 saat geçerli — sadece güncel, sadece yakınındaki
+• Davetiyeler en fazla 48 saat geçerli — sadece güncel, sadece yakınındaki
 • Her profil selfie ile doğrulanır — sahte hesap ve eski fotoğraf yok
 • Davetiye sahibi kiminle buluşacağına kendi karar verir
 • Karşılıklı seçim sonrası sohbet açılır

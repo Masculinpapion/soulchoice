@@ -25,7 +25,7 @@ Telefonunda uygulamayı bir kez aç (soğuk açılış hızlı olsun), Wi-Fi'a b
 
 ## 3 · Ürünü canlı göster (2 dk)
 Telefondan sırayla: **feed → davet aç → başvur → seç → sohbet**.
-Vurgu: her profil selfie ile doğrulanmış; davetler 24 saat yaşıyor; eşleşme
+Vurgu: her profil selfie ile doğrulanmış; davetler 6–48 saat yaşıyor; eşleşme
 olmadan mesaj yok.
 
 ## 4 · Mühendislik tarafı — asıl fark burada (2 dk)

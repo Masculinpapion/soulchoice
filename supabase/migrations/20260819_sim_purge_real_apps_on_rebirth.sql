@@ -1,12 +1,18 @@
--- ============================================================================
--- Test Canlılık Simülasyonu — v2 (12.07.2026, Mustafa kararı)
--- v2: persona penceresi + açlık sigortası KALDIRILDI — test kartı hiç "ölü"
---     beklemez; dolan/süresi geçen kart bir sonraki cron diliminde (max 15 dk)
---     taze karta döner. Bypass hesabı (Mustafa) motorun TAMAMEN dışında.
--- Tüm yazmalar TEK fonksiyonda; her sorgu is_test_user=true guard'lı.
--- Uygulama/feed kodu DEĞİŞMEZ. Sıfır yeni tablo.
--- Teardown: teardown-test-data.sql
--- ============================================================================
+-- 19.08.2026 — Test canlılık motoru: yeniden doğan test kartındaki GERÇEK
+-- kullanıcı başvuruları da silinir (Mustafa kararı, sahte-sinyal düzeltmesi).
+-- Sorun: simulate_test_liveliness() dolan test kartını aynı satırda tazeliyor,
+-- test→test başvuruları silip yenilerini ekliyor ama gerçek kullanıcının
+-- başvurusuna dokunmuyordu → "Başvurularım"da 21 gün reaksiyonsuz "Bekliyor"
+-- (kanıt: 279e44e0 → Ангелина/Дарина, 29.07'den beri pending).
+-- Gerçek akışla tutarlılık: matchsiz closed ilan cleanup ile SİLİNİR, başvurular
+-- CASCADE ile gider; yeniden doğan test kartı = yeni ilan → eski başvuru gider.
+-- Kullanıcı isterse yeni karta temiz başvurur (trg_reset_created_at_on_reapply);
+-- ücretsiz hak bayrağı (free_application_used) kullanıcıda → iade olmaz.
+-- Demo daveti (Mustafa hesabı, is_test_user=false) kapsam DIŞI — etkilenmez.
+-- Tek kaynak: ops/simulate_test_liveliness.sql (aynı gövde).
+-- Prod: supabase_admin ile koş; yedek /root/backups/fn_simulate_test_liveliness_pre_20260819.sql
+
+begin;
 
 create or replace function public.simulate_test_liveliness()
 returns table(refreshed_invitations int, seeded_applications int, touched_users int)
@@ -139,18 +145,13 @@ begin
 end;
 $$;
 
--- ── Cron değişimi (deploy anında, onayla) ───────────────────────────────────
--- Eski kaba job emekli:
---   select cron.unschedule(jobid) from cron.job where jobname = 'refresh-test-invitations';
--- Yeni: 15 dk'da bir, :05 expiry çakışmasından uzak dakikalarda:
---   select cron.schedule('simulate-test-liveliness', '7,22,37,52 * * * *',
---                        $sql$ select public.simulate_test_liveliness(); $sql$);
+-- Tek seferlik temizlik: test kartlarında bekleyen/geri çekilmiş GERÇEK
+-- başvurular (bugüne kadar birikenler; selected/accepted korunur).
+delete from public.applications a
+using public.invitations i, public.users o, public.users ap
+where i.id = a.invitation_id
+  and o.id = i.owner_id and o.is_test_user = true
+  and ap.id = a.applicant_id and ap.is_test_user = false
+  and a.status in ('pending', 'withdrawn', 'rejected', 'expired');
 
--- ── Deploy ÖNCESİ doğrulama listesi (10.07 salt-okuma sonuçları) ────────────
--- D1 ✓ job1: active→selecting @expiry (deadline=expires+48h); job2: selecting→closed.
---      → fonksiyon selection_deadline'a dokunmuyor; selecting/closed rebirth'te active'e döner.
--- D2 ✓ UNIQUE(invitation_id, applicant_id) mevcut → insert'e on conflict do nothing eklendi.
--- D3 ✓ invitations/applications/user_photos/… users'tan CASCADE; matches user FK'ları
---      CASCADE DEĞİL → teardown'da matches önce elle silinir (dosyada var).
--- D4 ⏳ panel istatistik sorgularının is_test_user hariç tuttuğu AYRICA kontrol edilecek
---      (panel Adım 2 kapsamı; deploy'u bloklamaz).
+commit;

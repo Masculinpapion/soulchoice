@@ -47,7 +47,10 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
         .select(
           '*, '
           'city:cities(name, name_ru, name_tr, name_en), '
-          'owner:users(id, name, age, gender, city_id, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          // 20.08: !inner → sahip filtresi SUNUCUDA uygulanır (karşı cins + yaş aralığı);
+          // önceden 30 kart iniyor, yarısı istemcide eleniyordu (kullanıcı ~15 görürdü,
+          // 30'dan sonraki karşı-cins kartlar hiç gelmezdi).
+          'owner:users!inner(id, name, age, gender, city_id, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
           'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
         )
         .eq('status', 'active')
@@ -63,6 +66,15 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     // Exclude blocked users' invitations
     if (blockedIds.isNotEmpty) {
       query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
+    }
+    // 20.08: sunucu tarafı sahip filtresi — kendi kartım her zaman, diğerleri
+    // karşı cins + yaş aralığı (istemci filtresi güvenlik ağı olarak kalır).
+    if (targetGender != null) {
+      final own = currentUserId != null ? 'id.eq.$currentUserId,' : '';
+      query = query.or(
+        '${own}and(gender.eq.$targetGender,age.gte.$minAge,age.lte.$maxAge)',
+        referencedTable: 'owner',
+      );
     }
 
     // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının

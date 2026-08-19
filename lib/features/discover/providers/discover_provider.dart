@@ -45,7 +45,8 @@ final discoverProvider =
   var query = client.from('invitations').select(
         '*, '
         'city:cities(name, name_ru, name_tr, name_en), '
-        'owner:users(id, name, age, gender, subscription_status, is_deleted, '
+        // 20.08: !inner → karşı cins + yaş filtresi sunucuda (bkz. invitations_provider)
+        'owner:users!inner(id, name, age, gender, subscription_status, is_deleted, '
         'photos:user_photos(url, is_primary, is_selfie, order_index)), '
         // RLS: başkasının kartında yalnız KENDİ başvurum döner (11.08)
         'applications(status, applicant_id)',
@@ -60,6 +61,12 @@ final discoverProvider =
   }
   if (blockedIds.isNotEmpty) {
     query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
+  }
+  if (targetGender != null) {
+    query = query
+        .eq('owner.gender', targetGender!)
+        .gte('owner.age', minAge)
+        .lte('owner.age', maxAge);
   }
 
   // 19.08 (Mustafa): gerçek kartlar vitrinin üstünde (feed_rank), sonra yeni→eski.

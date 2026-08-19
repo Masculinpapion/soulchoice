@@ -20,6 +20,23 @@ Future<String> _effectiveLocaleCode() async {
 // sihirbazın sonunda oluşur) — update 0 satıra denk gelir ve yeni kullanıcı
 // yeniden açılışa kadar push alamaz. Bu yüzden kayıt/izin akışı bittiğinde de
 // çağrılır (permissions_screen._finish).
+/// 19.08 (senaryo denetimi): çıkış/askı-çıkışından ÖNCE çağrılır — aksi hâlde
+/// aynı cihazda başka hesap girince önceki hesabın push'ları bu cihaza düşmeye
+/// devam ediyordu (token kurulum başına sabit, users.fcm_token eski satırda kalıyordu).
+/// Hata olursa yutulur; çıkış akışı engellenmez.
+Future<void> clearPushTokenBeforeSignOut() async {
+  try {
+    final uid = Supabase.instance.client.auth.currentUser?.id;
+    if (uid != null) {
+      await Supabase.instance.client
+          .from('users')
+          .update({'fcm_token': null})
+          .eq('id', uid);
+    }
+    await FirebaseMessaging.instance.deleteToken();
+  } catch (_) {}
+}
+
 Future<void> savePushToken() async {
   try {
     final uid = Supabase.instance.client.auth.currentUser?.id;

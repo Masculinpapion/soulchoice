@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/push_token.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/auth/session_expiry.dart';
@@ -84,6 +85,7 @@ class SuspendedScreen extends StatelessWidget {
                 TextButton(
                   onPressed: () async {
                     SessionExpiry.manualLogout = true;
+                    await clearPushTokenBeforeSignOut(); // 19.08
                     await Supabase.instance.client.auth.signOut();
                     if (context.mounted) context.go('/onboarding');
                   },

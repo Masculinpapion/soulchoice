@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
@@ -41,9 +42,19 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
 
   Future<void> _sendOtp() async {
     setState(() => _error = null);
-    final rawPhone = _phoneController.text.trim();
+    // 19.08 (senaryo denetimi): yalnız rakam, tam 10 hane (+7 hariç). Önceden
+    // "8916…"/"+7916…" gibi girişler +78916… olarak gidiyor, sunucu 400 dönüyor,
+    // kullanıcı "Ошибка подключения" görüyordu.
+    var rawPhone = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    if (rawPhone.length == 11 && (rawPhone.startsWith('8') || rawPhone.startsWith('7'))) {
+      rawPhone = rawPhone.substring(1); // 8916… / 7916… → 916…
+    }
     if (rawPhone.isEmpty) {
       setState(() => _error = AppLocalizations.of(context)!.phone_error_empty);
+      return;
+    }
+    if (rawPhone.length != 10) {
+      setState(() => _error = AppLocalizations.of(context)!.phone_error_format);
       return;
     }
     final phone = '$_countryCode$rawPhone';
@@ -226,6 +237,10 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                                     child: TextField(
                                       controller: _phoneController,
                                       keyboardType: TextInputType.phone,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(11),
+                                      ],
                                       style: TextStyle(
                                         fontFamily: 'Manrope',
                                         fontSize: 16,

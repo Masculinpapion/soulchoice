@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/push_token.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -697,6 +698,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onTap: () async {
                         try {
                           SessionExpiry.manualLogout = true;
+                          await clearPushTokenBeforeSignOut(); // 19.08
                           await Supabase.instance.client.auth.signOut();
                           if (context.mounted) context.go('/splash');
                         } catch (_) {

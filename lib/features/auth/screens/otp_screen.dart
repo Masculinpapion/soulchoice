@@ -103,8 +103,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       }
 
       final refreshToken = data['refresh_token'] as String;
+      // 19.08 (senaryo denetimi): yalnız refreshToken verilince gotrue
+      // `tokenRefreshed` yayar, `signedIn` HİÇ çıkmaz → main.dart'taki
+      // savePushToken() ve locale_provider'ın hesap-dili adaptasyonu girişte
+      // çalışmıyordu (ikinci cihaza push yok, dil yeniden açılışa kadar eski).
+      // accessToken da verilince gotrue `signedIn` yayar (gotrue 2.20 setSession).
+      final accessToken = data['access_token'] as String?;
       final authResponse = await Supabase.instance.client.auth.setSession(
         refreshToken,
+        accessToken: (accessToken != null && accessToken.isNotEmpty)
+            ? accessToken
+            : null,
       );
       if (!mounted) return;
 

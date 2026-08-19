@@ -157,6 +157,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get phone_error_empty => 'Telefon numarası gir';
 
   @override
+  String get phone_error_format =>
+      '+7\'den sonra 10 rakam gir, örn. 916 123 45 67';
+
+  @override
   String get phone_error_connection => 'Bağlantı hatası, tekrar dene';
 
   @override

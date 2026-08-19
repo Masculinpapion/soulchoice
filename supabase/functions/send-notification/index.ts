@@ -50,6 +50,13 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
     tr: { t: 'Yeni başvuru 🔔', b: '{name} katılmak istiyor' },
     en: { t: 'New application 🔔', b: '{name} wants to join' },
   },
+  // 19.08 (senaryo denetimi): trigger sabit RU başlık gönderiyordu; TR/EN kullanıcı
+  // RU push alıyordu. Uygulama l10n notif_type_invitation_updated_* ile birebir.
+  invitation_updated: {
+    ru: { t: 'Приглашение изменилось ✏️', b: 'Хозяин изменил детали приглашения' },
+    tr: { t: 'Davet güncellendi ✏️', b: 'Ev sahibi davet detaylarını değiştirdi' },
+    en: { t: 'Invitation updated ✏️', b: 'The host changed the invitation details' },
+  },
   new_message: {
     ru: { t: '💬 {name}', b: 'Новое сообщение' },
     tr: { t: '💬 {name}', b: 'Yeni mesaj' },

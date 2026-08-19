@@ -156,6 +156,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phone_error_empty => 'Введи номер телефона';
 
   @override
+  String get phone_error_format =>
+      'Введи 10 цифр после +7, например 916 123 45 67';
+
+  @override
   String get phone_error_connection => 'Ошибка подключения, попробуй ещё раз';
 
   @override

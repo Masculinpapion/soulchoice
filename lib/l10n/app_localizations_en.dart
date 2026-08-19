@@ -157,6 +157,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phone_error_empty => 'Enter phone number';
 
   @override
+  String get phone_error_format =>
+      'Enter 10 digits after +7, e.g. 916 123 45 67';
+
+  @override
   String get phone_error_connection => 'Connection error, please try again';
 
   @override

@@ -382,6 +382,12 @@ abstract class AppLocalizations {
   /// **'Enter phone number'**
   String get phone_error_empty;
 
+  /// No description provided for @phone_error_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 10 digits after +7, e.g. 916 123 45 67'**
+  String get phone_error_format;
+
   /// No description provided for @phone_error_connection.
   ///
   /// In en, this message translates to:

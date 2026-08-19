@@ -85,7 +85,7 @@ Future<void> main() async {
     savePushToken();
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedIn) savePushToken();
-    });
+    }, onError: (_, __) {}); // 19.08: çevrimdışı yenileme hatası 'fatal' sayılmasın
     FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
   }
 
@@ -233,6 +233,14 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
         invitationId is String &&
         invitationId.isNotEmpty) {
       target = '/invitation/$invitationId/applicants';
+    }
+    // Davet güncellendi → davet detayı (19.08 senaryo denetimi: dalı yoktu,
+    // in-app liste /invitation/{id} açıyordu, push dokunuşu hiçbir şey yapmıyordu)
+    if (target == null &&
+        type == 'invitation_updated' &&
+        invitationId is String &&
+        invitationId.isNotEmpty) {
+      target = '/invitation/$invitationId';
     }
     // Ödeme/abonelik push'ları → abonelik ekranı (31.07 denetimi: dalı yoktu,
     // dokununca hiçbir şey olmuyordu; in-app liste zaten /subscription açıyor)

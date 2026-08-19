@@ -23,7 +23,7 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     // KURAL (16.07): dilin sahibi HESAPTIR, cihaz tercihi önbellektir.
     // Girişte hesabın dili cihaza uygulanır; çıkışta cihaz 'system'e döner
     // (aynı cihazda önceki kullanıcının dili yeni hesaba sızıyordu).
-    Supabase.instance.client.auth.onAuthStateChange.listen((e) {
+    Supabase.instance.client.auth.onAuthStateChange.listen(onError: (_, __) {}, (e) {
       switch (e.event) {
         case AuthChangeEvent.signedIn:
         case AuthChangeEvent.initialSession:

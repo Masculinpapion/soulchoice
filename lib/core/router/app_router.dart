@@ -43,7 +43,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 class _AuthNotifier extends ChangeNotifier {
   _AuthNotifier() {
-    _sub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    _sub = Supabase.instance.client.auth.onAuthStateChange.listen(onError: (_, __) {}, (data) {
       // Oturum kendiliğinden düştüyse (manuel çıkış değil) telefon ekranında
       // "oturum süresi doldu" bilgisi gösterilir (madde S).
       if (data.event == AuthChangeEvent.signedOut) {

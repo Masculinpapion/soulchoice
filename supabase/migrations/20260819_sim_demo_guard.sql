@@ -1,13 +1,10 @@
--- ============================================================================
--- Test Canlılık Simülasyonu — v2 (12.07.2026, Mustafa kararı)
--- v2: persona penceresi + açlık sigortası KALDIRILDI — test kartı hiç "ölü"
---     beklemez; dolan/süresi geçen kart bir sonraki cron diliminde (max 15 dk)
---     taze karta döner. Bypass hesabı (Mustafa) motorun TAMAMEN dışında.
--- Tüm yazmalar TEK fonksiyonda; her sorgu is_test_user=true guard'lı.
--- Uygulama/feed kodu DEĞİŞMEZ. Sıfır yeni tablo.
--- Teardown: teardown-test-data.sql
--- ============================================================================
+-- 19.08.2026 — canlılık motoru: Демо hesabı (385ea0eb, is_test_user=TRUE) açık guard.
+-- Senaryo denetimi: demo daveti yalnız demo-autoextend cron'u sayesinde korunuyordu;
+-- cron dursa/HARD_STOP sonrası motor demo kartını yeniden doğurup 3 pending'i silerdi.
+-- NOT: 20260819_sim_purge_real_apps_on_rebirth.sql'deki 'Demo daveti Mustafa hesabı,
+-- is_test_user=false' açıklaması YANLIŞTI (sahip Демо, test=true). Tek kaynak ops/simulate_test_liveliness.sql.
 
+begin;
 create or replace function public.simulate_test_liveliness()
 returns table(refreshed_invitations int, seeded_applications int, touched_users int)
 language plpgsql
@@ -186,19 +183,4 @@ begin
   return query select v_refreshed, v_apps, v_touched;
 end;
 $$;
-
--- ── Cron değişimi (deploy anında, onayla) ───────────────────────────────────
--- Eski kaba job emekli:
---   select cron.unschedule(jobid) from cron.job where jobname = 'refresh-test-invitations';
--- Yeni: 15 dk'da bir, :05 expiry çakışmasından uzak dakikalarda:
---   select cron.schedule('simulate-test-liveliness', '7,22,37,52 * * * *',
---                        $sql$ select public.simulate_test_liveliness(); $sql$);
-
--- ── Deploy ÖNCESİ doğrulama listesi (10.07 salt-okuma sonuçları) ────────────
--- D1 ✓ job1: active→selecting @expiry (deadline=expires+48h); job2: selecting→closed.
---      → fonksiyon selection_deadline'a dokunmuyor; selecting/closed rebirth'te active'e döner.
--- D2 ✓ UNIQUE(invitation_id, applicant_id) mevcut → insert'e on conflict do nothing eklendi.
--- D3 ✓ invitations/applications/user_photos/… users'tan CASCADE; matches user FK'ları
---      CASCADE DEĞİL → teardown'da matches önce elle silinir (dosyada var).
--- D4 ⏳ panel istatistik sorgularının is_test_user hariç tuttuğu AYRICA kontrol edilecek
---      (panel Adım 2 kapsamı; deploy'u bloklamaz).
+commit;

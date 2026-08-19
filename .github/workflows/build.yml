@@ -112,7 +112,29 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # 19.08.2026 (Mustafa): her push'ta edge restart = birkaç sn canlı kesinti
+      # (kullanıcı tam o anda üyelik ekranında hata aldı). Yalnız
+      # supabase/functions/** değiştiğinde deploy et; workflow_dispatch her zaman deploy.
+      - name: Edge functions değişti mi?
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          BASE="${{ github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if git diff --name-only "$BASE" "${{ github.sha }}" | grep -q '^supabase/functions/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "supabase/functions değişmedi → deploy atlandı"
+          fi
       - name: Deploy Edge Functions to Timeweb
+        if: steps.changes.outputs.changed == 'true'
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: 89.169.1.127

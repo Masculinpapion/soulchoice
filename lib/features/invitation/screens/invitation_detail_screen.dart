@@ -1409,6 +1409,26 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       }, onConflict: 'invitation_id,applicant_id');
       // Sahibin push'u sunucudan gider: trg_notify_new_application (26.07 madde X)
 
+      // 19.08 (Mustafa): 3 ücretsiz hak — premium değilse kalan hakkı göster.
+      int? freeLeft;
+      try {
+        final me = await client
+            .from('users')
+            .select('free_applications_used, subscription_status, premium_until')
+            .eq('id', uid)
+            .maybeSingle();
+        if (me != null) {
+          final premiumUntil = DateTime.tryParse(me['premium_until'] as String? ?? '');
+          final isPremium = me['subscription_status'] == 'active' ||
+              (premiumUntil != null && premiumUntil.isAfter(DateTime.now()));
+          if (!isPremium) {
+            freeLeft = (3 - ((me['free_applications_used'] as int?) ?? 0)).clamp(0, 3);
+          }
+        }
+      } catch (_) {
+        freeLeft = null; // göstergesiz devam — başvuru zaten gitti
+      }
+
       widget.onApplied();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1490,6 +1510,19 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
                           color: Colors.white.withOpacity(0.50),
                         ),
                       ),
+                      if (freeLeft != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          AppLocalizations.of(context)!
+                              .inv_detail_free_left(freeLeft),
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withOpacity(0.78),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],

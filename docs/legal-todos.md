@@ -40,6 +40,9 @@ kayıt bildirimi + harç tahakkuku (начисление пошлин).
 yazışmaların işlenmesi, **launch sonrası İLK idari iş**. WIPO/Madrid (global tescil)
 bundan sonraya ertelendi.
 
+## 19.08.2026 — Oferta §2 + Terms §6: ücretsiz başvuru 1 → 3 (CANLI)
+Mustafa kararı: ömür boyu 3 ücretsiz başvuru (vitrin kartı dahil yakar). legal-counsel 19.08: Oferta §2 + Terms §6 RU/EN/TR güncellendi, "Дата редакции" 19.08.2026; **esaslı değil** (kullanıcı lehine genişletme, ücret/iade/oto-yenileme değişmedi) → yeniden onay/7 gün bildirim gerekmez; `feature_flags.oferta_version` 2026-07-09 sabit (18.08 emsali). Feed sıralaması (gerçek kartlar üstte) için metin gerekmez. BACKLOG (BİLGİ): hukuki metinler vitrin/test kartlarının varlığından söz etmiyor — ürün kararı (Terms §1 cümlesi ya da feed işareti), bu pakette yapılmadı. Yedekler sunucuda `*.bak-20260819-free3`.
+
 ## Roskomnadzor — Kişisel Veri Operatörü Bildirimi (152-ФЗ) — TAMAMLANDI (07.07.2026)
 
 SoulChoice için Roskomnadzor'a "kişisel veri işleme niyeti" bildirimi başarıyla gönderildi.

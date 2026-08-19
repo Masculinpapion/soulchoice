@@ -62,7 +62,11 @@ final discoverProvider =
     query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
   }
 
-  final rawData = await query.order('created_at', ascending: false).limit(100);
+  // 19.08 (Mustafa): gerçek kartlar vitrinin üstünde (feed_rank), sonra yeni→eski.
+  final rawData = await query
+      .order('feed_rank', ascending: true)
+      .order('created_at', ascending: false)
+      .limit(100);
 
   // Hibrit: cityId varsa once o sehirdekiler (shuffle), sonra digerleri (shuffle).
   // cityId yoksa hepsi shuffle.

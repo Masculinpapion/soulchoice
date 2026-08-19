@@ -1022,6 +1022,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Жди, пока владелец приглашения сделает выбор';
 
   @override
+  String inv_detail_free_left(int count) {
+    return 'Осталось бесплатных заявок: $count';
+  }
+
+  @override
   String inv_detail_error(String error) {
     return 'Ошибка: $error';
   }
@@ -1178,7 +1183,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get err_apply_limit =>
-      'Бесплатная заявка использована — безлимит открывает Premium.';
+      'Все 3 бесплатные заявки использованы — безлимит открывает Premium.';
 
   @override
   String get err_invitation_closed =>
@@ -2138,7 +2143,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'У тебя уже есть активное приглашение или запрос, создать новое нельзя.';
 
   @override
-  String get paywall_title => 'Бесплатная заявка использована';
+  String get paywall_title => '3 бесплатные заявки использованы';
 
   @override
   String get paywall_subtitle => 'Для безлимитных заявок оформи подписку.';

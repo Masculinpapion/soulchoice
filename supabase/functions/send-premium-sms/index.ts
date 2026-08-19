@@ -21,7 +21,7 @@ const PURPOSE = 'Подписка SoulChoice Premium, 1 месяц'
 // Onaylı metin (Variant A, 08.07.2026) — «заявка» terimi paywall ile aynı;
 // tutar config'ten gelir, 1000₽ iken metin Variant A ile birebir aynıdır
 const SMS_TEXT = (link: string, price: number) =>
-  'SoulChoice: бесплатная заявка использована. Продолжить знакомства — ' +
+  'SoulChoice: бесплатные заявки использованы. Продолжить знакомства — ' +
   `Premium ${price} ₽/мес, оплата в 1 клик: ` + link
 
 const rest = (path: string, init: RequestInit = {}) =>

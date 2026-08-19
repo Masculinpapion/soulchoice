@@ -13,7 +13,7 @@ final userProfileProvider =
           'verified, subscription_status, premium_until, selfie_status, '
           'selfie_rejected_reason, show_gender, min_age, max_age, banned, '
           'suspended_at, suspension_reason, is_deleted, is_admin, locale, '
-          'free_application_used, no_show_count, created_at, last_seen_at, '
+          'free_application_used, free_applications_used, no_show_count, created_at, last_seen_at, '
           'city:cities(name, name_ru, name_tr, name_en, country)')
       .eq('id', userId)
       .maybeSingle();

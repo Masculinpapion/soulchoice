@@ -1012,6 +1012,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Wait for the invitation owner to make their choice';
 
   @override
+  String inv_detail_free_left(int count) {
+    return 'Free applications left: $count';
+  }
+
+  @override
   String inv_detail_error(String error) {
     return 'Error: $error';
   }
@@ -1167,7 +1172,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get err_apply_limit =>
-      'Your free application is used — Premium unlocks unlimited applications.';
+      'All 3 free applications are used — Premium unlocks unlimited applications.';
 
   @override
   String get err_invitation_closed =>
@@ -2095,7 +2100,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You already have an active invitation or request, you can\'t create a new one.';
 
   @override
-  String get paywall_title => 'You\'ve used your free application';
+  String get paywall_title => 'You\'ve used your 3 free applications';
 
   @override
   String get paywall_subtitle => 'Subscribe for unlimited applications.';

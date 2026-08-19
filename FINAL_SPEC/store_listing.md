@@ -31,7 +31,7 @@ SoulChoice — приложение для тех, кто выбирает жи�
 
 SoulChoice работает в Москве и Санкт-Петербурге — и другие города скоро.
 
-С Premium — неограниченные заявки. Первая заявка бесплатна.
+С Premium — неограниченные заявки. Первые 3 заявки бесплатны.
 ```
 
 **Anahtar kelimeler** (App Store, virgülle ayrılmış, boşluksuz, 100 karakter sınırı)
@@ -68,7 +68,7 @@ No endless swiping, no follower counts — just specific invitations to specific
 
 SoulChoice is live in Moscow and St. Petersburg — more cities coming soon.
 
-Unlimited applications with Premium — your first application is free.
+Unlimited applications with Premium — your first 3 applications are free.
 ```
 
 **Keywords**
@@ -105,7 +105,7 @@ Sonsuz kaydırma yok, takipçi sayacı yok — sadece somut davetiyeler, somut b
 
 SoulChoice Moskova ve St. Petersburg'da aktif — yeni şehirler yakında.
 
-Premium ile sınırsız başvuru — ilk başvurun ücretsiz.
+Premium ile sınırsız başvuru — ilk 3 başvurun ücretsiz.
 ```
 
 **Anahtar kelimeler**

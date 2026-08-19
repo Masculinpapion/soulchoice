@@ -65,7 +65,12 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
     }
 
-    final data = await query.order('created_at', ascending: false).limit(30);
+    // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının
+    // ÜSTÜNDE — feed_rank 0=gerçek, 1=vitrin (DB trigger doldurur); grup içinde yeni→eski.
+    final data = await query
+        .order('feed_rank', ascending: true)
+        .order('created_at', ascending: false)
+        .limit(30);
 
     final rows = data as List;
 

@@ -1930,6 +1930,12 @@ abstract class AppLocalizations {
   /// **'Wait for the invitation owner to make their choice'**
   String get inv_detail_apply_sent_body;
 
+  /// No description provided for @inv_detail_free_left.
+  ///
+  /// In en, this message translates to:
+  /// **'Free applications left: {count}'**
+  String inv_detail_free_left(int count);
+
   /// No description provided for @inv_detail_error.
   ///
   /// In en, this message translates to:
@@ -2191,7 +2197,7 @@ abstract class AppLocalizations {
   /// No description provided for @err_apply_limit.
   ///
   /// In en, this message translates to:
-  /// **'Your free application is used — Premium unlocks unlimited applications.'**
+  /// **'All 3 free applications are used — Premium unlocks unlimited applications.'**
   String get err_apply_limit;
 
   /// No description provided for @err_invitation_closed.
@@ -3829,7 +3835,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywall_title.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve used your free application'**
+  /// **'You\'ve used your 3 free applications'**
   String get paywall_title;
 
   /// No description provided for @paywall_subtitle.

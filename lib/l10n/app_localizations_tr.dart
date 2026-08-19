@@ -1010,6 +1010,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Davetiye sahibinin seçim yapmasını bekle';
 
   @override
+  String inv_detail_free_left(int count) {
+    return 'Kalan ücretsiz başvuru: $count';
+  }
+
+  @override
   String inv_detail_error(String error) {
     return 'Hata: $error';
   }
@@ -1165,7 +1170,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get err_apply_limit =>
-      'Ücretsiz başvuru hakkın kullanıldı — sınırsız başvuru Premium ile.';
+      '3 ücretsiz başvuru hakkının tamamı kullanıldı — sınırsız başvuru Premium ile.';
 
   @override
   String get err_invitation_closed => 'Bu davet artık başvuru kabul etmiyor.';
@@ -2085,7 +2090,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Zaten aktif bir davetiyen/isteğin var, yenisini oluşturamazsın.';
 
   @override
-  String get paywall_title => 'Ücretsiz başvuru hakkını kullandın';
+  String get paywall_title => '3 ücretsiz başvuru hakkını kullandın';
 
   @override
   String get paywall_subtitle => 'Sınırsız başvuru için aboneliği başlat.';

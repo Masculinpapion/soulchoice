@@ -215,6 +215,8 @@
   "create_inv_gift_url_helper": "Only the person you pick sees it · after moderation",
   "create_inv_gift_url_invalid": "We don't recognise this store. Link Ozon, Wildberries, Yandex Market, Gold Apple, DNS… or just type the product name.",
   "create_inv_gift_url_invalid_text": "Product name must be 2–200 characters.",
+  "create_inv_gift_text_forbidden": "Only a product name or a store link here — no contacts, prices or messenger links.",
+  "create_inv_gift_link_not_saved": "Your card is published, but the product wasn't saved. Open the card and add it via editing.",
   "gift_stores_link": "Known stores",
   "gift_stores_title": "Known stores",
   "gift_stores_intro": "A product link must be from one of these stores (subdomains included). No link? Just type the product name.",

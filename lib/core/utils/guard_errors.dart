@@ -59,6 +59,11 @@ class GuardError {
     if (s.contains('GIFT_TEXT_INVALID')) {
       return GuardError(l10n.create_inv_gift_url_invalid_text);
     }
+    // 20.08: metin dalındaki yasak kalıp (gömülü link/temas/para) ayrı token —
+    // eskiden GIFT_TEXT_INVALID'e karışıp yanıltıcı "2–200" mesajı üretiyordu.
+    if (s.contains('GIFT_TEXT_FORBIDDEN')) {
+      return GuardError(l10n.create_inv_gift_text_forbidden);
+    }
     return null;
   }
 

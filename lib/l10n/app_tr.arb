@@ -215,6 +215,8 @@
   "create_inv_gift_url_helper": "Yalnızca seçtiğin kişi görür · moderasyon onayından sonra",
   "create_inv_gift_url_invalid": "Bu mağazayı tanımıyoruz. Ozon, Wildberries, Яндекс Маркет, Золотое Яблоко, DNS… linki ver ya da ürünün adını yaz.",
   "create_inv_gift_url_invalid_text": "Ürün adı 2–200 karakter olmalı.",
+  "create_inv_gift_text_forbidden": "Bu alana yalnız ürün adı veya mağaza linki yazılabilir — iletişim bilgisi, fiyat ya da mesajlaşma linki olmaz.",
+  "create_inv_gift_link_not_saved": "Kartın yayınlandı ancak ürün kaydedilemedi. Kartı açıp düzenleme ekranından ekleyebilirsin.",
   "gift_stores_link": "Tanınan mağazalar",
   "gift_stores_title": "Tanınan mağazalar",
   "gift_stores_intro": "Ürün linki yalnız bu mağazalardan olabilir (alt sayfaları dahil). Link bulamazsan ürünün adını yazman yeterli.",

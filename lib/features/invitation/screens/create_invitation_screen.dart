@@ -335,7 +335,12 @@ class _CreateInvitationScreenState
         // düz metin (ürün adı) serbest
         // (kural + mağaza listesi tek kaynak: logic/gift_link_rules.dart)
         if (_isGift) {
-          final err = validateGiftField(_giftUrlController.text, l10n);
+          // Paylaşım metninden linki ayıkla ve kullanıcıya da temiz hali göster
+          final normalized = normalizeGiftInput(_giftUrlController.text);
+          if (normalized != _giftUrlController.text) {
+            _giftUrlController.text = normalized;
+          }
+          final err = validateGiftField(normalized, l10n);
           if (err != null) return err;
         }
       case 4:
@@ -444,6 +449,17 @@ class _CreateInvitationScreenState
   }
 
   Future<void> _publish() async {
+    // Hediye alanı yayın anında da doğrulanır (adım doğrulaması yalnız o adımda
+    // koşuyor); kart oluştuktan sonra link reddi = yarım yayın (20.08 vakası).
+    final giftUrl = normalizeGiftInput(_giftUrlController.text);
+    if (_category == InvitationCategory.gift) {
+      final giftErr =
+          validateGiftField(giftUrl, AppLocalizations.of(context)!);
+      if (giftErr != null) {
+        showAuroraErrorSnack(context, giftErr);
+        return;
+      }
+    }
     setState(() => _isPublishing = true);
     try {
       final client = Supabase.instance.client;
@@ -487,12 +503,26 @@ class _CreateInvitationScreenState
 
       // Hediye ürün linki (opsiyonel) — ayrı tabloya; beyaz liste + moderasyon
       // DB trigger'ında zorlanır, link seçilene kadar hiç kimseye görünmez.
-      final giftUrl = _giftUrlController.text.trim();
       if (_category == InvitationCategory.gift && giftUrl.isNotEmpty) {
-        await client.from('invitation_gift_links').insert({
-          'invitation_id': inserted['id'],
-          'url': giftUrl,
-        });
+        try {
+          await client.from('invitation_gift_links').insert({
+            'invitation_id': inserted['id'],
+            'url': giftUrl,
+          });
+        } catch (_) {
+          // Kart bu noktada YAYINDA; sessiz kalınırsa kullanıcı tekrar
+          // "Опубликовать" basıp ACTIVE_INVITATION_LIMIT sürprizi yaşar
+          // (20.08 vakası). Durumu söyle ve feed'e çık — link düzenlemeden
+          // eklenebilir.
+          if (mounted) {
+            ref.invalidate(invitationsProvider);
+            ref.invalidate(myActiveInvitationsProvider);
+            showAuroraErrorSnack(context,
+                AppLocalizations.of(context)!.create_inv_gift_link_not_saved);
+            context.go('/feed');
+          }
+          return;
+        }
       }
 
       if (mounted) {

@@ -43,4 +43,54 @@ void main() {
     expect(isGiftLink('  http://x.ru'), isTrue);
     expect(isGiftLink('Красная помада'), isFalse);
   });
+
+  group('normalizeGiftInput (20.08 paylaşım-metni vakası)', () {
+    test('metin + tanınan link → yalnız link kalır', () {
+      expect(
+        normalizeGiftInput(
+            'Духи — Золотое Яблоко https://goldapple.ru/19760282209-chance'),
+        'https://goldapple.ru/19760282209-chance',
+      );
+      expect(
+        normalizeGiftInput('Смотри что нашла!\nhttps://www.ozon.ru/product/1 🎁'),
+        'https://www.ozon.ru/product/1',
+      );
+    });
+    test('metin + tanınmayan link → dokunulmaz (doğrulama reddedecek)', () {
+      const v = 'Кольцо https://avito.ru/item/1';
+      expect(normalizeGiftInput(v), v);
+    });
+    test('saf link ve saf metin değişmez', () {
+      expect(normalizeGiftInput(' https://goldapple.ru/x '),
+          'https://goldapple.ru/x');
+      expect(normalizeGiftInput('Красная помада'), 'Красная помада');
+    });
+  });
+
+  group('giftTextForbiddenRe (sunucu 18.08 kümesiyle aynı)', () {
+    test('yasak kalıplar yakalanır', () {
+      for (final s in [
+        'Парфюм 5000 ₽ переводом',
+        'напиши в t.me/xx',
+        'мой номер 8999',
+        'скинь на карту',
+        'пиши @handle',
+        'см. www.site.ru',
+      ]) {
+        expect(giftTextForbiddenRe.hasMatch(s), isTrue, reason: s);
+      }
+    });
+    test('normal ürün adları geçer', () {
+      for (final s in [
+        'Духи Chanel Chance',
+        'Картхолдер кожаный', // "карта" kökü kelime içinde — yanlış pozitif olmamalı
+        'Сертификатик' // ek almış hali sunucuda da serbest değil mi? [а-я]* ekiyle yakalanır
+      ]) {
+        // Сертификатик sunucu regex'inde de yakalanır (сертификат[а-я]*) —
+        // istemci aynı davranmalı; ilk ikisi serbest.
+        final expected = s.startsWith('Сертификат');
+        expect(giftTextForbiddenRe.hasMatch(s), expected, reason: s);
+      }
+    });
+  });
 }

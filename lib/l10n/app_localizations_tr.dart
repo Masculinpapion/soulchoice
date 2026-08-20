@@ -569,6 +569,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ürün adı 2–200 karakter olmalı.';
 
   @override
+  String get create_inv_gift_text_forbidden =>
+      'Bu alana yalnız ürün adı veya mağaza linki yazılabilir — iletişim bilgisi, fiyat ya da mesajlaşma linki olmaz.';
+
+  @override
+  String get create_inv_gift_link_not_saved =>
+      'Kartın yayınlandı ancak ürün kaydedilemedi. Kartı açıp düzenleme ekranından ekleyebilirsin.';
+
+  @override
   String get gift_stores_link => 'Tanınan mağazalar';
 
   @override

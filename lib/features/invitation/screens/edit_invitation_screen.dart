@@ -142,7 +142,12 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
       return l10n.create_inv_validation_description;
     }
     if (_isGift) {
-      final err = validateGiftField(_giftUrlController.text, l10n);
+      // Paylaşım metninden linki ayıkla ve kullanıcıya da temiz hali göster
+      final normalized = normalizeGiftInput(_giftUrlController.text);
+      if (normalized != _giftUrlController.text) {
+        _giftUrlController.text = normalized;
+      }
+      final err = validateGiftField(normalized, l10n);
       if (err != null) return err;
     }
     if (_venueController.text.trim().isEmpty) {
@@ -221,7 +226,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
 
       // Hediye linki: dolu → upsert (trigger 'pending'e çeker, moderasyona düşer);
       // boş ya da kategori hediye dışına çıktı → satırı sil.
-      final giftText = _giftUrlController.text.trim();
+      final giftText = normalizeGiftInput(_giftUrlController.text);
       if (_isGift && giftText.isNotEmpty) {
         await client.from('invitation_gift_links').upsert({
           'invitation_id': editId,

@@ -70,6 +70,32 @@ final RegExp _linkRe = RegExp(r'^https?://', caseSensitive: false);
 /// Girdi bir link mi (http/https)? Değilse serbest metin sayılır.
 bool isGiftLink(String value) => _linkRe.hasMatch(value.trim());
 
+final RegExp _embeddedLinkRe = RegExp(r'https?://\S+', caseSensitive: false);
+
+/// Yapıştırılan içerikten kullanılabilir değeri çıkarır. Mağaza paylaşım
+/// menüleri linki "Ürün adı https://goldapple.ru/…" biçiminde metinle birlikte
+/// verir (20.08 Natalia vakası): metnin içinde tanınan mağazaya ait bir link
+/// varsa YALNIZ o link kalır; yoksa metin olduğu gibi (trim) döner.
+String normalizeGiftInput(String value) {
+  final v = value.trim();
+  if (v.isEmpty || isGiftLink(v)) return v;
+  for (final m in _embeddedLinkRe.allMatches(v)) {
+    final candidate = m.group(0)!;
+    if (isWhitelistedGiftUrl(candidate)) return candidate;
+  }
+  return v;
+}
+
+/// Serbest metin dalında yasak kalıplar — sunucu `enforce_gift_link`
+/// (18.08 antifraud) ile aynı küme: para/kart/СБП/sertifika/temas/link.
+/// Sunucu otorite; burası erken ve anlaşılır UX.
+final RegExp giftTextForbiddenRe = RegExp(
+  r'(\d\s*(₽|руб|р\.))'
+  r'|(?<![а-яёa-z])(карт[аеуы]|сбп|перевод[а-я]*|сертификат[а-я]*|номер|телефон[а-я]*|деньги|денег)(?![а-яёa-z])'
+  r'|t\.me|wa\.me|@|https?:|www\.',
+  caseSensitive: false,
+);
+
 /// Link tanınan mağazalardan birine mi ait? Alt alanlar dahil
 /// (shop.mts.ru → mts.ru, m.ozon.ru → ozon.ru).
 bool isWhitelistedGiftUrl(String url) {
@@ -86,12 +112,16 @@ bool isWhitelistedGiftUrl(String url) {
 }
 
 /// Alan doğrulaması: hata metni ya da null (geçerli/boş).
+/// Girdi önce [normalizeGiftInput]'tan geçirilir — çağıran da SUNUCUYA
+/// normalize edilmiş değeri göndermeli (aksi halde istemci geçirir, sunucu
+/// reddeder — 20.08 vakası).
 String? validateGiftField(String value, AppLocalizations l10n) {
-  final v = value.trim();
+  final v = normalizeGiftInput(value);
   if (v.isEmpty) return null;
   if (isGiftLink(v)) {
     return isWhitelistedGiftUrl(v) ? null : l10n.create_inv_gift_url_invalid;
   }
   if (v.length < 2 || v.length > 200) return l10n.create_inv_gift_url_invalid_text;
+  if (giftTextForbiddenRe.hasMatch(v)) return l10n.create_inv_gift_text_forbidden;
   return null;
 }

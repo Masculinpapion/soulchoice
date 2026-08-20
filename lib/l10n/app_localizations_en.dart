@@ -571,6 +571,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Product name must be 2–200 characters.';
 
   @override
+  String get create_inv_gift_text_forbidden =>
+      'Only a product name or a store link here — no contacts, prices or messenger links.';
+
+  @override
+  String get create_inv_gift_link_not_saved =>
+      'Your card is published, but the product wasn\'t saved. Open the card and add it via editing.';
+
+  @override
   String get gift_stores_link => 'Known stores';
 
   @override

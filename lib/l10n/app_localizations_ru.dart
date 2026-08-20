@@ -571,6 +571,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Название товара — от 2 до 200 символов.';
 
   @override
+  String get create_inv_gift_text_forbidden =>
+      'Здесь только название товара или ссылка магазина — без контактов, цен и мессенджеров.';
+
+  @override
+  String get create_inv_gift_link_not_saved =>
+      'Карточка опубликована, но товар не сохранился. Открой карточку и добавь его через редактирование.';
+
+  @override
   String get gift_stores_link => 'Известные магазины';
 
   @override

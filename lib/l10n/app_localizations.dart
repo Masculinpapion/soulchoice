@@ -1138,6 +1138,18 @@ abstract class AppLocalizations {
   /// **'Product name must be 2–200 characters.'**
   String get create_inv_gift_url_invalid_text;
 
+  /// No description provided for @create_inv_gift_text_forbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Only a product name or a store link here — no contacts, prices or messenger links.'**
+  String get create_inv_gift_text_forbidden;
+
+  /// No description provided for @create_inv_gift_link_not_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card is published, but the product wasn\'t saved. Open the card and add it via editing.'**
+  String get create_inv_gift_link_not_saved;
+
   /// No description provided for @gift_stores_link.
   ///
   /// In en, this message translates to:

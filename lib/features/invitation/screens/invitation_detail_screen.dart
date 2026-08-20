@@ -1617,11 +1617,14 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid == null) return;
     try {
+      // 20.08 vakası: bir-çift-bir-sohbet rebind'i öncesinde eşleşme ters yönlü
+      // olabilir (başvuran user1'de) — tek tarafa bakmak matchsiz sanıp yedek
+      // yola düşürüyordu. İki yönü de ara.
       final row = await Supabase.instance.client
           .from('matches')
           .select('id')
           .eq('invitation_id', widget.invitationId)
-          .eq('user2_id', uid)
+          .or('user1_id.eq.$uid,user2_id.eq.$uid')
           .order('created_at', ascending: false)
           .limit(1)
           .maybeSingle();
@@ -1630,10 +1633,12 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       if (matchId != null) {
         context.push('/chat/$matchId');
       } else {
-        context.push('/messages');
+        // /messages bir shell-dalı rotası: push() root'a ikinci bir shell diker
+        // (karanlık ekran + Mesajlar sekmesi kilidi, S24 kanıtlı) — go() şart.
+        context.go('/messages');
       }
     } catch (_) {
-      if (mounted) context.push('/messages');
+      if (mounted) context.go('/messages');
     }
   }
 

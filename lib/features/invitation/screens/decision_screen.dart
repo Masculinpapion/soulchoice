@@ -113,11 +113,12 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
 
       // Mevcut match var mı kontrol et (idempotent)
       Map<String, dynamic>? matchRes;
+      // 20.08: rebind öncesi eşleşme ters yönlü olabilir — iki yönü de kontrol et
       final existing = await client
           .from('matches')
           .select('id')
           .eq('invitation_id', widget.invitationId)
-          .eq('user2_id', _applicantId!)
+          .or('user1_id.eq.${_applicantId!},user2_id.eq.${_applicantId!}')
           .maybeSingle();
       if (existing != null) {
         matchRes = existing;

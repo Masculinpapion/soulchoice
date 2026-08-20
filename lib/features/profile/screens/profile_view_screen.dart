@@ -155,16 +155,22 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                           children: [
                             // Profil tamamlanma — sadece kendi profili
                             if (isOwnProfile) ...[
-                              _buildCompletionCard(
-                                context: context,
-                                user: user,
-                                photos: photos,
-                                bio: bio,
-                                interests: interests,
-                                selfieStatus: selfieStatus,
-                                promptsAsync: promptsAsync,
-                              ),
-                              const SizedBox(height: 28),
+                              // Foto/prompt sorguları YÜKLENMEDEN kart çizilmez:
+                              // "yüklenmedi"yi "yok" sayıp geçici %70 + "foto
+                              // ekle" gösteriyordu (20.08 Mustafa bulgusu).
+                              if (photosAsync.hasValue &&
+                                  promptsAsync.hasValue) ...[
+                                _buildCompletionCard(
+                                  context: context,
+                                  user: user,
+                                  photos: photos,
+                                  bio: bio,
+                                  interests: interests,
+                                  selfieStatus: selfieStatus,
+                                  promptsAsync: promptsAsync,
+                                ),
+                                const SizedBox(height: 28),
+                              ],
                               _MyInvitationSection(),
                               const SizedBox(height: 28),
                               const _MyApplicationsSection(),
@@ -190,7 +196,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                   interests.length,
                                   (i) => _EditInterestPill(
                                     label: _interestLabel(interests[i], l10n),
-                                    isFirst: i == 0,
                                   ),
                                 ),
                               ),
@@ -968,10 +973,11 @@ String _interestLabel(String key, AppLocalizations l10n) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Editorial Interest Pill — glass blur, gradient ilk pill
 // ─────────────────────────────────────────────────────────────────────────────
+// 20.08 (Natalia sorusu): ilk çipteki süs gradyanı kaldırıldı — "Танцы neden
+// farklı?" diye anlam aranıyordu; vurgunun anlamı yoktu, hepsi aynı stil.
 class _EditInterestPill extends StatelessWidget {
   final String label;
-  final bool isFirst;
-  const _EditInterestPill({required this.label, required this.isFirst});
+  const _EditInterestPill({required this.label});
 
   @override
   Widget build(BuildContext context) => ClipRRect(
@@ -982,22 +988,10 @@ class _EditInterestPill extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
             decoration: BoxDecoration(
-              gradient: isFirst
-                  ? const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0x2EFF2D55),
-                        Color(0x2E2D7FFF),
-                      ],
-                    )
-                  : null,
-              color: isFirst ? null : Colors.white.withOpacity(0.06),
+              color: Colors.white.withOpacity(0.06),
               borderRadius: BorderRadius.circular(100),
               border: Border.all(
-                color: isFirst
-                    ? const Color(0x59FF2D55)
-                    : Colors.white.withOpacity(0.12),
+                color: Colors.white.withOpacity(0.12),
               ),
             ),
             child: Text(

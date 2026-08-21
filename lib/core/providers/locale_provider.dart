@@ -45,7 +45,11 @@ class LocaleNotifier extends StateNotifier<Locale?> {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString(_key);
       if (saved == 'system') {
-        _syncToDb((state ?? _fromSystem()).languageCode);
+        // 22.08: girişte DB'ye YAZILMAZ — çıkış sonrası tercih 'system'de
+        // kaldığından her yeni giriş cihaz dilini hesaba eziyordu (20.08:
+        // emülatör girişi hesabı en yaptı, telefon İngilizce'ye döndü).
+        // Hesaba yazım yalnız ilk kayıtta (aşağıda + push_token backfill)
+        // ve ayarlardaki bilinçli seçimde (setLocale/useSystemLocale) olur.
         return;
       }
       final row = await Supabase.instance.client

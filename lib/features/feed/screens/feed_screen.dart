@@ -978,6 +978,15 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
   late PageController _pageController;
   double _currentPage = 0;
   bool _ringInitialized = false;
+  // 22.08 sonsuz kaydırma: halkanın kurulu olduğu liste uzunluğu + hangi
+  // uzunluk için sayfa artışı istendiği (aynı boyuta ikinci istek atılmasın).
+  int _ringLength = 0;
+  int _bumpRequestedFor = -1;
+
+  InvitationFilter get _filter => InvitationFilter(
+      flowType: widget.flowType,
+      category: widget.category,
+      cityId: widget.cityId);
 
   void _onPageScroll() {
     if (!mounted) return;
@@ -992,6 +1001,39 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       return;
     }
     setState(() => _currentPage = _pageController.page ?? 0);
+    _checkLoadMore();
+  }
+
+  // 22.08 — SONSUZ KAYDIRMA: yüklü listenin sonuna ≤8 kart kalınca sıradaki
+  // sayfayı iste. Halka sarmalı olduğu için "son" her iki yönden de gelinen
+  // aynı bölgedir. hasMore=false (dilim zaten tam indi) hiçbir şey yapmaz —
+  // bugünkü envanterde (<120) davranış birebir eski feed.
+  void _checkLoadMore() {
+    if (_ringLength <= 0) return;
+    final k = _currentPage.round() % _ringLength;
+    if (k < _ringLength - 8) return;
+    if (_bumpRequestedFor == _ringLength) return;
+    final filter = _filter;
+    if (!ref.read(feedHasMoreProvider(filter))) return;
+    _bumpRequestedFor = _ringLength;
+    // Provider durumu scroll/build fazında değiştirilmez — microtask'a ertele.
+    Future(() {
+      if (!mounted) return;
+      ref.read(feedPageCountProvider(filter).notifier).state++;
+    });
+  }
+
+  // Controller değişim deseni (17.08 _syncViewportFraction ile aynı): yeni
+  // controller aynı karede attach olur, görsel zıplama üretmez; eskisi kare
+  // sonunda serbest bırakılır.
+  void _swapController({required int initialPage, double? viewportFraction}) {
+    final old = _pageController;
+    old.removeListener(_onPageScroll);
+    _pageController = PageController(
+        viewportFraction: viewportFraction ?? old.viewportFraction,
+        initialPage: initialPage)
+      ..addListener(_onPageScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
   }
 
   @override
@@ -1019,13 +1061,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     // gerçekten kısa ekranlar (SE 0.65, 8 Plus 0.63, 360×640 0.60) daralır.
     final f = target >= 0.70 ? 0.72 : target.clamp(0.56, 0.70);
     if ((f - _pageController.viewportFraction).abs() < 0.005) return;
-    final old = _pageController;
-    old.removeListener(_onPageScroll);
     // Mevcut sayfayı koru: ilk build'de 0 (sonra _initRing ortalar), canlı
     // değişimde (ör. hikâye şeridi sekmeye göre daralınca) kart zıplamaz.
-    _pageController = PageController(viewportFraction: f, initialPage: _currentPage.round())
-      ..addListener(_onPageScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => old.dispose());
+    _swapController(initialPage: _currentPage.round(), viewportFraction: f);
   }
 
   // Halka başlangıcı: listIndex 0'dan başla, ama ortada (500. tur)
@@ -1035,12 +1073,23 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     final start = length * 500;
     if (!_ringInitialized) {
       _ringInitialized = true;
+      _ringLength = length;
       _currentPage = start.toDouble();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
           _pageController.jumpToPage(start);
         }
       });
+    } else if (length != _ringLength) {
+      // 22.08 sonsuz kaydırma: sayfa eklenince (veya yenilemede kart sayısı
+      // değişince) modulo eşlemesi kayar — kullanıcının baktığı kartı (k)
+      // koruyarak halkayı yeni uzunlukta yeniden kur. Controller değişimi
+      // aynı karede attach olur (bkz. _swapController), görsel zıplama yok.
+      final k = _ringLength > 0 ? _currentPage.round() % _ringLength : 0;
+      final anchored = length * 500 + (k < length ? k : 0);
+      _swapController(initialPage: anchored);
+      _currentPage = anchored.toDouble();
+      _ringLength = length;
     } else if (_currentPage > maxPage) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
@@ -1069,6 +1118,8 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       setState(() {
         _ringInitialized = false;
         _currentPage = 0;
+        _ringLength = 0;
+        _bumpRequestedFor = -1;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
@@ -1091,6 +1142,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
     final filter = InvitationFilter(
         flowType: flowType, category: widget.category, cityId: widget.cityId);
     final async = ref.watch(invitationsProvider(filter));
+    // 22.08: hasMore autoDispose — izleyen olmazsa her okuyuşta varsayılana
+    // (true) döner ve gereksiz sayfa isteği atılırdı; burada canlı tutulur.
+    ref.watch(feedHasMoreProvider(filter));
 
     return RefreshIndicator(
       color: AuroraTheme.auroraRed,

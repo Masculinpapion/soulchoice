@@ -15,9 +15,24 @@ String? _cityName(Map<String, dynamic>? city, String? lang) {
   }
 }
 
+/// 22.08 — SONSUZ KAYDIRMA: tek istekte inen dilim boyutu. Kullanıcı yüklü
+/// listenin sonuna yaklaşınca [feedPageCountProvider] artırılır; sorgu
+/// 0..(sayfa×boyut) aralığını yeniden çeker (tam yeniden çekim = sayfalar
+/// arası tutarlı sıra; rebirth/sıra kayması duplikat üretemez).
+const feedPageSize = 120;
+
+/// Filter başına yüklü sayfa sayısı. autoDispose: sekme/filtre değişince sıfırlanır.
+final feedPageCountProvider =
+    StateProvider.autoDispose.family<int, _InvitationFilter>((ref, _) => 1);
+
+/// Sunucuda daha kart var mı? (son istekte istenen aralık tamamen dolduysa true)
+final feedHasMoreProvider =
+    StateProvider.autoDispose.family<bool, _InvitationFilter>((ref, _) => true);
+
 final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationModel>, _InvitationFilter>(
   (ref, filter) async {
     final client = Supabase.instance.client;
+    final pageCount = ref.watch(feedPageCountProvider(filter));
     final currentUserId = ref.read(currentUserIdProvider);
     final lang = ref.watch(localeProvider)?.languageCode;
 
@@ -79,16 +94,21 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
     // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının
     // ÜSTÜNDE — feed_rank 0=gerçek, 1=vitrin (DB trigger doldurur); grup içinde yeni→eski.
-    // 22.08: limit 30→120 — «Все города» görünümünde karşı-cins kart sayısı
-    // 30'u aşınca (43 kadın invite) kartların bir kısmı hiç inmiyordu; vitrin
-    // "dolu" algısı için kullanıcı HER kartı görebilmeli. 120 = mevcut envanter
-    // (~50/dilim) + büyüme payı; discover zaten 100 kullanıyor.
+    // 22.08: limit yerine SAYFALI aralık — kullanıcı kaydırdıkça pencere
+    // büyür, kart sayısı ne olursa olsun (influencer senaryosu) hepsi
+    // ulaşılabilir. id = üçüncü sıralama anahtarı: sayfalar arası kararlı
+    // sıra (created_at çakışsa bile kayma/duplikat olmaz).
+    final requested = pageCount * feedPageSize;
     final data = await query
         .order('feed_rank', ascending: true)
         .order('created_at', ascending: false)
-        .limit(120);
+        .order('id', ascending: true)
+        .range(0, requested - 1);
 
     final rows = data as List;
+    // Aralık tamamen dolduysa sunucuda devamı olabilir.
+    ref.read(feedHasMoreProvider(filter).notifier).state =
+        rows.length >= requested;
 
     return rows.map((row) {
       // ── Owner ─────────────────────────────────────────────────────────────

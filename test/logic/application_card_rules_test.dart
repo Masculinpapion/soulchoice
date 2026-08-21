@@ -25,7 +25,7 @@ void main() {
       );
     });
 
-    test('accepted + aktif ilan → GÖRÜNÜR (yeşil)', () {
+    test('accepted + aktif ilan → GÖRÜNÜR (yeşil «Принята», 22.08 kuralı)', () {
       expect(
         isMyApplicationCardVisible(
             applicationStatus: 'accepted', invitationStatus: 'active'),
@@ -33,9 +33,20 @@ void main() {
       );
     });
 
-    test('selecting penceresi canlı sayılır — pending/rejected/accepted görünür',
-        () {
-      for (final s in ['pending', 'rejected', 'accepted']) {
+    test('accepted + süre dolmuş (selecting) → GÖRÜNMEZ — pencereyi beklemez '
+        '(22.08 Mustafa: Natalia vakası)', () {
+      for (final s in ['accepted', 'selected']) {
+        expect(
+          isMyApplicationCardVisible(
+              applicationStatus: s, invitationStatus: 'selecting'),
+          isFalse,
+          reason: '$s + selecting düşmeli',
+        );
+      }
+    });
+
+    test('selecting penceresi pending/rejected için canlı sayılır', () {
+      for (final s in ['pending', 'rejected']) {
         expect(
           isMyApplicationCardVisible(
               applicationStatus: s, invitationStatus: 'selecting'),

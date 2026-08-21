@@ -1,8 +1,11 @@
 /// Profil "Başvurularım" kart yaşam döngüsü kuralları — SAF mantık.
-/// TEK KAYNAK: docs/product-logic.md §4 NİHAİ KARAR (Mustafa 11.08 gece):
-/// pano ANLIK DURUM gösterir; kart ömrü = ilan ömrü. İlan canlıyken
-/// (active/selecting) pending=sarı Bekliyor, accepted=yeşil, rejected=gri
-/// ЗАВЕРШЕНО; ilan kapanınca kart durumu ne olursa olsun düşer (kabul dahil).
+/// TEK KAYNAK: docs/product-logic.md §4 NİHAİ KARAR (Mustafa 11.08 gece,
+/// 22.08 revizyonu): pano ANLIK DURUM gösterir; kart ömrü = ilan ömrü.
+/// İlan canlıyken (active/selecting) pending=sarı Bekliyor, rejected=gri
+/// ЗАВЕРШЕНО; **accepted yalnız ilan `active` iken görünür** (22.08: ilan
+/// canlıyken yeşil «Принята» profesyonel işleyiş sinyali; süre dolunca —
+/// selecting'e geçişte — düşer, seçim penceresini beklemez; ilişki
+/// Mesajlar'da). İlan kapanınca kart durumu ne olursa olsun düşer.
 /// withdrawn/expired hiç görünmez.
 ///
 /// Bu dosya Supabase'e dokunmaz — provider/ekran buradan çağırır, testler
@@ -24,6 +27,12 @@ bool isMyApplicationCardVisible({
   // Kendi eylemi (withdrawn) ve kapalı-ilan artığı (expired) panoda yaşamaz.
   if (applicationStatus == 'withdrawn' || applicationStatus == 'expired') {
     return false;
+  }
+  // 22.08 (Mustafa): yeşil «Принята» yalnız ilan AKTİFKEN kalır (profesyonel
+  // işleyiş sinyali); süre dolunca (selecting) düşer, pencereyi beklemez
+  // ('selected' legacy, aynı anlam).
+  if (applicationStatus == 'accepted' || applicationStatus == 'selected') {
+    return invitationStatus == 'active';
   }
   return invitationStatus != null && invitationStatus != 'closed';
 }

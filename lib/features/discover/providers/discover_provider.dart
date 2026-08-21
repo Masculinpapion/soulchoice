@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,10 +17,28 @@ String? _cityName(Map<String, dynamic>? city, String? lang) {
   }
 }
 
+/// 22.08 — SONSUZ KAYDIRMA (feed ile aynı ilke, bkz. invitations_provider):
+/// tek istekte inen dilim boyutu; ızgara sona yaklaşınca sayfa artırılır.
+const discoverPageSize = 100;
+
+/// Şehir başına yüklü sayfa sayısı (autoDispose: ekran kapanınca sıfırlanır).
+final discoverPageCountProvider =
+    StateProvider.autoDispose.family<int, String?>((ref, _) => 1);
+
+/// Sunucuda daha kart var mı? (istenen aralık tamamen dolduysa true)
+final discoverHasMoreProvider =
+    StateProvider.autoDispose.family<bool, String?>((ref, _) => true);
+
+/// Teslim edilmiş kart SIRASI (invitation id) — sayfa eklenince önceki
+/// kartlar YERİNDE kalsın, yeniler karıştırılıp SONA eklensin diye
+/// oturum boyunca hatırlanır (ızgara kullanıcının altında yeniden dizilmez).
+final Map<String?, List<String>> _discoverOrderMemo = {};
+
 final discoverProvider =
     FutureProvider.autoDispose.family<List<InvitationModel>, String?>((ref, cityId) async {
   final currentUserId = ref.read(currentUserIdProvider);
   final lang = ref.watch(localeProvider)?.languageCode;
+  final pageCount = ref.watch(discoverPageCountProvider(cityId));
   final client = Supabase.instance.client;
 
   // Fetch current user gender + blocked IDs (sadece karşı cinsiyet gösterilir)
@@ -42,51 +62,81 @@ final discoverProvider =
     maxAge = userRow?['max_age'] as int? ?? 60;
   }
 
-  var query = client.from('invitations').select(
-        '*, '
-        'city:cities(name, name_ru, name_tr, name_en), '
-        // 20.08: !inner → karşı cins + yaş filtresi sunucuda (bkz. invitations_provider)
-        'owner:users!inner(id, name, age, gender, subscription_status, is_deleted, '
-        'photos:user_photos(url, is_primary, is_selfie, order_index)), '
-        // RLS: başkasının kartında yalnız KENDİ başvurum döner (11.08)
-        'applications(status, applicant_id)',
-      );
+  // Tek sorgu iskeleti — şehir kısıtı parametreyle. Kararlı sıralama
+  // (feed_rank, created_at, id) = sayfalar arası kayma/duplikat olmaz.
+  Future<List<Map<String, dynamic>>> fetchRows(
+      {String? onlyCity, bool excludeSelected = false, required int limit}) async {
+    if (limit <= 0) return const [];
+    var query = client.from('invitations').select(
+          '*, '
+          'city:cities(name, name_ru, name_tr, name_en), '
+          // 20.08: !inner → karşı cins + yaş filtresi sunucuda (bkz. invitations_provider)
+          'owner:users!inner(id, name, age, gender, subscription_status, is_deleted, '
+          'photos:user_photos(url, is_primary, is_selfie, order_index)), '
+          // RLS: başkasının kartında yalnız KENDİ başvurum döner (11.08)
+          'applications(status, applicant_id)',
+        );
 
-  query = query
-      .eq('status', 'active')
-      .gt('expires_at', DateTime.now().toUtc().toIso8601String());
-
-  if (currentUserId != null) {
-    query = query.neq('owner_id', currentUserId);
-  }
-  if (blockedIds.isNotEmpty) {
-    query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
-  }
-  if (targetGender != null) {
     query = query
-        .eq('owner.gender', targetGender!)
-        .gte('owner.age', minAge)
-        .lte('owner.age', maxAge);
+        .eq('status', 'active')
+        .gt('expires_at', DateTime.now().toUtc().toIso8601String());
+
+    if (onlyCity != null) query = query.eq('city_id', onlyCity);
+    if (excludeSelected && cityId != null) query = query.neq('city_id', cityId!);
+    if (currentUserId != null) {
+      query = query.neq('owner_id', currentUserId);
+    }
+    if (blockedIds.isNotEmpty) {
+      query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
+    }
+    if (targetGender != null) {
+      query = query
+          .eq('owner.gender', targetGender!)
+          .gte('owner.age', minAge)
+          .lte('owner.age', maxAge);
+    }
+
+    // 19.08 (Mustafa): gerçek kartlar vitrinin üstünde (feed_rank), sonra yeni→eski.
+    final data = await query
+        .order('feed_rank', ascending: true)
+        .order('created_at', ascending: false)
+        .order('id', ascending: true)
+        .range(0, limit - 1);
+    return (data as List).cast<Map<String, dynamic>>();
   }
 
-  // 19.08 (Mustafa): gerçek kartlar vitrinin üstünde (feed_rank), sonra yeni→eski.
-  final rawData = await query
-      .order('feed_rank', ascending: true)
-      .order('created_at', ascending: false)
-      .limit(100);
-
-  // Hibrit: cityId varsa once o sehirdekiler (shuffle), sonra digerleri (shuffle).
-  // cityId yoksa hepsi shuffle.
-  final List<Map<String, dynamic>> rows = (rawData as List).cast<Map<String, dynamic>>().toList();
+  // ŞEHİR ÖNCELİĞİ (Mustafa 22.08): önce kullanıcının seçili şehri TAMAMEN
+  // tüketilir, diğer şehirler ancak ondan sonra akmaya başlar.
+  final requested = pageCount * discoverPageSize;
+  List<Map<String, dynamic>> cityRows = const [];
+  List<Map<String, dynamic>> otherRows = const [];
   if (cityId != null) {
-    final cityMatched = rows.where((r) => r['city_id'] == cityId).toList()..shuffle();
-    final others = rows.where((r) => r['city_id'] != cityId).toList()..shuffle();
-    rows
-      ..clear()
-      ..addAll([...cityMatched, ...others]);
+    cityRows = await fetchRows(onlyCity: cityId, limit: requested);
+    otherRows = await fetchRows(
+        excludeSelected: true, limit: requested - cityRows.length);
   } else {
-    rows.shuffle();
+    otherRows = await fetchRows(limit: requested);
   }
+  ref.read(discoverHasMoreProvider(cityId).notifier).state =
+      cityRows.length + otherRows.length >= requested;
+
+  // Sıra koruması: memo'daki kartlar bilinen sırayla önce, İLK KEZ gelenler
+  // grup içinde (şehir → diğer) karıştırılıp sona. Böylece sayfa eklenince
+  // ızgara mevcut düzenini korur, çeşitlilik ilk yüklemede sağlanır.
+  final byId = {for (final r in [...cityRows, ...otherRows]) r['id'] as String: r};
+  final cityIds = {for (final r in cityRows) r['id'] as String};
+  final known = <Map<String, dynamic>>[];
+  for (final id in _discoverOrderMemo[cityId] ?? const <String>[]) {
+    final r = byId.remove(id);
+    if (r != null) known.add(r);
+  }
+  final fresh = byId.values.toList();
+  final freshCity = fresh.where((r) => cityIds.contains(r['id'])).toList()
+    ..shuffle(Random());
+  final freshOther = fresh.where((r) => !cityIds.contains(r['id'])).toList()
+    ..shuffle(Random());
+  final rows = [...known, ...freshCity, ...freshOther];
+  _discoverOrderMemo[cityId] = [for (final r in rows) r['id'] as String];
 
   final list = rows.map((row) {
     final ownerRow = row['owner'] as Map<String, dynamic>?;
@@ -138,8 +188,6 @@ final discoverProvider =
       .where((inv) => inv.ownerPhotoUrl != null)
       .where((inv) => targetGender == null || inv.owner?.gender == targetGender)
       .toList();
-
-  // (shuffle yukarida raw row asamasinda yapildi — sira korunmali)
 
   // Kullanıcı başına 1 kart — aynı kişinin birden fazla daveti olsa bile
   final seen = <String>{};

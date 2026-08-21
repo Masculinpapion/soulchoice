@@ -32,12 +32,28 @@ class DiscoverScreen extends ConsumerStatefulWidget {
 
 class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
   InvitationCategory? _selectedCategory;
+  // 22.08 sonsuz kaydırma: aynı liste boyutuna ikinci sayfa isteği atılmasın.
+  int _bumpedAtCount = -1;
+
+  // Izgara sona yaklaşınca sıradaki sayfayı iste (feed'deki _checkLoadMore
+  // ile aynı ilke; provider durumu scroll fazında değişmez → microtask).
+  void _maybeLoadMore(String? cityId, int loadedCount) {
+    if (_bumpedAtCount == loadedCount) return;
+    if (!ref.read(discoverHasMoreProvider(cityId))) return;
+    _bumpedAtCount = loadedCount;
+    Future(() {
+      if (!mounted) return;
+      ref.read(discoverPageCountProvider(cityId).notifier).state++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     final cityId = ref.watch(selectedCityIdProvider);
     final async = ref.watch(discoverProvider(cityId));
+    // 22.08: hasMore autoDispose — izleyen olmazsa varsayılana döner (bkz. feed).
+    ref.watch(discoverHasMoreProvider(cityId));
 
     return Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
@@ -100,6 +116,10 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
               // İçerik
               Expanded(
                 child: async.when(
+                  // 22.08: sayfa eklenirken eldeki ızgara EKRANDA KALIR —
+                  // skeleton'a düşerse scroll konumu sıfırlanırdı.
+                  skipLoadingOnReload: true,
+                  skipLoadingOnRefresh: true,
                   loading: () => const _LoadingGrid(),
                   error: (e, _) =>
                       _ErrorState(message: AppLocalizations.of(context)!.discover_error, retryLabel: AppLocalizations.of(context)!.btn_try_again, onRetry: () => ref.invalidate(discoverProvider(cityId))),
@@ -140,7 +160,15 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       backgroundColor: AuroraTheme.glassStrong,
                       onRefresh: () async =>
                           ref.invalidate(discoverProvider(cityId)),
-                      child: MasonryGridView.count(
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (n) {
+                          // Sona ~900px kala sıradaki sayfayı iste.
+                          if (n.metrics.maxScrollExtent - n.metrics.pixels < 900) {
+                            _maybeLoadMore(cityId, allInvitations.length);
+                          }
+                          return false;
+                        },
+                        child: MasonryGridView.count(
                         crossAxisCount: 2,
                         mainAxisSpacing: 14,
                         crossAxisSpacing: 14,
@@ -156,6 +184,7 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                                 context.push('/invitation/${inv.id}'),
                           );
                         },
+                      ),
                       ),
                     );
                   },

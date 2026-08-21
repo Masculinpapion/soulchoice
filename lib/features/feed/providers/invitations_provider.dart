@@ -79,10 +79,14 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
 
     // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının
     // ÜSTÜNDE — feed_rank 0=gerçek, 1=vitrin (DB trigger doldurur); grup içinde yeni→eski.
+    // 22.08: limit 30→120 — «Все города» görünümünde karşı-cins kart sayısı
+    // 30'u aşınca (43 kadın invite) kartların bir kısmı hiç inmiyordu; vitrin
+    // "dolu" algısı için kullanıcı HER kartı görebilmeli. 120 = mevcut envanter
+    // (~50/dilim) + büyüme payı; discover zaten 100 kullanıyor.
     final data = await query
         .order('feed_rank', ascending: true)
         .order('created_at', ascending: false)
-        .limit(30);
+        .limit(120);
 
     final rows = data as List;
 

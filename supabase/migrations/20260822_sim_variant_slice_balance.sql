@@ -1,3 +1,6 @@
+-- 20260822: rotasyon varyant seçimi AĞIRLIKLI DİLİM DENGELİ (Mustafa 22.08)
+-- Vitrin çip sırasındaki kategoriler (food/bar/concert...) yüksek hedefli;
+-- doluluk/hedef oranı en düşük dilim doldurulur. TEK KAYNAK: ops/simulate_test_liveliness.sql
 -- ============================================================================
 -- Test Canlılık Simülasyonu — v2 (12.07.2026, Mustafa kararı)
 -- v2: persona penceresi + açlık sigortası KALDIRILDI — test kartı hiç "ölü"
@@ -222,19 +225,3 @@ begin
   return query select v_refreshed, v_apps, v_touched;
 end;
 $$;
-
--- ── Cron değişimi (deploy anında, onayla) ───────────────────────────────────
--- Eski kaba job emekli:
---   select cron.unschedule(jobid) from cron.job where jobname = 'refresh-test-invitations';
--- Yeni: 15 dk'da bir, :05 expiry çakışmasından uzak dakikalarda:
---   select cron.schedule('simulate-test-liveliness', '7,22,37,52 * * * *',
---                        $sql$ select public.simulate_test_liveliness(); $sql$);
-
--- ── Deploy ÖNCESİ doğrulama listesi (10.07 salt-okuma sonuçları) ────────────
--- D1 ✓ job1: active→selecting @expiry (deadline=expires+48h); job2: selecting→closed.
---      → fonksiyon selection_deadline'a dokunmuyor; selecting/closed rebirth'te active'e döner.
--- D2 ✓ UNIQUE(invitation_id, applicant_id) mevcut → insert'e on conflict do nothing eklendi.
--- D3 ✓ invitations/applications/user_photos/… users'tan CASCADE; matches user FK'ları
---      CASCADE DEĞİL → teardown'da matches önce elle silinir (dosyada var).
--- D4 ⏳ panel istatistik sorgularının is_test_user hariç tuttuğu AYRICA kontrol edilecek
---      (panel Adım 2 kapsamı; deploy'u bloklamaz).

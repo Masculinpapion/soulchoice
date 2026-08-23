@@ -164,7 +164,16 @@ class AppLocalizationsRu extends AppLocalizations {
       'Введи 10 цифр после +7, например 916 123 45 67';
 
   @override
-  String get phone_error_connection => 'Ошибка подключения, попробуй ещё раз';
+  String get phone_error_connection =>
+      'Ошибка подключения. Если включён VPN, отключи его и попробуй ещё раз';
+
+  @override
+  String get error_network_vpn =>
+      'Не удалось соединиться с сервером. Если включён VPN, отключи его и попробуй ещё раз';
+
+  @override
+  String get profile_save_failed =>
+      'Не удалось сохранить профиль. Попробуй ещё раз';
 
   @override
   String get phone_terms => 'Продолжая, ты принимаешь';

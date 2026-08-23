@@ -397,8 +397,20 @@ abstract class AppLocalizations {
   /// No description provided for @phone_error_connection.
   ///
   /// In en, this message translates to:
-  /// **'Connection error, please try again'**
+  /// **'Connection error. If a VPN is on, turn it off and try again'**
   String get phone_error_connection;
+
+  /// No description provided for @error_network_vpn.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t reach the server. If a VPN is on, turn it off and try again'**
+  String get error_network_vpn;
+
+  /// No description provided for @profile_save_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Please try again'**
+  String get profile_save_failed;
 
   /// No description provided for @phone_terms.
   ///

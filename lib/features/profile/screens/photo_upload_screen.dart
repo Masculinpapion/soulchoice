@@ -5,6 +5,7 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
@@ -152,14 +153,20 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
   Future<void> _pickPhoto(int index) async {
     try {
-      final picked = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 90,
-        maxWidth: 1080,
-      );
+      // 23.08: imageQuality/maxWidth picker'da EXIF Orientation'ı düşürüp
+      // pikseli döndürmeden bırakıyordu → yan yatık foto. Ham al; küçültme +
+      // açı düzeltme compress'te (autoCorrectionAngle piksele uygular), crop
+      // ekranı ve yükleme hep dik görüntüyle çalışır.
+      final picked = await _picker.pickImage(source: ImageSource.gallery);
       if (picked == null || !mounted) return;
 
-      final rawBytes = await picked.readAsBytes();
+      final rawBytes = await FlutterImageCompress.compressWithFile(
+        picked.path,
+        quality: 90,
+        minWidth: 1080,
+        minHeight: 1080,
+      );
+      if (rawBytes == null || !mounted) return;
 
       // Flutter tabanlı crop ekranı — UCropActivity yok, request code çakışması yok
       final croppedBytes = await Navigator.of(context).push<Uint8List>(

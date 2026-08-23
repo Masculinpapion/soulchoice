@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
@@ -65,14 +66,24 @@ class _SelfieScreenState extends State<SelfieScreen> {
   }
 
   Future<void> _takeSelfie() async {
+    // 23.08: imageQuality/maxWidth picker'da re-encode yapıp EXIF Orientation
+    // etiketini düşürüyor ama pikseli DÖNDÜRMÜYORDU → panele yan yatık selfie
+    // (Samsung portrait). Ham çek; küçültme + açı düzeltme compress'te
+    // (autoCorrectionAngle EXIF açısını piksele uygular).
     final picked = await _picker.pickImage(
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
-      imageQuality: 80,
-      maxWidth: 1200,
     );
-    if (picked != null) {
-      setState(() => _selfie = File(picked.path));
+    if (picked == null) return;
+    final upright = await FlutterImageCompress.compressAndGetFile(
+      picked.path,
+      '${picked.path}_upright.jpg',
+      quality: 80,
+      minWidth: 1200,
+      minHeight: 1200,
+    );
+    if (upright != null) {
+      setState(() => _selfie = File(upright.path));
     }
   }
 
@@ -397,13 +408,17 @@ class _Tip extends StatelessWidget {
     children: [
       Icon(icon, size: 18, color: AuroraTheme.textSecondary),
       const SizedBox(width: 12),
-      Text(
+      // 23.08 testçi vakası: Expanded'sız Text dar/büyük-yazı ekranda sağdan
+      // kırpılıyordu — satır sar, kesme.
+      Expanded(
+        child: Text(
         text,
         style: TextStyle(
           fontFamily: 'Manrope',
           fontSize: 14,
           color: AuroraTheme.textSecondary,
           height: 1.5,
+        ),
         ),
       ),
     ],

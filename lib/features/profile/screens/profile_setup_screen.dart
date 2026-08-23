@@ -286,11 +286,18 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         // Bilinen guard token'ı (CONTACT_INFO_NOT_ALLOWED vb.) lokalize gösterilir
         final guard = await GuardError.resolve(context, e);
         if (!mounted) return;
+        // 23.08: jenerik «Произошла ошибка» kullanıcıya hiçbir şey söylemiyordu
+        // (403 vakası) — ağ hatasıysa VPN ipucu, değilse "kaydedilemedi" de.
+        final es = e.toString();
+        final isNetwork = es.contains('SocketException') ||
+            es.contains('ClientException') ||
+            es.contains('Connection');
         showAuroraErrorSnack(
           context,
           guard?.message ??
-              AppLocalizations.of(context)!
-                  .profile_setup_error(AppLocalizations.of(context)!.error_generic),
+              (isNetwork
+                  ? AppLocalizations.of(context)!.error_network_vpn
+                  : AppLocalizations.of(context)!.profile_save_failed),
         );
         setState(() => _isSaving = false);
       }

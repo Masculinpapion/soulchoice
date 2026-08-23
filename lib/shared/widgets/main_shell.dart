@@ -201,16 +201,22 @@ class _NavItem extends StatelessWidget {
                     : Icon(icon,
                         color: Colors.white.withOpacity(0.35), size: 22),
                 const SizedBox(height: 3),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'JetBrainsMono',
-                    fontSize: 9,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
-                    color: isActive
-                        ? AuroraTheme.auroraRed
-                        : Colors.white.withOpacity(0.30),
+                // 23.08: dar/büyük-yazı ekranda "Сообщения" iki satıra
+                // kırılıyordu — etiket tek satır kalır, sığmazsa küçülür.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 9,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                      color: isActive
+                          ? AuroraTheme.auroraRed
+                          : Colors.white.withOpacity(0.30),
+                    ),
                   ),
                 ),
               ],

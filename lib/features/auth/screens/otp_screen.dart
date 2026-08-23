@@ -109,15 +109,39 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       // çalışmıyordu (ikinci cihaza push yok, dil yeniden açılışa kadar eski).
       // accessToken da verilince gotrue `signedIn` yayar (gotrue 2.20 setSession).
       final accessToken = data['access_token'] as String?;
-      final authResponse = await Supabase.instance.client.auth.setSession(
-        refreshToken,
-        accessToken: (accessToken != null && accessToken.isNotEmpty)
-            ? accessToken
-            : null,
-      );
+      // 23.08 S10+ vakası: doğrulama sunucuda başarılıyken setSession'ın tek
+      // ağ hatası (VPN/DDoS-Guard reddi) kullanıcıyı "kod yanlış" sanılan
+      // döngüye sokuyor, kod da tüketilmiş oluyordu. Kısa aralıklı 3 deneme;
+      // yine olmazsa yarı-kurulu oturum temizlenir (sonraki istekler bozuk
+      // Authorization ile 401'e düşmesin) ve ağ/VPN mesajı gösterilir.
+      AuthResponse? authResponse;
+      for (var attempt = 0; attempt < 3; attempt++) {
+        try {
+          authResponse = await Supabase.instance.client.auth.setSession(
+            refreshToken,
+            accessToken: (accessToken != null && accessToken.isNotEmpty)
+                ? accessToken
+                : null,
+          );
+          break;
+        } catch (_) {
+          if (attempt == 2) {
+            try {
+              await Supabase.instance.client.auth
+                  .signOut(scope: SignOutScope.local);
+            } catch (_) {}
+            if (mounted) {
+              setState(() =>
+                  _error = AppLocalizations.of(context)!.error_network_vpn);
+            }
+            return;
+          }
+          await Future.delayed(Duration(milliseconds: 700 * (attempt + 1)));
+        }
+      }
       if (!mounted) return;
 
-      final user = authResponse.user;
+      final user = authResponse?.user;
       if (user != null) {
         final existing = await Supabase.instance.client
             .from('users')

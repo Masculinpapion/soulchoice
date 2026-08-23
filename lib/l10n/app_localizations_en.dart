@@ -165,7 +165,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter 10 digits after +7, e.g. 916 123 45 67';
 
   @override
-  String get phone_error_connection => 'Connection error, please try again';
+  String get phone_error_connection =>
+      'Connection error. If a VPN is on, turn it off and try again';
+
+  @override
+  String get error_network_vpn =>
+      'Couldn\'t reach the server. If a VPN is on, turn it off and try again';
+
+  @override
+  String get profile_save_failed =>
+      'Couldn\'t save your profile. Please try again';
 
   @override
   String get phone_terms => 'By continuing you accept our';

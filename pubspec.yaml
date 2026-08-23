@@ -41,6 +41,8 @@ dependencies:
   # Image picker & cropper
   image_picker: ^1.1.2
   crop_your_image: ^2.0.0
+  # 23.08: EXIF Orientation'ı piksele uygulayarak küçültme (yan-foto fix'i)
+  flutter_image_compress: ^2.3.0
 
   # Permissions
   permission_handler: ^11.3.1

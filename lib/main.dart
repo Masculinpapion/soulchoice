@@ -277,7 +277,13 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
       debugShowCheckedModeBanner: false,
       // Boş alana dokununca klavyeyi kapat — tüm ekranlarda tutarlı,
       // yeni eklenen ekranlar da otomatik kapsanır.
-      builder: (context, child) => GestureDetector(
+      // 23.08: sistem yazı ölçeği 0.9–1.15'e sabitlenir — S22 (1.3×) ve
+      // S10+ (1.7×) vakalarında tüm UI orantısız dağılıyordu (alt bar iki
+      // satıra kırılma, buton altında kalan linkler, kelime ortası kırılma).
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        minScaleFactor: 0.9,
+        maxScaleFactor: 1.15,
+        child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         behavior: HitTestBehavior.translucent,
         child: Stack(
@@ -360,6 +366,7 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
                 ),
               ),
           ],
+        ),
         ),
       ),
       theme: AppTheme.dark,

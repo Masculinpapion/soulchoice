@@ -165,7 +165,15 @@ class AppLocalizationsTr extends AppLocalizations {
       '+7\'den sonra 10 rakam gir, örn. 916 123 45 67';
 
   @override
-  String get phone_error_connection => 'Bağlantı hatası, tekrar dene';
+  String get phone_error_connection =>
+      'Bağlantı hatası. VPN açıksa kapatıp tekrar dene';
+
+  @override
+  String get error_network_vpn =>
+      'Sunucuya ulaşılamadı. VPN açıksa kapatıp tekrar dene';
+
+  @override
+  String get profile_save_failed => 'Profil kaydedilemedi. Lütfen tekrar dene';
 
   @override
   String get phone_terms => 'Devam ederek kabul etmiş olursun:';

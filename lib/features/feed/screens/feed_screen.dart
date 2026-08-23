@@ -356,7 +356,12 @@ class _StoryBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Kompakt: etiket satırı ~17 + boşluk 8 + avatar 56 + boşluk 6 + isim ~13
     // ≈ 100 → 106 (6pt pay; SE'de 100 taşıyordu, 17.08 kanıtlı).
-    final barHeight = compact ? 106.0 : 118.0;
+    // 23.08: sistem yazı ölçeği (clamp sonrası 1.0–1.15) etiket+isim satırını
+    // büyütüyor — sabit yükseklik dikeyde taşıyordu (emülatör kanıtı 1.3×),
+    // ölçek payı eklenir.
+    final tsFactor = MediaQuery.textScalerOf(context).scale(1.0);
+    final barHeight =
+        (compact ? 106.0 : 118.0) + (tsFactor - 1.0).clamp(0.0, 0.2) * 90;
     final filter = InvitationFilter(flowType: flowType, cityId: cityId);
     final async = ref.watch(invitationsProvider(filter));
 

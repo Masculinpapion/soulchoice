@@ -224,7 +224,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
       await client.from('users').upsert({
         'id': uid,
-        'phone': user.phone,
+        // 23.08 vakası: 'phone' GÖNDERME — authenticated rolünün phone kolonunda
+        // SELECT'i yok (31.07 kolon gizliliği) ve upsert'in ON CONFLICT'i bunu
+        // gerektiriyor → permission denied. Telefonu sunucu doldurur
+        // (trg_users_fill_phone_from_auth).
         'name': _nameController.text.trim(),
         'age': _age,
         'gender': _gender,

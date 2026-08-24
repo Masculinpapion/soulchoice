@@ -2076,9 +2076,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get chat_hide_conversation => 'Скрыть чат';
-
-  @override
   String get chat_delete_conversation => 'Удалить чат';
 
   @override
@@ -2093,17 +2090,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chat_delete => 'Удалить';
 
   @override
-  String get chat_hide => 'Скрыть';
-
-  @override
   String get chat_block_and_close => 'Заблокировать и закрыть';
 
   @override
   String get chat_block => 'Заблокировать';
-
-  @override
-  String get chat_hide_confirm_body =>
-      'Чат исчезнет из твоего списка. Собеседник продолжит его видеть; при новом сообщении чат вернётся.';
 
   @override
   String chat_block_confirm_body(String gender) {

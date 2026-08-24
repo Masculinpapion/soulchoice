@@ -895,15 +895,12 @@
   "notif_action_new_application": "{gender, select, other{davetine başvurdu}}",
   "notif_action_selected": "{gender, select, other{seni seçti 🎉}}",
   "notif_action_not_selected": "{gender, select, other{başvurunu yanıtladı}}",
-  "chat_hide_conversation": "Sohbeti Gizle",
   "chat_delete_conversation": "Sohbeti Sil",
   "chat_delete_confirm_body": "Bu kullanıcı hesabını silmiş. Sohbet ve geçmişi kalıcı olarak silinecek.",
   "chat_clear_confirm_body": "Sohbet geçmişi yalnızca senin tarafında kalıcı olarak silinecek. Karşı taraf sohbeti görmeye devam eder.",
   "chat_delete": "Sil",
-  "chat_hide": "Gizle",
   "chat_block_and_close": "Engelle ve Kapat",
   "chat_block": "Engelle",
-  "chat_hide_confirm_body": "Bu sohbet listenden kalkacak. Karşı taraf sohbeti görmeye devam eder; yeni mesaj gelirse sohbet geri gelir.",
   "chat_block_confirm_body": "Bu kişiyi engellemek istediğine emin misin? Sohbet kapanacak.",
   "@chat_block_confirm_body": {
     "placeholders": {

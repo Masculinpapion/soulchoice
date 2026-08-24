@@ -793,28 +793,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     }
   }
 
-  // Tek-taraflı gizleme (WhatsApp standardı): match SİLİNMEZ, yalnız benim
-  // listemden kalkar; karşı taraf sohbeti aynen görür; yeni mesajla geri döner.
-  Future<void> _hideChat() async {
-    try {
-      await Supabase.instance.client
-          .rpc('hide_chat', params: {'p_match_id': widget.matchId});
-      if (!mounted) return;
-      // Liste tazelenmezse gizlenen sohbet görünmeye devam eder
-      // (_deleteChat'teki 29.07 fix'inin atlanmış ikizi — 31.07 denetimi).
-      ref.invalidate(matchesProvider);
-      if (mounted) context.go('/messages');
-    } catch (e) {
-      if (mounted) {
-        _showAuroraSnack(
-          AppLocalizations.of(context)!.chat_send_error(AppLocalizations.of(context)!.error_generic),
-          accentColor: AuroraTheme.auroraRed,
-          icon: Icons.error_outline,
-        );
-      }
-    }
-  }
-
   // Normal sohbette "Sil" (01.08 Mustafa kararı): tek taraflı — benim geçmişim
   // kalıcı temizlenir (cleared_at), karşı tarafın kopyası durur; yeni mesaj
   // gelirse sohbet sıfırdan görünür. Sunucudan mesaj silinmez (20.07 kalıcılık
@@ -954,7 +932,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               // Engellenmiş sohbette ikinci engel anlamsız (bayrak tek seferlik)
               onBlock: (_otherDeleted || _blocked) ? null : _block,
               onReport: _otherDeleted ? null : _report,
-              onHide: _otherDeleted ? null : _hideChat,
               // Sil her sohbette var: normalde tek taraflı temizlik (clear_chat),
               // karşı taraf hesabını silmişse match'in gerçek silinmesi.
               onDelete: _otherDeleted ? _deleteChat : _clearChat,
@@ -1414,7 +1391,6 @@ class _ChatAppBar extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback? onBlock;
   final VoidCallback? onReport;
-  final VoidCallback? onHide;
   final VoidCallback? onDelete;
   /// Sil onay diyaloğu gövdesi; null ise varsayılan (silinmiş-hesap) metni.
   final String? deleteConfirmBody;
@@ -1428,7 +1404,6 @@ class _ChatAppBar extends StatelessWidget {
     required this.onBack,
     this.onBlock,
     this.onReport,
-    this.onHide,
     this.onDelete,
     this.deleteConfirmBody,
     this.currentUserGender = 'other',
@@ -1591,48 +1566,6 @@ class _ChatAppBar extends StatelessWidget {
                           ],
                         ),
                       );
-                    } else if (val == 'hide') {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: const Color(0xFF14121E),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          title: Text(
-                            AppLocalizations.of(context)!.chat_hide_conversation,
-                            style: TextStyle(
-                              fontFamily: 'Fraunces',
-                              fontStyle: FontStyle.italic,
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          content: Text(
-                            AppLocalizations.of(context)!.chat_hide_confirm_body,
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              color: Colors.white.withOpacity(0.65),
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: Text(AppLocalizations.of(context)!.btn_cancel,
-                                  style: TextStyle(fontFamily: 'JetBrainsMono', color: Colors.white54)),
-                            ),
-                            TextButton(
-                              onPressed: () { Navigator.pop(ctx); onHide!(); },
-                              child: Text(AppLocalizations.of(context)!.chat_hide,
-                                  style: TextStyle(
-                                    fontFamily: 'JetBrainsMono',
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                            ),
-                          ],
-                        ),
-                      );
                     } else if (val == 'block') {
                       showDialog(
                         context: context,
@@ -1685,20 +1618,6 @@ class _ChatAppBar extends StatelessWidget {
                           const Icon(Icons.delete_forever_outlined, color: AuroraTheme.auroraRed, size: 18),
                           const SizedBox(width: 10),
                           Text(AppLocalizations.of(context)!.chat_delete_conversation,
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
-                              )),
-                        ]),
-                      ),
-                    if (onHide != null)
-                      PopupMenuItem(
-                        value: 'hide',
-                        child: Row(children: [
-                          Icon(Icons.visibility_off_outlined, color: Colors.white.withOpacity(0.6), size: 18),
-                          const SizedBox(width: 10),
-                          Text(AppLocalizations.of(context)!.chat_hide_conversation,
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 fontSize: 14,

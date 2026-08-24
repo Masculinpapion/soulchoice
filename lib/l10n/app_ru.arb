@@ -895,15 +895,12 @@
   "notif_action_new_application": "{gender, select, female{откликнулась на твоё приглашение} male{откликнулся на твоё приглашение} other{откликнулся(ась) на твоё приглашение}}",
   "notif_action_selected": "{gender, select, female{выбрала тебя 🎉} male{выбрал тебя 🎉} other{выбрал(а) тебя 🎉}}",
   "notif_action_not_selected": "{gender, select, female{ответила на твою заявку} male{ответил на твою заявку} other{ответил(а) на твою заявку}}",
-  "chat_hide_conversation": "Скрыть чат",
   "chat_delete_conversation": "Удалить чат",
   "chat_delete_confirm_body": "Этот пользователь удалил аккаунт. Чат и его история будут удалены навсегда.",
   "chat_clear_confirm_body": "История переписки будет удалена только у тебя, без возможности восстановления. Собеседник продолжит видеть чат.",
   "chat_delete": "Удалить",
-  "chat_hide": "Скрыть",
   "chat_block_and_close": "Заблокировать и закрыть",
   "chat_block": "Заблокировать",
-  "chat_hide_confirm_body": "Чат исчезнет из твоего списка. Собеседник продолжит его видеть; при новом сообщении чат вернётся.",
   "chat_block_confirm_body": "{gender, select, female{Ты уверена, что хочешь заблокировать этого человека? Чат закроется.} other{Ты уверен, что хочешь заблокировать этого человека? Чат закроется.}}",
   "@chat_block_confirm_body": {
     "placeholders": {

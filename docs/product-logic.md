@@ -57,8 +57,11 @@ Kategori yalnızca sunumu etkiler (ikon, filtre); ilan oluşturma akışında ka
 
 ```
 active (6/12/24/48 saat — sahibi seçer; ASLA plandan sonra bitmez, bkz. süre kuralı)
-  └─ süre dolunca → selecting (+48 saat sabit seçim penceresi)
-        └─ pencere dolunca → closed
+  └─ süre dolunca → seçilecek bir şey YOKSA doğrudan closed (25.08 kuralı:
+  │     bekleyen başvuru yok VEYA kabul zaten verilmiş VEYA etkinlik saati geçmiş)
+  └─ yoksa → selecting (pencere = min(süre bitimi + 48 saat, etkinlik saati) — 25.08:
+        │     pencere etkinliği ASLA aşmaz; eski sabit +48s kural test kartlarında sürer)
+        └─ pencere dolunca / kabul verilince / bekleyen kalmayınca / etkinlik geçince → closed
               └─ match'i YOKSA saatlik temizlikte kalıcı silinir (başvurularıyla)
               └─ match'i VARSA silinmez (sohbet başlığı verisi yaşar)
 ```

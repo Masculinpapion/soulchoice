@@ -2028,9 +2028,6 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get chat_hide_conversation => 'Sohbeti Gizle';
-
-  @override
   String get chat_delete_conversation => 'Sohbeti Sil';
 
   @override
@@ -2045,17 +2042,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chat_delete => 'Sil';
 
   @override
-  String get chat_hide => 'Gizle';
-
-  @override
   String get chat_block_and_close => 'Engelle ve Kapat';
 
   @override
   String get chat_block => 'Engelle';
-
-  @override
-  String get chat_hide_confirm_body =>
-      'Bu sohbet listenden kalkacak. Karşı taraf sohbeti görmeye devam eder; yeni mesaj gelirse sohbet geri gelir.';
 
   @override
   String chat_block_confirm_body(String gender) {

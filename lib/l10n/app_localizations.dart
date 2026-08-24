@@ -3724,12 +3724,6 @@ abstract class AppLocalizations {
   /// **'{gender, select, other{responded to your application}}'**
   String notif_action_not_selected(String gender);
 
-  /// No description provided for @chat_hide_conversation.
-  ///
-  /// In en, this message translates to:
-  /// **'Hide chat'**
-  String get chat_hide_conversation;
-
   /// No description provided for @chat_delete_conversation.
   ///
   /// In en, this message translates to:
@@ -3754,12 +3748,6 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get chat_delete;
 
-  /// No description provided for @chat_hide.
-  ///
-  /// In en, this message translates to:
-  /// **'Hide'**
-  String get chat_hide;
-
   /// No description provided for @chat_block_and_close.
   ///
   /// In en, this message translates to:
@@ -3771,12 +3759,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Block'**
   String get chat_block;
-
-  /// No description provided for @chat_hide_confirm_body.
-  ///
-  /// In en, this message translates to:
-  /// **'This chat leaves your list. The other person still sees it; it returns when a new message arrives.'**
-  String get chat_hide_confirm_body;
 
   /// No description provided for @chat_block_confirm_body.
   ///

@@ -2039,9 +2039,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get chat_hide_conversation => 'Hide chat';
-
-  @override
   String get chat_delete_conversation => 'Delete chat';
 
   @override
@@ -2056,17 +2053,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chat_delete => 'Delete';
 
   @override
-  String get chat_hide => 'Hide';
-
-  @override
   String get chat_block_and_close => 'Block and Close';
 
   @override
   String get chat_block => 'Block';
-
-  @override
-  String get chat_hide_confirm_body =>
-      'This chat leaves your list. The other person still sees it; it returns when a new message arrives.';
 
   @override
   String chat_block_confirm_body(String gender) {

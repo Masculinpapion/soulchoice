@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { tochkaFetch } from '../_shared/tochka-fetch.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -100,7 +101,7 @@ serve(async (req) => {
       }
     }
 
-    const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/payments', {
+    const tochkaRes = await tochkaFetch(TOCHKA_API + '/acquiring/v1.0/payments', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + TOCHKA_JWT, 'Content-Type': 'application/json' },
       body: JSON.stringify({

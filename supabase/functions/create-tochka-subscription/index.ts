@@ -2,6 +2,7 @@
 // Akış: auth → zorunlu e-posta + oferta onayı → P9 kuralları → Точка create → DB kayıtları → link.
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
+import { tochkaFetch } from '../_shared/tochka-fetch.ts'
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -124,7 +125,7 @@ serve(async (req) => {
       // S5 (banka tavsiyesi, 09.07.2026): with_receipt varyantı — Client.email zorunlu,
       // çek DAİMA billing_email'e kesilir, müşteri banka sayfasında e-posta girmez.
       // Zorunlu alanlar canlı validasyon probuyla doğrulandı: Client.email, Items[].name/amount/quantity.
-      const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/subscriptions_with_receipt', {
+      const tochkaRes = await tochkaFetch(TOCHKA_API + '/acquiring/v1.0/subscriptions_with_receipt', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + TOCHKA_JWT, 'Content-Type': 'application/json' },
         body: JSON.stringify({

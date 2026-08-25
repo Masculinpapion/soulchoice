@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { tochkaFetch } from '../_shared/tochka-fetch.ts'
 
 // iOS Premium SMS akışı ("kargo bildirimi" deseni):
 // Ücretsiz başvurusunu kullanan iOS kullanıcısına, uygulama DIŞINDAN (SMS)
@@ -69,7 +70,7 @@ serve(async (req) => {
     const results: Record<string, string> = {}
     for (const u of users) {
       // Kişisel ödeme linki (7 gün geçerli, hesaba payments kaydıyla bağlı)
-      const tochkaRes = await fetch(TOCHKA_API + '/acquiring/v1.0/payments', {
+      const tochkaRes = await tochkaFetch(TOCHKA_API + '/acquiring/v1.0/payments', {
         method: 'POST',
         headers: { Authorization: 'Bearer ' + TOCHKA_JWT, 'Content-Type': 'application/json' },
         body: JSON.stringify({

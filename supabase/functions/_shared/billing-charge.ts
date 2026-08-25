@@ -4,6 +4,7 @@
 // sınıflandırma (ok/fail/unknown) → senkron GET teyidi → grant. Точка S3 limiti için
 // charge_attempt event'i çekimden ÖNCE yazılır — 20 saatlik sayaç bunu okur.
 import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
+import { tochkaFetch } from './tochka-fetch.ts'
 
 const TOCHKA_API = 'https://enter.tochka.com/uapi'
 const TOCHKA_JWT = Deno.env.get('TOCHKA_JWT_TOKEN') ?? ''
@@ -55,7 +56,7 @@ export function pendingRefundCount(op: Record<string, unknown> | null, alreadyRe
 }
 
 export async function getOperation(operationId: string): Promise<Record<string, unknown> | null> {
-  const res = await fetch(
+  const res = await tochkaFetch(
     `${TOCHKA_API}/acquiring/v1.0/payments/${encodeURIComponent(operationId)}?customerCode=${CUSTOMER_CODE}`,
     { headers: { Authorization: 'Bearer ' + TOCHKA_JWT } },
   )
@@ -206,7 +207,7 @@ export async function attemptCharge(
   let cls: 'ok' | 'fail' | 'unknown' = 'unknown'
   let rawBody = ''
   try {
-    const res = await fetch(
+    const res = await tochkaFetch(
       `${TOCHKA_API}/acquiring/v1.0/subscriptions/${encodeURIComponent(sub.tochka_subscription_id)}/charge`,
       {
         method: 'POST',

@@ -422,6 +422,17 @@ serve(async (req) => {
     }
 
     // ================= DIGEST (P2) + JWT ALARMI (P7) =================
+    // 25.08.2026: hata metinlerindeki ham URL'ler (ör. enter.tochka.com/...UUID)
+    // Gmail'de digest'i spam'e düşürdü, ardından yenileme maili de "benzerlik"le
+    // spam'e gitti. Digest gövdesinde URL'ler host adına indirgenir.
+    const scrubUrls = (s: string) =>
+      s.replace(/https?:\/\/[^\s)|,]+/g, (u) => {
+        try {
+          return new URL(u).host
+        } catch {
+          return '[link]'
+        }
+      })
     const red = summary.charge_unknown.length > 0 || summary.errors.length > 0
     const jwtWarn = summary.jwt_days_left != null && summary.jwt_days_left < 90
     const lines = [
@@ -440,7 +451,7 @@ serve(async (req) => {
       jwtWarn ? `⚠️ Точка JWT süresine ${summary.jwt_days_left} gün kaldı — token yenile!` : `Точка JWT: ${summary.jwt_days_left ?? '?'} gün`,
     ].filter((l) => l !== '')
     const subject = `${red ? '⚠️ ' : ''}SoulChoice billing: ${summary.charged.length} çekim, ${summary.charge_failed.length} hata${cfg.dry_run ? ' [DRY-RUN]' : ''}`
-    if (cfg.digest_email) await sendCustomEmail(cfg.digest_email, subject, lines.join('\n'))
+    if (cfg.digest_email) await sendCustomEmail(cfg.digest_email, subject, scrubUrls(lines.join('\n')))
     await db.queryObject(
       `insert into billing_events (event, detail) values ('digest', $1::jsonb)`,
       [JSON.stringify(summary)],

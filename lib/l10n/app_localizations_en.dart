@@ -1686,7 +1686,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selfie_subtitle =>
-      'We manually verify your profile for a safe community';
+      'Everyone here is real: every profile is selfie-verified. Only the moderator sees it — it never appears on your profile';
 
   @override
   String get selfie_take_btn => 'Take selfie';
@@ -1702,6 +1702,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selfie_submit_btn => 'Submit';
+
+  @override
+  String get selfie_skip_btn => 'Skip for now';
+
+  @override
+  String get selfie_skip_note =>
+      'You\'ll need verification to join invitations';
 
   @override
   String get blocked_users_title => 'Blocked';

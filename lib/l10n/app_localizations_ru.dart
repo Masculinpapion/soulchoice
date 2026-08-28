@@ -1705,7 +1705,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selfie_subtitle =>
-      'Мы вручную проверяем твой профиль для безопасного сообщества';
+      'Здесь только реальные люди: каждый профиль подтверждён селфи. Его увидит только модератор — в профиле оно не показывается';
 
   @override
   String get selfie_take_btn => 'Сделать селфи';
@@ -1721,6 +1721,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selfie_submit_btn => 'Отправить';
+
+  @override
+  String get selfie_skip_btn => 'Сделать позже';
+
+  @override
+  String get selfie_skip_note =>
+      'Чтобы участвовать в приглашениях, понадобится верификация';
 
   @override
   String get blocked_users_title => 'Чёрный список';

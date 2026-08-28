@@ -338,7 +338,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       } else {
         ref.invalidate(userPhotosProvider(uid));
         ref.invalidate(userProfileProvider(uid));
-        context.go('/profile/selfie');
+        context.go('/profile/selfie', extra: 'onboarding');
       }
     } catch (e) {
       // Rollback: loop ortasında hata çıktıysa yüklenen dosyaları geri al

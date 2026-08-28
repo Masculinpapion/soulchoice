@@ -15,7 +15,11 @@ import '../../../shared/widgets/sc_scaffold.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 
 class SelfieScreen extends StatefulWidget {
-  const SelfieScreen({super.key});
+  /// İlk kayıt akışından (fotoğraf ekranı) gelindiğinde true — yalnız bu
+  /// durumda "şimdilik atla" görünür; guard/ayarlar yollarında görünmez.
+  final bool fromOnboarding;
+
+  const SelfieScreen({super.key, this.fromOnboarding = false});
 
   @override
   State<SelfieScreen> createState() => _SelfieScreenState();
@@ -387,6 +391,38 @@ class _SelfieScreenState extends State<SelfieScreen> {
                   onPressed: (_selfie != null && !_isPending) ? _submit : null,
                   isLoading: _isUploading,
                 ),
+                if (widget.fromOnboarding && !_isPending && !_wasRejected) ...[
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.selfie_skip_note,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 12,
+                            color: AuroraTheme.textMuted,
+                            height: 1.4,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed:
+                              _isUploading ? null : () => context.go('/feed'),
+                          child: Text(
+                            AppLocalizations.of(context)!.selfie_skip_btn,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AuroraTheme.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
               ],
             ),

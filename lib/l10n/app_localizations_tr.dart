@@ -1677,7 +1677,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get selfie_subtitle =>
-      'Güvenli bir topluluk için profilini manuel olarak doğruluyoruz';
+      'Burada herkes gerçek: her profil selfie ile doğrulanır. Selfie\'ni yalnız moderatör görür — profilinde görünmez';
 
   @override
   String get selfie_take_btn => 'Selfie çek';
@@ -1693,6 +1693,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get selfie_submit_btn => 'Gönder';
+
+  @override
+  String get selfie_skip_btn => 'Şimdilik atla';
+
+  @override
+  String get selfie_skip_note => 'Davetlere katılmak için doğrulama gerekecek';
 
   @override
   String get blocked_users_title => 'Engellenenler';

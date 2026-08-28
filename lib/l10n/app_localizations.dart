@@ -3115,7 +3115,7 @@ abstract class AppLocalizations {
   /// No description provided for @selfie_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'We manually verify your profile for a safe community'**
+  /// **'Everyone here is real: every profile is selfie-verified. Only the moderator sees it — it never appears on your profile'**
   String get selfie_subtitle;
 
   /// No description provided for @selfie_take_btn.
@@ -3147,6 +3147,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get selfie_submit_btn;
+
+  /// No description provided for @selfie_skip_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get selfie_skip_btn;
+
+  /// No description provided for @selfie_skip_note.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll need verification to join invitations'**
+  String get selfie_skip_note;
 
   /// No description provided for @blocked_users_title.
   ///

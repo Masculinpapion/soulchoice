@@ -138,7 +138,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile/selfie',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (ctx, _) => const SelfieScreen(),
+        // extra 'onboarding' yalnız fotoğraf ekranından gelir — atla butonu
+        // sadece ilk kayıt akışında görünür (guard/ayarlar yollarında değil).
+        builder: (ctx, state) =>
+            SelfieScreen(fromOnboarding: state.extra == 'onboarding'),
       ),
       GoRoute(
         path: '/permissions',

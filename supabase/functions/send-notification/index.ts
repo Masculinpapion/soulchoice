@@ -15,6 +15,12 @@ const PRIVATE_KEY_RAW = (Deno.env.get('FIREBASE_PRIVATE_KEY') ?? '').replace(/\\
 // ikincil transport. Console → Инструменты → Push-уведомления → «Prod».
 const RUSTORE_PROJECT_ID = Deno.env.get('RUSTORE_PROJECT_ID') ?? ''
 const RUSTORE_SERVICE_TOKEN = Deno.env.get('RUSTORE_SERVICE_TOKEN') ?? ''
+// 27.08 RuStore duyurusu: Push API yeni domain'e taşınıyor (Минцифры sertifikalı
+// -dg); eski vkpns.rustore.ru uluslararası sertifika iptalinde ÖLECEK. Birincil
+// -dg, ağ/TLS hatasında geçiş dönemi boyunca eski domain'e düşülür. Deno'nun
+// -dg sertifikasına güveni compose'daki DENO_CERT (ca_bundle.pem) ile sağlanır.
+const RUSTORE_PUSH_HOST = Deno.env.get('RUSTORE_PUSH_HOST') ?? 'vkpns-dg.rustore.ru'
+const RUSTORE_PUSH_HOST_LEGACY = 'vkpns.rustore.ru'
 
 async function getFcmAccessToken(): Promise<string> {
   const privateKey = await jose.importPKCS8(PRIVATE_KEY_RAW, 'RS256')
@@ -317,8 +323,8 @@ serve(async (req) => {
           headers: { ...CORS, 'Content-Type': 'application/json' },
         })
       }
-      const ruRes = await fetch(
-        `https://vkpns.rustore.ru/v1/projects/${RUSTORE_PROJECT_ID}/messages:send`,
+      const ruSend = (host: string) => fetch(
+        `https://${host}/v1/projects/${RUSTORE_PROJECT_ID}/messages:send`,
         {
           method: 'POST',
           headers: {
@@ -334,6 +340,13 @@ serve(async (req) => {
           }),
         }
       )
+      let ruRes: Response
+      try {
+        ruRes = await ruSend(RUSTORE_PUSH_HOST)
+      } catch (e) {
+        console.error(`send-notification RUSTORE ${RUSTORE_PUSH_HOST} unreachable (${(e as Error).message}) — legacy domain deneniyor`)
+        ruRes = await ruSend(RUSTORE_PUSH_HOST_LEGACY)
+      }
       let ruData: unknown = null
       try { ruData = await ruRes.json() } catch (_) { /* gövdesiz cevap */ }
       if (!ruRes.ok) {

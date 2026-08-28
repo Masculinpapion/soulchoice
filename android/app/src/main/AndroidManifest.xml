@@ -43,6 +43,12 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- RuStore Push (28.08): GMS'siz cihazlar için ikincil push kanalı.
+             Proje: RuStore Console → Инструменты → Push-уведомления → «Prod» -->
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.project_id"
+            android:value="gh9OGsMHi4FGsSalyf3-khHS-tlDSMcn" />
+
         <!-- FileProvider: image_cropper (uCrop) geçici dosyalar için gerekli -->
         <provider
             android:name="androidx.core.content.FileProvider"

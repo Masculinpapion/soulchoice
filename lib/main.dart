@@ -14,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_rustore_push/flutter_rustore_push.dart' as rustore;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -130,6 +131,27 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
       if (m == null) return;
       _openWhenSessionReady(m.data);
     });
+    // RuStore Push (28.08): GMS'siz cihazlar (RuStore kitlesi — София vakası)
+    // FCM token alamıyor → o cihazlara push RuStore transportuyla gider.
+    // Aynı olay iki kanaldan gelirse _routeFromPushData rota-dedupe teke indirir;
+    // sunucu zaten FCM'i önceleyip tek kanala gönderir.
+    if (!kIsWeb && Platform.isAndroid) {
+      try {
+        rustore.RustorePushClient.setup();
+        rustore.RustorePushClient.attachCallbacks(
+          onNewToken: (dynamic _) => savePushToken(),
+          // Ön planda gelen RuStore push'u da FCM'dekiyle aynı in-app banner'a
+          // düşer (26.07 "push gelmedi" vakasının RuStore karşılığı olmasın).
+          onMessageReceived: (dynamic m) => _showInAppBanner(_ruToRemote(m)),
+          onMessageOpenedApp: (dynamic m) => _routeFromPushData(_ruPushData(m)),
+          onError: (dynamic _) {},
+        );
+        rustore.RustorePushClient.getInitialMessage().then((m) {
+          if (m == null) return;
+          _openWhenSessionReady(_ruPushData(m));
+        }).catchError((_) {});
+      } catch (_) {/* RuStore SDK'sız/eski cihazda push kurulumu FCM'i etkilemesin */}
+    }
     // iOS bildirim-tıklama köprüsü (01.08): FCM eklentisinin tap iletimi
     // iOS'ta delegate kurulum zamanlamasına takılıp kopabiliyor (tıklama
     // Dart'a hiç ulaşmıyor, kullanıcı feed'e düşüyordu). Natif AppDelegate
@@ -151,6 +173,32 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) NotificationCleaner.clearBadge();
+  }
+
+  // RuStore Push mesajı → mevcut FCM akışlarının beklediği tipler (28.08).
+  // Plugin'in Message alan tipleri sürümler arasında oynayabildiği için
+  // dynamic üzerinden savunmacı okunur — bozuk mesaj boş data'ya düşer.
+  static Map<String, dynamic> _ruPushData(dynamic m) {
+    try {
+      final d = (m as dynamic).data;
+      if (d is Map) {
+        return d.map((k, v) => MapEntry(k.toString(), v));
+      }
+    } catch (_) {}
+    return const {};
+  }
+
+  static RemoteMessage _ruToRemote(dynamic m) {
+    String? title;
+    String? body;
+    try {
+      title = (m as dynamic).notification?.title as String?;
+      body = (m as dynamic).notification?.body as String?;
+    } catch (_) {}
+    return RemoteMessage(
+      data: _ruPushData(m),
+      notification: RemoteNotification(title: title, body: body),
+    );
   }
 
   static Map<String, dynamic> _bridgePushData(String json) {

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_rustore_push/flutter_rustore_push.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,31 +29,67 @@ Future<void> clearPushTokenBeforeSignOut() async {
   try {
     final uid = Supabase.instance.client.auth.currentUser?.id;
     if (uid != null) {
+      // rustore_token da temizlenir (28.08) — aynı cihaz-el-değiştirme
+      // vakasının RuStore transportundaki karşılığı.
       await Supabase.instance.client
           .from('users')
-          .update({'fcm_token': null})
+          .update({'fcm_token': null, 'rustore_token': null})
           .eq('id', uid);
     }
     await FirebaseMessaging.instance.deleteToken();
   } catch (_) {}
+  if (isAndroidDevice) {
+    try {
+      await RustorePushClient.deleteToken();
+    } catch (_) {/* RuStore yoksa/SDK hata verirse çıkış engellenmez */}
+  }
 }
 
+/// FCM birincil, RuStore ikincil kanal olarak TOKEN TOPLAR; sunucu
+/// (send-notification) gönderimde FCM'i önceler, yoksa RuStore'a düşer.
+/// 28.08 (София vakası): GMS'siz cihazda FCM getToken() hiç token veremiyor
+/// ve eski yapıda tek try-catch tüm fonksiyonu düşürüyordu → kullanıcı
+/// tamamen push'suz kalıyordu. Artık iki kanal bağımsız denenir.
 Future<void> savePushToken() async {
+  final client = Supabase.instance.client;
+  final uid = client.auth.currentUser?.id;
+  if (uid == null) return;
+  var saved = false;
+
+  // 1) FCM — GMS'li Android + iOS
   try {
-    final uid = Supabase.instance.client.auth.currentUser?.id;
-    if (uid == null) return;
     final token = await FirebaseMessaging.instance.getToken();
-    if (token == null) return;
-    await Supabase.instance.client
-        .from('users')
-        .update({
-          'fcm_token': token,
-          'last_platform': platformTag,
-        })
-        .eq('id', uid);
-    // locale burada EZİLMEZ (16.07: cihaz, hesabın dilini eziyordu);
-    // yalnız hesapta hiç dil yoksa (yeni kayıt) etkin dil doldurulur.
-    await Supabase.instance.client
+    if (token != null) {
+      await client.from('users').update({
+        'fcm_token': token,
+        'last_platform': platformTag,
+      }).eq('id', uid);
+      saved = true;
+    }
+  } catch (_) {/* GMS yok/erişilemez — RuStore yolu aşağıda denenir */}
+
+  // 2) RuStore Push — yalnız Android; RuStore kurulu+oturumlu cihazlarda
+  // token verir. FCM başarılı olsa da toplanır (cihaz envanteri + test).
+  if (isAndroidDevice) {
+    try {
+      if (await RustorePushClient.available()) {
+        final rt = await RustorePushClient.getToken();
+        if (rt.isNotEmpty) {
+          await client.from('users').update({
+            'rustore_token': rt,
+            if (!saved) 'last_platform': platformTag,
+          }).eq('id', uid);
+          saved = true;
+        }
+      }
+    } catch (_) {/* RuStore yok/SDK hatası — sessiz, FCM durumu değişmez */}
+  }
+
+  if (!saved) return;
+  // locale burada EZİLMEZ (16.07: cihaz, hesabın dilini eziyordu);
+  // yalnız hesapta hiç dil yoksa (yeni kayıt) etkin dil doldurulur.
+  try {
+    await client
         .from('users')
         .update({'locale': await _effectiveLocaleCode()})
         .eq('id', uid)

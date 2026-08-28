@@ -9,5 +9,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 /// Web'de iOS DEĞİL sayılır: ödeme/paywall akışı zaten web'de "link" modudur.
 bool get isIOSDevice => !kIsWeb && Platform.isIOS;
 
+/// RuStore Push vb. Android'e özgü yollar için web-güvenli kontrol (28.08).
+bool get isAndroidDevice => !kIsWeb && Platform.isAndroid;
+
 /// Sunucuya yazılan kaynak etiketi (`users.last_platform`, ödeme `source`).
 String get platformTag => kIsWeb ? 'web' : (Platform.isIOS ? 'ios' : 'android');

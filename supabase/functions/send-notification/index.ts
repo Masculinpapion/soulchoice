@@ -11,6 +11,10 @@ const DB_URL = Deno.env.get('SUPABASE_DB_URL') ?? ''
 const PROJECT_ID = Deno.env.get('FIREBASE_PROJECT_ID') ?? ''
 const CLIENT_EMAIL = Deno.env.get('FIREBASE_CLIENT_EMAIL') ?? ''
 const PRIVATE_KEY_RAW = (Deno.env.get('FIREBASE_PRIVATE_KEY') ?? '').replace(/\\n/g, '\n')
+// RuStore Push / VK PNS (28.08): GMS'siz cihazlar (RuStore kitlesi) için
+// ikincil transport. Console → Инструменты → Push-уведомления → «Prod».
+const RUSTORE_PROJECT_ID = Deno.env.get('RUSTORE_PROJECT_ID') ?? ''
+const RUSTORE_SERVICE_TOKEN = Deno.env.get('RUSTORE_SERVICE_TOKEN') ?? ''
 
 async function getFcmAccessToken(): Promise<string> {
   const privateKey = await jose.importPKCS8(PRIVATE_KEY_RAW, 'RS256')
@@ -169,8 +173,8 @@ serve(async (req) => {
     }
     const db = new Client(DB_URL)
     await db.connect()
-    const result = await db.queryObject<{ fcm_token: string; locale: string | null }>(
-      'SELECT fcm_token, locale FROM users WHERE id = $1 LIMIT 1',
+    const result = await db.queryObject<{ fcm_token: string | null; rustore_token: string | null; locale: string | null }>(
+      'SELECT fcm_token, rustore_token, locale FROM users WHERE id = $1 LIMIT 1',
       [user_id]
     )
 
@@ -259,8 +263,11 @@ serve(async (req) => {
 
     await db.end()
     const fcmToken = result.rows[0]?.fcm_token
-    if (!fcmToken) {
-      return new Response(JSON.stringify({ error: 'no fcm_token' }), { status: 404, headers: CORS })
+    // 28.08 (София vakası): GMS'siz cihazda fcm_token hiç oluşmaz — RuStore
+    // token'ı varsa push VK PNS üzerinden gider; ikisi de yoksa eski 404.
+    const ruToken = result.rows[0]?.rustore_token
+    if (!fcmToken && !ruToken) {
+      return new Response(JSON.stringify({ error: 'no push token' }), { status: 404, headers: CORS })
     }
 
     // 31.07 (Mustafa onayı) — çoklu bildirim düzeni:
@@ -300,6 +307,55 @@ serve(async (req) => {
         if (reasonText) finalBody = `${reasonText} — ${finalBody}`
       }
     }
+
+    // RuStore (VK PNS) gönderimi — FCM v1'e yakın sözleşme; title'sız bildirim
+    // SDK'da GÖSTERİLMEZ, şablon akışı title'ı her zaman doldurur.
+    const sendRuStore = async (): Promise<Response> => {
+      if (!RUSTORE_PROJECT_ID || !RUSTORE_SERVICE_TOKEN) {
+        console.error(`send-notification RUSTORE not configured user=${user_id} type=${notifType}`)
+        return new Response(JSON.stringify({ success: false, error: 'rustore_not_configured' }), {
+          headers: { ...CORS, 'Content-Type': 'application/json' },
+        })
+      }
+      const ruRes = await fetch(
+        `https://vkpns.rustore.ru/v1/projects/${RUSTORE_PROJECT_ID}/messages:send`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + RUSTORE_SERVICE_TOKEN,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: {
+              token: ruToken,
+              notification: { title: finalTitle, body: finalBody },
+              data: data ?? {},
+            },
+          }),
+        }
+      )
+      let ruData: unknown = null
+      try { ruData = await ruRes.json() } catch (_) { /* gövdesiz cevap */ }
+      if (!ruRes.ok) {
+        console.error(`send-notification RUSTORE FAIL user=${user_id} type=${notifType} http=${ruRes.status} body=${JSON.stringify(ruData)}`)
+        // 404 = token'ın kurulumu artık yok (FCM UNREGISTERED muadili) → temizle
+        if (ruRes.status === 404) {
+          try {
+            const db3 = new Client(DB_URL)
+            await db3.connect()
+            await db3.queryObject('UPDATE users SET rustore_token = NULL WHERE id = $1 AND rustore_token = $2', [user_id, ruToken])
+            await db3.end()
+          } catch (_) { /* log yeterli */ }
+        }
+        return new Response(JSON.stringify({ success: false, rustore: ruData }), {
+          headers: { ...CORS, 'Content-Type': 'application/json' },
+        })
+      }
+      return new Response(JSON.stringify({ success: true, rustore: ruData }), {
+        headers: { ...CORS, 'Content-Type': 'application/json' },
+      })
+    }
+    if (!fcmToken) return await sendRuStore()
 
     const accessToken = await getFcmAccessToken()
     const fcmRes = await fetch(
@@ -352,6 +408,8 @@ serve(async (req) => {
           await db2.end()
         } catch (_) { /* temizlik başarısız olsa da push zaten gitmedi; log yeterli */ }
       }
+      // FCM düştü ama cihazın RuStore kanalı varsa aynı istekte oradan dene (28.08)
+      if (ruToken) return await sendRuStore()
       return new Response(JSON.stringify({ success: false, fcm: fcmData }), {
         headers: { ...CORS, 'Content-Type': 'application/json' },
       })

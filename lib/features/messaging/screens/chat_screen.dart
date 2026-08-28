@@ -1694,13 +1694,25 @@ class _EventBadge extends StatelessWidget {
   final DateTime? eventDate;
   const _EventBadge({required this.title, this.venue = '', this.eventDate});
 
+  // 29.08 (Natalya bulgusu → Mustafa onayı, B şıkkı): süresi geçmiş etkinlik
+  // "· 14:00" ile hâlâ aktif bir planmış gibi duruyordu. Rozet bağlam çıpası
+  // olarak KALIR ("görüştünüz mü" akışının referansı) ama geçmişe dönünce
+  // görünümü solar ve saat yerine tarih gösterilir.
+  bool get _isPast => eventDate != null && eventDate!.isBefore(DateTime.now());
+
   String get _label {
     final parts = <String>[title];
     if (venue.isNotEmpty) parts.add(venue.toUpperCase());
     if (eventDate != null) {
-      final h = eventDate!.hour.toString().padLeft(2, '0');
-      final m = eventDate!.minute.toString().padLeft(2, '0');
-      parts.add('$h:$m');
+      if (_isPast) {
+        final d = eventDate!.day.toString().padLeft(2, '0');
+        final mo = eventDate!.month.toString().padLeft(2, '0');
+        parts.add('$d.$mo');
+      } else {
+        final h = eventDate!.hour.toString().padLeft(2, '0');
+        final m = eventDate!.minute.toString().padLeft(2, '0');
+        parts.add('$h:$m');
+      }
     }
     return parts.join(' · ');
   }
@@ -1710,26 +1722,35 @@ class _EventBadge extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AuroraTheme.auroraRed.withOpacity(0.08),
+          color: _isPast
+              ? Colors.white.withOpacity(0.04)
+              : AuroraTheme.auroraRed.withOpacity(0.08),
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: AuroraTheme.auroraRed.withOpacity(0.22)),
+          border: Border.all(
+              color: _isPast
+                  ? Colors.white.withOpacity(0.12)
+                  : AuroraTheme.auroraRed.withOpacity(0.22)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ShaderMask(
-              shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
-              child: const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.white),
-            ),
+            if (_isPast)
+              const Icon(Icons.local_fire_department_rounded,
+                  size: 14, color: Colors.white30)
+            else
+              ShaderMask(
+                shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(b),
+                child: const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.white),
+              ),
             const SizedBox(width: 7),
             Flexible(
               child: Text(
                 _label.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'JetBrainsMono',
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white60,
+                  color: _isPast ? Colors.white38 : Colors.white60,
                   letterSpacing: 0.8,
                 ),
                 overflow: TextOverflow.ellipsis,

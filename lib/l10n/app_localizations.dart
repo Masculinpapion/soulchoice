@@ -2731,7 +2731,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_setup_education_label.
   ///
   /// In en, this message translates to:
-  /// **'School / University'**
+  /// **'School/university name — e.g. MSU'**
   String get profile_setup_education_label;
 
   /// No description provided for @profile_setup_interests_title.

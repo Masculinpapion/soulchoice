@@ -622,7 +622,7 @@
   "profile_setup_bio_hint": "Kendini kısaca tanıt...",
   "profile_setup_job_title": "Meslek ve Eğitim",
   "profile_setup_job_label": "Meslek",
-  "profile_setup_education_label": "Okul / Üniversite",
+  "profile_setup_education_label": "Okul/üniversite adı — örn. İTÜ",
   "profile_setup_interests_title": "İlgi alanları",
   "profile_setup_interests_subtitle": "En az 3 seç",
   "profile_setup_prompts_title": "Birkaç soru",

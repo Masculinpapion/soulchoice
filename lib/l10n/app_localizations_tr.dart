@@ -1471,7 +1471,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_job_label => 'Meslek';
 
   @override
-  String get profile_setup_education_label => 'Okul / Üniversite';
+  String get profile_setup_education_label => 'Okul/üniversite adı — örn. İTÜ';
 
   @override
   String get profile_setup_interests_title => 'İlgi alanları';

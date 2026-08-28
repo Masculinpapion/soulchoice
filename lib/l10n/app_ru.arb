@@ -622,7 +622,7 @@
   "profile_setup_bio_hint": "Коротко представься...",
   "profile_setup_job_title": "Работа и образование",
   "profile_setup_job_label": "Профессия",
-  "profile_setup_education_label": "Школа / Университет",
+  "profile_setup_education_label": "Школа или вуз — напр., МГУ",
   "profile_setup_interests_title": "Интересы",
   "profile_setup_interests_subtitle": "Выбери не менее 3",
   "profile_setup_prompts_title": "Несколько вопросов",

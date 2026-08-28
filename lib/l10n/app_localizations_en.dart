@@ -1477,7 +1477,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_job_label => 'Occupation';
 
   @override
-  String get profile_setup_education_label => 'School / University';
+  String get profile_setup_education_label =>
+      'School/university name — e.g. MSU';
 
   @override
   String get profile_setup_interests_title => 'Interests';

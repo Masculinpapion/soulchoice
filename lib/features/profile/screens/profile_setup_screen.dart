@@ -1313,44 +1313,55 @@ class _StepPrompts extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            ...questions.entries.map(
-              (e) => Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      e.value,
-                      style: const TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AuroraTheme.textPrimary,
-                        letterSpacing: 0.1,
+            // 29.08 saha bulgusu: klavye açıkken alttaki sorular görünmüyor,
+            // kullanıcı "tek soru var" sanıp devam ediyordu → her soruya
+            // "1/4" sayacı + klavyede İleri tuşu (odak sonraki soruya zincirlenir).
+            ...questions.entries.toList().asMap().entries.map(
+              (idx) {
+                final i = idx.key;
+                final e = idx.value;
+                final isLast = i == questions.length - 1;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${i + 1}/${questions.length} · ${e.value}',
+                        style: const TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AuroraTheme.textPrimary,
+                          letterSpacing: 0.1,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 16,
-                        color: AuroraTheme.textPrimary,
-                        height: 1.6,
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontSize: 16,
+                          color: AuroraTheme.textPrimary,
+                          height: 1.6,
+                        ),
+                        initialValue: answers[e.key] ?? '',
+                        // DB sınırı user_prompts.answer ≤ 150 (18.08); sayaç gizli
+                        maxLength: 150,
+                        textInputAction: isLast
+                            ? TextInputAction.done
+                            : TextInputAction.next,
+                        onChanged: (v) => onAnswered(e.key, v),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.profile_setup_prompts_answer_hint,
+                        ),
                       ),
-                      initialValue: answers[e.key] ?? '',
-                      // DB sınırı user_prompts.answer ≤ 150 (18.08); sayaç gizli
-                      maxLength: 150,
-                      onChanged: (v) => onAnswered(e.key, v),
-                      decoration: InputDecoration(
-                        counterText: '',
-                        hintText: AppLocalizations.of(
-                          context,
-                        )!.profile_setup_prompts_answer_hint,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),

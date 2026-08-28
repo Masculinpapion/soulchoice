@@ -639,7 +639,7 @@
   "profile_setup_bio_hint": "Briefly introduce yourself...",
   "profile_setup_job_title": "Work & Education",
   "profile_setup_job_label": "Occupation",
-  "profile_setup_education_label": "School / University",
+  "profile_setup_education_label": "School/university name — e.g. MSU",
   "profile_setup_interests_title": "Interests",
   "profile_setup_interests_subtitle": "Select at least 3",
   "profile_setup_prompts_title": "A few questions",

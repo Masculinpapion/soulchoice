@@ -1489,7 +1489,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_job_label => 'Профессия';
 
   @override
-  String get profile_setup_education_label => 'Школа / Университет';
+  String get profile_setup_education_label => 'Школа или вуз — напр., МГУ';
 
   @override
   String get profile_setup_interests_title => 'Интересы';

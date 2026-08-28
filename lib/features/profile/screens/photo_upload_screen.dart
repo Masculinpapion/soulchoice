@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/supabase_constants.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -338,6 +339,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       } else {
         ref.invalidate(userPhotosProvider(uid));
         ref.invalidate(userProfileProvider(uid));
+        funnelEvent('photos_done');
         context.go('/profile/selfie', extra: 'onboarding');
       }
     } catch (e) {

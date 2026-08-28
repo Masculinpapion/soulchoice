@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:soulchoice/core/utils/legal_links.dart';
 import '../../../core/auth/otp_autofill.dart';
 import '../../../core/auth/session_expiry.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -36,6 +37,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     super.initState();
     _sessionExpired = SessionExpiry.expired;
     SessionExpiry.expired = false;
+    funnelEvent('onboarding_start');
   }
 
   static const _commonCountries = [('+7', '🇷🇺 Россия')];

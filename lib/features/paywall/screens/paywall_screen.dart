@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:soulchoice/core/utils/legal_links.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../profile/providers/profile_provider.dart';
@@ -37,6 +38,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
   @override
   void initState() {
     super.initState();
+    funnelEvent('paywall_shown');
     WidgetsBinding.instance.addObserver(this);
     _loadPaywallMode();
     _loadBillingContext();

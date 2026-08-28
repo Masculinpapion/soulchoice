@@ -9,6 +9,7 @@ import '../../../core/services/native_uploader.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/utils/selfie_reason_l10n.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
@@ -36,6 +37,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.fromOnboarding) funnelEvent('selfie_shown');
     _loadRejection();
   }
 
@@ -126,6 +128,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
         'moderation_status': 'pending',
       });
 
+      funnelEvent('selfie_submitted');
       if (mounted) context.go('/feed');
     } catch (_) {
       // Ham exception metni kullanıcıya sızdırılmaz (31.07)
@@ -200,7 +203,12 @@ class _SelfieScreenState extends State<SelfieScreen> {
         actions: [
           if (widget.fromOnboarding && !_isPending && !_wasRejected)
             TextButton(
-              onPressed: _isUploading ? null : () => context.go('/feed'),
+              onPressed: _isUploading
+                  ? null
+                  : () {
+                      funnelEvent('selfie_skip');
+                      context.go('/feed');
+                    },
               child: Text(
                 AppLocalizations.of(context)!.selfie_skip_btn,
                 style: TextStyle(

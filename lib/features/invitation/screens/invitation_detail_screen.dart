@@ -12,6 +12,7 @@ import '../providers/invitation_provider.dart';
 import '../providers/my_active_invitation_provider.dart';
 import '../../feed/providers/invitations_provider.dart';
 import '../providers/my_applications_provider.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../profile/providers/profile_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -1408,6 +1409,7 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         'status': 'pending',
       }, onConflict: 'invitation_id,applicant_id');
       // Sahibin push'u sunucudan gider: trg_notify_new_application (26.07 madde X)
+      funnelEventOnce('first_apply');
 
       // 19.08 (Mustafa): 3 ücretsiz hak — premium değilse kalan hakkı göster.
       int? freeLeft;

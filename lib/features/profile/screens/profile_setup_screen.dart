@@ -9,6 +9,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../core/utils/guard_errors.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
 import '../providers/profile_provider.dart';
@@ -204,6 +205,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
     if (_step < _stepCount - 1) {
       setState(() => _step++);
+      funnelEvent('wizard_step', {'step': _step});
       _pageController.nextPage(
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,

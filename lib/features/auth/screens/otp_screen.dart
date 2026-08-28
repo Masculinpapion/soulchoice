@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/auth/otp_autofill.dart';
 import '../../../core/theme/aurora_theme.dart';
+import '../../../core/services/funnel_events.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../../../shared/widgets/sc_scaffold.dart';
@@ -39,6 +40,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   void initState() {
     super.initState();
+    funnelEvent('otp_shown');
     _startResendTimer();
     _listenForSms();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -143,6 +145,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
       final user = authResponse?.user;
       if (user != null) {
+        funnelEvent('otp_verified');
         final existing = await Supabase.instance.client
             .from('users')
             .select('id')

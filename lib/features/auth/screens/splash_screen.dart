@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/services/update_gate.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 
@@ -39,6 +40,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _navigate() async {
     // 31.07: sorgu ile animasyon PARALEL koşar (önce 1.8 sn beklenip sonra
     // sorgu atılıyordu — açılışa boşuna ~0.5 sn ekliyordu).
+    // Zorunlu güncelleme kapısı — sorgu animasyonla paralel koşar; bayrak
+    // yoksa/ağ yoksa kapı kapalı (UpdateGate hiç fırlatmaz).
+    final gateFuture = UpdateGate.updateRequired();
     final session = Supabase.instance.client.auth.currentSession;
     final probe = session == null
         ? null
@@ -50,6 +54,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             .timeout(const Duration(seconds: 8));
 
     await Future.delayed(const Duration(milliseconds: 1800));
+    if (!mounted) return;
+
+    if (await gateFuture) {
+      if (mounted) context.go('/update-required');
+      return;
+    }
     if (!mounted) return;
 
     if (session == null || probe == null) {

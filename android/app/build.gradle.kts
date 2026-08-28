@@ -70,3 +70,13 @@ flutter {
 
 dependencies {
 }
+
+// RuStore 27.08 duyurusu: SDK Push güncel sürüm 7.4.0 (eski uluslararası SSL
+// sertifikaları iptal edilince eski sürümler kopabilir). Flutter eklentisi
+// (flutter_rustore_push 7.2.0) natife 7.2.0 bağlıyor — burada 7.4.0'a
+// zorlanıyor; eklenti API'si minor sürümde uyumlu (E2E emülatör kanıtlı).
+configurations.all {
+    resolutionStrategy {
+        force("ru.rustore.sdk:pushclient:7.4.0")
+    }
+}

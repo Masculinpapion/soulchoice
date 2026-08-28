@@ -1168,6 +1168,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your session has expired — please sign in again.';
 
   @override
+  String get update_required_title => 'Update the app';
+
+  @override
+  String get update_required_body =>
+      'This version of SoulChoice is no longer supported. Update the app to continue.';
+
+  @override
+  String get update_required_btn => 'Update';
+
+  @override
   String get suspended_title => 'Account suspended';
 
   @override

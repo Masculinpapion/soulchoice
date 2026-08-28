@@ -1179,6 +1179,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get phone_session_expired => 'Сессия истекла — войди снова.';
 
   @override
+  String get update_required_title => 'Обновите приложение';
+
+  @override
+  String get update_required_body =>
+      'Эта версия SoulChoice больше не поддерживается. Обновите приложение, чтобы продолжить.';
+
+  @override
+  String get update_required_btn => 'Обновить';
+
+  @override
   String get suspended_title => 'Аккаунт приостановлен';
 
   @override

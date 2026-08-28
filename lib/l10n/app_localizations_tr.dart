@@ -1165,6 +1165,16 @@ class AppLocalizationsTr extends AppLocalizations {
       'Oturumunun süresi doldu — lütfen tekrar giriş yap.';
 
   @override
+  String get update_required_title => 'Uygulamayı güncelle';
+
+  @override
+  String get update_required_body =>
+      'SoulChoice\'un bu sürümü artık desteklenmiyor. Devam etmek için uygulamayı güncelle.';
+
+  @override
+  String get update_required_btn => 'Güncelle';
+
+  @override
   String get suspended_title => 'Hesap askıya alındı';
 
   @override

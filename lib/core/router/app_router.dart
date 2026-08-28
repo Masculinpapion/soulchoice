@@ -10,6 +10,7 @@ import '../auth/session_expiry.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/phone_screen.dart';
 import '../../features/auth/screens/suspended_screen.dart';
+import '../../features/auth/screens/update_required_screen.dart';
 import '../../features/auth/screens/otp_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/onboarding/screens/permissions_screen.dart';
@@ -109,6 +110,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (ctx, _) => const SplashScreen()),
       GoRoute(
           path: '/suspended', builder: (ctx, _) => const SuspendedScreen()),
+      GoRoute(
+          path: '/update-required',
+          builder: (ctx, _) => const UpdateRequiredScreen()),
       GoRoute(
           path: '/onboarding', builder: (ctx, _) => const OnboardingScreen()),
       GoRoute(

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_rustore_push/flutter_rustore_push.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -56,6 +57,13 @@ Future<void> savePushToken() async {
   if (uid == null) return;
   var saved = false;
 
+  // Sürüm telemetrisi (28.08): RuStore'da güncelleme dağıtımı belirsiz —
+  // hangi kullanıcının hangi build'de kaldığı ancak bu alanla görünür.
+  int? appBuild;
+  try {
+    appBuild = int.tryParse((await PackageInfo.fromPlatform()).buildNumber);
+  } catch (_) {}
+
   // 1) FCM — GMS'li Android + iOS
   try {
     final token = await FirebaseMessaging.instance.getToken();
@@ -63,6 +71,7 @@ Future<void> savePushToken() async {
       await client.from('users').update({
         'fcm_token': token,
         'last_platform': platformTag,
+        if (appBuild != null) 'app_build': appBuild,
       }).eq('id', uid);
       saved = true;
     }
@@ -78,6 +87,7 @@ Future<void> savePushToken() async {
           await client.from('users').update({
             'rustore_token': rt,
             if (!saved) 'last_platform': platformTag,
+            if (!saved && appBuild != null) 'app_build': appBuild,
           }).eq('id', uid);
           saved = true;
         }

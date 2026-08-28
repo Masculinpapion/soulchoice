@@ -2182,6 +2182,24 @@ abstract class AppLocalizations {
   /// **'Your session has expired — please sign in again.'**
   String get phone_session_expired;
 
+  /// No description provided for @update_required_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the app'**
+  String get update_required_title;
+
+  /// No description provided for @update_required_body.
+  ///
+  /// In en, this message translates to:
+  /// **'This version of SoulChoice is no longer supported. Update the app to continue.'**
+  String get update_required_body;
+
+  /// No description provided for @update_required_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update_required_btn;
+
   /// No description provided for @suspended_title.
   ///
   /// In en, this message translates to:

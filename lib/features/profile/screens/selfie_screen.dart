@@ -195,6 +195,23 @@ class _SelfieScreenState extends State<SelfieScreen> {
               ? context.pop()
               : context.go('/profile/photos'),
         ),
+        // Onboarding'de "şimdilik atla" — kaydırmasız her zaman görünür olsun
+        // diye sağ üstte (28.08 Mustafa kararı: alt konum fold altında kalıyordu).
+        actions: [
+          if (widget.fromOnboarding && !_isPending && !_wasRejected)
+            TextButton(
+              onPressed: _isUploading ? null : () => context.go('/feed'),
+              child: Text(
+                AppLocalizations.of(context)!.selfie_skip_btn,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AuroraTheme.textSecondary,
+                ),
+              ),
+            ),
+        ],
       ),
       body: AmbientBackground(
         child: SafeArea(
@@ -391,38 +408,6 @@ class _SelfieScreenState extends State<SelfieScreen> {
                   onPressed: (_selfie != null && !_isPending) ? _submit : null,
                   isLoading: _isUploading,
                 ),
-                if (widget.fromOnboarding && !_isPending && !_wasRejected) ...[
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.selfie_skip_note,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 12,
-                            color: AuroraTheme.textMuted,
-                            height: 1.4,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed:
-                              _isUploading ? null : () => context.go('/feed'),
-                          child: Text(
-                            AppLocalizations.of(context)!.selfie_skip_btn,
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AuroraTheme.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
                 const SizedBox(height: 8),
               ],
             ),

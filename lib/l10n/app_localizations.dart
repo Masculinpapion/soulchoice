@@ -3154,12 +3154,6 @@ abstract class AppLocalizations {
   /// **'Skip for now'**
   String get selfie_skip_btn;
 
-  /// No description provided for @selfie_skip_note.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ll need verification to join invitations'**
-  String get selfie_skip_note;
-
   /// No description provided for @blocked_users_title.
   ///
   /// In en, this message translates to:

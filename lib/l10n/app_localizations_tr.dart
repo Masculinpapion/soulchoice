@@ -1698,9 +1698,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selfie_skip_btn => 'Şimdilik atla';
 
   @override
-  String get selfie_skip_note => 'Davetlere katılmak için doğrulama gerekecek';
-
-  @override
   String get blocked_users_title => 'Engellenenler';
 
   @override

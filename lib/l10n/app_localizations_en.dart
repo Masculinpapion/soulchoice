@@ -1707,10 +1707,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selfie_skip_btn => 'Skip for now';
 
   @override
-  String get selfie_skip_note =>
-      'You\'ll need verification to join invitations';
-
-  @override
   String get blocked_users_title => 'Blocked';
 
   @override

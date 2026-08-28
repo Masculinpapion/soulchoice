@@ -1726,10 +1726,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selfie_skip_btn => 'Сделать позже';
 
   @override
-  String get selfie_skip_note =>
-      'Чтобы участвовать в приглашениях, понадобится верификация';
-
-  @override
   String get blocked_users_title => 'Чёрный список';
 
   @override

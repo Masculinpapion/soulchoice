@@ -612,6 +612,7 @@
   "profile_setup_city_question": "Hangi şehirdesin?",
   "profile_setup_city_search": "Şehir ara...",
   "profile_setup_city_not_found": "Şehir bulunamadı",
+  "profile_setup_city_limited_note": "Şimdilik bu şehirlerdeyiz. Yakında daha fazlası eklenecek!",
   "city_request_btn": "Şehrim listede yok",
   "city_request_title": "Şehrini yaz",
   "city_request_hint": "Şehir adı",

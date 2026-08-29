@@ -629,6 +629,7 @@
   "profile_setup_city_question": "What city are you in?",
   "profile_setup_city_search": "Search city...",
   "profile_setup_city_not_found": "City not found",
+  "profile_setup_city_limited_note": "We're currently available in these cities. More coming soon!",
   "city_request_btn": "My city isn't listed",
   "city_request_title": "Type your city",
   "city_request_hint": "City name",

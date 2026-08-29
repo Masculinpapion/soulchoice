@@ -741,37 +741,55 @@ class _StepCityState extends State<_StepCity> {
                 letterSpacing: -0.4,
               ),
             ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: _searchCtrl,
-              style: TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 16,
-                color: AuroraTheme.textPrimary,
-                height: 1.6,
-              ),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(
-                  context,
-                )!.profile_setup_city_search,
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: AuroraTheme.textMuted,
-                  size: 20,
+            // Az şehirli lansman dönemi (29.08 Mustafa kararı): ≤6 aktif şehirde
+            // arama kutusu YANILTICI (kullanıcı kendi şehrini yazıp "bulunamadı"
+            // duvarına çarpıyordu — Ahmet vakası). Kartlar doğrudan gösterilir,
+            // açıklama eklenir; şehir sayısı büyüyünce arama kendiliğinden döner.
+            if (!_loading && _cities.length <= 6) ...[
+              const SizedBox(height: 10),
+              Text(
+                AppLocalizations.of(context)!.profile_setup_city_limited_note,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 14,
+                  color: AuroraTheme.textSecondary,
+                  height: 1.5,
                 ),
-                suffixIcon: _searchCtrl.text.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () => _searchCtrl.clear(),
-                        child: Icon(
-                          Icons.close,
-                          color: AuroraTheme.textMuted,
-                          size: 18,
-                        ),
-                      )
-                    : null,
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
+            ] else ...[
+              const SizedBox(height: 24),
+              TextField(
+                controller: _searchCtrl,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 16,
+                  color: AuroraTheme.textPrimary,
+                  height: 1.6,
+                ),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(
+                    context,
+                  )!.profile_setup_city_search,
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: AuroraTheme.textMuted,
+                    size: 20,
+                  ),
+                  suffixIcon: _searchCtrl.text.isNotEmpty
+                      ? GestureDetector(
+                          onTap: () => _searchCtrl.clear(),
+                          child: Icon(
+                            Icons.close,
+                            color: AuroraTheme.textMuted,
+                            size: 18,
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             if (_loading)
               const Center(
                 child: CircularProgressIndicator(

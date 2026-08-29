@@ -20,6 +20,8 @@ Store incelemecisine verilecek metin (EN):
   - Haritaya **yalnız gerçekte tahsis edilemeyen +7000-blok numaraları** girer (Rusya numara planında operatörlere verilmez) — gerçek kullanıcı çakışması imkânsız.
   - **Gerçek (aranabilir) numara ASLA eklenmez.** +79295774238 bypass'ı bu gerekçeyle 15.07.2026'da kaldırıldı: flag açıkken numarayı bilen herkes o hesaba girebilirdi.
 - Demo numara SMS.ru'ya hiç gitmez → maliyet yok; 60 sn rate-limit muafiyeti var.
+- **Testçi bypass'ları (Play kapalı test, RU numarası olmayan TR testçiler):** `+7 000 000 00 02` (Rıdvan, 26.08), `+7 000 000 00 03` (Sezer, 26.08), `+7 000 000 00 04` (salcandyni, 29.08) — hepsi kod **1234**, `zz_flag_test_phone` trigger'ı kayıtta otomatik `is_test_user=true` damgalar; `enforce_otp_daily_cap` muafiyetindeler.
+- ⚠️ **DERS (28-29.08.2026):** Sunucudaki fonksiyon dosyası deploy'da REPO kopyasıyla ezilir — 28.08 edge deploy'u sunucuya elle eklenmiş 002/003'ü sildi, 29.08'de fark edilip geri kondu. Bu yüzden bypass numaraları DAİMA önce bu repoya işlenir; sunucuya elle eklenen numara kalıcı değildir.
 - Kapatmak istersen: `.env`'de `ALLOW_TEST_OTP=false` + `docker compose --env-file /root/supabase/docker/.env up -d --no-deps functions` (proje kökü `/root`).
 
 ## Demo hesabın içeriği

@@ -18,6 +18,9 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 // Demo hesabı ve inceleme talimatı: docs/store-review-demo.md
 const TEST_PHONES: Record<string, string> = {
   '+70000000001': '1234', // store-review / demo hesabı
+  '+70000000002': '1234', // Play kapalı test — TR testçi (Rıdvan), 26.08.2026
+  '+70000000003': '1234', // Play kapalı test — TR testçi (Sezer), 26.08.2026
+  '+70000000004': '1234', // Play kapalı test — TR testçi (salcandyni), 29.08.2026
 }
 const ALLOW_TEST_OTP = Deno.env.get('ALLOW_TEST_OTP') === 'true'
 

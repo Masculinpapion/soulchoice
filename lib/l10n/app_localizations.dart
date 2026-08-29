@@ -2668,6 +2668,12 @@ abstract class AppLocalizations {
   /// **'City not found'**
   String get profile_setup_city_not_found;
 
+  /// No description provided for @profile_setup_city_limited_note.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re currently available in these cities. More coming soon!'**
+  String get profile_setup_city_limited_note;
+
   /// No description provided for @city_request_btn.
   ///
   /// In en, this message translates to:

@@ -1440,6 +1440,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_city_not_found => 'Şehir bulunamadı';
 
   @override
+  String get profile_setup_city_limited_note =>
+      'Şimdilik bu şehirlerdeyiz. Yakında daha fazlası eklenecek!';
+
+  @override
   String get city_request_btn => 'Şehrim listede yok';
 
   @override

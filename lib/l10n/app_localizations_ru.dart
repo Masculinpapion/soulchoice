@@ -1457,6 +1457,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profile_setup_city_not_found => 'Город не найден';
 
   @override
+  String get profile_setup_city_limited_note =>
+      'Мы пока работаем в этих городах. Скоро подключим больше!';
+
+  @override
   String get city_request_btn => 'Моего города нет';
 
   @override

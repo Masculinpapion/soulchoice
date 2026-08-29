@@ -1446,6 +1446,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_city_not_found => 'City not found';
 
   @override
+  String get profile_setup_city_limited_note =>
+      'We\'re currently available in these cities. More coming soon!';
+
+  @override
   String get city_request_btn => 'My city isn\'t listed';
 
   @override

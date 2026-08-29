@@ -21,6 +21,9 @@ const TEST_PHONES: Record<string, string> = {
   '+70000000002': '1234', // Play kapalı test — TR testçi (Rıdvan), 26.08.2026
   '+70000000003': '1234', // Play kapalı test — TR testçi (Sezer), 26.08.2026
   '+70000000004': '1234', // Play kapalı test — TR testçi (salcandyni), 29.08.2026
+  '+70000000005': '1234', // Play kapalı test — TR testçi #5, 29.08.2026
+  '+70000000006': '1234', // Play kapalı test — TR testçi #6, 29.08.2026
+  '+70000000007': '1234', // Play kapalı test — TR testçi #7, 29.08.2026
 }
 const ALLOW_TEST_OTP = Deno.env.get('ALLOW_TEST_OTP') === 'true'
 

@@ -6,9 +6,9 @@ Kaynak: landing page pozisyonlaması ([[reference_landing_page]]), gerçek uygul
 
 ## 🇷🇺 RUSÇA (birincil)
 
-**Başlık** (30 karakter sınırı, kullanılan: 28)
+**Başlık** (30 karakter sınırı; KARAR 29.08.2026 Mustafa: ad HER YERDE düz «SoulChoice» — marka bütünlüğü, ek açıklama başlığa yazılmaz)
 ```
-SoulChoice: Реальные встречи
+SoulChoice
 ```
 
 **Kısa açıklama** (80 karakter sınırı, kullanılan: 62)
@@ -43,9 +43,9 @@ SoulChoice работает в Москве и Санкт-Петербурге �
 
 ## 🇬🇧 İNGİLİZCE
 
-**Title** (limit 30, used: 24)
+**Title** (limit 30; 29.08.2026 decision: plain «SoulChoice» everywhere)
 ```
-SoulChoice: Real Meetups
+SoulChoice
 ```
 
 **Short description** (limit 80, used: 61)
@@ -80,9 +80,9 @@ dating,meetups,invitations,real meetings,selfie verified,events,chat,social
 
 ## 🇹🇷 TÜRKÇE
 
-**Başlık** (limit 30, kullanılan: 26)
+**Başlık** (limit 30; karar 29.08.2026: her yerde düz «SoulChoice»)
 ```
-SoulChoice: Gerçek Buluşma
+SoulChoice
 ```
 
 **Kısa açıklama** (limit 80, kullanılan: 61)

@@ -556,6 +556,12 @@ abstract class AppLocalizations {
   /// **'Notifications are off — enable them in settings so you don\'t miss messages'**
   String get notif_system_off_banner;
 
+  /// No description provided for @offline_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get offline_banner;
+
   /// No description provided for @perm_camera_title.
   ///
   /// In en, this message translates to:

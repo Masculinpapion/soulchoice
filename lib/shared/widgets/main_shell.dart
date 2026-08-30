@@ -5,6 +5,7 @@ import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/aurora_theme.dart';
 import '../../features/messaging/providers/matches_provider.dart';
+import 'offline_banner.dart';
 
 class MainShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
@@ -23,7 +24,16 @@ class MainShell extends ConsumerWidget {
       child: Scaffold(
       backgroundColor: AuroraTheme.bgDeep,
       extendBody: true,
-      body: navigationShell,
+      // Çevrimdışı bandı içeriğin üstüne biner — düzen kaymaz (30.08)
+      body: Stack(
+        children: [
+          navigationShell,
+          const Align(
+            alignment: Alignment.topCenter,
+            child: OfflineBanner(),
+          ),
+        ],
+      ),
       bottomNavigationBar: _AuroraNavBar(
         currentBranchIndex: navigationShell.currentIndex,
         onBranchTap: (i) {

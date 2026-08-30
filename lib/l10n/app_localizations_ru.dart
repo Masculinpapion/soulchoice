@@ -257,6 +257,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Уведомления выключены — включи их в настройках, чтобы не пропустить сообщения';
 
   @override
+  String get offline_banner => 'Нет подключения к интернету';
+
+  @override
   String get perm_camera_title => 'Разрешить доступ к камере';
 
   @override

@@ -258,6 +258,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notifications are off — enable them in settings so you don\'t miss messages';
 
   @override
+  String get offline_banner => 'No internet connection';
+
+  @override
   String get perm_camera_title => 'Allow camera access';
 
   @override

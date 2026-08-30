@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/notification_cleaner.dart';
+import '../../../core/services/review_request.dart';
 import '../../../core/utils/guard_errors.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/message_model.dart';
@@ -790,6 +791,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         accentColor: attended ? AuroraTheme.auroraBlue : AuroraTheme.auroraGold,
         icon: attended ? Icons.check_circle_outline : Icons.info_outline,
       );
+      // 30.08: buluşma gerçekleşti = en mutlu an → mağaza puan penceresi
+      // (90 günde 1, sessiz-hatalı; snackbar'ın görünmesi için kısa gecikme)
+      if (attended) {
+        Future.delayed(const Duration(seconds: 2), maybeRequestReview);
+      }
     }
   }
 

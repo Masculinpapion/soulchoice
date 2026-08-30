@@ -256,6 +256,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bildirimler kapalı — mesajları kaçırmamak için ayarlardan aç';
 
   @override
+  String get offline_banner => 'İnternet bağlantısı yok';
+
+  @override
   String get perm_camera_title => 'Kameraya erişime izin ver';
 
   @override

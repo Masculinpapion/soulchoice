@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../../core/theme/aurora_theme.dart';
@@ -26,12 +28,38 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
     with WidgetsBindingObserver {
   RealtimeChannel? _channel;
   bool _channelDropped = false;
+  // 30.08: sistem bildirim izni kapalıysa tek satırlık uyarı bandı (Tinder
+  // standardı) — X ile kalıcı kapatılabilir, izin açılınca kendiliğinden gider.
+  bool _showNotifBanner = false;
+  static const _kNotifBannerDismissedKey = 'notif_off_banner_dismissed';
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _subscribeRealtime();
+    _checkNotifBanner();
+  }
+
+  Future<void> _checkNotifBanner() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool(_kNotifBannerDismissedKey) == true) return;
+      final st = await Permission.notification.status;
+      if (mounted) {
+        setState(() => _showNotifBanner = !(st.isGranted || st.isLimited));
+      }
+    } catch (_) {
+      // Durum okunamazsa band gösterilmez — liste normal çalışır
+    }
+  }
+
+  Future<void> _dismissNotifBanner() async {
+    setState(() => _showNotifBanner = false);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kNotifBannerDismissedKey, true);
+    } catch (_) {}
   }
 
   // Arka plandan dönüşte liste tazelenir — soket sessizce koptuysa realtime
@@ -40,6 +68,7 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && mounted) {
       ref.invalidate(matchesProvider);
+      _checkNotifBanner(); // Ayarlar'dan izinle dönüldüyse band kalksın
     }
   }
 
@@ -115,6 +144,46 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
                   ),
                 ),
               ),
+              if (_showNotifBanner)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+                    decoration: BoxDecoration(
+                      color: AuroraTheme.glassBg,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AuroraTheme.glassBorder),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.notifications_off_outlined,
+                            size: 16, color: AuroraTheme.auroraRed),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: openAppSettings,
+                            child: Text(
+                              AppLocalizations.of(context)!
+                                  .notif_system_off_banner,
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 12,
+                                color: Colors.white,
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          visualDensity: VisualDensity.compact,
+                          icon: const Icon(Icons.close,
+                              size: 16, color: Colors.white38),
+                          onPressed: _dismissNotifBanner,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const Expanded(child: _MatchesTab()),
             ],
           ),

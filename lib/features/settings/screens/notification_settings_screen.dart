@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -17,8 +18,11 @@ class NotificationSettingsScreen extends StatefulWidget {
 }
 
 class _NotificationSettingsScreenState
-    extends State<NotificationSettingsScreen> {
+    extends State<NotificationSettingsScreen> with WidgetsBindingObserver {
   bool _loading = true;
+  // 30.08: sistem bildirim izni kapalıysa toggle'lar "açık" görünüp push
+  // gelmiyordu — kullanıcıya kapalı olduğu ve Ayarlar yolu gösterilir.
+  bool _sysNotifOff = false;
   bool _newApplication = true;
   bool _selected = true;
   bool _message = true;
@@ -35,7 +39,33 @@ class _NotificationSettingsScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _load();
+    _checkSysPermission();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Ayarlar'dan dönüşte (resumed) banner kendini günceller — izni açan
+  // kullanıcı ekrana dönünce bandı bir daha görmez.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkSysPermission();
+  }
+
+  Future<void> _checkSysPermission() async {
+    try {
+      final st = await Permission.notification.status;
+      if (mounted) {
+        setState(() => _sysNotifOff = !(st.isGranted || st.isLimited));
+      }
+    } catch (_) {
+      // Durum okunamazsa banner gösterilmez — ekran çalışmaya devam eder
+    }
   }
 
   TimeOfDay _parseTime(String? s, TimeOfDay fallback) {
@@ -180,6 +210,49 @@ class _NotificationSettingsScreenState
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                     children: [
+                      if (_sysNotifOff) ...[
+                        _card([
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.notifications_off_outlined,
+                                    size: 18, color: AuroraTheme.auroraRed),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(l10n.notif_system_off_banner,
+                                          style: const TextStyle(
+                                              fontFamily: 'Manrope',
+                                              fontSize: 13,
+                                              color: Colors.white,
+                                              height: 1.4)),
+                                      const SizedBox(height: 4),
+                                      GestureDetector(
+                                        onTap: openAppSettings,
+                                        child: Text(
+                                          l10n.perm_go_to_settings,
+                                          style: const TextStyle(
+                                              fontFamily: 'Manrope',
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: AuroraTheme.auroraRed),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: 20),
+                      ],
                       _sectionLabel(l10n.notif_pref_push_section),
                       _card([
                         _toggle(l10n.notif_pref_new_application,

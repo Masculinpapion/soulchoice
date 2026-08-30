@@ -254,6 +254,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get perm_go_to_settings => 'Go to settings';
 
   @override
+  String get notif_system_off_banner =>
+      'Notifications are off — enable them in settings so you don\'t miss messages';
+
+  @override
   String get perm_camera_title => 'Allow camera access';
 
   @override

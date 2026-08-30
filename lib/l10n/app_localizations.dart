@@ -550,6 +550,12 @@ abstract class AppLocalizations {
   /// **'Go to settings'**
   String get perm_go_to_settings;
 
+  /// No description provided for @notif_system_off_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off — enable them in settings so you don\'t miss messages'**
+  String get notif_system_off_banner;
+
   /// No description provided for @perm_camera_title.
   ///
   /// In en, this message translates to:

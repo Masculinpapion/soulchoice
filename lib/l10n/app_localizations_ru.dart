@@ -253,6 +253,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get perm_go_to_settings => 'Перейти в настройки';
 
   @override
+  String get notif_system_off_banner =>
+      'Уведомления выключены — включи их в настройках, чтобы не пропустить сообщения';
+
+  @override
   String get perm_camera_title => 'Разрешить доступ к камере';
 
   @override

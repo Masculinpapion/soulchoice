@@ -252,6 +252,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get perm_go_to_settings => 'Ayarlara git';
 
   @override
+  String get notif_system_off_banner =>
+      'Bildirimler kapalı — mesajları kaçırmamak için ayarlardan aç';
+
+  @override
   String get perm_camera_title => 'Kameraya erişime izin ver';
 
   @override

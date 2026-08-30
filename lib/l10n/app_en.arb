@@ -87,6 +87,7 @@
   "perm_not_now": "Not now",
   "perm_denied_hint": "You can grant this permission from settings to use this feature",
   "perm_go_to_settings": "Go to settings",
+  "notif_system_off_banner": "Notifications are off — enable them in settings so you don't miss messages",
   "perm_camera_title": "Allow camera access",
   "perm_camera_desc": "Required to take a selfie for identity verification",
   "feed_all_cities": "All Cities",

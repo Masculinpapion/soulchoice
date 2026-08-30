@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/supabase_constants.dart';
 import '../../../core/services/native_uploader.dart';
@@ -76,10 +78,27 @@ class _SelfieScreenState extends State<SelfieScreen> {
     // etiketini düşürüyor ama pikseli DÖNDÜRMÜYORDU → panele yan yatık selfie
     // (Samsung portrait). Ham çek; küçültme + açı düzeltme compress'te
     // (autoCorrectionAngle EXIF açısını piksele uygular).
-    final picked = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
+    final XFile? picked;
+    try {
+      picked = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
+      );
+    } on PlatformException catch (e) {
+      // 30.08: kamera izni kalıcı reddedilmişse (iOS ilk red, Android 2. red)
+      // sistem diyaloğu bir daha çıkmaz, picker exception atar — buton sessiz
+      // ölü kalıyordu. Kullanıcıya Ayarlar yolu gösterilir.
+      if (e.code.contains('camera_access_denied')) {
+        _showCameraDeniedDialog();
+      } else if (mounted) {
+        _showAuroraSnack(
+          AppLocalizations.of(context)!.error_generic,
+          accentColor: AuroraTheme.auroraRed,
+          icon: Icons.error_outline,
+        );
+      }
+      return;
+    }
     if (picked == null) return;
     final upright = await FlutterImageCompress.compressAndGetFile(
       picked.path,
@@ -91,6 +110,61 @@ class _SelfieScreenState extends State<SelfieScreen> {
     if (upright != null) {
       setState(() => _selfie = File(upright.path));
     }
+  }
+
+  void _showCameraDeniedDialog() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AuroraTheme.bgDeep,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          l10n.perm_camera_title,
+          style: const TextStyle(
+            fontFamily: 'Fraunces',
+            fontStyle: FontStyle.italic,
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+        content: Text(
+          l10n.perm_denied_hint,
+          style: const TextStyle(
+            fontFamily: 'Manrope',
+            color: Colors.white54,
+            fontSize: 14,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              l10n.btn_cancel,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                color: Colors.white54,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings();
+            },
+            child: Text(
+              l10n.perm_go_to_settings,
+              style: const TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w600,
+                color: AuroraTheme.auroraRed,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _submit() async {

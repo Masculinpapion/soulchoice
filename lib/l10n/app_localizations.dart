@@ -2731,8 +2731,32 @@ abstract class AppLocalizations {
   /// No description provided for @profile_setup_bio_hint.
   ///
   /// In en, this message translates to:
-  /// **'Briefly introduce yourself...'**
+  /// **'Briefly introduce yourself — e.g., I love jazz, cook pasta, do exhibitions on weekends'**
   String get profile_setup_bio_hint;
+
+  /// No description provided for @profile_setup_prompt_hint_favorite_restaurant.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g., a cozy Georgian place — for the khinkali'**
+  String get profile_setup_prompt_hint_favorite_restaurant;
+
+  /// No description provided for @profile_setup_prompt_hint_last_book.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g., The Master and Margarita — I reread it every year'**
+  String get profile_setup_prompt_hint_last_book;
+
+  /// No description provided for @profile_setup_prompt_hint_perfect_evening.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g., dinner, a riverside walk and live music'**
+  String get profile_setup_prompt_hint_perfect_evening;
+
+  /// No description provided for @profile_setup_prompt_hint_travel_dream.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g., Lake Baikal in winter — to see the ice myself'**
+  String get profile_setup_prompt_hint_travel_dream;
 
   /// No description provided for @profile_setup_job_title.
   ///

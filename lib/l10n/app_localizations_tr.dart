@@ -1473,7 +1473,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profile_setup_bio_subtitle => 'İsteğe bağlı — maks 200 karakter';
 
   @override
-  String get profile_setup_bio_hint => 'Kendini kısaca tanıt...';
+  String get profile_setup_bio_hint =>
+      'Kendini kısaca tanıt — örn., caz severim, makarna yaparım, hafta sonları sergiler';
+
+  @override
+  String get profile_setup_prompt_hint_favorite_restaurant =>
+      'Örn., samimi bir Gürcü mekânı — hinkalisi için';
+
+  @override
+  String get profile_setup_prompt_hint_last_book =>
+      'Örn., «Usta ile Margarita» — her yıl yeniden okurum';
+
+  @override
+  String get profile_setup_prompt_hint_perfect_evening =>
+      'Örn., akşam yemeği, sahilde yürüyüş ve canlı müzik';
+
+  @override
+  String get profile_setup_prompt_hint_travel_dream =>
+      'Örn., kışın Baykal — buzu kendi gözümle görmek';
 
   @override
   String get profile_setup_job_title => 'Meslek ve Eğitim';

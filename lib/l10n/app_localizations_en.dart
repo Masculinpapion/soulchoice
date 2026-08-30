@@ -1479,7 +1479,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile_setup_bio_subtitle => 'Optional — max 200 characters';
 
   @override
-  String get profile_setup_bio_hint => 'Briefly introduce yourself...';
+  String get profile_setup_bio_hint =>
+      'Briefly introduce yourself — e.g., I love jazz, cook pasta, do exhibitions on weekends';
+
+  @override
+  String get profile_setup_prompt_hint_favorite_restaurant =>
+      'E.g., a cozy Georgian place — for the khinkali';
+
+  @override
+  String get profile_setup_prompt_hint_last_book =>
+      'E.g., The Master and Margarita — I reread it every year';
+
+  @override
+  String get profile_setup_prompt_hint_perfect_evening =>
+      'E.g., dinner, a riverside walk and live music';
+
+  @override
+  String get profile_setup_prompt_hint_travel_dream =>
+      'E.g., Lake Baikal in winter — to see the ice myself';
 
   @override
   String get profile_setup_job_title => 'Work & Education';

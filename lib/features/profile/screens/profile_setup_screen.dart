@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../../../core/utils/prompt_hints.dart';
 import 'package:soulchoice/core/utils/legal_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -1290,6 +1291,7 @@ class _StepAgeRange extends StatelessWidget {
 }
 
 class _StepPrompts extends StatelessWidget {
+
   final Map<String, String> questions;
   final Map<String, String> answers;
   final void Function(String key, String val) onAnswered;
@@ -1371,9 +1373,11 @@ class _StepPrompts extends StatelessWidget {
                         onChanged: (v) => onAnswered(e.key, v),
                         decoration: InputDecoration(
                           counterText: '',
-                          hintText: AppLocalizations.of(
-                            context,
-                          )!.profile_setup_prompts_answer_hint,
+                          // 30.08 (Mustafa onayı): soru başına somut örnek —
+                          // genel «Твой ответ...» ilham vermiyordu (Гоша/huni)
+                          hintText: promptHintFor(
+                              AppLocalizations.of(context)!, e.key),
+                          hintMaxLines: 2,
                         ),
                       ),
                     ],

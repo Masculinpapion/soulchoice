@@ -1491,7 +1491,24 @@ class AppLocalizationsRu extends AppLocalizations {
       'Необязательно — максимум 200 символов';
 
   @override
-  String get profile_setup_bio_hint => 'Коротко представься...';
+  String get profile_setup_bio_hint =>
+      'Коротко представься — напр., люблю джаз, готовлю пасту, по выходным выставки';
+
+  @override
+  String get profile_setup_prompt_hint_favorite_restaurant =>
+      'Напр., грузинский на Патриках — за хинкали';
+
+  @override
+  String get profile_setup_prompt_hint_last_book =>
+      'Напр., «Мастер и Маргарита» — перечитываю каждый год';
+
+  @override
+  String get profile_setup_prompt_hint_perfect_evening =>
+      'Напр., ужин, прогулка по набережной и живая музыка';
+
+  @override
+  String get profile_setup_prompt_hint_travel_dream =>
+      'Напр., Байкал зимой — увидеть лёд своими глазами';
 
   @override
   String get profile_setup_job_title => 'Работа и образование';

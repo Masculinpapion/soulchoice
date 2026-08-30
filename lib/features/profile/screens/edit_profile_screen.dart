@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/utils/prompt_hints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -616,8 +617,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                   onChanged: (v) => _prompts[e.key] = v,
                                   decoration: InputDecoration(
                                     counterText: '',
-                                    hintText:
-                                        l10n.profile_setup_prompts_answer_hint,
+                                    // 30.08: soru başına örnek (sihirbazla aynı)
+                                    hintText: promptHintFor(l10n, e.key),
+                                    hintMaxLines: 2,
                                   ),
                                 ),
                               ],

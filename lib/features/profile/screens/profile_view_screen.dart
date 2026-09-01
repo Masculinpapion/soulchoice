@@ -160,7 +160,9 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                               // ekle" gösteriyordu (20.08 Mustafa bulgusu).
                               if (photosAsync.hasValue &&
                                   promptsAsync.hasValue) ...[
-                                _buildCompletionCard(
+                                // 02.09 (Mustafa): %100'de kart ve boşluğu tamamen
+                                // kalkar — tamamlanmış profilde kalabalık yapmasın.
+                                ..._buildCompletionCard(
                                   context: context,
                                   user: user,
                                   photos: photos,
@@ -169,7 +171,6 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
                                   selfieStatus: selfieStatus,
                                   promptsAsync: promptsAsync,
                                 ),
-                                const SizedBox(height: 28),
                               ],
                               _MyInvitationSection(),
                               const SizedBox(height: 28),
@@ -340,7 +341,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
     );
   }
 
-  Widget _buildCompletionCard({
+  List<Widget> _buildCompletionCard({
     required BuildContext context,
     required Map<String, dynamic> user,
     required List<Map<String, dynamic>> photos,
@@ -408,11 +409,15 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
       route ??= '/profile/edit';
     }
 
-    return _ProfileCompletionCard(
-      score: score,
-      hint: score == 100 ? null : hint,
-      onTap: route != null ? () => context.push(route!, extra: 'edit') : null,
-    );
+    if (score == 100) return const [];
+    return [
+      _ProfileCompletionCard(
+        score: score,
+        hint: hint,
+        onTap: route != null ? () => context.push(route!, extra: 'edit') : null,
+      ),
+      const SizedBox(height: 28),
+    ];
   }
 
   String _questionLabel(String key, AppLocalizations l10n, String gender) {

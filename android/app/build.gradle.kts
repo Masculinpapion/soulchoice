@@ -78,5 +78,10 @@ dependencies {
 configurations.all {
     resolutionStrategy {
         force("ru.rustore.sdk:pushclient:7.4.0")
+        // 02.09.2026: Play Console uyarısı — ru.rustore.sdk:coreui:8.0.0'ın getirdiği
+        // material:1.6.1, Android 15'te kaldırılan setStatusBarColor/
+        // setNavigationBarColor'ı korumasız çağırıyor (datepicker). 1.14.0'da
+        // çağrılar SDK<35 korumasında; 1.6.1 → 1.14.0 API uyumlu (yalnız coreui kullanıyor).
+        force("com.google.android.material:material:1.14.0")
     }
 }

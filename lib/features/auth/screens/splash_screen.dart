@@ -52,6 +52,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             .eq('id', session.user.id)
             .maybeSingle()
             .timeout(const Duration(seconds: 8));
+    // 02.09: yarım kalan kurulum kaldığı yerden sürsün — profili var ama hiç
+    // fotoğrafı olmayan kullanıcı feed'e değil fotoğraf adımına döner
+    // (28.08/01.09 yolculuk bulgusu: fotoğraf ekranında çıkan bir daha çağrılmıyordu).
+    final photoProbe = session == null
+        ? null
+        : Supabase.instance.client
+            .from('user_photos')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .eq('is_selfie', false)
+            .limit(1)
+            .timeout(const Duration(seconds: 8));
 
     await Future.delayed(const Duration(milliseconds: 1800));
     if (!mounted) return;
@@ -77,7 +89,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         context.go('/suspended');
         return;
       }
-      context.go(existing == null ? '/profile/setup' : '/feed');
+      if (existing == null) {
+        context.go('/profile/setup');
+        return;
+      }
+      var hasPhoto = true;
+      try {
+        final photos = await photoProbe!;
+        hasPhoto = (photos as List).isNotEmpty;
+      } catch (_) {
+        // Foto sorgusu düşerse feed'e geç — kurulum kapısı kullanıcıyı kilitlemesin
+      }
+      if (!mounted) return;
+      context.go(hasPhoto ? '/feed' : '/profile/photos');
     } catch (_) {
       // Ağ yok/yavaş: session var demek kullanıcı daha önce giriş yapmış →
       // feed'e geç (feed kendi offline/hata durumunu gösterir). Sonsuz splash

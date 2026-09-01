@@ -1280,6 +1280,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Seçim penceren yakında kapanıyor — başvuranlara bir göz at.';
 
   @override
+  String get notif_type_profile_incomplete_title =>
+      'Profilin neredeyse hazır 📸';
+
+  @override
+  String get notif_type_profile_incomplete_body =>
+      'Fotoğraflarını ekle, davetlere başvurmaya başla.';
+
+  @override
   String get notif_type_invitation_updated_title => 'Davet güncellendi';
 
   @override

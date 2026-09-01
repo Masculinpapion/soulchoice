@@ -1285,6 +1285,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your selection window closes soon — take a look at your applicants.';
 
   @override
+  String get notif_type_profile_incomplete_title =>
+      'Your profile is almost ready 📸';
+
+  @override
+  String get notif_type_profile_incomplete_body =>
+      'Add your photos to start applying to invitations.';
+
+  @override
   String get notif_type_invitation_updated_title => 'Invitation updated';
 
   @override

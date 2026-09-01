@@ -2386,6 +2386,18 @@ abstract class AppLocalizations {
   /// **'Your selection window closes soon — take a look at your applicants.'**
   String get notif_type_selection_reminder_body;
 
+  /// No description provided for @notif_type_profile_incomplete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is almost ready 📸'**
+  String get notif_type_profile_incomplete_title;
+
+  /// No description provided for @notif_type_profile_incomplete_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your photos to start applying to invitations.'**
+  String get notif_type_profile_incomplete_body;
+
   /// No description provided for @notif_type_invitation_updated_title.
   ///
   /// In en, this message translates to:

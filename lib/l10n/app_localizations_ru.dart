@@ -1296,6 +1296,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Окно выбора скоро закроется — загляни в заявки.';
 
   @override
+  String get notif_type_profile_incomplete_title => 'Профиль почти готов 📸';
+
+  @override
+  String get notif_type_profile_incomplete_body =>
+      'Добавь фото — и можно откликаться на приглашения.';
+
+  @override
   String get notif_type_invitation_updated_title => 'Приглашение изменилось';
 
   @override

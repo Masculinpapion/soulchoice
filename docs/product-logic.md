@@ -150,6 +150,8 @@ active (6/12/24/48 saat — sahibi seçer; ASLA plandan sonra bitmez, bkz. süre
 - **Selfie zorunludur:** onaysız selfie ile ne ilan açılabilir ne başvuru yapılabilir (ikisi de DB'de zorlanır). Herkes doğrulanmış olduğu için ayrı "tik" rozeti yoktur (özellik 19.06'da kaldırıldı). ✅
 - Store inceleme/demo girişi: `docs/store-review-demo.md`.
 
+- **02.09.2026 (Mustafa kararı, yolculuk bulgusu Гоша 28.08 / Александр 01.09):** kayıtta zorunlu fotoğraf sayısı 3 → **1** (`AppConstants.minPhotos`; kalanı profilden), splash'ta profili olup hiç fotoğrafı olmayan kullanıcı feed'e değil `/profile/photos`'a döner (kurulum kaldığı yerden), kayıttan ≥24 saat sonra fotoğrafsız gerçek kullanıcıya TEK `profile_incomplete` push'u + in-app kayıt (sunucu `/root/bin/profile-nudge.sh`, saatlik, yalnız 10:00–21:59 MSK; dedupe `notifications.type`; push dokunuşu/in-app tıklama → `/profile/photos`). Sunucu tarafında fotoğraf sayısı şartı yok; hukuki metin etkilenmez (servis bildirimi).
+
 ## 11. Legacy notları (post-launch temizlik 🕐)
 
 - `applications.status`: `selected` hiç kullanılmıyor (kabul doğrudan `accepted` yazar) — `expired` ise §4 kararıyla kullanıma giriyor.

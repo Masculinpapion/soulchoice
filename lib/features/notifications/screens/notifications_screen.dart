@@ -415,6 +415,8 @@ String _notifTitle(NotificationItem item, AppLocalizations l) {
       return l.notif_type_selection_reminder_title;
     case 'invitation_updated':
       return l.notif_type_invitation_updated_title;
+    case 'profile_incomplete':
+      return l.notif_type_profile_incomplete_title;
     default:
       return name.isNotEmpty ? name : item.type;
   }
@@ -464,6 +466,8 @@ String _notifBody(NotificationItem item, AppLocalizations l) {
       return invTitle.isEmpty
           ? l.notif_type_invitation_updated_body
           : '${l.notif_type_invitation_updated_body} — «$invTitle»';
+    case 'profile_incomplete':
+      return l.notif_type_profile_incomplete_body;
     default:
       return item.body;
   }

@@ -273,6 +273,10 @@ class _SoulChoiceAppState extends ConsumerState<SoulChoiceApp>
     if (type == 'selfie_rejected') {
       target = '/profile/selfie';
     }
+    // Profilini tamamla (fotoğrafsız 24 saat) → fotoğraf adımı (02.09)
+    if (type == 'profile_incomplete') {
+      target = '/profile/photos';
+    }
     // Yeni başvuru + seçim hatırlatması → başvuranlar ekranı
     // (26.07 iOS turu: feed'e düşüyordu; selection_reminder dalı 31.07 denetimi)
     final invitationId = data['invitation_id'];

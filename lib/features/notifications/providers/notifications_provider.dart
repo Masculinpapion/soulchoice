@@ -102,6 +102,7 @@ class NotificationItem {
     // (16.07 fix: payload boş olduğundan /feed push ediliyordu → siyah ekran)
     if (type == 'selfie_rejected') return '/profile/selfie';
     if (type == 'selfie_approved') return '/feed';
+    if (type == 'profile_incomplete') return '/profile/photos';
     // '/profile' kayıtlı rota DEĞİL (24.07 denetim bulgusu) — abonelik ekranına
     if (type.startsWith('premium_')) return '/subscription';
     final invId = payload['invitation_id'] as String?;

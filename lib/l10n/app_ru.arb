@@ -494,6 +494,8 @@
   "paywall_premium_active": "Premium активен — пользуйся! 🎉",
   "notif_type_selection_reminder_title": "Заявки ждут ✨",
   "notif_type_selection_reminder_body": "Окно выбора скоро закроется — загляни в заявки.",
+  "notif_type_profile_incomplete_title": "Профиль почти готов 📸",
+  "notif_type_profile_incomplete_body": "Добавь фото — и можно откликаться на приглашения.",
   "notif_type_invitation_updated_title": "Приглашение изменилось",
   "notif_type_invitation_updated_body": "Хозяин изменил детали приглашения",
   "messages_empty_active": "Пока нет чатов",

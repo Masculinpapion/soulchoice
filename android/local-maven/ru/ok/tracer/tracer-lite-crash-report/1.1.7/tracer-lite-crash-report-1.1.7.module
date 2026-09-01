@@ -1,0 +1,133 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ru.ok.tracer",
+    "module": "tracer-lite-crash-report",
+    "version": "1.1.7",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.7.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-lite-crash-report-1.1.7.aar",
+          "url": "tracer-lite-crash-report-1.1.7.aar",
+          "size": 23251,
+          "sha512": "9c10aaea4d60884f948b2fb0b2f7b801666697f478825c63b95c6ceba3c59b9f8384455e1e3a60c18eb2c0e8433828bbe921f7da0d036b4d5fe3f38c6e2232b2",
+          "sha256": "f23cab1615f491c23b55b181eddf3773943f22466580ecb920f1b53afd12df48",
+          "sha1": "ffd257a0b93a037c6a0d7cf77fe1e0cdf0e89c83",
+          "md5": "f1a37cedaf0d420c4acc17ce2cc28eb9"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.7.20"
+          }
+        },
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-lite-crash-report-1.1.7.aar",
+          "url": "tracer-lite-crash-report-1.1.7.aar",
+          "size": 23251,
+          "sha512": "9c10aaea4d60884f948b2fb0b2f7b801666697f478825c63b95c6ceba3c59b9f8384455e1e3a60c18eb2c0e8433828bbe921f7da0d036b4d5fe3f38c6e2232b2",
+          "sha256": "f23cab1615f491c23b55b181eddf3773943f22466580ecb920f1b53afd12df48",
+          "sha1": "ffd257a0b93a037c6a0d7cf77fe1e0cdf0e89c83",
+          "md5": "f1a37cedaf0d420c4acc17ce2cc28eb9"
+        }
+      ]
+    }
+  ]
+}

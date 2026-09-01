@@ -1,0 +1,260 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ru.ok.tracer",
+    "module": "tracer-platform",
+    "version": "1.1.7",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "platform",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-base",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-crash-report",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-crash-report-native",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-disk-usage",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-heap-dumps",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-crash-report",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-performance-metrics",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-manifest",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-opentelemetry",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-performance-metrics",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-profiler-sampling",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-profiler-systrace",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-sample-upload",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-user-sample",
+          "version": {
+            "requires": "1.1.7"
+          }
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "platform",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-base",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-crash-report",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-crash-report-native",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-disk-usage",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-heap-dumps",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-commons",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-crash-report",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-lite-performance-metrics",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-manifest",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-opentelemetry",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-performance-metrics",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-profiler-sampling",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-profiler-systrace",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-sample-upload",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-user-sample",
+          "version": {
+            "requires": "1.1.7"
+          }
+        }
+      ]
+    }
+  ]
+}

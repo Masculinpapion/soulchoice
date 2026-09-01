@@ -1,0 +1,91 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ru.ok.tracer",
+    "module": "tracer-manifest",
+    "version": "1.1.7",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-manifest-1.1.7.aar",
+          "url": "tracer-manifest-1.1.7.aar",
+          "size": 1915,
+          "sha512": "28dae02305eaaf2a6dff219250537be2728ff2c4054593cbbb042d52268f6dc13a0bc95b700186db11eafc782e3bb267b0a6265f14199ea0dd71f4c7809628e2",
+          "sha256": "46d8d12b5d0daa23f844b4eb1fec31d0c497c992ee0f84efad3eb68972a450e0",
+          "sha1": "be0c75fea4c99b3ef039a91244aaec36ca834211",
+          "md5": "6afd416a826eed0b55da4a891b77617f"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.3.0"
+          }
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-manifest-1.1.7.aar",
+          "url": "tracer-manifest-1.1.7.aar",
+          "size": 1915,
+          "sha512": "28dae02305eaaf2a6dff219250537be2728ff2c4054593cbbb042d52268f6dc13a0bc95b700186db11eafc782e3bb267b0a6265f14199ea0dd71f4c7809628e2",
+          "sha256": "46d8d12b5d0daa23f844b4eb1fec31d0c497c992ee0f84efad3eb68972a450e0",
+          "sha1": "be0c75fea4c99b3ef039a91244aaec36ca834211",
+          "md5": "6afd416a826eed0b55da4a891b77617f"
+        }
+      ]
+    }
+  ]
+}

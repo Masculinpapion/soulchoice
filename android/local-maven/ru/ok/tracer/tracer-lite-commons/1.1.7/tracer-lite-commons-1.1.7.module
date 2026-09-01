@@ -1,0 +1,133 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "ru.ok.tracer",
+    "module": "tracer-lite-commons",
+    "version": "1.1.7",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-base",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.7.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-lite-commons-1.1.7.aar",
+          "url": "tracer-lite-commons-1.1.7.aar",
+          "size": 35471,
+          "sha512": "7018f68f3ca736b644a9354b351c71f70385c784debb433089255240acbdf226ad840c73455ec5c3ef667f8d1909a03fb09aa7e83ee35fa57711a531edb9ee2b",
+          "sha256": "d692eaa622ee91afd94c55523f444e88275de65f7d65bd7aaf011faec47d488c",
+          "sha1": "20898f656f75e37600f9303afc64c9e41c7b080e",
+          "md5": "ee483aa1c9cc555ed886f8b29bf54256"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-platform",
+          "version": {
+            "requires": "1.1.7"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "ru.ok.tracer",
+          "module": "tracer-base",
+          "version": {
+            "requires": "1.1.7"
+          }
+        },
+        {
+          "group": "javax.inject",
+          "module": "javax.inject",
+          "version": {
+            "requires": "1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.7.20"
+          }
+        },
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tracer-lite-commons-1.1.7.aar",
+          "url": "tracer-lite-commons-1.1.7.aar",
+          "size": 35471,
+          "sha512": "7018f68f3ca736b644a9354b351c71f70385c784debb433089255240acbdf226ad840c73455ec5c3ef667f8d1909a03fb09aa7e83ee35fa57711a531edb9ee2b",
+          "sha256": "d692eaa622ee91afd94c55523f444e88275de65f7d65bd7aaf011faec47d488c",
+          "sha1": "20898f656f75e37600f9303afc64c9e41c7b080e",
+          "md5": "ee483aa1c9cc555ed886f8b29bf54256"
+        }
+      ]
+    }
+  ]
+}

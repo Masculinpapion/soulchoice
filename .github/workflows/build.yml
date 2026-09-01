@@ -3,6 +3,10 @@ name: Flutter Build
 on:
   push:
     branches: [ main ]
+    # 02.09.2026: yalnız docs/** değişen push'ta Android build gereksiz
+    # (01.09 docs commit'i tam APK/AAB derlemesi tetikledi, VK deposu kesikken kırmızıya düştü)
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: [ main ]
   workflow_dispatch:

@@ -1,5 +1,10 @@
 allprojects {
     repositories {
+        // 02.09.2026: RuStore SDK (ru.rustore.sdk, ru.ok.tracer) yalnız VK'nın
+        // artifactory'sinde yayınlanıyor; 01.09 gecesi o sunucu tümden 404 verince
+        // CI build'i düştü. Kopyalar repo içinde (android/local-maven, ~3 MB) —
+        // önce buraya bakılır, eksik olan varsa sıradaki depolar denenir.
+        maven { url = uri("${rootProject.projectDir}/local-maven") }
         google()
         mavenCentral()
     }

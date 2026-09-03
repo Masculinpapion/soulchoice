@@ -111,7 +111,9 @@ jobs:
       # koşusu aynı .new dosyasında yarışınca job'ı kırıyordu (10.08 gecesi).
 
   deploy-functions:
-    needs: build-debug
+    # 03.09 (kalite teşhisi): Android build'e bağımlılık kaldırıldı — VK artifactory
+    # kesintisi (01.09) ilgisiz bir build hatasıyla backend hotfix'ini kilitlemişti.
+    # Edge tip kapısı artık tests.yml/edge-typecheck'te.
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
@@ -152,3 +154,14 @@ jobs:
             cp -r /tmp/sc_deploy/supabase/functions/* /root/volumes/functions/
             rm -rf /tmp/sc_deploy
             docker restart supabase-edge-functions
+      # 03.09: deploy sonrası doğrulama — bozuk deploy sessiz kalmasın.
+      - name: Deploy sonrası smoke
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          set -e
+          sleep 12
+          H=$(curl -s -o /dev/null -w '%{http_code}' https://soulchoice.app/functions/v1/hello)
+          O=$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS https://soulchoice.app/functions/v1/send-call-otp)
+          echo "hello=$H send-call-otp OPTIONS=$O"
+          case "$H" in 200|401) ;; *) echo "::error::hello $H döndü — edge runtime ayağa kalkmadı"; exit 1;; esac
+          [ "$O" = "200" ] || { echo "::error::send-call-otp OPTIONS $O"; exit 1; }

@@ -1,12 +1,17 @@
 # Kritik para/güvenlik testleri — 01.08.2026 (launch-readiness otomatik test kapısı).
-# edge-unit: çekim sınıflandırma + iade sayacı + DB sözleşme (status literalleri).
+# edge-unit: çekim sınıflandırma + iade sayacı + DB sözleşme (status literalleri) + bildirim tipi sözleşmesi.
 # security-smoke: girişsiz erişim regresyonu (31.07 açık sınıfı) — canlıya anon
 # anahtarla vurur, korumalı yüzeyler 2xx dışı dönmek zorunda. Günlük cron da
 # koşar: kod değişmeden düşen koruma (config drift) 24 saat içinde kırmızı yanar.
+# 03.09.2026 (kalite teşhisi): pull_request tetiği (kırmızı merge'den ÖNCE görünür),
+# flutter analyze (yalnız error seviyesi kapı), deno check (edge tip hatası prod'a gitmesin),
+# l10n üretilmiş dosya drift'i (f59c37e→069a4eb vakası), gece prod↔repo şema drift'i.
 name: Tests
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   schedule:
     - cron: '30 6 * * *'   # her gün 09:30 MSK
@@ -21,6 +26,20 @@ jobs:
         with:
           deno-version: v2.x
       - run: deno test --allow-read --allow-env tests/edge/
+
+  # 03.09: tip hatalı edge fonksiyonu deploy olup ilk çağrıda 500 vermesin.
+  edge-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: |
+          set -e
+          for f in supabase/functions/*/index.ts; do
+            echo "== $f"; deno check "$f"
+          done
 
   security-smoke:
     runs-on: ubuntu-latest
@@ -38,3 +57,58 @@ jobs:
         with:
           channel: stable
       - run: flutter test
+
+  # 03.09: statik analiz kapısı. Mevcut kod tabanında 356 deprecated uyarısı var;
+  # ilk aşamada yalnız ERROR seviyesi kırmızı yapar (uyarı/info raporlanır, düşürmez).
+  # l10n: üretilmiş app_localizations_*.dart ARB ile uyumlu olmalı (unutulan gen-l10n commit'i).
+  flutter-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - name: flutter analyze (errors fatal)
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: l10n drift
+        run: |
+          flutter gen-l10n
+          if ! git diff --quiet -- lib/l10n; then
+            echo "::error::lib/l10n üretilmiş dosyalar ARB ile uyumsuz — 'flutter gen-l10n' çıktısını commit'le"
+            git --no-pager diff --stat -- lib/l10n
+            exit 1
+          fi
+
+  # 03.09: prod şeması ↔ repo baseline drift'i (K2: sunucu tek gerçek kaynak değil).
+  # Yalnız gece/elle koşar (PR'da sunucuya SSH yok). Kırmızı = sunucuda elle değişiklik
+  # var, repo'ya alınmamış (veya migration repoda, sunucuya uygulanmamış).
+  schema-drift:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: prod şemasını çek
+        env:
+          SSH_KEY: ${{ secrets.TIMEWEB_SSH_KEY }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_prod && chmod 600 ~/.ssh/id_prod
+          ssh-keyscan -H 89.169.1.127 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/id_prod root@89.169.1.127 \
+            "docker exec supabase-db pg_dump -U supabase_admin -d postgres --schema-only --no-owner --no-privileges -n public" > /tmp/live_public.sql
+          ssh -i ~/.ssh/id_prod root@89.169.1.127 \
+            "docker exec supabase-db psql -U postgres -Atc \"select format('select cron.schedule(%L, %L, \\\$cron\\\$%s\\\$cron\\\$);', jobname, schedule, command) from cron.job order by jobname\"" > /tmp/live_cron.sql
+      - name: diff
+        run: |
+          set -e
+          norm() { grep -v '^-- Dumped' "$1" | sed -e 's/[[:space:]]*$//'; }
+          if ! diff -u <(norm supabase/schema/public_baseline.sql) <(norm /tmp/live_public.sql) > /tmp/schema.diff; then
+            echo "::error::PROD ŞEMASI repo baseline'dan sapmış — supabase/schema/public_baseline.sql güncellenmeli veya migration sunucuya uygulanmalı"
+            head -200 /tmp/schema.diff; exit 1
+          fi
+          if ! diff -u supabase/schema/cron_jobs.sql /tmp/live_cron.sql > /tmp/cron.diff; then
+            echo "::error::pg_cron işleri repo'dan sapmış"; cat /tmp/cron.diff; exit 1
+          fi
+          echo "şema + cron: drift yok"

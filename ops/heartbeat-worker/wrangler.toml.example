@@ -9,3 +9,7 @@ crons = ["*/10 * * * *"]
 [[kv_namespaces]]
 binding = "HB"
 id = "<KV_ID — Cloudflare hesabında>"
+
+[[routes]]
+pattern = "hb.ahmtransfer.com"
+custom_domain = true

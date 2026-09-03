@@ -1607,7 +1607,8 @@ CREATE FUNCTION public.otp_is_bypass(p_norm text) RETURNS boolean
     LANGUAGE sql IMMUTABLE
     AS $$
   select p_norm in ('70000000001','70000000002','70000000003','70000000004',
-                    '70000000005','70000000006','70000000007')
+                    '70000000005','70000000006','70000000007',
+                    '70000000008','70000000009')
 $$;
 
 
@@ -2357,7 +2358,7 @@ CREATE FUNCTION public.zz_flag_test_phone() RETURNS trigger
     LANGUAGE plpgsql SECURITY DEFINER
     AS $$
 begin
-  if regexp_replace(coalesce(new.phone,''),'[^0-9]','','g') in ('70000000001','70000000002','70000000003','70000000004','70000000005','70000000006','70000000007') then
+  if regexp_replace(coalesce(new.phone,''),'[^0-9]','','g') in ('70000000001','70000000002','70000000003','70000000004','70000000005','70000000006','70000000007','70000000008','70000000009') then
     new.is_test_user := true;
   end if;
   return new;

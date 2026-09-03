@@ -112,3 +112,24 @@ jobs:
             echo "::error::pg_cron işleri repo'dan sapmış"; cat /tmp/cron.diff; exit 1
           fi
           echo "şema + cron: drift yok"
+
+  # 04.09.2026 — KRİTİK YOL E2E (gece + elle): iki tahsis edilemeyen test numarasıyla canlıda gerçek
+  # OTP→kayıt→davet→başvuru→seçim→mesaj zinciri; sonunda temizler. 23.08 tipi "23 gün kırık kayıt" bir gecede yakalanır.
+  e2e-critical-path:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ssh anahtarı
+        env:
+          SSH_KEY: ${{ secrets.TIMEWEB_SSH_KEY }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_prod && chmod 600 ~/.ssh/id_prod
+          ssh-keyscan -H 89.169.1.127 >> ~/.ssh/known_hosts 2>/dev/null
+      - name: kritik yol E2E
+        run: SSH_KEY=~/.ssh/id_prod bash tests/e2e/critical_path.sh
+      - name: kırmızıysa Telegram
+        if: failure()
+        run: ssh -i ~/.ssh/id_prod root@89.169.1.127 "/root/monitoring/alert.sh CRIT 'KRİTİK YOL E2E KIRMIZI (gece CI) — https://github.com/Masculinpapion/soulchoice/actions/runs/${{ github.run_id }}'"

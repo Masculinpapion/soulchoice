@@ -177,8 +177,16 @@ serve(async (req) => {
     if (!user_id || !title || !body) {
       return new Response(JSON.stringify({ error: 'user_id, title, body required' }), { status: 400, headers: CORS })
     }
+    // 03.09 (kalite teşhisi B3): istek başına TEK bağlantı (eskiden db/db2/db3 = 3),
+    // finally ile kapanır; push_log.status teslim sonucunu taşır (alarm: UNREGISTERED oranı).
     const db = new Client(DB_URL)
     await db.connect()
+    let pushLogId: number | null = null
+    const setStatus = async (s: string) => {
+      if (pushLogId == null) return
+      try { await db.queryObject('UPDATE push_log SET status = $1 WHERE id = $2', [s, pushLogId]) } catch (_) { /* süs */ }
+    }
+    try {
     const result = await db.queryObject<{ fcm_token: string | null; rustore_token: string | null; locale: string | null }>(
       'SELECT fcm_token, rustore_token, locale FROM users WHERE id = $1 LIMIT 1',
       [user_id]
@@ -212,7 +220,6 @@ serve(async (req) => {
       if (pref) {
         // Tür kapalı → atla (yalnız toggle'ı olan türler)
         if (col && pref.enabled === false) {
-          await db.end()
           return new Response(JSON.stringify({ success: true, skipped: 'type_disabled' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
         }
         // Sessiz saatler içinde → atla (alıcının yerel saati; sunucu Europe/Moscow)
@@ -226,7 +233,6 @@ serve(async (req) => {
           // Gece aşan aralık (örn. 22:00–08:00) da doğru değerlendirilir
           const inQuiet = start <= end ? (cur >= start && cur < end) : (cur >= start || cur < end)
           if (inQuiet) {
-            await db.end()
             return new Response(JSON.stringify({ success: true, skipped: 'quiet_hours' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
           }
         }
@@ -246,13 +252,13 @@ serve(async (req) => {
         [user_id, notifType, dedupRef]
       )
       if (dup.rows.length > 0) {
-        await db.end()
         return new Response(JSON.stringify({ success: true, skipped: 'duplicate' }), { headers: { ...CORS, 'Content-Type': 'application/json' } })
       }
-      await db.queryObject(
-        'INSERT INTO push_log(user_id, type, ref) VALUES ($1, $2, $3)',
+      const ins = await db.queryObject<{ id: number }>(
+        'INSERT INTO push_log(user_id, type, ref) VALUES ($1, $2, $3) RETURNING id',
         [user_id, notifType, dedupRef]
       )
+      pushLogId = ins.rows[0]?.id ?? null
     } catch (_) { /* dedupe altyapısı henüz yoksa push yine gitsin */ }
 
     // iOS rozet: okunmamış in-app bildirim sayısı (notifications insert'i bu
@@ -267,12 +273,12 @@ serve(async (req) => {
       unread = Number(u.rows[0]?.c ?? 0)
     } catch (_) { /* rozet süs */ }
 
-    await db.end()
     const fcmToken = result.rows[0]?.fcm_token
     // 28.08 (София vakası): GMS'siz cihazda fcm_token hiç oluşmaz — RuStore
     // token'ı varsa push VK PNS üzerinden gider; ikisi de yoksa eski 404.
     const ruToken = result.rows[0]?.rustore_token
     if (!fcmToken && !ruToken) {
+      await setStatus('no_token')
       return new Response(JSON.stringify({ error: 'no push token' }), { status: 404, headers: CORS })
     }
 
@@ -354,16 +360,17 @@ serve(async (req) => {
         // 404 = token'ın kurulumu artık yok (FCM UNREGISTERED muadili) → temizle
         if (ruRes.status === 404) {
           try {
-            const db3 = new Client(DB_URL)
-            await db3.connect()
-            await db3.queryObject('UPDATE users SET rustore_token = NULL WHERE id = $1 AND rustore_token = $2', [user_id, ruToken])
-            await db3.end()
+            await db.queryObject('UPDATE users SET rustore_token = NULL WHERE id = $1 AND rustore_token = $2', [user_id, ruToken])
           } catch (_) { /* log yeterli */ }
+          await setStatus('unregistered')
+        } else {
+          await setStatus('rustore_fail')
         }
         return new Response(JSON.stringify({ success: false, rustore: ruData }), {
           headers: { ...CORS, 'Content-Type': 'application/json' },
         })
       }
+      await setStatus('sent_rustore')
       return new Response(JSON.stringify({ success: true, rustore: ruData }), {
         headers: { ...CORS, 'Content-Type': 'application/json' },
       })
@@ -415,11 +422,11 @@ serve(async (req) => {
       console.error(`send-notification FCM FAIL user=${user_id} type=${notifType} http=${fcmRes.status} code=${errCode}`)
       if (fcmRes.status === 404 || errCode === 'UNREGISTERED') {
         try {
-          const db2 = new Client(DB_URL)
-          await db2.connect()
-          await db2.queryObject('UPDATE users SET fcm_token = NULL WHERE id = $1 AND fcm_token = $2', [user_id, fcmToken])
-          await db2.end()
+          await db.queryObject('UPDATE users SET fcm_token = NULL WHERE id = $1 AND fcm_token = $2', [user_id, fcmToken])
         } catch (_) { /* temizlik başarısız olsa da push zaten gitmedi; log yeterli */ }
+        await setStatus('unregistered')
+      } else {
+        await setStatus('fcm_fail')
       }
       // FCM düştü ama cihazın RuStore kanalı varsa aynı istekte oradan dene (28.08)
       if (ruToken) return await sendRuStore()
@@ -427,10 +434,16 @@ serve(async (req) => {
         headers: { ...CORS, 'Content-Type': 'application/json' },
       })
     }
+    await setStatus('sent_fcm')
     return new Response(JSON.stringify({ success: true, fcm: fcmData }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     })
+    } finally {
+      try { await db.end() } catch (_) { /* zaten kapalı */ }
+    }
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500, headers: CORS })
+    // 03.09: iç hata mesajı istemciye sızmaz (teşhis raporu), log'a düşer.
+    console.error('send-notification ERROR ' + String((e as Error).message).slice(0, 300))
+    return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })
   }
 })

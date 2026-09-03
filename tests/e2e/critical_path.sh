@@ -8,7 +8,7 @@
 # tarafında psql ile yapılır; geri kalan her şey istemcinin yaptığı gibi PostgREST/edge üzerinden.
 set -u
 BASE="https://soulchoice.app"
-ANON=$(grep -o "supabaseAnonKey = '[^']*'" "$(dirname "$0")/../../lib/core/constants/supabase_constants.dart" | cut -d"'" -f2)
+ANON=$(grep -A2 "SUPABASE_ANON_KEY" "$(dirname "$0")/../../lib/core/constants/supabase_constants.dart" | grep -o "defaultValue: '[^']*'" | cut -d"'" -f2)
 [ -n "$ANON" ] || { echo "anon key bulunamadı"; exit 2; }
 SSH_KEY=${SSH_KEY:-$HOME/.ssh/timeweb_prod}
 SSH="ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=15 root@89.169.1.127"

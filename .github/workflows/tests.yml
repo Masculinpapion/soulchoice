@@ -112,6 +112,26 @@ jobs:
             echo "::error::pg_cron işleri repo'dan sapmış"; cat /tmp/cron.diff; exit 1
           fi
           echo "şema + cron: drift yok"
+      # 04.09.2026 — ops betikleri (cron/alarm) repo'daki kopyayla birebir olmalı; sunucuda elle değişen
+      # betik ertesi sabah burada görünür. alert.sh (Telegram token) bilerek repo dışında.
+      - name: ops betikleri drift
+        run: |
+          set -e; BAD=""
+          for pair in ops/monitoring/checks.sh:/root/monitoring/checks.sh \
+                      ops/monitoring/daily-digest.sh:/root/monitoring/daily-digest.sh \
+                      ops/monitoring/demo-autoextend.sh:/root/monitoring/demo-autoextend.sh \
+                      ops/monitoring/new-user-alert.sh:/root/monitoring/new-user-alert.sh \
+                      ops/monitoring/selection-reminder.sh:/root/bin/selection-reminder.sh \
+                      ops/nobet-report.sh:/root/bin/nobet-report.sh \
+                      ops/restore-drill.sh:/root/bin/restore-drill.sh \
+                      ops/billing-cron.sh:/root/bin/billing-cron.sh \
+                      ops/profile-nudge.sh:/root/bin/profile-nudge.sh; do
+            L=${pair%%:*}; R=${pair#*:}
+            ssh -i ~/.ssh/id_prod root@89.169.1.127 "cat $R" > /tmp/srv.sh || { BAD="$BAD $R(okunamadı)"; continue; }
+            diff -q "$L" /tmp/srv.sh >/dev/null || { BAD="$BAD $L"; diff -u "$L" /tmp/srv.sh | head -40; }
+          done
+          [ -z "$BAD" ] || { echo "::error::ops betiği drift:$BAD"; exit 1; }
+          echo "ops betikleri: drift yok (9 dosya)"
 
   # 04.09.2026 — KRİTİK YOL E2E (gece + elle): iki tahsis edilemeyen test numarasıyla canlıda gerçek
   # OTP→kayıt→davet→başvuru→seçim→mesaj zinciri; sonunda temizler. 23.08 tipi "23 gün kırık kayıt" bir gecede yakalanır.

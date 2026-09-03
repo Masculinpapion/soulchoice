@@ -47,8 +47,16 @@ A=$(login "$PA") && ok "A giriş (OTP bypass) uid=${A#*|}" || fail "A giriş"
 B=$(login "$PB") && ok "B giriş uid=${B#*|}" || fail "B giriş"
 TA=${A%%|*}; UA=${A#*|}; TB=${B%%|*}; UB=${B#*|}
 [ $FAILS -eq 0 ] || { echo "SONUÇ: giriş başarısız, durduruldu"; exit 1; }
-rest() { # rest <token> <method> <path> [json] [prefer]
-  curl -s -m 25 -X "$2" "$BASE/rest/v1/$3" -H "apikey: $ANON" -H "Authorization: Bearer $1" -H "Content-Type: application/json" ${5:+-H "Prefer: $5"} ${4:+-d "$4"}
+rest() { # rest <token> <method> <path> [json] [prefer] — boş gövde/bağlantı kopması (GitHub runner ↔ Timeweb DDoS filtresi,
+  # 04.09 ilk CI koşusu) için 3 deneme; yalnız ağ hatasında tekrarlar (HTTP cevabı geldiyse olduğu gibi döner).
+  local i out code
+  for i in 1 2 3; do
+    out=$(curl -s -m 25 -w '\n%{http_code}' -X "$2" "$BASE/rest/v1/$3" -H "apikey: $ANON" -H "Authorization: Bearer $1" -H "Content-Type: application/json" ${5:+-H "Prefer: $5"} ${4:+-d "$4"})
+    code=${out##*$'\n'}; out=${out%$'\n'*}
+    if [ "$code" != "000" ] && [ "$code" != "" ]; then printf '%s' "$out"; return 0; fi
+    echo "  ↻ $2 $3: ağ hatası (deneme $i/3)" >&2; sleep 3
+  done
+  printf '%s' "$out"
 }
 
 # ---------- 2) Kayıt (profile_setup ile birebir upsert) ----------

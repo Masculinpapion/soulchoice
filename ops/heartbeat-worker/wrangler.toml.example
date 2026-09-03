@@ -1,0 +1,11 @@
+name = "soulchoice-heartbeat"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+# KV namespace id `wrangler kv namespace create HB` çıktısından doldurulur (kurulum scripti yapar)
+[[kv_namespaces]]
+binding = "HB"
+id = "<KV_ID — Cloudflare hesabında>"

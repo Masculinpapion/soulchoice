@@ -1,7 +1,9 @@
+select cron.schedule('cleanup-call-otps', '55 3 * * *', $cron$delete from public.call_otps where expires_at < now() - interval '1 day'$cron$);
 select cron.schedule('cleanup-client-errors', '15 3 * * *', $cron$select public.cleanup_client_errors()$cron$);
 select cron.schedule('cleanup-closed-invitations', '5 * * * *', $cron$select public.cleanup_closed_invitations()$cron$);
 select cron.schedule('cleanup-invitation-create-log', '40 3 * * *', $cron$delete from public.invitation_create_log where created_at < now() - interval '30 days'$cron$);
 select cron.schedule('cleanup-messages-archive', '35 3 * * *', $cron$delete from public.messages_archive where archived_at < now() - interval '90 days'$cron$);
+select cron.schedule('cleanup-notifications', '50 3 * * *', $cron$delete from public.notifications where read_at is not null and created_at < now() - interval '90 days'$cron$);
 select cron.schedule('cleanup-otp-send-log', '45 3 * * *', $cron$delete from public.otp_send_log where created_at < now() - interval '2 days'$cron$);
 select cron.schedule('downgrade-expired-premium', '25 * * * *', $cron$select downgrade_expired_premium()$cron$);
 select cron.schedule('invitation-active-to-selecting', '0 * * * *', $cron$

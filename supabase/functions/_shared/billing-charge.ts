@@ -3,8 +3,23 @@
 // ön-mutabakat (Order-diff; önceki çekim geçtiyse KAYDET-ÇEKME) → charge → savunmacı
 // sınıflandırma (ok/fail/unknown) → senkron GET teyidi → grant. Точка S3 limiti için
 // charge_attempt event'i çekimden ÖNCE yazılır — 20 saatlik sayaç bunu okur.
-import { Client } from 'https://deno.land/x/postgres@v0.17.0/mod.ts'
 import { tochkaFetch } from './tochka-fetch.ts'
+
+// 03.09 (kalite teşhisi — ödeme testleri): DB ve banka çağrıları enjekte edilebilir.
+// Üretimde varsayılanlar (postgres Client + tochkaFetch) kullanılır; testler sahte
+// db/fetch verir. Client yapısal olarak DbLike'ı sağlar.
+export interface DbLike {
+  queryObject<T = Record<string, unknown>>(sql: string, args?: unknown[]): Promise<{ rows: T[] }>
+}
+export interface ChargeDeps {
+  fetcher: (url: string, init?: RequestInit) => Promise<Response>
+  sleep: (ms: number) => Promise<void>
+}
+export const defaultDeps: ChargeDeps = {
+  fetcher: (url, init) => tochkaFetch(url, init),
+  sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+}
+type Client = DbLike
 
 const TOCHKA_API = 'https://enter.tochka.com/uapi'
 const TOCHKA_JWT = Deno.env.get('TOCHKA_JWT_TOKEN') ?? ''
@@ -55,8 +70,8 @@ export function pendingRefundCount(op: Record<string, unknown> | null, alreadyRe
   return Math.max(0, refunds.length - alreadyRefunded)
 }
 
-export async function getOperation(operationId: string): Promise<Record<string, unknown> | null> {
-  const res = await tochkaFetch(
+export async function getOperation(operationId: string, deps: ChargeDeps = defaultDeps): Promise<Record<string, unknown> | null> {
+  const res = await deps.fetcher(
     `${TOCHKA_API}/acquiring/v1.0/payments/${encodeURIComponent(operationId)}?customerCode=${CUSTOMER_CODE}`,
     { headers: { Authorization: 'Bearer ' + TOCHKA_JWT } },
   )
@@ -160,8 +175,9 @@ export async function reconcileOnly(
   sub: ChargeSub,
   periodDays: number,
   via: string,
+  deps: ChargeDeps = defaultDeps,
 ): Promise<{ outcome: 'reconciled' | 'nothing' | 'unavailable'; until: Date | null }> {
-  const op = await getOperation(sub.tochka_subscription_id)
+  const op = await getOperation(sub.tochka_subscription_id, deps)
   if (!op) return { outcome: 'unavailable', until: null }
   const orders = approvedOrders(op)
   const known = await db.queryObject<{ order_id: string }>(
@@ -183,9 +199,10 @@ export async function attemptCharge(
   sub: ChargeSub,
   periodDays: number,
   via: string,
+  deps: ChargeDeps = defaultDeps,
 ): Promise<ChargeOutcome> {
   // 1) ÖN-MUTABAKAT: işlenmemiş çekim var mı? Varsa kaydet, ÇEKME (çifte çekim koruması)
-  const pre = await reconcileOnly(db, sub, periodDays, via)
+  const pre = await reconcileOnly(db, sub, periodDays, via, deps)
   // 31.07 DENETİM: banka sorulamadığında akış körlemesine çekime devam
   // ediyordu → önceki çekim kayıt düşmemişse AYNI dönem için İKİNCİ KEZ para
   // çekiliyordu. Artık fail-closed: çekme, ertesi koşuda tekrar dene.
@@ -207,7 +224,7 @@ export async function attemptCharge(
   let cls: 'ok' | 'fail' | 'unknown' = 'unknown'
   let rawBody = ''
   try {
-    const res = await tochkaFetch(
+    const res = await deps.fetcher(
       `${TOCHKA_API}/acquiring/v1.0/subscriptions/${encodeURIComponent(sub.tochka_subscription_id)}/charge`,
       {
         method: 'POST',
@@ -242,8 +259,8 @@ export async function attemptCharge(
   let op2: Record<string, unknown> | null = null
   let fresh: TochkaOrder | undefined
   for (let i = 0; i < 5 && !fresh; i++) {
-    await new Promise((r) => setTimeout(r, 3000))
-    op2 = await getOperation(sub.tochka_subscription_id)
+    await deps.sleep(3000)
+    op2 = await getOperation(sub.tochka_subscription_id, deps)
     fresh = approvedOrders(op2).reverse().find((o) => !known2Ids.has(o.orderId)) // en yeni önce
   }
   if (fresh && op2) {

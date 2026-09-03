@@ -432,3 +432,27 @@ if [ -f "$RD" ]; then
   else [ -f "$STATE/restore_drill" ] && report "restore_drill" OK "tatbikat guncel ($RD_DATE)"
   fi
 fi
+
+# --- 25. DB baglanti doluluk (04.09.2026, Tier-3) ---
+# Edge fonksiyonlari her cagrida db:5432'ye dogrudan baglanir (Supavisor'a gecis ertelendi: tenant
+# yapilandirmasi + yuk testi ister). max_connections=100; influencer trafiginde dolarsa her sey 500 verir.
+DBC=$(docker exec supabase-db psql -U postgres -Atc "select count(*) from pg_stat_activity" 2>/dev/null)
+DBMAX=$(docker exec supabase-db psql -U postgres -Atc "show max_connections" 2>/dev/null)
+if [ -n "$DBC" ] && [ -n "$DBMAX" ]; then
+  if [ "$DBC" -ge $(( DBMAX * 85 / 100 )) ]; then report "db_conn" CRIT "DB baglantisi $DBC/$DBMAX (>=%85) — edge/PostgREST 500 vermeye baslar; Supavisor gecisi one alinmali"
+  elif [ "$DBC" -ge $(( DBMAX * 65 / 100 )) ]; then report "db_conn" WARN "DB baglantisi $DBC/$DBMAX (>=%65)"
+  else [ -f "$STATE/db_conn" ] && report "db_conn" OK "DB baglantisi normal ($DBC/$DBMAX)"
+  fi
+fi
+
+# --- 26. Disk buyume hizi (04.09.2026, Tier-3) ---
+# Mutlak doluluk alarmi ayri; burada gunluk buyume: 24 saatte >3 GB veya >%3 WARN (log/yedek/storage sizintisi).
+DU_NOW=$(df --output=used / | tail -1 | tr -dc '0-9'); DU_TOT=$(df --output=size / | tail -1 | tr -dc '0-9')
+DU_FILE="$STATE/disk_used.day"
+if [ -f "$DU_FILE" ] && [ $(( $(date +%s) - $(stat -c %Y "$DU_FILE") )) -ge 86400 ]; then
+  DU_OLD=$(cat "$DU_FILE"); DU_D=$(( DU_NOW - DU_OLD ))
+  if [ "$DU_D" -gt 3145728 ] || [ "$DU_D" -gt $(( DU_TOT * 3 / 100 )) ]; then report "disk_growth" WARN "disk 24 saatte $(( DU_D / 1024 )) MB buyudu (kullanim $(( DU_NOW * 100 / DU_TOT ))%) — log/yedek/storage kontrol"
+  else [ -f "$STATE/disk_growth" ] && report "disk_growth" OK "disk buyumesi normal ($(( DU_D / 1024 )) MB/gun)"
+  fi
+  echo "$DU_NOW" > "$DU_FILE"
+elif [ ! -f "$DU_FILE" ]; then echo "$DU_NOW" > "$DU_FILE"; fi

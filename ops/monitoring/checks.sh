@@ -456,3 +456,16 @@ if [ -f "$DU_FILE" ] && [ $(( $(date +%s) - $(stat -c %Y "$DU_FILE") )) -ge 8640
   fi
   echo "$DU_NOW" > "$DU_FILE"
 elif [ ! -f "$DU_FILE" ]; then echo "$DU_NOW" > "$DU_FILE"; fi
+
+# --- 27. Selfie oto-inceleme sagligi (04.09.2026) ---
+# /root/ops/selfie-review/selfie_review.py cron */1: pending selfie 10 dk icinde audit_log'a dusmeliyse WARN (cron olmus);
+# insan bekleyen (isaretli) selfie 2 saatten eskiyse WARN hatirlatma (Mustafa panelden bakmali).
+SR_STUCK=$(docker exec supabase-db psql -U postgres -Atc "select count(*) from public.users u join public.user_photos p on p.user_id=u.id and p.is_selfie where u.selfie_status='pending' and not u.is_test_user and p.created_at < now()-interval '10 minutes' and not exists (select 1 from public.audit_log a where a.target_id=u.id and a.action like 'selfie_auto_%' and a.meta->>'selfie_url'=p.url)" 2>/dev/null)
+SR_WAIT=$(docker exec supabase-db psql -U postgres -Atc "select count(*) from public.users u where u.selfie_status='pending' and not u.is_test_user and exists (select 1 from public.audit_log a where a.target_id=u.id and a.action='selfie_auto_flag' and a.ts < now()-interval '2 hours')" 2>/dev/null)
+if [ -n "$SR_STUCK" ] && [ "$SR_STUCK" -gt 0 ]; then report "selfie_review" WARN "$SR_STUCK selfie 10 dk'dir incelenmedi — selfie-review cron'u calismiyor olabilir"
+elif [ -n "$SR_WAIT" ] && [ "$SR_WAIT" -gt 0 ]; then report "selfie_review" WARN "$SR_WAIT supheli selfie 2 saattir insan onayi bekliyor — ops panelinden bak"
+else [ -f "$STATE/selfie_review" ] && report "selfie_review" OK "selfie kuyrugu temiz"
+fi
+
+# betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)
+true

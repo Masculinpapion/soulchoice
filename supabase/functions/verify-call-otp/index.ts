@@ -28,55 +28,37 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   try {
-    const { phone, code } = await req.json()
-    if (!phone || !code) {
+    const { phone: rawPhone, code } = await req.json()
+    if (!rawPhone || !code) {
       return new Response(JSON.stringify({ error: 'phone and code required' }), { status: 400, headers: CORS })
     }
-
+    // 03.09 (H3): send-call-otp ile aynı normalizasyon; auth.users araması iki biçimi de dener.
+    const phone = String(rawPhone).replace(/[\s\-()]/g, '')
     const phoneNorm = phone.replace(/^\+/, '')
-    const MAX_ATTEMPTS = 5
 
-    const now = new Date().toISOString()
-    // Brute-force koruması: kodu SORGUYA katma; önce telefonun geçerli OTP
-    // kaydını çek, deneme sayısını kontrol et, sonra kodu KODDA karşılaştır.
-    const otpRes = await fetch(
-      SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone) + '&expires_at=gt.' + now + '&order=created_at.desc&limit=1',
-      { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } }
-    )
-    const otpRows = await otpRes.json()
-    if (!Array.isArray(otpRows) || otpRows.length === 0) {
-      return new Response(JSON.stringify({ error: 'invalid_code' }), { status: 401, headers: CORS })
+    // 03.09: doğrulama DB'de atomik (otp_verify — 20260903_otp_rpc_hardening.sql):
+    // kayıt FOR UPDATE ile kilitlenir, sayaç tek UPDATE ile artar, kod sorguya
+    // katılmaz (brute-force), telefon gövdede gider (kong log'una PII düşmez).
+    const vRes = await fetch(SUPABASE_URL + '/rest/v1/rpc/otp_verify', {
+      method: 'POST',
+      headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_phone: phone, p_code: String(code) }),
+    })
+    if (!vRes.ok) {
+      console.error('verify-call-otp RPC_FAILED ' + vRes.status)
+      return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })
     }
-    const otp = otpRows[0]
-
-    // 5 yanlış denemeden sonra kod iptal — yeni kod istemek zorunlu
-    if ((otp.attempts ?? 0) >= MAX_ATTEMPTS) {
-      await fetch(SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone), {
-        method: 'DELETE',
-        headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },
-      })
+    const verdict = (await vRes.json()) as string
+    if (verdict === 'too_many') {
       return new Response(JSON.stringify({ error: 'too_many_attempts' }), { status: 429, headers: CORS })
     }
-
-    // Kod yanlış → deneme sayacını artır, kaydı SİLME (kullanıcı tekrar denesin)
-    if (String(otp.code) !== String(code)) {
-      await fetch(SUPABASE_URL + '/rest/v1/call_otps?id=eq.' + otp.id, {
-        method: 'PATCH',
-        headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify({ attempts: (otp.attempts ?? 0) + 1 }),
-      })
+    if (verdict !== 'ok') {
       return new Response(JSON.stringify({ error: 'invalid_code' }), { status: 401, headers: CORS })
     }
-
-    // Kod doğru → tüm OTP kayıtlarını sil (mevcut akış)
-    await fetch(SUPABASE_URL + '/rest/v1/call_otps?phone=eq.' + encodeURIComponent(phone), {
-      method: 'DELETE',
-      headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY },
-    })
 
     const db = new Client(DB_URL)
     await db.connect()
-    const result = await db.queryObject(
+    const result = await db.queryObject<{ id: string }>(
       'SELECT id FROM auth.users WHERE phone = $1 OR phone = $2 LIMIT 1',
       [phone, phoneNorm]
     )
@@ -93,7 +75,9 @@ serve(async (req) => {
       })
       const newUser = await createRes.json()
       if (!newUser.id) {
-        return new Response(JSON.stringify({ error: 'user_create_failed', detail: newUser }), { status: 500, headers: CORS })
+        // 03.09: verify hataları artık loglanır (teşhis raporu: bu fonksiyonda 0 console.error vardı).
+        console.error('verify-call-otp USER_CREATE_FAILED ' + JSON.stringify(newUser).slice(0, 300))
+        return new Response(JSON.stringify({ error: 'user_create_failed' }), { status: 500, headers: CORS })
       }
       userId = newUser.id
     }
@@ -133,7 +117,8 @@ serve(async (req) => {
     }
 
     if (!session.access_token) {
-      return new Response(JSON.stringify({ error: 'session_failed', detail: session }), { status: 500, headers: CORS })
+      console.error('verify-call-otp SESSION_FAILED ' + JSON.stringify(session).slice(0, 300))
+      return new Response(JSON.stringify({ error: 'session_failed' }), { status: 500, headers: CORS })
     }
 
     return new Response(JSON.stringify(
@@ -141,6 +126,7 @@ session), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     })
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: CORS })
+    console.error('verify-call-otp ERROR ' + String((e as Error).message).slice(0, 300))
+    return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })
   }
 })

@@ -4,7 +4,8 @@
 //  2) NÖBET KÖPRÜSÜ: @soulchoice_nobet_bot webhook'u → POST /tg (Telegram secret başlığı doğrulanır);
 //     yalnız ALLOWED_TG_ID'den gelen mesajlar KV gelen kutusuna yazılır ve «aldım» yanıtı gider;
 //     bulut rutini GET /inbox?t=<INBOX_SECRET> ile okur, POST /inbox/ack ile işaretler,
-//     cevabı doğrudan Telegram Bot API ile yazar. Mac/VPN'e bağımlılık yok.
+//     cevabı POST /reply ile yazar (bot token Worker'da kalır). Mac/VPN'e bağımlılık yok.
+//     Sunucu tarafı rapor: https://soulchoice.app/nobet/<token>/report.json (nginx /nobet/api/ → bu Worker).
 const STALE_MS = 30 * 60 * 1000;
 
 async function tgSend(token, chatId, text) {
@@ -68,16 +69,12 @@ export default {
       await tgSend(env.NOBET_TOKEN, chatId, '⏳ Nöbet aldı. Bulut rutini bakıp burada cevaplayacak (en geç 1 saat; acil alarmlar ayrıca gelir).');
       return new Response('queued');
     }
-    // Bulut rutini önyükleme: tek BOOT_SECRET ile çalışma sırlarını alır (rutin API'si env var kabul etmiyor).
-    if (url.pathname === '/bootstrap' && request.method === 'GET') {
-      if (!secretOk('BOOT_SECRET')) return new Response('forbidden', { status: 403 });
-      return json({
-        ssh_key: env.NOBET_SSH_KEY,
-        bot_token: env.NOBET_TOKEN,
-        inbox_url: 'https://hb.ahmtransfer.com',
-        inbox_secret: env.INBOX_SECRET,
-        chat_id: env.ALLOWED_TG_ID,
-      });
+    // Rutinin cevabı: bot token Worker'da kalır, rutin yalnız INBOX_SECRET bilir.
+    if (url.pathname === '/reply' && request.method === 'POST') {
+      if (!secretOk('INBOX_SECRET')) return new Response('forbidden', { status: 403 });
+      const { chat_id, text } = await request.json();
+      const ok = await tgSend(env.NOBET_TOKEN, chat_id || env.ALLOWED_TG_ID, String(text || '').slice(0, 3900));
+      return json({ ok });
     }
     if (url.pathname === '/inbox' && request.method === 'GET') {
       if (!secretOk('INBOX_SECRET')) return new Response('forbidden', { status: 403 });

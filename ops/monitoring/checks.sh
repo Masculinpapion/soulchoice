@@ -402,7 +402,7 @@ fi
 
 # --- 22. Push teslim orani (03.09.2026, B3) ---
 # push_log.status (send-notification yazar). 60 dk'da >=10 denemede basarisiz oran >%40 CRIT, >%20 WARN.
-PL_ROW=$(docker exec supabase-db psql -U postgres -t -A -c "select count(*) filter (where status is not null), count(*) filter (where status in ('unregistered','fcm_fail','rustore_fail','no_token')) from push_log where sent_at > now() - interval '60 minutes'" 2>/dev/null | head -1)
+PL_ROW=$(docker exec supabase-db psql -U postgres -t -A -c "select count(*) filter (where status is not null), count(*) filter (where status in ('unregistered','fcm_fail','rustore_fail')) from push_log where sent_at > now() - interval '60 minutes'" 2>/dev/null | head -1)
 PL_TOT=${PL_ROW%%|*}; PL_BAD=${PL_ROW#*|}
 if [ "${PL_TOT:-0}" -ge 10 ] 2>/dev/null; then
   PL_PCT=$(( ${PL_BAD:-0} * 100 / PL_TOT ))

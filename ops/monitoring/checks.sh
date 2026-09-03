@@ -419,3 +419,16 @@ fi
 if [ -s "$DIR/heartbeat.url" ]; then
   curl -fsS -m 10 --retry 2 "$(cat "$DIR/heartbeat.url")" >/dev/null 2>&1 || true
 fi
+
+# --- 24. Restore tatbikati tazeligi (03.09.2026, C2) ---
+# /root/bin/restore-drill.sh ayin 1'i 05:00 kosar; damga 35 gunden eskiyse veya ok=false ise uyar.
+RD=/root/backups/offsite/last-restore-drill.json
+if [ -f "$RD" ]; then
+  RD_DATE=$(python3 -c "import json;print(json.load(open('$RD')).get('date',''))" 2>/dev/null)
+  RD_OK=$(python3 -c "import json;print(json.load(open('$RD')).get('ok'))" 2>/dev/null)
+  RD_AGE=$(( ( $(date +%s) - $(date -d "${RD_DATE:-1970-01-01}" +%s) ) / 86400 ))
+  if [ "$RD_OK" != "True" ]; then report "restore_drill" CRIT "son restore tatbikati BASARISIZ ($RD_DATE) — yedek geri yuklenemiyor olabilir"
+  elif [ "$RD_AGE" -gt 35 ]; then report "restore_drill" WARN "restore tatbikati $RD_AGE gundur yapilmadi"
+  else [ -f "$STATE/restore_drill" ] && report "restore_drill" OK "tatbikat guncel ($RD_DATE)"
+  fi
+fi

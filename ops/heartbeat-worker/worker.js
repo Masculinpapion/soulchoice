@@ -68,6 +68,17 @@ export default {
       await tgSend(env.NOBET_TOKEN, chatId, '⏳ Nöbet aldı. Bulut rutini bakıp burada cevaplayacak (en geç 1 saat; acil alarmlar ayrıca gelir).');
       return new Response('queued');
     }
+    // Bulut rutini önyükleme: tek BOOT_SECRET ile çalışma sırlarını alır (rutin API'si env var kabul etmiyor).
+    if (url.pathname === '/bootstrap' && request.method === 'GET') {
+      if (!secretOk('BOOT_SECRET')) return new Response('forbidden', { status: 403 });
+      return json({
+        ssh_key: env.NOBET_SSH_KEY,
+        bot_token: env.NOBET_TOKEN,
+        inbox_url: 'https://hb.ahmtransfer.com',
+        inbox_secret: env.INBOX_SECRET,
+        chat_id: env.ALLOWED_TG_ID,
+      });
+    }
     if (url.pathname === '/inbox' && request.method === 'GET') {
       if (!secretOk('INBOX_SECRET')) return new Response('forbidden', { status: 403 });
       const inbox = JSON.parse((await env.HB.get('inbox')) || '[]');

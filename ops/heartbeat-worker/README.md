@@ -15,3 +15,7 @@ Cloudflare Worker (Mustafa'nın Cloudflare hesabı, proje klasörü Mac'te `~/Pr
 - Bulut rutini `GET /inbox?t=<INBOX_SECRET>` okur, `POST /inbox/ack {ids}` işaretler, cevabı Bot API ile yazar.
 - Secrets: TG_WEBHOOK_SECRET, INBOX_SECRET (Mac: ~/.claude/secrets/soulchoice_ops_worker.env), NOBET_TOKEN, ALLOWED_TG_ID.
 - Rutin SSH anahtarı: ~/.ssh/soulchoice_nobet_cloud (sunucu authorized_keys, yorum soulchoice-nobet-cloud-20260903).
+
+## Bulut Nöbet rutini (03.09 15:46)
+- Rutin `soulchoice-nobet-patrol` (trig_01L5saCXuhuMEhvkj54PuTz3), saatlik `7 * * * *` UTC, sonnet-5; sırları `/bootstrap?t=BOOT_SECRET` ile alır (rutin API'si env var kabul etmiyor).
+- Sunucu anahtarı: `soulchoice-nobet-cloud-20260903` (authorized_keys). Detay: memory project_nobet_cloud.md

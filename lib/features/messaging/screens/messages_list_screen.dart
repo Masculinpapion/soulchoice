@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,9 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_kNotifBannerDismissedKey, true);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'messages_list');
+    }
   }
 
   // Arka plandan dönüşte liste tazelenir — soket sessizce koptuysa realtime

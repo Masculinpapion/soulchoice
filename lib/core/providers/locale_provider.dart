@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -110,6 +111,8 @@ class LocaleNotifier extends StateNotifier<Locale?> {
           .update({'locale': code})
           .eq('id', uid)
           .then((_) {}, onError: (_) {});
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'locale');
+    }
   }
 }

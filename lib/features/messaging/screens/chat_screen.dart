@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -117,7 +118,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       final profile = await ref.read(userProfileProvider(uid).future);
       final g = profile?['gender'] as String?;
       if (mounted && g != null) setState(() => _myGender = g);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat');
+    }
   }
 
   // Hediye linki: yalnız match tarafı + moderasyon onaylı ise döner (RPC).
@@ -128,7 +131,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       if (gl is String && gl.isNotEmpty && mounted) {
         setState(() => _giftUrl = gl);
       }
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat');
+    }
   }
 
   Future<void> _loadSafetyDismissed() async {
@@ -137,7 +142,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       final dismissed =
           prefs.getBool('$_safetyPrefPrefix${widget.matchId}') ?? false;
       if (mounted) setState(() => _safetyDismissed = dismissed);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat');
+    }
   }
 
   Future<void> _dismissSafetyNotice() async {
@@ -145,7 +152,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('$_safetyPrefPrefix${widget.matchId}', true);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat');
+    }
   }
 
   Future<void> _loadMatchInfo() async {
@@ -187,7 +196,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         ]);
         otherUser = results[0] as Map<String, dynamic>?;
         myUser = results[1] as Map<String, dynamic>?;
-      } catch (_) {}
+      } catch (e, st) {
+        ErrorReporter.report(e, stack: st, screen: 'chat');
+      }
       if (otherUserId != null) {
         try {
           final photoRows = await client
@@ -200,7 +211,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           if (photoRows is List && photoRows.isNotEmpty) {
             photoUrl = (photoRows.first as Map<String, dynamic>)['url'] as String?;
           }
-        } catch (_) {}
+        } catch (e, st) {
+          ErrorReporter.report(e, stack: st, screen: 'chat');
+        }
       }
 
       if (!mounted) return;
@@ -422,7 +435,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         setState(() => _messages.addAll(fresh));
         _loadReactions();
       }
-    } catch (_) {
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat_realtime');
       // Bir sonraki olayda/açılışta telafi edilir.
     }
   }
@@ -456,7 +470,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         _messages.insertAll(0, older);
         _hasMore = data.length == _pageSize;
       });
-    } catch (_) {
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat_paging');
       // Tek ağ hatası sayfalamayı kalıcı kilitlemesin (31.07 denetimi) —
       // bir sonraki kaydırmada tekrar denenir.
     } finally {
@@ -478,7 +493,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       // Okundu yazıldıktan sonra sohbet listesi rozeti bayat kalmasın —
       // liste realtime'ı read_at UPDATE'ini dinlemiyor (11.08 denetim).
       if (mounted) ref.invalidate(matchesProvider);
-    } catch (_) {/* sessiz */}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'chat'); /* sessiz */
+    }
   }
 
   void _subscribeRealtime() {
@@ -868,7 +885,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       // liste zaten blocked_by == ben filtresiyle gizler).
       try {
         await client.rpc('hide_chat', params: {'p_match_id': widget.matchId});
-      } catch (_) {}
+      } catch (e, st) {
+        ErrorReporter.report(e, stack: st, screen: 'chat_send');
+      }
       if (!mounted) return;
       // Engellenen kişi tüm yüzeylerden anında düşsün (31.07 denetimi):
       // sohbet listesi + feed + keşfet; başvuranlar ekranı zaten yeniden yüklenir.

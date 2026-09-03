@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -262,7 +263,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
             'marketing_consent': _marketingConsent,
             'source': 'app_onboarding',
           });
-        } catch (_) {
+        } catch (e, st) {
+          ErrorReporter.report(e, stack: st, screen: 'setup_email');
           // sessiz: e-posta kaydı profili engellemez, cron/lifecycle telafi etmez ama
           // kullanıcı profil düzenlemeden tekrar deneyebilir
         }

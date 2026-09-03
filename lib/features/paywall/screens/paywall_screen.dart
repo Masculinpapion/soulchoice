@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,7 +95,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
           if (context.canPop()) context.pop();
           return;
         }
-      } catch (_) {}
+      } catch (e, st) {
+        ErrorReporter.report(e, stack: st, screen: 'paywall');
+      }
       if (attempt + 1 < attempts) {
         await Future.delayed(const Duration(seconds: 4));
         if (!mounted) return;

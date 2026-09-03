@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +51,9 @@ class _InvitationDetailScreenState
       final profile = await ref.read(userProfileProvider(uid).future);
       final g = profile?['gender'] as String?;
       if (mounted && g != null) setState(() => _myGender = g);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'invitation_detail');
+    }
   }
 
   String _currentUserGender() => _myGender;

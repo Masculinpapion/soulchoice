@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -97,7 +98,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       try {
         final photos = await photoProbe!;
         hasPhoto = (photos as List).isNotEmpty;
-      } catch (_) {
+      } catch (e, st) {
+        ErrorReporter.report(e, stack: st, screen: 'splash_photo_probe');
         // Foto sorgusu düşerse feed'e geç — kurulum kapısı kullanıcıyı kilitlemesin
       }
       if (!mounted) return;

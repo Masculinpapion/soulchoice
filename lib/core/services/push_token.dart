@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -38,7 +39,9 @@ Future<void> clearPushTokenBeforeSignOut() async {
           .eq('id', uid);
     }
     await FirebaseMessaging.instance.deleteToken();
-  } catch (_) {}
+  } catch (e, st) {
+    ErrorReporter.report(e, stack: st, screen: 'push_token');
+  }
   if (isAndroidDevice) {
     try {
       await RustorePushClient.deleteToken();
@@ -62,7 +65,9 @@ Future<void> savePushToken() async {
   int? appBuild;
   try {
     appBuild = int.tryParse((await PackageInfo.fromPlatform()).buildNumber);
-  } catch (_) {}
+  } catch (e, st) {
+    ErrorReporter.report(e, stack: st, screen: 'push_token');
+  }
 
   // 1) FCM — GMS'li Android + iOS
   try {
@@ -104,5 +109,7 @@ Future<void> savePushToken() async {
         .update({'locale': await _effectiveLocaleCode()})
         .eq('id', uid)
         .isFilter('locale', null);
-  } catch (_) {}
+  } catch (e, st) {
+    ErrorReporter.report(e, stack: st, screen: 'push_token');
+  }
 }

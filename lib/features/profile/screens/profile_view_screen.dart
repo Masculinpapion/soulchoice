@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -1465,7 +1466,9 @@ class _ApplicantActionsState extends ConsumerState<_ApplicantActions> {
       for (var attempt = 0; attempt < 2; attempt++) {
         try {
           if (await _recoverIfAccepted()) return;
-        } catch (_) {}
+        } catch (e, st) {
+          ErrorReporter.report(e, stack: st, screen: 'profile_view');
+        }
         await Future.delayed(const Duration(seconds: 2));
       }
       _showSelectError(TimeoutException('match_and_select'));
@@ -1473,7 +1476,9 @@ class _ApplicantActionsState extends ConsumerState<_ApplicantActions> {
       // Zaten seçilmişse (çift dokunuş / bayat ekran) hata yerine sohbete git
       try {
         if (await _recoverIfAccepted()) return;
-      } catch (_) {}
+      } catch (e, st) {
+        ErrorReporter.report(e, stack: st, screen: 'profile_view');
+      }
       // 24.07 denetim: sessiz başarısızlık — sahibi bilgilendir (guard token'ları dahil)
       _showSelectError(e);
     }

@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen>
     ref.invalidate(notificationsProvider);
     try {
       await ref.read(notificationsProvider.future);
-    } catch (_) {}
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'notifications');
+    }
     if (mounted) setState(() => _localItems = null);
   }
 

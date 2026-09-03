@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -116,7 +117,8 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
       if (url.isNotEmpty && _giftUrlController.text.isEmpty) {
         _giftUrlController.text = url;
       }
-    } catch (_) {
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'edit_invitation_gift');
       // Sessiz: link okunamazsa alan boş kalır, kullanıcı yeniden yazabilir.
     }
   }

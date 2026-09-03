@@ -1,7 +1,7 @@
 // SoulChoice ops Worker (03.09.2026) — Cloudflare, Mustafa'nın mevcut hesabı. İki görev:
 //  1) DEAD-MAN: sunucudaki checks.sh her 15 dk GET /ping?t=<PING_SECRET>; cron (*/10) 30 dk sessizlikte
 //     Telegram CRIT (alarm botu), ping dönünce OK. (kalite teşhisi A7)
-//  2) NÖBET KÖPRÜSÜ: @soulchoice_nobet_bot webhook'u → POST /tg (Telegram secret başlığı doğrulanır);
+//  2) NÖBET KÖPRÜSÜ: alarm botu (aynı bot iki yönlü; @soulchoice_nobet_bot 03.09 Telegram tarafından kısıtlandı) webhook'u → POST /tg (Telegram secret başlığı doğrulanır);
 //     yalnız ALLOWED_TG_ID'den gelen mesajlar KV gelen kutusuna yazılır ve «aldım» yanıtı gider;
 //     bulut rutini GET /inbox?t=<INBOX_SECRET> ile okur, POST /inbox/ack ile işaretler,
 //     cevabı POST /reply ile yazar (bot token Worker'da kalır). Mac/VPN'e bağımlılık yok.
@@ -62,11 +62,17 @@ export default {
         return new Response('pending');
       }
       if (fromId !== env.ALLOWED_TG_ID) return new Response('ignored'); // yabancı: sessizce düş
+      if (msg.text.startsWith('/start')) return new Response('ignored'); // Start dokunuşları kutuya girmez
       const inbox = JSON.parse((await env.HB.get('inbox')) || '[]');
       inbox.push({ id: msg.message_id, chat_id: chatId, text: msg.text.slice(0, 2000), at: (msg.date || 0) * 1000 });
       while (inbox.length > 50) inbox.shift();
       await env.HB.put('inbox', JSON.stringify(inbox));
-      await tgSend(env.NOBET_TOKEN, chatId, '⏳ Nöbet aldı. Bulut rutini bakıp burada cevaplayacak (en geç 1 saat; acil alarmlar ayrıca gelir).');
+      // «aldım» yanıtı en fazla 10 dakikada bir (03.09: 32 hızlı yanıt yeni botu Telegram'a kısıtlattı)
+      const lastAck = Number(await env.HB.get('last_ack')) || 0;
+      if (Date.now() - lastAck > 10 * 60 * 1000) {
+        await tgSend(env.NOBET_TOKEN, chatId, '⏳ Nöbet aldı — bulut rutini en geç 1 saat içinde burada cevaplar.');
+        await env.HB.put('last_ack', String(Date.now()));
+      }
       return new Response('queued');
     }
     // Rutinin cevabı: bot token Worker'da kalır, rutin yalnız INBOX_SECRET bilir.

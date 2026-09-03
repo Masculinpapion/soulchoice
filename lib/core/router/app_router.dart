@@ -96,12 +96,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (loc == '/admin') {
         final uid = Supabase.instance.client.auth.currentUser?.id;
         if (uid == null) return '/feed';
-        final data = await Supabase.instance.client
-            .from('users')
-            .select('is_admin')
-            .eq('id', uid)
-            .maybeSingle();
-        if (data?['is_admin'] != true) return '/feed';
+        // 03.09: is_admin özel kolon — kendi değeri my_private_profile() RPC'sinden.
+        final data = await Supabase.instance.client.rpc('my_private_profile');
+        if (data is! Map || data['is_admin'] != true) return '/feed';
       }
 
       return null;

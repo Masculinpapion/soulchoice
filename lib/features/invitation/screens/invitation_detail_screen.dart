@@ -1414,11 +1414,9 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
       // 19.08 (Mustafa): 3 ücretsiz hak — premium değilse kalan hakkı göster.
       int? freeLeft;
       try {
-        final me = await client
-            .from('users')
-            .select('free_applications_used, subscription_status, premium_until')
-            .eq('id', uid)
-            .maybeSingle();
+        // 03.09: free_applications_used özel kolon — kendi değeri RPC'den.
+        final meRaw = await client.rpc('my_private_profile');
+        final me = meRaw is Map ? Map<String, dynamic>.from(meRaw) : null;
         if (me != null) {
           final premiumUntil = DateTime.tryParse(me['premium_until'] as String? ?? '');
           final isPremium = me['subscription_status'] == 'active' ||

@@ -50,11 +50,9 @@ class _SelfieScreenState extends State<SelfieScreen> {
     final uid = client.auth.currentUser?.id;
     if (uid == null) return;
     try {
-      final row = await client
-          .from('users')
-          .select('selfie_status, selfie_rejected_reason')
-          .eq('id', uid)
-          .maybeSingle();
+      // 03.09: selfie_rejected_reason özel kolon — kendi değeri RPC'den.
+      final raw = await client.rpc('my_private_profile');
+      final row = raw is Map ? Map<String, dynamic>.from(raw) : null;
       if (!mounted || row == null) return;
       final status = row['selfie_status'] as String?;
       // Onay bekleyen kullanıcı yeniden çekip kuyruğunu sıfırlamasın —

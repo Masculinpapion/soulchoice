@@ -44,13 +44,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // yoksa/ağ yoksa kapı kapalı (UpdateGate hiç fırlatmaz).
     final gateFuture = UpdateGate.updateRequired();
     final session = Supabase.instance.client.auth.currentSession;
+    // 03.09 (kalite teşhisi B4): suspended_at/banned artık herkese açık kolon değil —
+    // kişinin kendi özel alanları my_private_profile() RPC'sinden gelir (satır yoksa null).
     final probe = session == null
         ? null
         : Supabase.instance.client
-            .from('users')
-            .select('id, suspended_at, banned')
-            .eq('id', session.user.id)
-            .maybeSingle()
+            .rpc('my_private_profile')
+            .then((v) => v is Map ? Map<String, dynamic>.from(v) : null)
             .timeout(const Duration(seconds: 8));
     // 02.09: yarım kalan kurulum kaldığı yerden sürsün — profili var ama hiç
     // fotoğrafı olmayan kullanıcı feed'e değil fotoğraf adımına döner

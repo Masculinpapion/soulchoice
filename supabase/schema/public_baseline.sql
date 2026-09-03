@@ -948,6 +948,33 @@ $$;
 
 
 --
+-- Name: my_private_profile(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.my_private_profile() RETURNS jsonb
+    LANGUAGE sql STABLE SECURITY DEFINER
+    SET search_path TO 'public', 'pg_temp'
+    AS $$
+  select (select jsonb_build_object(
+      'id', id,
+      'banned', banned,
+      'suspended_at', suspended_at,
+      'suspension_reason', suspension_reason,
+      'is_admin', is_admin,
+      'selfie_status', selfie_status,
+      'selfie_rejected_reason', selfie_rejected_reason,
+      'free_application_used', free_application_used,
+      'free_applications_used', free_applications_used,
+      'no_show_count', no_show_count,
+      'warning_count', warning_count,
+      'subscription_status', subscription_status,
+      'premium_until', premium_until,
+      'locale', locale)
+    from public.users where id = auth.uid())
+$$;
+
+
+--
 -- Name: notify_application_status(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2510,7 +2537,9 @@ CREATE TABLE public.client_errors (
     app_build text DEFAULT ''::text NOT NULL,
     screen text DEFAULT ''::text NOT NULL,
     error text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    stack text,
+    device text
 );
 
 
@@ -2821,6 +2850,7 @@ CREATE TABLE public.payments (
     subscription_id uuid,
     charge_type text DEFAULT 'one_time'::text NOT NULL,
     order_id text DEFAULT ''::text NOT NULL,
+    refund_checked_at timestamp with time zone,
     CONSTRAINT payments_charge_type_check CHECK ((charge_type = ANY (ARRAY['one_time'::text, 'subscription_initial'::text, 'subscription_renewal'::text]))),
     CONSTRAINT payments_source_check CHECK ((source = ANY (ARRAY['web'::text, 'android'::text, 'ios_app'::text, 'ios_sms'::text, 'test'::text]))),
     CONSTRAINT payments_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'paid'::text, 'refunded'::text, 'failed'::text, 'expired'::text])))
@@ -4178,6 +4208,13 @@ CREATE INDEX idx_notifications_user_created ON public.notifications USING btree 
 --
 
 CREATE INDEX idx_notifications_user_unread ON public.notifications USING btree (user_id) WHERE (read_at IS NULL);
+
+
+--
+-- Name: idx_payments_refund_check; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_payments_refund_check ON public.payments USING btree (refund_checked_at NULLS FIRST) WHERE ((status = 'paid'::text) AND (operation_id <> ''::text));
 
 
 --

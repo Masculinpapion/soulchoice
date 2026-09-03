@@ -27,7 +27,8 @@ ROW=$(P "select json_build_object(
  'client_errors_24h',(select count(*) from client_errors where created_at > now()-interval '24 hours' and platform<>'test'),
  'client_errors_top',(select coalesce(json_agg(t),'[]'::json) from (select left(error,120) as e, count(*) as n from client_errors where created_at > now()-interval '24 hours' and platform<>'test' group by 1 order by 2 desc limit 3) t),
  'push_total_60m',(select count(*) from push_log where sent_at > now()-interval '60 minutes' and status is not null),
- 'push_fail_60m',(select count(*) from push_log where sent_at > now()-interval '60 minutes' and status in ('unregistered','fcm_fail','rustore_fail','no_token')),
+ 'push_fail_60m',(select count(*) from push_log where sent_at > now()-interval '60 minutes' and status in ('unregistered','fcm_fail','rustore_fail')),
+ 'push_no_token_60m',(select count(*) from push_log where sent_at > now()-interval '60 minutes' and status='no_token'),
  'db_connections',(select count(*) from pg_stat_activity),
  'demo_invitation',(select json_build_object('status',status,'expires_at',expires_at) from invitations where id='33db9e96-7624-4803-881b-384890b6ee90'),
  'billing_heartbeat',(select json_build_object('last_run_at',last_run_at,'status',last_status) from cron_heartbeat where job='billing-cron')

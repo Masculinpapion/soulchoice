@@ -25,6 +25,8 @@ const TEST_PHONES: Record<string, string> = {
   '+70000000005': '1234', // Play kapalı test — TR testçi #5, 29.08.2026
   '+70000000006': '1234', // Play kapalı test — TR testçi #6, 29.08.2026
   '+70000000007': '1234', // Play kapalı test — TR testçi #7, 29.08.2026
+  '+70000000008': '1234', // E2E kritik yol testi — A (04.09.2026, gece CI)
+  '+70000000009': '1234', // E2E kritik yol testi — B (04.09.2026, gece CI)
 }
 const ALLOW_TEST_OTP = Deno.env.get('ALLOW_TEST_OTP') === 'true'
 

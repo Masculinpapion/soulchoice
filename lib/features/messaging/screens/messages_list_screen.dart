@@ -28,6 +28,11 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
     with WidgetsBindingObserver {
   RealtimeChannel? _channel;
   bool _channelDropped = false;
+  // 03.09 (kalite teşhisi B2): mesaj aboneliği match_id in (sohbetlerim) ile
+  // SUNUCUDA süzülür; sohbet listesi değişince kanal yenilenir.
+  RealtimeChannel? _msgChannel;
+  List<String> _msgIds = const [];
+  ProviderSubscription<AsyncValue<List<MatchPreview>>>? _msgSub;
   // 30.08: sistem bildirim izni kapalıysa tek satırlık uyarı bandı (Tinder
   // standardı) — X ile kalıcı kapatılabilir, izin açılınca kendiliğinden gider.
   bool _showNotifBanner = false;
@@ -72,23 +77,62 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
     }
   }
 
+  void _resubscribeMessages(List<String> ids) {
+    if (!mounted) return;
+    if (ids.length == _msgIds.length &&
+        ids.asMap().entries.every((e) => _msgIds[e.key] == e.value)) {
+      return;
+    }
+    _msgIds = ids;
+    if (_msgChannel != null) {
+      Supabase.instance.client.removeChannel(_msgChannel!);
+      _msgChannel = null;
+    }
+    if (ids.isEmpty) return;
+    final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
+    _msgChannel = Supabase.instance.client
+        .channel('messages_list_msgs:$uid')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.inFilter,
+            column: 'match_id',
+            value: ids,
+          ),
+          callback: (_) => ref.invalidate(matchesProvider),
+        )
+        .subscribe();
+  }
+
   void _subscribeRealtime() {
     final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
     if (uid.isEmpty) return;
+    // Yeni eşleşme (kabul) anlık listeye düşsün. 03.09: filtre sunucuda —
+    // eskiden filtresiz abonelik TÜM matches olaylarını her açık listeye taşıyordu.
     _channel = Supabase.instance.client
         .channel('messages_list:$uid')
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
-          table: 'messages',
+          table: 'matches',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user1_id',
+            value: uid,
+          ),
           callback: (_) => ref.invalidate(matchesProvider),
         )
-        // Yeni eşleşme (kabul) anlık listeye düşsün — RLS yalnız kendi
-        // match'lerini verir, filtre gerekmez.
         .onPostgresChanges(
           event: PostgresChangeEvent.insert,
           schema: 'public',
           table: 'matches',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user2_id',
+            value: uid,
+          ),
           callback: (_) => ref.invalidate(matchesProvider),
         )
         .subscribe((status, [_]) {
@@ -103,14 +147,29 @@ class _MessagesListScreenState extends ConsumerState<MessagesListScreen>
             if (mounted) ref.invalidate(matchesProvider);
           }
         });
+    _msgSub = ref.listenManual<AsyncValue<List<MatchPreview>>>(
+      matchesProvider,
+      (_, next) {
+        final ids = (next.valueOrNull ?? const <MatchPreview>[])
+            .map((m) => m.matchId)
+            .toList()
+          ..sort();
+        _resubscribeMessages(ids);
+      },
+      fireImmediately: true,
+    );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _msgSub?.close();
     if (_channel != null) {
       _channel!.unsubscribe();
       Supabase.instance.client.removeChannel(_channel!);
+    }
+    if (_msgChannel != null) {
+      Supabase.instance.client.removeChannel(_msgChannel!);
     }
     super.dispose();
   }

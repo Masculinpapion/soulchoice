@@ -27,12 +27,19 @@ class _ApplicantsScreenState extends ConsumerState<ApplicantsScreen> {
     // Sahibi ekranda değerlendirirken gelen YENİ başvuru anlık düşsün —
     // profil deseniyle aynı (11.08 denetim). RLS: sahibe kendi ilanının
     // başvuruları döner; ilan-id elle süzülür.
+    // 03.09 (kalite teşhisi B2): filtre sunucuda — eskiden TÜM applications
+    // olayları her açık ekrana geliyordu (realtime worker O(kullanıcı×olay)).
     _channel = Supabase.instance.client
         .channel('applicants:$invitationId')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'applications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'invitation_id',
+            value: invitationId,
+          ),
           callback: (payload) {
             final rec = payload.newRecord.isNotEmpty
                 ? payload.newRecord

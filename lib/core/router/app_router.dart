@@ -1,3 +1,4 @@
+import '../services/error_reporter.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -67,7 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthNotifier();
   ref.onDispose(notifier.dispose);
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/splash',
     refreshListenable: notifier,
@@ -320,5 +321,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ),
   );
+  // 03.09 (kalite teşhisi): hata raporları gerçek rotayı taşısın
+  // (eskiden screen alanı hep 'flutter_error' idi).
+  ErrorReporter.currentScreen =
+      () => router.routerDelegate.currentConfiguration.uri.path;
+  return router;
 });
-

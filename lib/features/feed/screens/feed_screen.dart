@@ -511,6 +511,8 @@ class _StoryAvatar extends StatelessWidget {
                           imageUrl: photoUrl!,
                           fit: BoxFit.cover,
                           alignment: PhotoFocus.of(photoUrl),
+                          // 03.09: avatar boyutunda decode — 1080px orijinal bellekte tutulmasın
+                          memCacheWidth: 256,
                           errorWidget: (_, __, ___) =>
                               _AvatarFallback(name: label),
                         )
@@ -1457,6 +1459,8 @@ class InvitationCard extends StatelessWidget {
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,
                   alignment: PhotoFocus.of(ownerPhotoUrl),
+                  // 03.09: kart genişliğinde decode (orijinal 1080px zaten tavan)
+                  memCacheWidth: 1080,
                   placeholder: (_, __) => _CardFallbackGradient(ownerName: ownerName, category: category),
                   errorWidget: (_, __, ___) => _CardFallbackGradient(ownerName: ownerName, category: category),
                 )
@@ -1509,7 +1513,7 @@ class InvitationCard extends StatelessWidget {
                             ),
                             child: ClipOval(
                               child: ownerPhotoUrl != null
-                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: PhotoFocus.of(ownerPhotoUrl), errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
+                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: PhotoFocus.of(ownerPhotoUrl), memCacheWidth: 256, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
                                   : _AvatarFallback(name: ownerName),
                             ),
                           ),
@@ -2274,6 +2278,7 @@ class _ApplicantAvatarStack extends StatelessWidget {
                       imageUrl: shown[i],
                       fit: BoxFit.cover,
                       alignment: PhotoFocus.of(shown[i], fallback: Alignment.center),
+                      memCacheWidth: 256,
                       placeholder: (_, __) => Container(color: Colors.white12),
                       errorWidget: (_, __, ___) => Container(
                         color: Colors.white12,

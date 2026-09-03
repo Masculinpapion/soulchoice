@@ -1954,6 +1954,40 @@ class _MyApplicationsSection extends ConsumerStatefulWidget {
 class _MyApplicationsSectionState
     extends ConsumerState<_MyApplicationsSection> {
   RealtimeChannel? _channel;
+  RealtimeChannel? _ownedChannel;
+  ProviderSubscription<AsyncValue<List<Map<String, dynamic>>>>? _ownedSub;
+  List<String> _ownedIds = const [];
+
+  // Kendi davetlerime gelen başvurular: invitation_id in (aktif davet id'leri).
+  // Realtime tek filtre kabul ettiği için liste değişince kanal yenilenir.
+  void _resubscribeOwned(List<String> ids) {
+    if (!mounted) return;
+    if (ids.length == _ownedIds.length &&
+        ids.asMap().entries.every((e) => _ownedIds[e.key] == e.value)) {
+      return;
+    }
+    _ownedIds = ids;
+    if (_ownedChannel != null) {
+      Supabase.instance.client.removeChannel(_ownedChannel!);
+      _ownedChannel = null;
+    }
+    if (ids.isEmpty) return;
+    final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
+    _ownedChannel = Supabase.instance.client
+        .channel('owned_apps:$uid')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'applications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.inFilter,
+            column: 'invitation_id',
+            value: ids,
+          ),
+          callback: (_) => ref.invalidate(myActiveInvitationsProvider),
+        )
+        .subscribe();
+  }
 
   @override
   void initState() {
@@ -1966,24 +2000,46 @@ class _MyApplicationsSectionState
     // kartının başvuru sayacını tazeler (desen: notifications_screen).
     final uid = Supabase.instance.client.auth.currentUser?.id ?? '';
     if (uid.isEmpty) return;
+    // 03.09 (kalite teşhisi B2): filtre SUNUCUDA. (a) kendi başvurularım:
+    // applicant_id=uid; (b) kendi davetlerime gelenler: invitation_id in (aktif
+    // davet id'lerim) — liste değişince yeniden abone olunur (_resubscribeOwned).
     _channel = Supabase.instance.client
         .channel('my_apps:$uid')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'applications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'applicant_id',
+            value: uid,
+          ),
           callback: (_) {
             ref.invalidate(myApplicationsListProvider);
-            ref.invalidate(myActiveInvitationsProvider);
           },
         )
         .subscribe();
+    _ownedSub = ref.listenManual<AsyncValue<List<Map<String, dynamic>>>>(
+      myActiveInvitationsProvider,
+      (_, next) {
+        final ids = (next.valueOrNull ?? const [])
+            .map((i) => i['id'] as String)
+            .toList()
+          ..sort();
+        _resubscribeOwned(ids);
+      },
+      fireImmediately: true,
+    );
   }
 
   @override
   void dispose() {
+    _ownedSub?.close();
     if (_channel != null) {
       Supabase.instance.client.removeChannel(_channel!);
+    }
+    if (_ownedChannel != null) {
+      Supabase.instance.client.removeChannel(_ownedChannel!);
     }
     super.dispose();
   }

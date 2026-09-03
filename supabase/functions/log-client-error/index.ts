@@ -37,6 +37,9 @@ serve(async (req) => {
       app_build: clip(body.app_build, 16),
       screen: clip(body.screen, 64),
       error: clip(body.error, 600) || 'empty',
+      // 03.09 (kalite teşhisi A2): stack trace (satır sonları korunur) + cihaz OS
+      stack: String(body.stack ?? '').slice(0, 4000) || null,
+      device: clip(body.device, 120) || null,
     }
     await fetch(SUPABASE_URL + '/rest/v1/client_errors', {
       method: 'POST',

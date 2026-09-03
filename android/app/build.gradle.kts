@@ -60,6 +60,10 @@ android {
         }
         release {
             signingConfig = signingConfigs.getByName("release")
+            // 03.09 (kalite teşhisi A3): natif (NDK/engine) çökme sembolleri Crashlytics'e
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                nativeSymbolUploadEnabled = true
+            }
         }
     }
 }
@@ -69,6 +73,9 @@ flutter {
 }
 
 dependencies {
+    // 03.09 (kalite teşhisi A3): Flutter engine / NDK çökmeleri eskiden HİÇ raporlanmıyordu.
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-crashlytics-ndk")
 }
 
 // RuStore 27.08 duyurusu: SDK Push güncel sürüm 7.4.0 (eski uluslararası SSL

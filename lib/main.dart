@@ -7,7 +7,7 @@ import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -35,33 +35,83 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // FCM token kaydı core/services/push_token.dart'a taşındı (24.07):
 // kayıt akışının sonunda da çağrılması gerekiyor (yeni kullanıcı push bug'ı).
 
+// 03.09 (kalite teşhisi A1): Firebase hazır değilken Crashlytics çağrısı
+// kendisi patlamasın — açılış çökmesi eskiden HİÇBİR yere ulaşmıyordu.
+bool _firebaseReady = false;
+
+void _recordError(Object error, StackTrace? stack, String screen,
+    {bool fatal = true}) {
+  try {
+    if (_firebaseReady) {
+      FirebaseCrashlytics.instance
+          .recordError(error, stack ?? StackTrace.current, fatal: fatal);
+    }
+  } catch (_) {}
+  ErrorReporter.report(error, stack: stack, screen: screen);
+}
+
 Future<void> main() async {
+  // 03.09: tüm açılış + uygulama ömrü tek korumalı zone'da. Zone dışı async
+  // hatalar (init sırasında dahil) PlatformDispatcher'a düşmeden yakalanır.
+  runZonedGuarded<Future<void>>(_boot, (error, stack) {
+    _recordError(error, stack, 'zone_error');
+  });
+}
+
+Future<void> _boot() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Tarayıcı demosu (01.08): Firebase/Crashlytics/AppMetrica/push web'de
   // yapılandırılmadığı için çağrılırsa main() ölür (beyaz ekran). Web'de
   // bunlar atlanır — demo salt ürün akışını gösterir, push YOKTUR.
   if (!kIsWeb) {
-    await Firebase.initializeApp();
-
+    // Handler'lar Firebase'den ÖNCE: init'in kendisi patlarsa da rapor düşer.
     FlutterError.onError = (details) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+      try {
+        if (_firebaseReady) {
+          FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+        }
+      } catch (_) {}
       // Nöbetçi Kovan (12.08): sessiz hatalar sunucuya da düşer
-      ErrorReporter.report(details.exception, screen: 'flutter_error');
+      ErrorReporter.report(details.exception,
+          stack: details.stack, screen: 'flutter_error');
     };
     PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      ErrorReporter.report(error, screen: 'platform_error');
+      _recordError(error, stack, 'platform_error');
       return true;
     };
+    // Release'te build hatası gri kutu yerine sade bir uyarı; rapor zaten
+    // FlutterError.onError'dan gider.
+    if (kReleaseMode) {
+      ErrorWidget.builder = (details) => const _BuildErrorBox();
+    }
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    // 31.07: BEKLEME YOK. await olduğu için ilk açılışta sistem izin diyaloğu
-    // launch screen üstünde çıkıp runApp'i blokluyordu (kullanıcı cevaplayana
-    // kadar boş ekran). İzin zaten onboarding'de açıklamalı ekranla isteniyor.
-    unawaited(FirebaseMessaging.instance.requestPermission());
-    AppMetrica.activate(
-      const AppMetricaConfig('7d2ff52b-8262-411f-8b24-b3f5f52c17eb'),
-    );
+    try {
+      await Firebase.initializeApp();
+      _firebaseReady = true;
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'boot_firebase');
+    }
+
+    if (_firebaseReady) {
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      // 31.07: BEKLEME YOK. await olduğu için ilk açılışta sistem izin diyaloğu
+      // launch screen üstünde çıkıp runApp'i blokluyordu (kullanıcı cevaplayana
+      // kadar boş ekran). İzin zaten onboarding'de açıklamalı ekranla isteniyor.
+      unawaited(FirebaseMessaging.instance.requestPermission());
+    }
+    try {
+      AppMetrica.activate(
+        const AppMetricaConfig(
+          '7d2ff52b-8262-411f-8b24-b3f5f52c17eb',
+          // 03.09: Dart + natif (C++/NDK) çökmeler ve ANR AppMetrica'ya da gitsin —
+          // GMS'siz RuStore cihazlarında Crashlytics ulaşamayabiliyor.
+          crashReporting: true,
+          nativeCrashReporting: true,
+        ),
+      );
+    } catch (e, st) {
+      ErrorReporter.report(e, stack: st, screen: 'boot_appmetrica');
+    }
   }
 
   timeago.setLocaleMessages('tr', timeago.TrMessages());
@@ -76,10 +126,19 @@ Future<void> main() async {
     ),
   );
 
-  await Supabase.initialize(
-    url: SupabaseConstants.supabaseUrl,
-    anonKey: SupabaseConstants.supabaseAnonKey,
-  );
+  // 03.09: Supabase init patlarsa (bozuk yerel oturum deposu, DNS, TLS) beyaz
+  // ekran yerine "tekrar dene" ekranı; hata Crashlytics'e düşer, Kovan kuyruğuna
+  // yazılır ve başarılı açılışta gönderilir.
+  try {
+    await Supabase.initialize(
+      url: SupabaseConstants.supabaseUrl,
+      anonKey: SupabaseConstants.supabaseAnonKey,
+    );
+  } catch (e, st) {
+    _recordError(e, st, 'boot_supabase');
+    runApp(_BootFailureApp(onRetry: () => _boot()));
+    return;
+  }
   unawaited(ErrorReporter.init());
 
   if (!kIsWeb) {
@@ -87,10 +146,63 @@ Future<void> main() async {
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedIn) savePushToken();
     }, onError: (_, __) {}); // 19.08: çevrimdışı yenileme hatası 'fatal' sayılmasın
-    FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
+    if (_firebaseReady) {
+      FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());
+    }
   }
 
   runApp(const ProviderScope(child: SoulChoiceApp()));
+}
+
+/// Açılış başarısız (ağ/TLS/depo) — beyaz ekran yerine tekrar dene.
+class _BootFailureApp extends StatelessWidget {
+  const _BootFailureApp({required this.onRetry});
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFF0B0F1A),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.wifi_off_rounded,
+                    color: Colors.white70, size: 48),
+                const SizedBox(height: 16),
+                const Text(
+                  'Не удалось подключиться.\nПроверь интернет и попробуй снова.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () => onRetry(),
+                  child: const Text('Повторить'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Release'te widget build hatası: gri kutu yerine sade, küçük bir işaret.
+class _BuildErrorBox extends StatelessWidget {
+  const _BuildErrorBox();
+  @override
+  Widget build(BuildContext context) => const SizedBox(
+        height: 24,
+        child: Center(
+          child: Icon(Icons.error_outline, size: 16, color: Colors.white38),
+        ),
+      );
 }
 
 class SoulChoiceApp extends ConsumerStatefulWidget {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/prompt_hints.dart';
@@ -318,6 +319,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     // 24.07: users satırı artık var — kayıt akışında push token'ı garantiye al
     // (signedIn anında satır olmadığından ilk deneme boşa düşüyordu).
     savePushToken();
+    // 03.09 (D2): hesap oluştu — «registration_completed» hunide yoktu.
+    unawaited(funnelEventOnce('registration_completed'));
     if (mounted) {
       context.go('/permissions');
     }

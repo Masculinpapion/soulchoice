@@ -116,7 +116,12 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   }
 
   Future<void> _finish() async {
-    funnelEvent('permissions_done');
+    // 03.09 (D3): izin kabul/red ayrımı — push teslim oranını doğrudan belirliyor.
+    funnelEvent('permissions_done', {
+      'notification': _results[0] == true,
+      'photos': _results[1] == true,
+      'camera': _results[2] == true,
+    });
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPermissionsRequestedKey, true);
     // 24.07 E2E: kayıt sırasında signedIn anında users satırı olmadığından

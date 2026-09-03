@@ -132,6 +132,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               await Supabase.instance.client.auth
                   .signOut(scope: SignOutScope.local);
             } catch (_) {}
+            funnelEvent('otp_network_error');
             if (mounted) {
               setState(() =>
                   _error = AppLocalizations.of(context)!.error_network_vpn);
@@ -164,13 +165,17 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       // 31.07 denetimi: non-2xx exception fırlattığı için sunucunun hata kodu
       // (too_many_attempts = "kod iptal, yenisini iste") hiç yüzeye çıkmıyordu
       // — kullanıcı aynı ölü kodu tekrar tekrar giriyordu.
+      final code = (e.details is Map) ? (e.details as Map)['error'] : null;
+      // 03.09 (kalite teşhisi D1): OTP alt-adımları ölçülsün — huninin en pahalı
+      // adımı en ölçümsüz olanıydı (otp_shown → otp_verified arası kapalı kutuydu).
+      funnelEvent(code == 'too_many_attempts' ? 'otp_too_many' : 'otp_wrong_code');
       if (mounted) {
-        final code = (e.details is Map) ? (e.details as Map)['error'] : null;
         setState(() => _error = code == 'too_many_attempts'
             ? AppLocalizations.of(context)!.otp_error_too_many
             : AppLocalizations.of(context)!.otp_error_failed);
       }
     } catch (e) {
+      funnelEvent('otp_verify_error');
       if (mounted) {
         setState(() =>
             _error = AppLocalizations.of(context)!.otp_error_failed);
@@ -187,6 +192,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Future<void> _resend({String channel = 'sms'}) async {
     if (_resendBusy) return;
     _resendBusy = true;
+    funnelEvent('otp_resend', {'channel': channel});
     try {
       // SMS kanalında Retriever hash'i yeniden gönderilir + dinleyici tazelenir
       // (sistem dinleme penceresi ~5 dk — her gönderimde yeniden kurulmalı).
@@ -212,6 +218,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     } catch (_) {
       // OTP sessiz-retry fix (26.07): yeniden gönderim düşerse kullanıcı
       // bunu GÖRMELİ; timer sıfırlanmaz ki beklemeden tekrar deneyebilsin.
+      funnelEvent('otp_resend_failed', {'channel': channel});
       if (mounted) {
         setState(() => _error = AppLocalizations.of(context)!.error_generic);
       }

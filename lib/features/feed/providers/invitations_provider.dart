@@ -66,7 +66,12 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
           // önceden 30 kart iniyor, yarısı istemcide eleniyordu (kullanıcı ~15 görürdü,
           // 30'dan sonraki karşı-cins kartlar hiç gelmezdi).
           'owner:users!inner(id, name, age, gender, city_id, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
-          'applications(status, applicant:users(id, photos:user_photos(url, is_selfie, order_index)))',
+          // 03.09 (kalite teşhisi B1): başvuru embed'i HAFİF — eskiden her ilanla
+          // birlikte TÜM başvuranların TÜM fotoğrafları iniyordu (ilk popüler ilanda
+          // 200 başvuru × N foto). Fotoğraflar aşağıda tek toplu sorguyla, yalnız
+          // gösterilecek ≤4 pending başvuran için çekilir; sayaç/gizleme kuralı
+          // tüm başvuru satırlarını görmeye devam eder.
+          'applications(status, applicant_id)',
         )
         .eq('status', 'active')
         .eq('flow_type', filter.flowType.name)
@@ -110,6 +115,36 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     ref.read(feedHasMoreProvider(filter).notifier).state =
         rows.length >= requested;
 
+    // 03.09: avatar yığını için başvuran fotoğrafları — ilan başına ilk 4 pending
+    // başvuranın ilk (selfie olmayan) fotoğrafı, tüm feed için TEK sorgu.
+    final wantedApplicantIds = <String>{};
+    for (final row in rows) {
+      final apps = ((row['applications'] as List<dynamic>?) ?? const [])
+          .cast<Map<String, dynamic>>();
+      for (final a in apps.where((a) => a['status'] == 'pending').take(4)) {
+        final id = a['applicant_id'] as String?;
+        if (id != null) wantedApplicantIds.add(id);
+      }
+    }
+    final applicantPhoto = <String, String>{};
+    if (wantedApplicantIds.isNotEmpty) {
+      try {
+        final ph = await client
+            .from('user_photos')
+            .select('user_id, url, order_index')
+            .eq('is_selfie', false)
+            .inFilter('user_id', wantedApplicantIds.toList())
+            .order('order_index', ascending: true);
+        for (final p in (ph as List).cast<Map<String, dynamic>>()) {
+          final uid = p['user_id'] as String?;
+          final url = p['url'] as String?;
+          if (uid != null && url != null) applicantPhoto.putIfAbsent(uid, () => url);
+        }
+      } catch (_) {
+        // Avatar yığını süs; foto gelmezse kart yine çizilir.
+      }
+    }
+
     return rows.map((row) {
       // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
@@ -144,7 +179,15 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       final ownerPhotoUrl = sortedPhotos.firstOrNull?['url'] as String?;
 
       // ── Applicant photos (up to 4 pending applicants) ─────────────────────
-      final apps = (row['applications'] as List<dynamic>?) ?? [];
+      // Hafif embed (status, applicant_id) → kural/sayaç için beklenen biçim
+      // {'status', 'applicant': {'id'}} (feed_visibility_rules sözleşmesi).
+      final apps = ((row['applications'] as List<dynamic>?) ?? const [])
+          .cast<Map<String, dynamic>>()
+          .map((a) => <String, dynamic>{
+                'status': a['status'],
+                'applicant': {'id': a['applicant_id']},
+              })
+          .toList();
 
       // 11.08 (Mustafa bulgusu): KABUL edilmiş başvuran kartı feed'de tekrar
       // görmez — "Хочу прийти" ölü mekanikti (§13), ilişki Mesajlar'a taşındı.
@@ -163,16 +206,12 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
           .where((a) => a['status'] == 'pending')
           .toList();
 
-      final applicantPhotoUrls = pendingApps.expand<String>((a) {
-        final applicant = a['applicant'] as Map<String, dynamic>?;
-        if (applicant == null) return [];
-        final appPhotos = (applicant['photos'] as List<dynamic>?) ?? [];
-        return appPhotos
-            .cast<Map<String, dynamic>>()
-            .where((p) => p['is_selfie'] == false)
-            .map((p) => p['url'] as String?).whereType<String>()
-            .take(1);
-      }).take(4).toList();
+      final applicantPhotoUrls = pendingApps
+          .take(4)
+          .map((a) => applicantPhoto[
+              (a['applicant'] as Map<String, dynamic>?)?['id'] as String? ?? ''])
+          .whereType<String>()
+          .toList();
 
       final cityRow = row['city'] as Map<String, dynamic>?;
 

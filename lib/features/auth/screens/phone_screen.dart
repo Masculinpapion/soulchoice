@@ -79,8 +79,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       ).timeout(const Duration(seconds: 20));
       final data = response.data as Map<String, dynamic>?;
       if (data?['success'] == true) {
+        funnelEvent('otp_send_requested');
         if (mounted) context.go('/auth/otp', extra: phone);
       } else {
+        funnelEvent('otp_send_failed',
+            {'reason': data?['error']?.toString() ?? 'unknown'});
         if (mounted)
           setState(
             () => _error =
@@ -91,6 +94,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     } on FunctionException catch (e) {
       // 31.07 denetimi: 60 sn rate-limit'i (too_soon + retry_after) "bağlantı
       // hatası" olarak görünüyordu — kullanıcı sebepsiz yere tekrar deniyordu.
+      final d0 = (e.details is Map) ? e.details as Map : const {};
+      funnelEvent('otp_send_failed',
+          {'reason': d0['error']?.toString() ?? 'http'});
       if (mounted) {
         final d = (e.details is Map) ? e.details as Map : const {};
         setState(() => _error = d['error'] == 'too_soon'
@@ -99,6 +105,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             : AppLocalizations.of(context)!.phone_error_connection);
       }
     } catch (e) {
+      funnelEvent('otp_send_failed', {'reason': 'network'});
       if (mounted)
         setState(
           () => _error = AppLocalizations.of(context)!.phone_error_connection,

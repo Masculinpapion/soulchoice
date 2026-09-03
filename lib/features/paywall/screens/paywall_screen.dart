@@ -174,6 +174,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
   Future<void> _payOnce() async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
+    // 03.09 (D4): ödeme hunisi — paywall_shown'dan sonra hiçbir adım ölçülmüyordu.
+    funnelEvent('checkout_started', {'kind': 'once'});
     try {
       final response = await Supabase.instance.client.functions.invoke(
         'create-tochka-payment',
@@ -183,7 +185,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
       final link = data?['paymentLink'] as String?;
       if (link == null) throw Exception(data?['error'] ?? 'no_link');
       await _launchLink(link);
+      funnelEvent('checkout_opened', {'kind': 'once'});
     } catch (_) {
+      funnelEvent('checkout_failed', {'kind': 'once'});
       if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -356,6 +360,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
 
   Future<bool> _startSubscription(String email) async {
     final l10n = AppLocalizations.of(context)!;
+    funnelEvent('checkout_started', {'kind': 'subscription'});
     try {
       final response = await Supabase.instance.client.functions.invoke(
         'create-tochka-subscription',
@@ -369,9 +374,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
       final link = data?['paymentLink'] as String?;
       if (link == null) throw Exception(data?['error'] ?? 'no_link');
       await _launchLink(link);
+      funnelEvent('checkout_opened', {'kind': 'subscription'});
       return true;
     } on FunctionException catch (e) {
       final code = (e.details is Map) ? (e.details as Map)['error'] : null;
+      funnelEvent('checkout_failed',
+          {'kind': 'subscription', 'reason': code?.toString() ?? 'http'});
       if (code == 'already_subscribed') {
         _snack(l10n.sub_already_active);
       } else if (code == 'use_resume') {

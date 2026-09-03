@@ -145,6 +145,20 @@ Future<void> _boot() async {
     savePushToken();
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (data.event == AuthChangeEvent.signedIn) savePushToken();
+      // 03.09 (D5): çöken/hata alan kullanıcıyı destek talebine bağlayabilmek için
+      // Crashlytics + AppMetrica kullanıcı kimliği (yalnız UUID, PII yok).
+      if (data.event == AuthChangeEvent.signedIn ||
+          data.event == AuthChangeEvent.initialSession) {
+        final uid = data.session?.user.id;
+        if (uid != null) {
+          try {
+            if (_firebaseReady) {
+              FirebaseCrashlytics.instance.setUserIdentifier(uid);
+            }
+            AppMetrica.setUserProfileID(uid);
+          } catch (_) {}
+        }
+      }
     }, onError: (_, __) {}); // 19.08: çevrimdışı yenileme hatası 'fatal' sayılmasın
     if (_firebaseReady) {
       FirebaseMessaging.instance.onTokenRefresh.listen((_) => savePushToken());

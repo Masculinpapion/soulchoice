@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../core/services/funnel_events.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -500,6 +502,12 @@ class _CreateInvitationScreenState
         'slots_total': 1,
         'status': 'active',
       }).select('id').single();
+      // 03.09 (D2): «ilk davet» hunide yoktu (yalnız first_apply vardı).
+      funnelEvent('invitation_created', {
+        'category': _category?.name ?? 'food',
+        'flow': _flowType.name,
+      });
+      unawaited(funnelEventOnce('first_invitation_created'));
 
       // Hediye ürün linki (opsiyonel) — ayrı tabloya; beyaz liste + moderasyon
       // DB trigger'ında zorlanır, link seçilene kadar hiç kimseye görünmez.

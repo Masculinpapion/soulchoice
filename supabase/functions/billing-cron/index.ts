@@ -86,6 +86,10 @@ serve(async (req) => {
   if (!SERVICE_KEY || auth !== 'Bearer ' + SERVICE_KEY) {
     return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403 })
   }
+  // 03.09 (kalite teşhisi): saatlik koşu {"quiet":true} ile gelir — aktivite/kırmızı yoksa
+  // digest maili atlanır (günde 24 boş mail olmasın); 07:25 UTC günlük koşu tam digest.
+  let quiet = false
+  try { const b = await req.json(); quiet = b?.quiet === true } catch (_) { /* gövdesiz */ }
 
   const summary = {
     dry_run: true,
@@ -252,7 +256,7 @@ serve(async (req) => {
           summary.charge_unknown.push(`${label} → ${r.raw.slice(0, 120)}`)
           heartbeatStatus = 'error'
         }
-      } catch (e) {
+      } catch (e: any) {
         summary.errors.push(`${label}: ${String(e?.message ?? e)}`)
         heartbeatStatus = 'error'
       }
@@ -344,10 +348,17 @@ serve(async (req) => {
     // op 888189b9). Son 120 günün paid ödemeleri operasyon bazında taranır;
     // bizde refunded sayısı bankadaki refund satırı sayısına eşitlenir.
     if (!cfg.dry_run) {
+      // 03.09 (kalite teşhisi B3): eskiden 120 günün HER ödemesi her koşuda bankaya soruluyordu
+      // (~200 abonede 40 sn bütçe dolar). Artık refund_checked_at damgası: 24 saatte bir, en eski
+      // kontrol edilen önce, koşu başına en fazla 50 operasyon.
       const ops = await db.queryObject<{ operation_id: string }>(
-        `select distinct operation_id from payments
+        `select operation_id from payments
           where status = 'paid' and operation_id <> ''
-            and paid_at > now() - interval '120 days'`,
+            and paid_at > now() - interval '120 days'
+          group by operation_id
+         having coalesce(max(refund_checked_at), '-infinity'::timestamptz) < now() - interval '24 hours'
+          order by max(refund_checked_at) nulls first
+          limit 50`,
       )
       for (const { operation_id } of ops.rows) {
         if (overBudget()) {
@@ -357,6 +368,10 @@ serve(async (req) => {
         try {
           const op = await getOperation(operation_id)
           if (!op) continue
+          await db.queryObject(
+            `update payments set refund_checked_at = now() where operation_id = $1`,
+            [operation_id],
+          )
           if (pendingRefundCount(op, 0) === 0) continue
           const done = await db.queryObject<{ n: string }>(
             `select count(*) as n from payments where operation_id = $1 and status = 'refunded'`,
@@ -414,7 +429,7 @@ serve(async (req) => {
                 'Если это ошибка — напиши нам: support@soulchoice.app')
             }
           }
-        } catch (e) {
+        } catch (e: any) {
           summary.errors.push(`iade ${operation_id.slice(0, 8)}: ${String(e?.message ?? e)}`)
           heartbeatStatus = 'warn'
         }
@@ -451,7 +466,13 @@ serve(async (req) => {
       jwtWarn ? `⚠️ Точка JWT süresine ${summary.jwt_days_left} gün kaldı — token yenile!` : `Точка JWT: ${summary.jwt_days_left ?? '?'} gün`,
     ].filter((l) => l !== '')
     const subject = `${red ? '⚠️ ' : ''}SoulChoice billing: ${summary.charged.length} çekim, ${summary.charge_failed.length} hata${cfg.dry_run ? ' [DRY-RUN]' : ''}`
-    if (cfg.digest_email) await sendCustomEmail(cfg.digest_email, subject, scrubUrls(lines.join('\n')))
+    const activity = summary.notified.length + summary.notify_failed.length + summary.charged.length +
+      summary.charge_failed.length + summary.pending_verify.length + summary.reconciled.length +
+      summary.downgraded.length + summary.refunded.length + summary.deferred.length +
+      summary.lifecycle_sent.length + summary.expired_bindings > 0
+    if (cfg.digest_email && (!quiet || red || activity)) {
+      await sendCustomEmail(cfg.digest_email, subject, scrubUrls(lines.join('\n')))
+    }
     await db.queryObject(
       `insert into billing_events (event, detail) values ('digest', $1::jsonb)`,
       [JSON.stringify(summary)],
@@ -469,7 +490,7 @@ serve(async (req) => {
     )
 
     return new Response(JSON.stringify(summary), { headers: { 'Content-Type': 'application/json' } })
-  } catch (e) {
+  } catch (e: any) {
     console.error('billing-cron fatal', e)
     try {
       await db.queryObject(

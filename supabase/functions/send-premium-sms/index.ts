@@ -146,7 +146,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ candidates: users.length, results }), {
       headers: { 'Content-Type': 'application/json' },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error('send-premium-sms error', e)
     return new Response(JSON.stringify({ error: e.message }), { status: 500 })
   }

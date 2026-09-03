@@ -138,7 +138,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error('send-call-otp ERROR ' + maskPhones((e as Error).message))
     return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })
   }

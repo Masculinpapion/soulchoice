@@ -21,7 +21,7 @@ serve(async (req) => {
       }
       : { last_run_age_seconds: null, last_status: 'never_ran' }
     return new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } })
-  } catch (e) {
+  } catch (e: any) {
     return new Response(JSON.stringify({ error: 'unavailable' }), { status: 500 })
   } finally {
     try {

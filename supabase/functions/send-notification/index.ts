@@ -349,7 +349,7 @@ serve(async (req) => {
       let ruRes: Response
       try {
         ruRes = await ruSend(RUSTORE_PUSH_HOST)
-      } catch (e) {
+      } catch (e: any) {
         console.error(`send-notification RUSTORE ${RUSTORE_PUSH_HOST} unreachable (${(e as Error).message}) — legacy domain deneniyor`)
         ruRes = await ruSend(RUSTORE_PUSH_HOST_LEGACY)
       }
@@ -441,7 +441,7 @@ serve(async (req) => {
     } finally {
       try { await db.end() } catch (_) { /* zaten kapalı */ }
     }
-  } catch (e) {
+  } catch (e: any) {
     // 03.09: iç hata mesajı istemciye sızmaz (teşhis raporu), log'a düşer.
     console.error('send-notification ERROR ' + String((e as Error).message).slice(0, 300))
     return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })

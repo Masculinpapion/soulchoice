@@ -152,7 +152,7 @@ serve(async (req) => {
       JSON.stringify({ paymentLink: op.paymentLink, operationId: op.operationId }),
       { headers: { ...CORS, 'Content-Type': 'application/json' } },
     )
-  } catch (e) {
+  } catch (e: any) {
     console.error('create-tochka-payment error', e)
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: CORS })
   }

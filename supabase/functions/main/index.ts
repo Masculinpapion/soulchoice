@@ -1,3 +1,5 @@
+// deno-lint-ignore no-explicit-any
+declare const EdgeRuntime: any // Supabase edge runtime globali (tip bildirimi yok)
 import * as jose from 'https://deno.land/x/jose@v4.14.4/index.ts'
 
 console.log('main function started')
@@ -13,7 +15,7 @@ if (SUPABASE_URL) {
     SUPABASE_JWT_KEYS = jose.createRemoteJWKSet(
       new URL('/auth/v1/.well-known/jwks.json', SUPABASE_URL)
     )
-  } catch (e) {
+  } catch (e: any) {
     console.error('Failed to fetch JWKS from SUPABASE_URL:', e)
   }
 }
@@ -39,7 +41,7 @@ async function isValidLegacyJWT(jwt: string): Promise<boolean> {
   const secretKey = encoder.encode(JWT_SECRET)
   try {
     await jose.jwtVerify(jwt, secretKey);
-  } catch (e) {
+  } catch (e: any) {
     console.error('Symmetric Legacy JWT verification error', e);
     return false;
   }
@@ -53,7 +55,7 @@ async function isValidJWT(jwt: string): Promise<boolean> {
   }
   try {
     await jose.jwtVerify(jwt, SUPABASE_JWT_KEYS)
-  } catch (e) {
+  } catch (e: any) {
     console.error('Asymmetric JWT verification error', e);
     return false
   }
@@ -83,7 +85,7 @@ Deno.serve(async (req: Request) => {
           headers: { 'Content-Type': 'application/json' },
         })
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
       return new Response(JSON.stringify({ msg: e.toString() }), {
         status: 401,
@@ -122,7 +124,7 @@ Deno.serve(async (req: Request) => {
       envVars,
     })
     return await worker.fetch(req)
-  } catch (e) {
+  } catch (e: any) {
     const error = { msg: e.toString() }
     return new Response(JSON.stringify(error), {
       status: 500,

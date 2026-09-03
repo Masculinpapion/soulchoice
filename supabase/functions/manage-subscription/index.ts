@@ -45,7 +45,7 @@ async function sendPush(userId: string, title: string, body: string,
       body: JSON.stringify({ user_id: userId, title, body,
         ...(type ? { data: { type }, template } : {}) }),
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error('push failed', e?.message ?? e)
   }
 }
@@ -231,7 +231,7 @@ serve(async (req) => {
     } finally {
       await db.end()
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error('manage-subscription error', e)
     return json(500, { error: String(e?.message ?? e) })
   }

@@ -231,7 +231,7 @@ export async function sendCustomEmail(
       new Promise((_, rej) => setTimeout(() => rej(new Error('smtp_timeout')), 20000)),
     ])
     return { ok: true }
-  } catch (e) {
+  } catch (e: any) {
     console.error('custom email failed', e?.message ?? e)
     return { ok: false, error: String(e?.message ?? e) }
   }
@@ -254,7 +254,7 @@ export async function sendBillingEmail(
       new Promise((_, rej) => setTimeout(() => rej(new Error('smtp_timeout')), 20000)),
     ])
     return { ok: true }
-  } catch (e) {
+  } catch (e: any) {
     console.error('billing email failed', kind, e?.message ?? e)
     return { ok: false, error: String(e?.message ?? e) }
   }

@@ -69,7 +69,7 @@ serve(async (_req) => {
     return new Response(JSON.stringify({ reminded }), {
       headers: { 'Content-Type': 'application/json' },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error('selection-reminder error', e)
     return new Response(JSON.stringify({ error: String(e?.message ?? e) }), {
       status: 500,

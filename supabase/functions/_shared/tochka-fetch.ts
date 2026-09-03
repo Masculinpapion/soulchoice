@@ -50,7 +50,7 @@ EYVMxjh8zNbFuoc7fzvvrFILLe7ifvEIUqSVIC/AzplM/Jxw7buXFeGP1qVCBEHq
 let tochkaClient: Deno.HttpClient | null = null
 try {
   tochkaClient = Deno.createHttpClient({ caCerts: [RUSSIAN_TRUSTED_ROOT_CA] })
-} catch (e) {
+} catch (e: any) {
   console.error(
     'tochka-fetch: Deno.createHttpClient kullanılamadı, varsayılan fetch ile devam:',
     String((e as Error)?.message ?? e),

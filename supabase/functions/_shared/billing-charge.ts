@@ -217,7 +217,7 @@ export async function attemptCharge(
     )
     rawBody = (await res.text()).slice(0, 1000)
     cls = classifyChargeResponse(res.status, rawBody)
-  } catch (e) {
+  } catch (e: any) {
     cls = 'fail' // ağ hatası: çekim gitmedi varsayımı güvenli; sonraki ön-mutabakat yakalar
     rawBody = e instanceof Error ? e.message : String(e)
   }

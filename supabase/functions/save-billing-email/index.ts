@@ -94,7 +94,7 @@ serve(async (req) => {
     } finally {
       await db.end()
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error('save-billing-email error', e)
     return json(500, { error: String(e?.message ?? e) })
   }

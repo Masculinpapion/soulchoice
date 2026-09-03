@@ -125,7 +125,7 @@ serve(async (req) => {
 session), {
       headers: { ...CORS, 'Content-Type': 'application/json' },
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error('verify-call-otp ERROR ' + String((e as Error).message).slice(0, 300))
     return new Response(JSON.stringify({ error: 'internal' }), { status: 500, headers: CORS })
   }

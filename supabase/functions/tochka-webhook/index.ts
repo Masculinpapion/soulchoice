@@ -80,7 +80,7 @@ async function bellNotif(db: Client, userId: string, dateStr: string) {
                jsonb_build_object('until_date', $3::text))`,
       [userId, `Подписка оформлена! Premium активен до ${dateStr}.`, dateStr],
     )
-  } catch (e) { console.error('bell notif failed', e) }
+  } catch (e: any) { console.error('bell notif failed', e) }
 }
 
 async function sendPush(userId: string, title: string, body: string,
@@ -380,7 +380,7 @@ serve(async (req) => {
     } finally {
       await db.end()
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error('tochka-webhook error', e)
     return new Response('error', { status: 500 }) // Точка tekrar dener
   }

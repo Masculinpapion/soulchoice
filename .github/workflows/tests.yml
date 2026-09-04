@@ -149,7 +149,7 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_prod && chmod 600 ~/.ssh/id_prod
           ssh-keyscan -H 89.169.1.127 >> ~/.ssh/known_hosts 2>/dev/null
-      - name: kritik yol E2E (sunucu içinde koşar — 04.09: runner→Timeweb paket kaybı yanlış CRIT veriyordu)
+      - name: "kritik yol E2E (sunucu içinde koşar; 04.09 runner→Timeweb paket kaybı yanlış CRIT veriyordu)"
         run: |
           set -e
           ssh -i ~/.ssh/id_prod root@89.169.1.127 "mkdir -p /root/e2e"

@@ -25,7 +25,7 @@ CERR=$(Q "select count(*) from client_errors where created_at > now()-interval '
 CETOP=$(Q "select left(error,90)||' ('||count(*)||'x)' from client_errors where created_at > now()-interval '24 hours' and platform <> 'test' group by left(error,90) order by count(*) desc limit 1")
 SMSFAIL=$(docker logs supabase-edge-functions --since 24h 2>&1 | grep -c "send-call-otp SMS_FAILED")
 OTPOK=$(docker logs supabase-kong --since 24h 2>&1 | grep "send-call-otp" | grep -c '" 200 ')
-QLEN=$(wc -l < /root/monitoring/state/alert.queue 2>/dev/null || echo 0)
+QLEN=$(cat /root/monitoring/state/alert.queue 2>/dev/null | wc -l)
 RSVER=$(curl -s -m 10 "https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice" | grep -oE '1\.0\.0\([0-9]+\)' | head -1)
 EKHATA=""
 if [ "${CERR:-0}" != "0" ]; then EKHATA=" - en sik: ${CETOP:-?}"; fi

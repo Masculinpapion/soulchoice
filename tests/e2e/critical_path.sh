@@ -7,18 +7,31 @@
 # Gereksinim: ssh anahtarı (SSH_KEY env veya ~/.ssh/timeweb_prod) — selfie onayı ve temizlik servis
 # tarafında psql ile yapılır; geri kalan her şey istemcinin yaptığı gibi PostgREST/edge üzerinden.
 set -u
-BASE="https://soulchoice.app"
-ANON=$(grep -A2 "SUPABASE_ANON_KEY" "$(dirname "$0")/../../lib/core/constants/supabase_constants.dart" | grep -o "defaultValue: '[^']*'" | cut -d"'" -f2)
-[ -n "$ANON" ] || { echo "anon key bulunamadı"; exit 2; }
-SSH_KEY=${SSH_KEY:-$HOME/.ssh/timeweb_prod}
-SSH="ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=15 root@89.169.1.127"
+if [ "${E2E_LOCAL:-0}" = "1" ]; then
+  # 04.09 akşam (Mustafa): betik SUNUCUNUN İÇİNDE koşar. GitHub runner → Timeweb yolunda paketler nginx'e
+  # gelmeden sessizce düşüyordu (4 deneme × 28 sn, iz yok) → yanlış CRIT. Kong'a 127.0.0.1:8000'den gidilir
+  # (nginx/DDoS-Guard devre dışı, uygulama yolu Kong'dan itibaren aynı), psql doğrudan docker exec.
+  BASE="http://127.0.0.1:8000"
+  ANON=$(cat /root/monitoring/anon.key 2>/dev/null)
+  [ -n "$ANON" ] || { echo "anon key bulunamadı (/root/monitoring/anon.key)"; exit 2; }
+  SSH=""
+else
+  BASE="https://soulchoice.app"
+  ANON=$(grep -A2 "SUPABASE_ANON_KEY" "$(dirname "$0")/../../lib/core/constants/supabase_constants.dart" | grep -o "defaultValue: '[^']*'" | cut -d"'" -f2)
+  [ -n "$ANON" ] || { echo "anon key bulunamadı"; exit 2; }
+  SSH_KEY=${SSH_KEY:-$HOME/.ssh/timeweb_prod}
+  SSH="ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=15 root@89.169.1.127"
+fi
 PA="+70000000008"; PB="+70000000009"
 MOSCOW="3f08d6f3-c1c1-4315-996f-4b5232441b44"
 FAILS=0
 ok()   { echo "✅ $1"; }
 fail() { echo "❌ $1"; FAILS=$((FAILS+1)); }
 json() { python3 -c "import sys,json; d=json.load(sys.stdin); print($1)" 2>/dev/null; }
-psql() { $SSH "docker exec supabase-db psql -U postgres -Atc \"$1\""; }
+psql() {
+  if [ -z "$SSH" ]; then docker exec supabase-db psql -U postgres -Atc "$1"
+  else $SSH "docker exec supabase-db psql -U postgres -Atc \"$1\""; fi
+}
 
 # ---------- 0) Temizlik (önceki koşu artıkları) ----------
 cleanup() {
@@ -95,7 +108,13 @@ r=$(rest "$TB" POST "rpc/my_chat_summaries" "{}"); echo "$r" | grep -q "$MATCH" 
 N=$(psql "select count(*) from public.notifications where user_id='$UA' and type='new_application'"); [ "${N:-0}" -ge 1 ] && ok "A'ya new_application bildirimi ($N)" || fail "A new_application bildirimi yok"
 N=$(psql "select count(*) from public.notifications where user_id='$UB' and type='selected'"); [ "${N:-0}" -ge 1 ] && ok "B'ye selected bildirimi ($N)" || fail "B selected bildirimi yok"
 N=$(psql "select count(*) from public.messages where match_id='$MATCH'"); [ "${N:-0}" -eq 2 ] && ok "2 mesaj kayıtlı" || fail "mesaj sayısı $N"
-N=$(psql "select count(*) from public.push_log where user_id in ('$UA','$UB') and sent_at > now()-interval '10 minutes'"); [ "${N:-0}" -ge 1 ] && ok "push hattı tetiklendi (push_log $N, token yok → no_token beklenir)" || fail "push_log kaydı yok"
+# push_log asenkron yazılır (bildirim → edge). Sunucu içinde betik 2 sn'de bittiği için (04.09) tek sorgu yarışı
+# kaybediyordu; 20 sn'ye kadar 2 sn'de bir bakılır.
+N=0; for _ in 1 2 3 4 5 6 7 8 9 10; do
+  N=$(psql "select count(*) from public.push_log where user_id in ('$UA','$UB') and sent_at > now()-interval '10 minutes'")
+  [ "${N:-0}" -ge 1 ] && break; sleep 2
+done
+[ "${N:-0}" -ge 1 ] && ok "push hattı tetiklendi (push_log $N, token yok → no_token beklenir)" || fail "push_log kaydı yok (20 sn beklendi)"
 N=$(psql "select free_applications_used from public.users where id='$UB'"); [ "${N:-0}" -ge 1 ] && ok "ücretsiz hak sayacı arttı ($N)" || fail "free_applications_used artmadı ($N)"
 # Kabul edilen başvuran daveti feed'de görmemeli (feed_visibility_rules) — hide kuralı RLS değil istemci; burada yalnız status kontrol
 S=$(psql "select status from public.applications where id='$APP'"); [ "$S" = "accepted" ] && ok "başvuru accepted" || fail "başvuru durumu $S"

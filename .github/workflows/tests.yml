@@ -149,8 +149,12 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/id_prod && chmod 600 ~/.ssh/id_prod
           ssh-keyscan -H 89.169.1.127 >> ~/.ssh/known_hosts 2>/dev/null
-      - name: kritik yol E2E
-        run: SSH_KEY=~/.ssh/id_prod bash tests/e2e/critical_path.sh
+      - name: kritik yol E2E (sunucu içinde koşar — 04.09: runner→Timeweb paket kaybı yanlış CRIT veriyordu)
+        run: |
+          set -e
+          ssh -i ~/.ssh/id_prod root@89.169.1.127 "mkdir -p /root/e2e"
+          scp -i ~/.ssh/id_prod tests/e2e/critical_path.sh root@89.169.1.127:/root/e2e/critical_path.sh
+          ssh -i ~/.ssh/id_prod root@89.169.1.127 "E2E_LOCAL=1 bash /root/e2e/critical_path.sh"
       - name: kırmızıysa Telegram
         if: failure()
         run: ssh -i ~/.ssh/id_prod root@89.169.1.127 "/root/monitoring/alert.sh CRIT 'KRİTİK YOL E2E KIRMIZI (gece CI) — https://github.com/Masculinpapion/soulchoice/actions/runs/${{ github.run_id }}'"

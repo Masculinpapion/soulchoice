@@ -43,6 +43,10 @@ cleanup() {
     delete from public.notifications where user_id in (select id from public.users where phone in ('+70000000008','+70000000009','70000000008','70000000009'));
     delete from public.push_log where user_id in (select id from public.users where phone in ('+70000000008','+70000000009','70000000008','70000000009'));
     update public.users set free_applications_used = 0 where phone in ('+70000000008','+70000000009','70000000008','70000000009');
+    delete from public.city_requests where user_id in (select id from public.users where phone in ('+70000000008','+70000000009','70000000008','70000000009'));
+    delete from public.city_requests where city_text like 'E2E-%';
+    -- 04.09: users satırları da silinir → «kayıt» adımı gerçek yeni kullanıcı gibi INSERT olur (auth satırı kalır, OTP bypass yeniden bulur)
+    delete from public.users where phone in ('+70000000008','+70000000009','70000000008','70000000009');
   " >/dev/null 2>&1
 }
 cleanup
@@ -60,6 +64,7 @@ A=$(login "$PA") && ok "A giriş (OTP bypass) uid=${A#*|}" || fail "A giriş"
 B=$(login "$PB") && ok "B giriş uid=${B#*|}" || fail "B giriş"
 TA=${A%%|*}; UA=${A#*|}; TB=${B%%|*}; UB=${B#*|}
 [ $FAILS -eq 0 ] || { echo "SONUÇ: giriş başarısız, durduruldu"; exit 1; }
+
 rest() { # rest <token> <method> <path> [json] [prefer] — boş gövde/bağlantı kopması (GitHub runner ↔ Timeweb DDoS filtresi,
   # 04.09 ilk CI koşusu) için 3 deneme; yalnız ağ hatasında tekrarlar (HTTP cevabı geldiyse olduğu gibi döner).
   local i out code
@@ -71,6 +76,13 @@ rest() { # rest <token> <method> <path> [json] [prefer] — boş gövde/bağlant
   done
   printf '%s' "$out"
 }
+
+# ---------- 1b) Sihirbaz yan dalı: «Şehrim listede yok» — users satırı HENÜZ YOKKEN (sihirbaz 3. adım) ----------
+# 29.07→04.09 FK users(id) yüzünden 409 veriyordu, uygulama yutuyordu (Алёна vakası); FK auth.users'a alındı.
+N=$(psql "select count(*) from public.users where id='$UA'"); [ "${N:-0}" -eq 0 ] || fail "ön koşul: A'nın users satırı silinmemiş ($N)"
+r=$(rest "$TA" POST "city_requests" "{\"user_id\":\"$UA\",\"city_text\":\"E2E-Kazan\"}" "return=minimal")
+[ -z "$r" ] && ok "şehir talebi (users satırı yokken) kaydedildi" || fail "şehir talebi → ${r:0:160}"
+N=$(psql "select count(*) from public.city_requests where user_id='$UA' and city_text='E2E-Kazan'"); [ "${N:-0}" -eq 1 ] && ok "şehir talebi DB'de ($N)" || fail "şehir talebi DB'de yok"
 
 # ---------- 2) Kayıt (profile_setup ile birebir upsert) ----------
 NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)

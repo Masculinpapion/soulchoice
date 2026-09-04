@@ -4766,7 +4766,7 @@ ALTER TABLE ONLY public.city_keys
 --
 
 ALTER TABLE ONLY public.city_requests
-    ADD CONSTRAINT city_requests_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+    ADD CONSTRAINT city_requests_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
 --

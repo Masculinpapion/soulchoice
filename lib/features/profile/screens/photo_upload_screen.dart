@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -147,7 +148,8 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
           ..addAll(_photos.where((p) => p.isRemote));
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'photo_upload:upload'); // 04.09: sessiz hata Kovan'a
       if (mounted) setState(() => _isLoading = false);
     }
   }

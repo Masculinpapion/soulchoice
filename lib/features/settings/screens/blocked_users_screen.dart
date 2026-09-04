@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,7 +47,8 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
             'photos:user_photos(url, is_selfie, order_index))',
           )
           .eq('blocker_id', uid);
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'blocked_users:load'); // 04.09: sessiz hata Kovan'a
       if (mounted) setState(() => _loading = false);
       return;
     }

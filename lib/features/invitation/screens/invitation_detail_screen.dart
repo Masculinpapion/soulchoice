@@ -1640,7 +1640,8 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
         // (karanlık ekran + Mesajlar sekmesi kilidi, S24 kanıtlı) — go() şart.
         context.go('/messages');
       }
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'invitation_detail:apply'); // 04.09: sessiz hata Kovan'a
       if (mounted) context.go('/messages');
     }
   }

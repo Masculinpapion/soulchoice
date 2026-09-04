@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -131,7 +132,8 @@ class _NotificationSettingsScreenState
         'quiet_hours_start': '${_fmt(_quietStart)}:00',
         'quiet_hours_end': '${_fmt(_quietEnd)}:00',
       }, onConflict: 'user_id');
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'notification_settings:save'); // 04.09: sessiz hata Kovan'a
       if (mounted) {
         _messengerKey.currentState
           ?..removeCurrentSnackBar()

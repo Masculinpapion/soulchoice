@@ -335,7 +335,8 @@ class _MatchesTabState extends ConsumerState<_MatchesTab> {
                           params: {'p_match_id': m.matchId});
                       ref.invalidate(matchesProvider);
                       await ref.read(matchesProvider.future);
-                    } catch (_) {
+                    } catch (err, stk) {
+                      ErrorReporter.report(err, stack: stk, screen: 'messages:delete'); // 04.09: sessiz hata Kovan'a
                       // Silme sunucuya işlenemedi — satırı geri getir
                       ref.invalidate(matchesProvider);
                     } finally {

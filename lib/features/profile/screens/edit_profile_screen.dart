@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'package:flutter/material.dart';
 import '../../../core/utils/prompt_hints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -217,7 +218,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _isLoading = false;
       });
       _baseline = _stateSignature();
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'edit_profile:save'); // 04.09: sessiz hata Kovan'a
       if (mounted) setState(() => _isLoading = false);
     }
   }

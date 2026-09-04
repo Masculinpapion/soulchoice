@@ -80,7 +80,10 @@ Future<void> savePushToken() async {
       }).eq('id', uid);
       saved = true;
     }
-  } catch (_) {/* GMS yok/erişilemez — RuStore yolu aşağıda denenir */}
+  } catch (err, stk) {
+    // GMS yok/erişilemez — RuStore yolu aşağıda denenir; 04.09: sessiz hata Kovan'a
+    ErrorReporter.report(err, stack: stk, screen: 'push_token:fcm_save');
+  }
 
   // 2) RuStore Push — yalnız Android; RuStore kurulu+oturumlu cihazlarda
   // token verir. FCM başarılı olsa da toplanır (cihaz envanteri + test).
@@ -97,7 +100,10 @@ Future<void> savePushToken() async {
           saved = true;
         }
       }
-    } catch (_) {/* RuStore yok/SDK hatası — sessiz, FCM durumu değişmez */}
+    } catch (err, stk) {
+      // RuStore yok/SDK hatası — FCM durumu değişmez; 04.09: sessiz hata Kovan'a
+      ErrorReporter.report(err, stack: stk, screen: 'push_token:rustore_save');
+    }
   }
 
   if (!saved) return;

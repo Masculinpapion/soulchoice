@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -126,7 +127,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 : null,
           );
           break;
-        } catch (_) {
+        } catch (err, stk) {
+          ErrorReporter.report(err, stack: stk, screen: 'otp:set_session'); // 04.09: sessiz hata Kovan'a
           if (attempt == 2) {
             try {
               await Supabase.instance.client.auth
@@ -215,7 +217,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         });
       }
       _startResendTimer();
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'otp:resend'); // 04.09: sessiz hata Kovan'a
       // OTP sessiz-retry fix (26.07): yeniden gönderim düşerse kullanıcı
       // bunu GÖRMELİ; timer sıfırlanmaz ki beklemeden tekrar deneyebilsin.
       funnelEvent('otp_resend_failed', {'channel': channel});

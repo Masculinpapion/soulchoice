@@ -478,5 +478,18 @@ if [ -n "$TG_TOK" ]; then
   fi
 fi
 
+# --- 29. Gercek istemcinin yazma istegi reddedildi (04.09.2026, Mustafa: "gelen her kullanicinin adimini izle") ---
+# nginx access.log son 15 dk: uygulama UA'si (Dart/ veya Dalvik/) ile gelen POST/PATCH/DELETE'lerde 401/404 disi 4xx.
+# 04.09 Алёна: city_requests 409 (FK) 38 gun boyunca kimse gormedi; bu bekci ayni gun WARN verirdi.
+# Bilinen gurultu haric: send-call-otp 400 (bos telefon = Play test botu).
+C4=$(grep -h -F -f <(for i in $(seq 0 15); do date -u -d "-$i min" +"%d/%b/%Y:%H:%M"; done) /var/log/nginx/access.log 2>/dev/null \
+  | awk -F'"' '$2 ~ /^(POST|PATCH|DELETE) \/(rest|functions|storage|auth)\// && $6 ~ /^(Dart|Dalvik)\// {
+      split($3,a," "); code=a[1]; split($2,b," "); p=b[2]; sub(/\?.*/,"",p);
+      if (code ~ /^4/ && code!="401" && code!="404" && !(p ~ /send-call-otp$/ && code=="400")) print code, p }' \
+  | sort | uniq -c | sort -rn | head -5)
+if [ -n "$C4" ]; then report "client_4xx" WARN "uygulama yazma istegi reddedildi (son 15 dk): $(echo "$C4" | awk '{printf "%s %s x%s; ", $2, $3, $1}') — Kovan'da yoksa sessiz hata, yol/ekran kontrol"
+else [ -f "$STATE/client_4xx" ] && report "client_4xx" OK "uygulama yazma isteklerinde 4xx yok"
+fi
+
 # betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)
 true

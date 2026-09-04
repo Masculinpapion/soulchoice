@@ -366,7 +366,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           'emoji': emoji,
         }, onConflict: 'message_id,user_id');
       }
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'chat:reaction'); // 04.09: sessiz hata Kovan'a
       if (mounted) _loadReactions(); // sunucuyla eşitle
     }
   }
@@ -827,7 +828,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       if (!mounted) return;
       ref.invalidate(matchesProvider);
       if (mounted) context.go('/messages');
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'chat:clear'); // 04.09: sessiz hata Kovan'a
       if (mounted) {
         _showAuroraSnack(
           AppLocalizations.of(context)!.error_generic,
@@ -851,7 +853,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       // ediyor (29.07 cihaz bulgusu) — dönmeden önce invalidate.
       ref.invalidate(matchesProvider);
       if (mounted) context.go('/messages');
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'chat:match_update'); // 04.09: sessiz hata Kovan'a
       if (mounted) {
         _showAuroraSnack(
           AppLocalizations.of(context)!.error_generic,
@@ -894,7 +897,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       ref.invalidate(matchesProvider);
       ref.invalidate(invitationsProvider);
       ref.invalidate(discoverProvider);
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'chat:block'); // 04.09: sessiz hata Kovan'a
       // 24.07 denetim: engelleme başarısızsa "engellendi" gibi çıkıp gitme
       if (mounted) {
         _showAuroraSnack(

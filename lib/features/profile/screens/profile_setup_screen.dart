@@ -154,7 +154,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         _maxAge = row['max_age'] as int? ?? 60;
         _isLoadingProfile = false;
       });
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'profile_setup:load'); // 04.09: sessiz hata Kovan'a
       if (mounted) setState(() => _isLoadingProfile = false);
     }
   }
@@ -948,7 +949,8 @@ class _StepCityState extends State<_StepCity> {
             .from('city_requests')
             .insert({'user_id': uid, 'city_text': name});
       }
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'profile_setup:city_request'); // 04.09: sessiz hata Kovan'a
       // Talep kaydı süsleyici — hata kullanıcı akışını bozmaz.
     }
     if (mounted) {

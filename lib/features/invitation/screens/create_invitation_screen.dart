@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -517,7 +518,8 @@ class _CreateInvitationScreenState
             'invitation_id': inserted['id'],
             'url': giftUrl,
           });
-        } catch (_) {
+        } catch (err, stk) {
+          ErrorReporter.report(err, stack: stk, screen: 'create_invitation:gift_link'); // 04.09: sessiz hata Kovan'a
           // Kart bu noktada YAYINDA; sessiz kalınırsa kullanıcı tekrar
           // "Опубликовать" basıp ACTIVE_INVITATION_LIMIT sürprizi yaşar
           // (20.08 vakası). Durumu söyle ve feed'e çık — link düzenlemeden

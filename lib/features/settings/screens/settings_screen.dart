@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
@@ -701,7 +702,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           await clearPushTokenBeforeSignOut(); // 19.08
                           await Supabase.instance.client.auth.signOut();
                           if (context.mounted) context.go('/splash');
-                        } catch (_) {
+                        } catch (err, stk) {
+                          ErrorReporter.report(err, stack: stk, screen: 'settings:signout'); // 04.09: sessiz hata Kovan'a
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

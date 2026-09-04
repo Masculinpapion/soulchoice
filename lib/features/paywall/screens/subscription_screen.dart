@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -105,7 +106,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
             ? l10n.sub_retry_limit
             : l10n.sub_retry_failed);
       }
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'subscription:action'); // 04.09: sessiz hata Kovan'a
       if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -134,7 +136,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen>
           _snack(l10n.sub_resumed_note(until));
         }
       }
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'subscription:cancel'); // 04.09: sessiz hata Kovan'a
       if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
       if (mounted) setState(() => _busy = false);

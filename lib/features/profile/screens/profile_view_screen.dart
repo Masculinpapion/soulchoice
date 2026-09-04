@@ -1288,7 +1288,8 @@ class _ActionSheet extends StatelessWidget {
         icon: Icons.check_rounded,
       ));
       router.pop();
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'profile_view:block'); // 04.09: sessiz hata Kovan'a
       // 24.07 kuralı: başarısız engelleme başarı gibi kapanmasın
       messenger.showSnackBar(auroraSnackBar(l10n.error_generic));
     }
@@ -1532,7 +1533,8 @@ class _ApplicantActionsState extends ConsumerState<_ApplicantActions> {
         'status': 'rejected',
         'responded_at': DateTime.now().toUtc().toIso8601String(),
       }).eq('id', widget.applicationId);
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'profile_view:reject_application'); // 04.09: sessiz hata Kovan'a
       // 24.07 denetim: başarısız red, başarı gibi kapanmasın
       if (mounted) {
         setState(() => _loading = false);

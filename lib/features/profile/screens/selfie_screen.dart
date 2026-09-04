@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -202,7 +203,8 @@ class _SelfieScreenState extends State<SelfieScreen> {
 
       funnelEvent('selfie_submitted');
       if (mounted) context.go('/feed');
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'selfie:upload'); // 04.09: sessiz hata Kovan'a
       // Ham exception metni kullanıcıya sızdırılmaz (31.07)
       if (mounted) {
         _showAuroraSnack(

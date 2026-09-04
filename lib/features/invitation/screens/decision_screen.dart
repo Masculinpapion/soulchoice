@@ -1,3 +1,4 @@
+import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -210,7 +211,8 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
             'responded_at': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('id', _applicationId!);
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'decision:select'); // 04.09: sessiz hata Kovan'a
       // 31.07 denetimi: hata yutulup pop ediliyordu — red hiç yazılmadan
       // kullanıcı reddettiğini sanıyordu. Hata görünür, ekranda kalınır.
       if (mounted) {

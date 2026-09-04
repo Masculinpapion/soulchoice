@@ -189,7 +189,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
       if (link == null) throw Exception(data?['error'] ?? 'no_link');
       await _launchLink(link);
       funnelEvent('checkout_opened', {'kind': 'once'});
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'paywall:checkout'); // 04.09: sessiz hata Kovan'a
       funnelEvent('checkout_failed', {'kind': 'once'});
       if (mounted) _snack(AppLocalizations.of(context)!.error_generic);
     } finally {
@@ -391,7 +392,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen>
         _snack(l10n.error_generic);
       }
       return false;
-    } catch (_) {
+    } catch (err, stk) {
+      ErrorReporter.report(err, stack: stk, screen: 'paywall:action'); // 04.09: sessiz hata Kovan'a
       if (mounted) _snack(l10n.error_generic);
       return false;
     }

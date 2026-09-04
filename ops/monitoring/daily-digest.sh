@@ -36,6 +36,22 @@ if [ "${CERR:-0}" != "0" ]; then EKHATA=" - en sik: ${CETOP:-?}"; fi
 - Alarm kuyrugu: ${QLEN:-0} bekleyen
 - Apple maili + ASC + Play konsolu -> oturumda Fable bakar"
 
+# --- Yeni kullanici adim haritasi (04.09.2026, Mustafa: kisi bazinda nerede durdu) ---
+NEWU=$(docker exec supabase-db psql -U postgres -t -A -c "select string_agg(line, E'\n' order by created_at desc) from (
+  select u.created_at, coalesce(u.name,'?')||' ('||to_char(u.created_at at time zone 'Europe/Moscow','DD.MM HH24:MI')||') '
+    ||case when exists(select 1 from user_photos p where p.user_id=u.id and not p.is_selfie) then 'foto✓' else 'foto✗' end||' '
+    ||case u.selfie_status when 'approved' then 'selfie✓' when 'pending' then 'selfie⏳' when 'rejected' then 'selfie✗('||coalesce(u.selfie_rejected_reason,'')||')' else 'selfie-' end||' '
+    ||case when exists(select 1 from invitations i where i.owner_id=u.id) then 'ilan✓' when exists(select 1 from applications a where a.applicant_id=u.id) then 'basvuru✓' else 'ilan/basvuru✗' end
+    ||case when exists(select 1 from city_requests c where c.user_id=u.id) then ' sehir-talebi✓' else '' end
+    ||case when u.last_seen_at > u.created_at + interval '30 minutes' then ' geri-geldi✓' else '' end as line
+  from users u where not u.is_test_user and not u.is_deleted and u.created_at > now()-interval '24 hours') s" 2>/dev/null)
+ORPH=$(Q "select count(*) from auth.users a where a.created_at > now()-interval '24 hours' and not exists (select 1 from users u where u.id=a.id)")
+if [ -n "$NEWU" ] || [ "${ORPH:-0}" != "0" ]; then
+  /root/monitoring/alert.sh INFO "🧭 Son 24 saat yeni kullanicilar — adim haritasi
+${NEWU:--}
+OTP gecip profili bitirmeyen: ${ORPH:-0}"
+fi
+
 # --- Kayit Hunisi (28.08.2026, Mustafa karari: adim adim dusus takibi) ---
 F_REG=$(Q "select count(*) from users where not is_test_user and not is_deleted and created_at > now()-interval '7 days'")
 F_PHOTO=$(Q "select count(*) from users u where not is_test_user and not is_deleted and created_at > now()-interval '7 days' and exists(select 1 from user_photos p where p.user_id=u.id and not p.is_selfie)")

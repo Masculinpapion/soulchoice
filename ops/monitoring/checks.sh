@@ -467,5 +467,16 @@ elif [ -n "$SR_WAIT" ] && [ "$SR_WAIT" -gt 0 ]; then report "selfie_review" WARN
 else [ -f "$STATE/selfie_review" ] && report "selfie_review" OK "selfie kuyrugu temiz"
 fi
 
+# --- 28. Alarm botunda webhook = ops-agent Onayla dugmesi olur (04.09.2026, Mustafa) ---
+# 03.09 gece nobet koprusu icin ayni bota webhook kuruldu -> agent'in getUpdates'i 409 aldi, Telegram selfie onay
+# dugmesi 20 saat sessizce oldu. Kural: bu bot TEK tuketici (ops-agent getUpdates). Webhook gorulurse WARN.
+TG_TOK=$(grep -h "^TELEGRAM_BOT_TOKEN=" /root/monitoring/.env 2>/dev/null | head -1 | cut -d= -f2-)
+if [ -n "$TG_TOK" ]; then
+  TG_WH=$(curl -s -m 10 "https://api.telegram.org/bot${TG_TOK}/getWebhookInfo" 2>/dev/null | python3 -c "import sys,json;print(json.load(sys.stdin).get('result',{}).get('url',''))" 2>/dev/null)
+  if [ -n "$TG_WH" ]; then report "tg_webhook" WARN "alarm botunda webhook var ($TG_WH) — ops-agent Onayla dugmesi calismaz; deleteWebhook gerekir"
+  else [ -f "$STATE/tg_webhook" ] && report "tg_webhook" OK "alarm botunda webhook yok, dugme yolu acik"
+  fi
+fi
+
 # betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)
 true

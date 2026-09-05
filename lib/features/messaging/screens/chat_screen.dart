@@ -895,7 +895,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       // Engellenen kişi tüm yüzeylerden anında düşsün (31.07 denetimi):
       // sohbet listesi + feed + keşfet; başvuranlar ekranı zaten yeniden yüklenir.
       ref.invalidate(matchesProvider);
-      ref.invalidate(invitationsProvider);
+      ref.refreshFeed();
       ref.invalidate(discoverProvider);
     } catch (err, stk) {
       ErrorReporter.report(err, stack: stk, screen: 'chat:block'); // 04.09: sessiz hata Kovan'a

@@ -527,7 +527,7 @@ class _InvitationDetailScreenState
                                   ref.invalidate(
                                       myApplicationProvider(invitationId));
                                   // Feed kartındaki CTA "beklemede"ye dönsün
-                                  ref.invalidate(invitationsProvider);
+                                  ref.refreshFeed();
                                   // Profildeki "Başvurularım" bayat kalmasın
                                   // (29.07: 5 başvurudan 1'i görünüyordu)
                                   ref.invalidate(myApplicationsListProvider);
@@ -683,8 +683,7 @@ class _InvitationDetailScreenState
                                       .eq('id', invitationId);
                                   ref.invalidate(
                                       invitationDetailProvider);
-                                  ref.invalidate(
-                                      invitationsProvider);
+                                  ref.refreshFeed();
                                   ref.invalidate(
                                       myActiveInvitationsProvider);
                                   if (context.mounted) {

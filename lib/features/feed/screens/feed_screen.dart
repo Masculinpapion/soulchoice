@@ -38,7 +38,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   void _invalidateAll() {
     if (!mounted) return;
-    ref.invalidate(invitationsProvider);
+    // 05.09: yalnız baş dilim(ler) yeniden iner; sonraki dilimler imleç
+    // değişmedikçe yerinde kalır (delta sayfalama, invitations_provider).
+    ref.refreshFeed();
     // Çan rozeti bayat kalmasın — uygulama açıkken gelen bildirim sayıya
     // yansımıyordu (31.07 denetimi). 11.08: türetilmiş sayaç değil KAYNAK
     // invalidate edilmeli — öncekisi no-op'tu, rozet yine bayat kalıyordu.
@@ -1157,7 +1159,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
       color: AuroraTheme.auroraRed,
       backgroundColor: AuroraTheme.glassBg,
       onRefresh: () async {
-        ref.invalidate(invitationsProvider(filter));
+        ref.refreshFeed();
         await ref.read(invitationsProvider(filter).future);
       },
       child: LayoutBuilder(

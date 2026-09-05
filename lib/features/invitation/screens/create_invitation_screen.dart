@@ -525,7 +525,7 @@ class _CreateInvitationScreenState
           // (20.08 vakası). Durumu söyle ve feed'e çık — link düzenlemeden
           // eklenebilir.
           if (mounted) {
-            ref.invalidate(invitationsProvider);
+            ref.refreshFeed();
             ref.invalidate(myActiveInvitationsProvider);
             showAuroraErrorSnack(context,
                 AppLocalizations.of(context)!.create_inv_gift_link_not_saved);
@@ -536,7 +536,7 @@ class _CreateInvitationScreenState
       }
 
       if (mounted) {
-        ref.invalidate(invitationsProvider);
+        ref.refreshFeed();
         ref.invalidate(myActiveInvitationsProvider);
         context.go('/feed');
       }

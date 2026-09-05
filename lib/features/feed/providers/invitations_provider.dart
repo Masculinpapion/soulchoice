@@ -4,6 +4,7 @@ import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../logic/feed_keyset.dart';
 import '../logic/feed_visibility_rules.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
@@ -16,18 +17,192 @@ String? _cityName(Map<String, dynamic>? city, String? lang) {
 }
 
 /// 22.08 — SONSUZ KAYDIRMA: tek istekte inen dilim boyutu. Kullanıcı yüklü
-/// listenin sonuna yaklaşınca [feedPageCountProvider] artırılır; sorgu
-/// 0..(sayfa×boyut) aralığını yeniden çeker (tam yeniden çekim = sayfalar
-/// arası tutarlı sıra; rebirth/sıra kayması duplikat üretemez).
+/// listenin sonuna yaklaşınca [feedPageCountProvider] artırılır.
+/// 05.09 — DELTA: eskiden her artışta 0..(sayfa×boyut) baştan çekiliyordu;
+/// artık yalnız yeni dilim iner (imleç: önceki dilimin son satırı, bkz.
+/// feed_keyset.dart). Dilim sayısı ne olursa olsun istek başına ≤120 satır.
 const feedPageSize = 120;
 
 /// Filter başına yüklü sayfa sayısı. autoDispose: sekme/filtre değişince sıfırlanır.
 final feedPageCountProvider =
     StateProvider.autoDispose.family<int, _InvitationFilter>((ref, _) => 1);
 
-/// Sunucuda daha kart var mı? (son istekte istenen aralık tamamen dolduysa true)
+/// Sunucuda daha kart var mı? (son inen dilim tamamen dolduysa true)
 final feedHasMoreProvider =
     StateProvider.autoDispose.family<bool, _InvitationFilter>((ref, _) => true);
+
+/// Feed'i baştan tazele — `ref.invalidate(invitationsProvider)`'ın yerini
+/// alır (05.09). Yalnız BAŞ dilimler yeniden çekilir; sonraki dilimler ancak
+/// bir öncekinin imleci (son satırı) değişirse peşinden gelir. 30 sn'lik
+/// zamanlayıcı, ilan oluşturma/düzenleme, profil/ayar değişikliği, pull-to-
+/// refresh — hepsi buradan geçer; provider zincirini dışarıdan bilmek gerekmez.
+extension FeedRefresh on WidgetRef {
+  void refreshFeed() {
+    invalidate(_feedViewerProvider);
+    invalidate(_feedHeadProvider);
+    invalidate(invitationsProvider);
+  }
+}
+
+/// İzleyici bağlamı: engel listesi + cinsiyet/yaş tercihi. Dilim başına
+/// değil, feed başına bir kez çekilir; refreshFeed ile tazelenir.
+class _FeedViewer {
+  final String? userId;
+  final List<String> blockedIds;
+  final String? gender;
+  final int minAge;
+  final int maxAge;
+  const _FeedViewer({
+    required this.userId,
+    required this.blockedIds,
+    required this.gender,
+    required this.minAge,
+    required this.maxAge,
+  });
+
+  String? get targetGender =>
+      gender == 'male' ? 'female' : gender == 'female' ? 'male' : null;
+
+  /// Sonraki dilimlerin selectAsync anahtarı: bağlam gerçekten değişmedikçe
+  /// (yeni engel, yaş aralığı) dilimler yeniden çekilmez.
+  String get key =>
+      '$userId|$gender|$minAge|$maxAge|${(List.of(blockedIds)..sort()).join(',')}';
+}
+
+final _feedViewerProvider = FutureProvider.autoDispose<_FeedViewer>((ref) async {
+  final client = Supabase.instance.client;
+  final currentUserId = ref.read(currentUserIdProvider);
+  List<String> blockedIds = [];
+  String? myGender;
+  int minAge = 21;
+  int maxAge = 60;
+  if (currentUserId != null) {
+    final results = await Future.wait<dynamic>([
+      // Çift yönlü gizleme: engellediğim + beni engelleyen (SECURITY DEFINER RPC)
+      client.rpc('hidden_from_feed'),
+      client.from('users').select('gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
+    ]);
+    blockedIds =
+        (results[0] as List).map((b) => b['user_id'] as String).toList();
+    final userRow = results[1] as Map<String, dynamic>?;
+    myGender = userRow?['gender'] as String?;
+    minAge = userRow?['min_age'] as int? ?? 21;
+    maxAge = userRow?['max_age'] as int? ?? 60;
+  }
+  return _FeedViewer(
+    userId: currentUserId,
+    blockedIds: blockedIds,
+    gender: myGender,
+    minAge: minAge,
+    maxAge: maxAge,
+  );
+});
+
+/// Sunucudan inen bir dilim: ham satırlar + sıradaki dilimin imleci
+/// (null = devamı yok: dilim dolmadı ya da son satırdan imleç türemedi).
+class _FeedPage {
+  final List<Map<String, dynamic>> rows;
+  final FeedCursor? next;
+  const _FeedPage(this.rows, this.next);
+  static const empty = _FeedPage([], null);
+}
+
+Future<_FeedPage> _fetchFeedPage(
+  _InvitationFilter filter,
+  _FeedViewer viewer, {
+  FeedCursor? after,
+}) async {
+  final client = Supabase.instance.client;
+  var query = client
+      .from('invitations')
+      .select(
+        '*, '
+        'city:cities(name, name_ru, name_tr, name_en), '
+        // 20.08: !inner → sahip filtresi SUNUCUDA uygulanır (karşı cins + yaş aralığı);
+        // önceden 30 kart iniyor, yarısı istemcide eleniyordu (kullanıcı ~15 görürdü,
+        // 30'dan sonraki karşı-cins kartlar hiç gelmezdi).
+        'owner:users!inner(id, name, age, gender, city_id, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
+        // 03.09 (kalite teşhisi B1): başvuru embed'i HAFİF — eskiden her ilanla
+        // birlikte TÜM başvuranların TÜM fotoğrafları iniyordu (ilk popüler ilanda
+        // 200 başvuru × N foto). Fotoğraflar aşağıda tek toplu sorguyla, yalnız
+        // gösterilecek ≤4 pending başvuran için çekilir; sayaç/gizleme kuralı
+        // tüm başvuru satırlarını görmeye devam eder.
+        'applications(status, applicant_id)',
+      )
+      .eq('status', 'active')
+      .eq('flow_type', filter.flowType.name)
+      .gt('expires_at', DateTime.now().toUtc().toIso8601String());
+
+  if (filter.cityId != null) {
+    query = query.eq('city_id', filter.cityId!);
+  }
+  if (filter.category != null) {
+    query = query.eq('category', filter.category!.name);
+  }
+  // Exclude blocked users' invitations
+  if (viewer.blockedIds.isNotEmpty) {
+    query = query.not('owner_id', 'in', '(${viewer.blockedIds.join(',')})');
+  }
+  // 20.08: sunucu tarafı sahip filtresi — kendi kartım her zaman, diğerleri
+  // karşı cins + yaş aralığı (istemci filtresi güvenlik ağı olarak kalır).
+  final targetGender = viewer.targetGender;
+  if (targetGender != null) {
+    final own = viewer.userId != null ? 'id.eq.${viewer.userId},' : '';
+    query = query.or(
+      '${own}and(gender.eq.$targetGender,age.gte.${viewer.minAge},age.lte.${viewer.maxAge})',
+      referencedTable: 'owner',
+    );
+  }
+  // 05.09 DELTA: imleçten sonrası (sıralamayla birebir, feed_keyset.dart).
+  if (after != null) {
+    query = query.or(feedKeysetAfter(after));
+  }
+
+  // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının
+  // ÜSTÜNDE — feed_rank 0=gerçek, 1=vitrin (DB trigger doldurur); grup içinde yeni→eski.
+  // id = üçüncü sıralama anahtarı: dilimler arası kararlı sıra (created_at
+  // çakışsa bile kayma/duplikat olmaz). Sıralama değişirse feed_keyset.dart da değişir.
+  final data = await query
+      .order('feed_rank', ascending: true)
+      .order('created_at', ascending: false)
+      .order('id', ascending: true)
+      .limit(feedPageSize);
+
+  final rows = (data as List).cast<Map<String, dynamic>>();
+  // Dilim tamamen dolduysa sunucuda devamı olabilir → son satır imleç olur.
+  final next = rows.length >= feedPageSize ? feedCursorFromRow(rows.last) : null;
+  return _FeedPage(rows, next);
+}
+
+/// Baş dilim (0..119). refreshFeed bunu tazeler; sonraki dilimler yalnız
+/// imleç değişirse peşinden yeniden iner.
+final _feedHeadProvider =
+    FutureProvider.autoDispose.family<_FeedPage, _InvitationFilter>((ref, filter) async {
+  final viewer = await ref.watch(_feedViewerProvider.future);
+  return _fetchFeedPage(filter, viewer);
+});
+
+/// i ≥ 1 dilimi: (i-1). dilimin imlecinden sonrası. Önceki dilimin imleci
+/// null ise (devamı yok) istek atmadan boş döner.
+// Açık tip: sağlayıcı kendini (index-1) çağırır, çıkarım döngüye girer.
+final AutoDisposeFutureProviderFamily<_FeedPage, (_InvitationFilter, int)>
+    _feedNextPageProvider = FutureProvider.autoDispose
+        .family<_FeedPage, (_InvitationFilter, int)>((ref, key) async {
+  final (filter, index) = key;
+  final prev = index <= 1
+      ? _feedHeadProvider(filter)
+      : _feedNextPageProvider((filter, index - 1));
+  // İki bağımlılık da await'ten ÖNCE izlenir (Riverpod: async boşluk sonrası
+  // watch'tan kaçın). Bağlam anahtarı değişmedikçe bu dilim yeniden inmez.
+  final afterFuture = ref.watch(prev.selectAsync((p) => p.next));
+  final viewerKeyFuture =
+      ref.watch(_feedViewerProvider.selectAsync((v) => v.key));
+  final after = await afterFuture;
+  await viewerKeyFuture;
+  if (after == null) return _FeedPage.empty;
+  final viewer = await ref.read(_feedViewerProvider.future);
+  return _fetchFeedPage(filter, viewer, after: after);
+});
 
 final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationModel>, _InvitationFilter>(
   (ref, filter) async {
@@ -36,84 +211,34 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
     final currentUserId = ref.read(currentUserIdProvider);
     final lang = ref.watch(localeProvider)?.languageCode;
 
-    // Fetch blocked IDs + current user preferences
-    List<String> blockedIds = [];
-    String? myGender;
-    int minAge = 21;
-    int maxAge = 60;
-    if (currentUserId != null) {
-      final results = await Future.wait<dynamic>([
-        // Çift yönlü gizleme: engellediğim + beni engelleyen (SECURITY DEFINER RPC)
-        client.rpc('hidden_from_feed'),
-        client.from('users').select('gender, min_age, max_age').eq('id', currentUserId).maybeSingle(),
-      ]);
-      blockedIds =
-          (results[0] as List).map((b) => b['user_id'] as String).toList();
-      final userRow = results[1] as Map<String, dynamic>?;
-      myGender = userRow?['gender'] as String?;
-      minAge = userRow?['min_age'] as int? ?? 21;
-      maxAge = userRow?['max_age'] as int? ?? 60;
-    }
+    // Dilimler zincir hâlinde (i, i-1'in imlecini bekler); hepsi izlenir ki
+    // herhangi biri değişince liste yeniden kurulsun.
+    final pageFutures = <Future<_FeedPage>>[
+      ref.watch(_feedHeadProvider(filter).future),
+      for (var i = 1; i < pageCount; i++)
+        ref.watch(_feedNextPageProvider((filter, i)).future),
+    ];
+    final viewer = await ref.watch(_feedViewerProvider.future);
+    final pages = await Future.wait(pageFutures);
 
-    final targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
+    final targetGender = viewer.targetGender;
+    final minAge = viewer.minAge;
+    final maxAge = viewer.maxAge;
 
-    var query = client
-        .from('invitations')
-        .select(
-          '*, '
-          'city:cities(name, name_ru, name_tr, name_en), '
-          // 20.08: !inner → sahip filtresi SUNUCUDA uygulanır (karşı cins + yaş aralığı);
-          // önceden 30 kart iniyor, yarısı istemcide eleniyordu (kullanıcı ~15 görürdü,
-          // 30'dan sonraki karşı-cins kartlar hiç gelmezdi).
-          'owner:users!inner(id, name, age, gender, city_id, subscription_status, is_deleted, photos:user_photos(url, is_primary, is_selfie, order_index)), '
-          // 03.09 (kalite teşhisi B1): başvuru embed'i HAFİF — eskiden her ilanla
-          // birlikte TÜM başvuranların TÜM fotoğrafları iniyordu (ilk popüler ilanda
-          // 200 başvuru × N foto). Fotoğraflar aşağıda tek toplu sorguyla, yalnız
-          // gösterilecek ≤4 pending başvuran için çekilir; sayaç/gizleme kuralı
-          // tüm başvuru satırlarını görmeye devam eder.
-          'applications(status, applicant_id)',
-        )
-        .eq('status', 'active')
-        .eq('flow_type', filter.flowType.name)
-        .gt('expires_at', DateTime.now().toUtc().toIso8601String());
-
-    if (filter.cityId != null) {
-      query = query.eq('city_id', filter.cityId!);
+    // Dilimleri birleştir; id ile kopya koruması (dilimler arasında rebirth /
+    // yeni kart girse bile aynı ilan iki kez çizilmez).
+    final seenIds = <String>{};
+    final rows = <Map<String, dynamic>>[];
+    for (final page in pages) {
+      for (final row in page.rows) {
+        final id = row['id'] as String?;
+        if (id != null && !seenIds.add(id)) continue;
+        rows.add(row);
+      }
     }
-    if (filter.category != null) {
-      query = query.eq('category', filter.category!.name);
-    }
-    // Exclude blocked users' invitations
-    if (blockedIds.isNotEmpty) {
-      query = query.not('owner_id', 'in', '(${blockedIds.join(',')})');
-    }
-    // 20.08: sunucu tarafı sahip filtresi — kendi kartım her zaman, diğerleri
-    // karşı cins + yaş aralığı (istemci filtresi güvenlik ağı olarak kalır).
-    if (targetGender != null) {
-      final own = currentUserId != null ? 'id.eq.$currentUserId,' : '';
-      query = query.or(
-        '${own}and(gender.eq.$targetGender,age.gte.$minAge,age.lte.$maxAge)',
-        referencedTable: 'owner',
-      );
-    }
-
-    // 19.08 (Mustafa): gerçek kullanıcı kartları her zaman vitrin (test) kartlarının
-    // ÜSTÜNDE — feed_rank 0=gerçek, 1=vitrin (DB trigger doldurur); grup içinde yeni→eski.
-    // 22.08: limit yerine SAYFALI aralık — kullanıcı kaydırdıkça pencere
-    // büyür, kart sayısı ne olursa olsun (influencer senaryosu) hepsi
-    // ulaşılabilir. id = üçüncü sıralama anahtarı: sayfalar arası kararlı
-    // sıra (created_at çakışsa bile kayma/duplikat olmaz).
-    final requested = pageCount * feedPageSize;
-    final data = await query
-        .order('feed_rank', ascending: true)
-        .order('created_at', ascending: false)
-        .order('id', ascending: true)
-        .range(0, requested - 1);
-
-    final rows = data as List;
-    // Aralık tamamen dolduysa sunucuda devamı olabilir.
+    // Son inen dilimin imleci varsa sunucuda devamı olabilir.
     ref.read(feedHasMoreProvider(filter).notifier).state =
-        rows.length >= requested;
+        pages.isNotEmpty && pages.last.next != null;
 
     // 03.09: avatar yığını için başvuran fotoğrafları — ilan başına ilk 4 pending
     // başvuranın ilk (selfie olmayan) fotoğrafı, tüm feed için TEK sorgu.

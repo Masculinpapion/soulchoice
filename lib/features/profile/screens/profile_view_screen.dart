@@ -441,7 +441,7 @@ class _ProfileViewScreenState extends ConsumerState<ProfileViewScreen> {
         // Engellenen kişinin kartları feed/keşfet/sohbet listesinde bayat
         // kalmasın (29.07 + 31.07 denetimi: matchesProvider eksikti)
         onBlocked: () {
-          ref.invalidate(invitationsProvider);
+          ref.refreshFeed();
           ref.invalidate(discoverProvider);
           ref.invalidate(matchesProvider);
         },

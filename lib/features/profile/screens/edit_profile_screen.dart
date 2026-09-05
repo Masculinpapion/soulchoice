@@ -337,7 +337,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ref.invalidate(userPromptsProvider(uid));
         // Yaş aralığı feed/keşfet filtresini besler — bayat kalmasın
         // (31.07 denetimi; settings_screen aynı işlemde zaten yapıyor)
-        ref.invalidate(invitationsProvider);
+        ref.refreshFeed();
         ref.invalidate(discoverProvider);
         context.pop();
       }

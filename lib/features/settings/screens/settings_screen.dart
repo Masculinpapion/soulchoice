@@ -423,7 +423,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               _minAge = localMin;
                               _maxAge = localMax;
                             });
-                            ref.invalidate(invitationsProvider);
+                            ref.refreshFeed();
                             ref.invalidate(discoverProvider);
                           }
                         },

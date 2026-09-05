@@ -243,7 +243,7 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
 
       if (mounted) {
         ref.invalidate(invitationDetailProvider(editId));
-        ref.invalidate(invitationsProvider);
+        ref.refreshFeed();
         ref.invalidate(myActiveInvitationsProvider);
         context.pop();
       }

@@ -491,5 +491,18 @@ if [ -n "$C4" ]; then report "client_4xx" WARN "uygulama yazma istegi reddedildi
 else [ -f "$STATE/client_4xx" ] && report "client_4xx" OK "uygulama yazma isteklerinde 4xx yok"
 fi
 
+# --- 30. Saatlik cron damgalari (05.09.2026, acik is #3) ---
+# selection-reminder (:40) ve profile-nudge (:50) host crontab'inda kosar ve cron_heartbeat'e damga yazar
+# (05.09). Damga yok/130 dk'dan eski = cron olmus veya flock kilidi takili (WARN); last_status=error = cagri
+# basarisiz (WARN). billing-cron damgasi ayri ("billing" argumanli gunluk denetim + nobet raporu).
+for HBJ in selection-reminder profile-nudge; do
+  HB_ROW=$(docker exec supabase-db psql -U postgres -Atc "select coalesce(last_status,'?')||'|'||extract(epoch from now()-last_run_at)::int from cron_heartbeat where job='$HBJ'" 2>/dev/null | head -1)
+  HB_ST=${HB_ROW%%|*}; HB_AGE=${HB_ROW#*|}
+  if [ -z "$HB_ROW" ] || [ "${HB_AGE:-999999}" -gt 7800 ] 2>/dev/null; then report "hb_$HBJ" WARN "$HBJ cron damgasi yok/eski ($(( ${HB_AGE:-0} / 60 )) dk) — host crontab / /tmp/$HBJ.lock kontrol"
+  elif [ "$HB_ST" = "error" ]; then report "hb_$HBJ" WARN "$HBJ son kosusu HATA verdi — /var/log/$HBJ.log"
+  else [ -f "$STATE/hb_$HBJ" ] && report "hb_$HBJ" OK "$HBJ damgasi guncel ($HB_ST, $(( HB_AGE / 60 )) dk)"
+  fi
+done
+
 # betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)
 true

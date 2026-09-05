@@ -8,12 +8,16 @@
 # Gönderim yalnız 10:00–21:59 MSK (gece push yok). DRY=1 → yalnız aday listesi.
 # Push metni alıcının locale'ine göre burada seçilir (send-notification'da
 # şablon yok; istemci title/body'yi aynen gösterir). Repo kopyası: ops/profile-nudge.sh
+# 05.09: cron_heartbeat damgasi yazar (pencere disi = skip_window; checks.sh §30 130 dk'dan eski damgada WARN).
 set -u
 exec 9>/tmp/profile-nudge.lock
 flock -n 9 || exit 0
 DRY="${DRY:-0}"
 H=$(TZ=Europe/Moscow date +%H); H=$((10#$H))
-if [ "$DRY" != "1" ] && { [ "$H" -lt 10 ] || [ "$H" -gt 21 ]; }; then exit 0; fi
+hb() { # hb <status> <detail-json>
+  docker exec supabase-db psql -U postgres -d postgres -Atq -c "insert into cron_heartbeat (job,last_run_at,last_status,detail) values ('profile-nudge',now(),'$1','$2'::jsonb) on conflict (job) do update set last_run_at=now(), last_status=excluded.last_status, detail=excluded.detail" >/dev/null 2>&1 || true
+}
+if [ "$DRY" != "1" ] && { [ "$H" -lt 10 ] || [ "$H" -gt 21 ]; }; then hb skip_window "{\"hour_msk\":$H}"; exit 0; fi
 KEY=$(grep "^SERVICE_ROLE_KEY=" /root/supabase/docker/.env | cut -d= -f2-)
 SQL="select u.id, coalesce(u.locale,'ru') from users u
  where coalesce(u.is_test_user,false)=false and u.is_deleted=false and u.banned=false and u.suspended_at is null
@@ -42,3 +46,4 @@ SQL="select u.id, coalesce(u.locale,'ru') from users u
     echo
   done
 } >> /var/log/profile-nudge.log 2>&1
+hb ok "{\"dry\":$DRY}"

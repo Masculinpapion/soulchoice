@@ -488,6 +488,7 @@
   "selfie_reason_lighting": "Işık yetersiz — aydınlık yerde çek",
   "selfie_reason_mismatch": "Profil fotoğraflarıyla eşleşmiyor",
   "selfie_reason_multiple_people": "Kadrajda başka biri var — tek başına çek",
+  "selfie_reason_profile_mismatch": "Profil bilgileri fotoğrafla veya kurallarla uyuşmuyor — profili güncelleyip selfieyi yeniden çek",
   "profile_my_applications": "BAŞVURULARIM",
   "app_status_closed": "TAMAMLANDI",
   "app_status_pending": "BEKLİYOR",

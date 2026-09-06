@@ -10,5 +10,6 @@ String? selfieReasonL10n(AppLocalizations l, String? slug) => switch (slug) {
       'lighting' => l.selfie_reason_lighting,
       'mismatch' => l.selfie_reason_mismatch,
       'multiple_people' => l.selfie_reason_multiple_people,
+      'profile_mismatch' => l.selfie_reason_profile_mismatch,
       _ => null,
     };

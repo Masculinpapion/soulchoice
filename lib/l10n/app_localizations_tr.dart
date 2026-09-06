@@ -1262,6 +1262,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kadrajda başka biri var — tek başına çek';
 
   @override
+  String get selfie_reason_profile_mismatch =>
+      'Profil bilgileri fotoğrafla veya kurallarla uyuşmuyor — profili güncelleyip selfieyi yeniden çek';
+
+  @override
   String get profile_my_applications => 'BAŞVURULARIM';
 
   @override

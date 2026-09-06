@@ -488,6 +488,7 @@
   "selfie_reason_lighting": "Мало света — сними при хорошем освещении",
   "selfie_reason_mismatch": "Не совпадает с фото профиля",
   "selfie_reason_multiple_people": "В кадре кто-то ещё — сделай селфи в одиночку",
+  "selfie_reason_profile_mismatch": "Данные профиля не соответствуют фото или правилам — обнови профиль и пройди селфи заново",
   "profile_my_applications": "МОИ ЗАЯВКИ",
   "app_status_closed": "ЗАВЕРШЕНО",
   "app_status_pending": "ОЖИДАЕТ",

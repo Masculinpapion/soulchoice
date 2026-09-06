@@ -156,6 +156,8 @@ const SELFIE_REASONS: Record<string, Record<string, string>> = {
   lighting: { ru: 'Мало света — сними при хорошем освещении', tr: 'Işık yetersiz — aydınlık yerde çek', en: 'Poor lighting — retake in good light' },
   mismatch: { ru: 'Не совпадает с фото профиля', tr: 'Profil fotoğraflarıyla eşleşmiyor', en: "Doesn't match your profile photos" },
   multiple_people: { ru: 'В кадре кто-то ещё — сделай селфи в одиночку', tr: 'Kadrajda başka biri var — tek başına çek', en: 'Someone else in frame — take it alone' },
+  // 06.09 (Mustafa): profil verisi/kurallarla uyuşmazlık — fotoğraf-cinsiyet çelişkisi, çift/grup teklifi, kural dışı bio
+  profile_mismatch: { ru: 'Данные профиля не соответствуют фото или правилам — обнови профиль и пройди селфи заново', tr: 'Profil bilgileri fotoğrafla veya kurallarla uyuşmuyor — profili güncelleyip selfieyi yeniden çek', en: "Profile details don't match the photos or the rules — update your profile and retake the selfie" },
 }
 
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''

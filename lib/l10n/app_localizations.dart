@@ -2350,6 +2350,12 @@ abstract class AppLocalizations {
   /// **'Someone else in frame — take it alone'**
   String get selfie_reason_multiple_people;
 
+  /// No description provided for @selfie_reason_profile_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile details don\'t match the photos or the rules — update your profile and retake the selfie'**
+  String get selfie_reason_profile_mismatch;
+
   /// No description provided for @profile_my_applications.
   ///
   /// In en, this message translates to:

@@ -1266,6 +1266,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Someone else in frame — take it alone';
 
   @override
+  String get selfie_reason_profile_mismatch =>
+      'Profile details don\'t match the photos or the rules — update your profile and retake the selfie';
+
+  @override
   String get profile_my_applications => 'MY APPLICATIONS';
 
   @override

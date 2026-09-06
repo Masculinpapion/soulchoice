@@ -1278,6 +1278,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'В кадре кто-то ещё — сделай селфи в одиночку';
 
   @override
+  String get selfie_reason_profile_mismatch =>
+      'Данные профиля не соответствуют фото или правилам — обнови профиль и пройди селфи заново';
+
+  @override
   String get profile_my_applications => 'МОИ ЗАЯВКИ';
 
   @override

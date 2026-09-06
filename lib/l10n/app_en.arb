@@ -505,6 +505,7 @@
   "selfie_reason_lighting": "Poor lighting — retake in good light",
   "selfie_reason_mismatch": "Doesn't match your profile photos",
   "selfie_reason_multiple_people": "Someone else in frame — take it alone",
+  "selfie_reason_profile_mismatch": "Profile details don't match the photos or the rules — update your profile and retake the selfie",
   "profile_my_applications": "MY APPLICATIONS",
   "app_status_closed": "CLOSED",
   "app_status_pending": "PENDING",

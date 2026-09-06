@@ -154,6 +154,7 @@
   "create_inv_validation_title": "Title cannot be empty",
   "create_inv_validation_venue": "Venue name cannot be empty",
   "create_inv_validation_date": "Please select a date and time",
+  "create_inv_time_too_soon": "Pick a time at least 1 hour from now — applications close an hour before the meeting",
   "create_inv_error_publish": "Error: {error}",
   "@create_inv_error_publish": {
     "placeholders": {

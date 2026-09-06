@@ -398,6 +398,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get create_inv_validation_date => 'Lütfen tarih ve saat seç';
 
   @override
+  String get create_inv_time_too_soon =>
+      'En az 1 saat sonrasını seç — başvurular buluşmadan bir saat önce kapanır';
+
+  @override
   String create_inv_error_publish(String error) {
     return 'Hata: $error';
   }

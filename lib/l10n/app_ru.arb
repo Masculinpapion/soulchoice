@@ -154,6 +154,7 @@
   "create_inv_validation_title": "Заголовок не может быть пустым",
   "create_inv_validation_venue": "Название места не может быть пустым",
   "create_inv_validation_date": "Пожалуйста, выбери дату и время",
+  "create_inv_time_too_soon": "Выбери время минимум через 1 час — заявки закрываются за час до встречи",
   "create_inv_error_publish": "Ошибка: {error}",
   "@create_inv_error_publish": {
     "placeholders": {

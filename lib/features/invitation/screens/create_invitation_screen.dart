@@ -107,6 +107,8 @@ class _CreateInvitationScreenState
   /// `_kUntilPlan` (0) = "Plana kadar" dinamik seçeneği (yakın planlar için).
   static const int _kUntilPlan = 0;
   static const Duration _kPlanBuffer = Duration(hours: 1);
+  /// En erken plan: şimdi + 1 s (06.09). Daha yakın seçim uyarıyla reddedilir.
+  static const Duration _kMinLead = Duration(hours: 1);
   static const List<int> _kDurationOptions = [48, 24, 12, 6];
 
   DateTime? get _expiryLimit => _eventDate?.subtract(_kPlanBuffer);
@@ -178,10 +180,19 @@ class _CreateInvitationScreenState
     ),
     _StepDateTime(
       date: _eventDate,
-      onSelected: (d) => setState(() {
-        _eventDate = d;
-        _reconcileExpiry();
-      }),
+      onSelected: (d) {
+        // 06.09 (Mustafa): bugün dahil her saat seçilebilir; tek sınır şimdi+1 s
+        // (başvurular plandan 1 s önce kapanır). Yakınsa net uyarı, sessiz red yok.
+        if (d.isBefore(DateTime.now().add(_kMinLead))) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              auroraSnackBar(AppLocalizations.of(context)!.create_inv_time_too_soon));
+          return;
+        }
+        setState(() {
+          _eventDate = d;
+          _reconcileExpiry();
+        });
+      },
     ),
     _StepDuration(
       selected: _expiryHours,
@@ -354,6 +365,11 @@ class _CreateInvitationScreenState
         // Hediye'de tarih opsiyonel (teslim buluşması için sabit saat gerekmez)
         if (!_isGift && _eventDate == null)
           return l10n.create_inv_validation_date;
+        // Ekranda uzun beklendiyse seçim geçmişe/1 saatin içine düşmüş olabilir
+        if (_eventDate != null &&
+            _eventDate!.isBefore(DateTime.now().add(_kMinLead))) {
+          return l10n.create_inv_time_too_soon;
+        }
       case 6:
         if (!_fitsPlan(_expiryHours)) {
           return l10n.create_inv_duration_conflict(
@@ -1496,6 +1512,12 @@ class _StepDateTime extends StatelessWidget {
               context: context,
               initialTime: TimeOfDay(hour: (now.hour + 2) % 24, minute: 0),
               initialEntryMode: TimePickerEntryMode.input,
+              // Telefon saati 12 s biçimindeyse klavye modu "18"i geçersiz sayıyordu
+              // («Указано недопустимое время», 06.09 emülatör) — gösterim ve doğrulama 24 s.
+              builder: (ctx, child) => MediaQuery(
+                data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+                child: child!,
+              ),
             );
             if (pickedTime == null) return;
             onSelected(

@@ -154,6 +154,7 @@
   "create_inv_validation_title": "Başlık boş olamaz",
   "create_inv_validation_venue": "Mekan adı boş olamaz",
   "create_inv_validation_date": "Lütfen tarih ve saat seç",
+  "create_inv_time_too_soon": "En az 1 saat sonrasını seç — başvurular buluşmadan bir saat önce kapanır",
   "create_inv_error_publish": "Hata: {error}",
   "@create_inv_error_publish": {
     "placeholders": {

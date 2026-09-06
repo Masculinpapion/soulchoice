@@ -826,6 +826,12 @@ abstract class AppLocalizations {
   /// **'Please select a date and time'**
   String get create_inv_validation_date;
 
+  /// No description provided for @create_inv_time_too_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a time at least 1 hour from now — applications close an hour before the meeting'**
+  String get create_inv_time_too_soon;
+
   /// No description provided for @create_inv_error_publish.
   ///
   /// In en, this message translates to:

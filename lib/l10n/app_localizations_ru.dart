@@ -401,6 +401,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get create_inv_validation_date => 'Пожалуйста, выбери дату и время';
 
   @override
+  String get create_inv_time_too_soon =>
+      'Выбери время минимум через 1 час — заявки закрываются за час до встречи';
+
+  @override
   String create_inv_error_publish(String error) {
     return 'Ошибка: $error';
   }

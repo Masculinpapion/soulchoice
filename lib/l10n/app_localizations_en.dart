@@ -401,6 +401,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create_inv_validation_date => 'Please select a date and time';
 
   @override
+  String get create_inv_time_too_soon =>
+      'Pick a time at least 1 hour from now — applications close an hour before the meeting';
+
+  @override
   String create_inv_error_publish(String error) {
     return 'Error: $error';
   }

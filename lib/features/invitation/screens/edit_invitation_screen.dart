@@ -292,17 +292,27 @@ class _EditInvitationScreenState extends ConsumerState<EditInvitationScreen> {
         minute: _eventDate?.minute ?? 0,
       ),
       initialEntryMode: TimePickerEntryMode.input,
+      // 12 s telefon biçiminde klavye modu doğrulaması kırılıyordu — 24 s sabit (06.09)
+      builder: (ctx, child) => MediaQuery(
+        data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
     if (pickedTime == null || !mounted) return;
-    setState(() {
-      _eventDate = DateTime(
-        pickedDate.year,
-        pickedDate.month,
-        pickedDate.day,
-        pickedTime.hour,
-        pickedTime.minute,
-      );
-    });
+    final picked = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      pickedTime.hour,
+      pickedTime.minute,
+    );
+    // Şimdi+1 s'ten yakın plan kabul edilmez, sebep açıkça söylenir (06.09, Mustafa)
+    if (picked.isBefore(DateTime.now().add(const Duration(hours: 1)))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          auroraSnackBar(AppLocalizations.of(context)!.create_inv_time_too_soon));
+      return;
+    }
+    setState(() => _eventDate = picked);
   }
 
   Widget _sectionLabel(String text) => Padding(

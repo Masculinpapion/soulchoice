@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # selfie_review.py — SELFİE OTO-İNCELEME (04.09.2026). Sunucu: /root/ops/selfie-review/, cron */1 dk, flock.
 # Akış (Mustafa 22.08 revizyonu): bekleme YOK — pending selfie düşer düşmez incelenir.
+#   ÖNERİ MODU (Mustafa kararı 06.09.2026: onay DAİMA insan — oto-onay yok, oto-red yok):
 #   • selfide tek/baskın yüz + profil fotoğraflarından en az biriyle SFace kosinüs benzerliği ≥ APPROVE
-#     → anında 'approved' (trg_notify_selfie_status push'u atar) + audit_log 'selfie_auto_approve'
-#   • aksi hâlde pending KALIR + audit_log 'selfie_auto_flag' + Telegram WARN → insan bakar (RED DAİMA İNSAN)
+#     → pending KALIR + audit_log 'selfie_auto_suggest' + Telegram INFO «önerim: ONAYLA (skor)» → Mustafa düğme/panel
+#   • aksi hâlde pending KALIR + audit_log 'selfie_auto_flag' + Telegram WARN «şüpheli» → insan bakar
+#   (04.09–06.09 arası ≥APPROVE anında 'approved' yazıyordu — tek vaka: Ангелина 06.09 16:05; Mustafa açık onay vermemişti.)
 # Veri sunucu dışına ÇIKMAZ (localhost storage + yerel OpenCV) → gizlilik metni değişmez.
 # Aynı selfie URL'si iki kez incelenmez; kullanıcı yeni selfie yüklerse (yeni URL) yeniden incelenir.
 # Kalibrasyon: `selfie_review.py --calibrate` → onaylı kullanıcıların skor dağılımını yazar, HİÇBİR ŞEY YAZMAZ.
@@ -147,12 +149,13 @@ for line in rows:
         continue
     meta = json.dumps({"selfie_url": surl, "score": round(s, 3), "profile_photos": len(purls.split())}, ensure_ascii=False)
     if d == "approve":
-        psql(f"update public.users set selfie_status='approved', selfie_rejected_reason=null where id={q(uid)} and selfie_status='pending';"
-             f"insert into public.audit_log(actor, action, target_type, target_id, reason, meta) values ('selfie-auto-review','selfie_auto_approve','user',{q(uid)},{q(why)},{q(meta)}::jsonb);")
+        # ÖNERİ MODU: DB'ye onay YAZILMAZ; kayıt pending kalır, karar Mustafa'nın (Telegram düğmesi / ops paneli).
+        psql(f"insert into public.audit_log(actor, action, target_type, target_id, reason, meta) values ('selfie-auto-review','selfie_auto_suggest','user',{q(uid)},{q(why)},{q(meta)}::jsonb);")
+        subprocess.run([ALERT, "INFO", f"selfie önerim: ONAYLA — {name[:20]} ({uid[:8]}) {why}. Kayıt alarmındaki Onayla düğmesi veya ops paneli."], timeout=30)
         ok += 1
     else:
         psql(f"insert into public.audit_log(actor, action, target_type, target_id, reason, meta) values ('selfie-auto-review','selfie_auto_flag','user',{q(uid)},{q(why)},{q(meta)}::jsonb);")
         subprocess.run([ALERT, "WARN", f"şüpheli selfie: {name[:20]} ({uid[:8]}) — {why}. Ops panelinden onayla/reddet (oto-red yok)."], timeout=30)
         flag += 1
     print(f"{datetime.datetime.now():%H:%M} {uid[:8]} {d} {why}", flush=True)
-print(f"{datetime.datetime.now():%Y-%m-%d %H:%M} onay={ok} işaret={flag} hata={err}", flush=True)
+print(f"{datetime.datetime.now():%Y-%m-%d %H:%M} öneri={ok} işaret={flag} hata={err}", flush=True)

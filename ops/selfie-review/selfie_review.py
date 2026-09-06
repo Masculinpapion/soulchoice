@@ -4,7 +4,7 @@
 # Akış (Mustafa 22.08 revizyonu): bekleme YOK — pending selfie düşer düşmez incelenir.
 #   ÖNERİ MODU (Mustafa kararı 06.09.2026: onay DAİMA insan — oto-onay yok, oto-red yok):
 #   • selfide tek/baskın yüz + profil fotoğraflarından en az biriyle SFace kosinüs benzerliği ≥ APPROVE
-#     → pending KALIR + audit_log 'selfie_auto_suggest' + Telegram INFO «önerim: ONAYLA (skor)» → Mustafa düğme/panel
+#     → pending KALIR + audit_log 'selfie_auto_suggest' + pg_notify('ops_selfie') → ops-agent Telegram'a foto + [✅ Onayla] düğmesiyle «ÖNERİM: ONAYLA (skor)» atar
 #   • aksi hâlde pending KALIR + audit_log 'selfie_auto_flag' + Telegram WARN «şüpheli» → insan bakar
 #   (04.09–06.09 arası ≥APPROVE anında 'approved' yazıyordu — tek vaka: Ангелина 06.09 16:05; Mustafa açık onay vermemişti.)
 # Veri sunucu dışına ÇIKMAZ (localhost storage + yerel OpenCV) → gizlilik metni değişmez.
@@ -151,7 +151,9 @@ for line in rows:
     if d == "approve":
         # ÖNERİ MODU: DB'ye onay YAZILMAZ; kayıt pending kalır, karar Mustafa'nın (Telegram düğmesi / ops paneli).
         psql(f"insert into public.audit_log(actor, action, target_type, target_id, reason, meta) values ('selfie-auto-review','selfie_auto_suggest','user',{q(uid)},{q(why)},{q(meta)}::jsonb);")
-        subprocess.run([ALERT, "INFO", f"selfie önerim: ONAYLA — {name[:20]} ({uid[:8]}) {why}. Kayıt alarmındaki Onayla düğmesi veya ops paneli."], timeout=30)
+        # ops-agent'ın kayıt alarmı kanalı: selfie+profil fotoğrafı + [✅ Onayla] [📋 Panelde aç] düğmeleriyle gider (Mustafa 06.09: düğme mesajın içinde olsun)
+        label = f"{name[:20]} · ÖNERİM: ONAYLA (skor {s:.2f})"
+        psql(f"select pg_notify('ops_selfie', {q(uid)} || '|' || {q(label)});")
         ok += 1
     else:
         psql(f"insert into public.audit_log(actor, action, target_type, target_id, reason, meta) values ('selfie-auto-review','selfie_auto_flag','user',{q(uid)},{q(why)},{q(meta)}::jsonb);")

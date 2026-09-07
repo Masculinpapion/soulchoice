@@ -92,6 +92,17 @@ jobs:
       # RuStore anahtar teslimi istemesin diye imzalı APK da üretilir (24.07 karar B).
       - run: flutter build apk --release --no-pub
 
+      # 07.09: Crashlytics natif (NDK) yığınları «Missing» geliyordu — 830'daki
+      # SIGSEGV (OnePlus 8 Pro, moderasyon cihazı) okunamadı. Gradle'da
+      # nativeSymbolUploadEnabled=true olsa da yükleme görevi kendiliğinden
+      # koşmaz; libapp.so + 3. taraf .so sembolleri buradan gider (libflutter.so
+      # engine sembolleri Flutter tarafından ayrıca yayımlanır, bu adım kapsamaz).
+      # Sembol yüklemesi paketi etkilemez; hata verirse build KIRILMAZ.
+      - name: Upload native symbols to Crashlytics
+        continue-on-error: true
+        working-directory: android
+        run: ./gradlew app:uploadCrashlyticsSymbolFileRelease --no-daemon -q
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-release

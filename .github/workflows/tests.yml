@@ -126,6 +126,7 @@ jobs:
                       ops/restore-drill.sh:/root/bin/restore-drill.sh \
                       ops/billing-cron.sh:/root/bin/billing-cron.sh \
                       ops/profile-nudge.sh:/root/bin/profile-nudge.sh \
+                      ops/rustore-api.sh:/root/bin/rustore-api.sh \
                       ops/selfie-review/selfie_review.py:/root/ops/selfie-review/selfie_review.py; do
             L=${pair%%:*}; R=${pair#*:}
             ssh -i ~/.ssh/id_prod root@89.169.1.127 "cat $R" > /tmp/srv.sh || { BAD="$BAD $R(okunamadı)"; continue; }

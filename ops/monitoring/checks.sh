@@ -504,5 +504,32 @@ for HBJ in selection-reminder profile-nudge; do
   fi
 done
 
+
+# --- 31. RuStore Public API: surum durumu + yeni yorum (07.09.2026, Mustafa: "API'ye baglanalim") ---
+# /root/bin/rustore-api.sh — anahtar /root/.rustore_api.key (ID 2351031899; yalniz durum/yorum okuma + yayin ayari;
+# yukleme/moderasyona gonderme yetkisi YOK). Politika: durum degisince INFO (MODERATION->ACTIVE/REJECTED),
+# yeni yorum INFO (commentId artar), API 3 kosu ust uste cevap vermezse WARN. Ilk kosu sessizce durum tohumlar.
+RS_OUT=$(/root/bin/rustore-api.sh versions 3 2>/dev/null)
+if echo "$RS_OUT" | grep -q "^code: OK"; then
+  rm -f "$STATE/rustore_api_fail"
+  [ -f "$STATE/rustore_api" ] && report "rustore_api" OK "RuStore API yeniden cevap veriyor"
+  RS_NOW=$(echo "$RS_OUT" | awk 'NR>1 {printf "%s=%s(%s%%) ", $3, $4, $7}')   # versionCode=STATUS(partial%)
+  RS_PREV=$(cat "$STATE/rustore_versions" 2>/dev/null || true)
+  if [ -n "$RS_NOW" ] && [ "$RS_NOW" != "$RS_PREV" ]; then
+    [ -n "$RS_PREV" ] && $ALERT INFO "🏬 RuStore surum durumu degisti: $RS_NOW(onceki: $RS_PREV) — console.rustore.ru/apps/2063736130/versions"
+    echo "$RS_NOW" > "$STATE/rustore_versions"
+  fi
+  RV_OUT=$(/root/bin/rustore-api.sh reviews 20 2>/dev/null)
+  RV_MAX=$(echo "$RV_OUT" | awk 'NR>1 && $1 ~ /^[0-9]+$/ {print $1}' | sort -n | tail -1)
+  RV_PREV=$(cat "$STATE/rustore_last_review" 2>/dev/null || echo 0)
+  if [ -n "$RV_MAX" ] && [ "$RV_MAX" -gt "$RV_PREV" ] 2>/dev/null; then
+    [ "$RV_PREV" != "0" ] && $ALERT INFO "⭐ RuStore yeni yorum: $(echo "$RV_OUT" | awk -v id="$RV_MAX" '$1==id' | cut -c1-200) — cevap: konsol Отзывы"
+    echo "$RV_MAX" > "$STATE/rustore_last_review"
+  fi
+else
+  RS_FAILS=$(( $(cat "$STATE/rustore_api_fail" 2>/dev/null || echo 0) + 1 )); echo "$RS_FAILS" > "$STATE/rustore_api_fail"
+  [ "$RS_FAILS" -ge 3 ] && report "rustore_api" WARN "RuStore API $RS_FAILS kosudur cevap vermiyor (anahtar/ag) — /root/bin/rustore-api.sh token"
+fi
+
 # betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)
 true

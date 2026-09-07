@@ -3,6 +3,8 @@
 -- v2: persona penceresi + açlık sigortası KALDIRILDI — test kartı hiç "ölü"
 --     beklemez; dolan/süresi geçen kart bir sonraki cron diliminde (max 15 dk)
 --     taze karta döner. Bypass hesabı (Mustafa) motorun TAMAMEN dışında.
+-- v2.1 (07.09.2026, Mustafa): BAŞVURU HAVUZU KAPALI — motor yalnız test kartlarını
+--     yeniler + keşfet nabzı; test hesapları adına başvuru YAZILMAZ (ayrıntı adım 1 sonu).
 -- Tüm yazmalar TEK fonksiyonda; her sorgu is_test_user=true guard'lı.
 -- Uygulama/feed kodu DEĞİŞMEZ. Sıfır yeni tablo.
 -- Teardown: teardown-test-data.sql
@@ -168,34 +170,15 @@ begin
       end if;
     end if;
 
-    -- 0–4 taze test başvuranı ek (aynı şehir, karşı cinsiyet, davet doğumundan sonra damga)
-    n_apps := floor(random()*5)::int;
-    with fresh as (
-      insert into public.applications (invitation_id, applicant_id, status, created_at)
-      select r.inv_id, tu.id, 'pending',
-             v_created + (random() * (v_now - v_created))
-      from public.users tu
-      where tu.is_test_user = true
-        and tu.id <> r.user_id
-        and tu.id <> v_bypass
-        and tu.id <> v_demo
-        and tu.city_id = r.city_id
-        and tu.gender is distinct from r.gender
-        and tu.is_deleted = false
-        and tu.banned = false
-      order by random()
-      limit n_apps
-      on conflict (invitation_id, applicant_id) do nothing
-      returning applicant_id, created_at
-    )
-    -- Başvuranların keşfet tazeliği: last_active_at ≈ başvuru anı
-    update public.users u
-    set last_active_at = greatest(coalesce(u.last_active_at, f.created_at), f.created_at)
-    from fresh f
-    where u.id = f.applicant_id and u.is_test_user = true;
-
-    get diagnostics n_apps = row_count;  -- update edilen başvuran sayısı
-    v_apps := v_apps + n_apps;
+    -- BAŞVURU HAVUZU KAPATILDI (07.09.2026, Mustafa: «havuzu kapat»). Eskiden burada
+    -- 0–4 taze test başvuranı (aynı şehir, karşı cinsiyet) 'pending' olarak eklenir ve
+    -- last_active_at'i güncellenirdi. Kod denetimi (07.09): başvuran sayısı/yığını
+    -- YALNIZ kart sahibine çizilir (feed_screen `isOwner && applicationCount > 0`),
+    -- gerçek kullanıcı başkasının kartında başvuru görmez → havuzun kullanıcıya
+    -- görünür faydası yoktu; yalnız DB gürültüsü (push_log no_token ~170/gün) ve
+    -- «motor gerçek hesaba bulaşır mı» endişesi üretiyordu. Kart yenileme (yukarısı)
+    -- başvuruya bağlı değildir. Geri açmak = git geçmişindeki bloğu geri koymak.
+    n_apps := 0;
 
     -- Davet sahibinin tazeliği
     update public.users

@@ -3510,7 +3510,13 @@ CREATE VIEW public.v_pending_selfies AS
            FROM public.user_photos p
           WHERE ((p.user_id = u.id) AND p.is_primary)
           ORDER BY p.created_at DESC
-         LIMIT 1) AS primary_photo_url
+         LIMIT 1) AS primary_photo_url,
+    u.gender,
+    u.show_gender,
+    u.min_age,
+    u.max_age,
+    u.locale,
+    "left"(COALESCE(u.bio, ''::text), 300) AS bio
    FROM public.users u
   WHERE ((u.selfie_status = 'pending'::text) AND (u.is_deleted = false))
   ORDER BY u.created_at;

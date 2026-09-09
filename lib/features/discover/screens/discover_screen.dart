@@ -18,8 +18,6 @@ import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
-import '../../../core/utils/platform_x.dart';
-import '../../../shared/widgets/plan_hero.dart';
 
 // Deterministik aspect ratio — hash bazlı, iki seçenek (yumusak masonry)
 double _cardAspect(String id) =>
@@ -280,12 +278,10 @@ class _DiscoverCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Zemin — iOS (planFirstMode): plan sahnesi; Android: fotoğraf.
-                planFirstMode
-                    ? PlanHero(category: inv.category, glyphSize: 44)
-                    : photoUrl != null
-                        ? _FocusZoomPhoto(url: photoUrl)
-                        : Container(color: Colors.white.withOpacity(0.05)),
+                // Fotoğraf
+                photoUrl != null
+                    ? _FocusZoomPhoto(url: photoUrl)
+                    : Container(color: Colors.white.withOpacity(0.05)),
 
                 // Alt gradient
                 Positioned.fill(

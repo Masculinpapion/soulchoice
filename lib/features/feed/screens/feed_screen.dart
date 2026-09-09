@@ -19,7 +19,6 @@ import '../../notifications/providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
 import '../../../core/utils/platform_x.dart';
-import '../../../shared/widgets/plan_hero.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -1496,11 +1495,9 @@ class InvitationCard extends StatelessWidget {
             return Stack(
             fit: StackFit.expand,
             children: [
-              // 1. Arka plan — iOS (planFirstMode): plan sahnesi, fotoğraf
-              // yalnız üst pildeki avatarda; Android: tam kapak fotoğraf.
-              if (planFirstMode)
-                PlanHero(category: category, glyphSize: compact ? 60 : 76)
-              else if (ownerPhotoUrl != null)
+              // 1. Arka plan fotoğrafı — tam kapak, yüz üstte (iOS'ta da aynı:
+              // gerçek fotoğraf kalır, Mustafa 09.09; fark plan hiyerarşisinde)
+              if (ownerPhotoUrl != null)
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,

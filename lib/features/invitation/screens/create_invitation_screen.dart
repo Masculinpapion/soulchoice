@@ -20,6 +20,7 @@ import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../shared/widgets/aurora_snackbar.dart';
 import '../logic/gift_link_rules.dart';
 import '../widgets/gift_url_field.dart';
+import '../../../core/utils/gender_gate.dart';
 
 // Bu ekrana özel, tekrar eden Aurora metin stilleri (eski AppTextStyles yerine).
 const _displayMediumStyle = TextStyle(
@@ -479,6 +480,10 @@ class _CreateInvitationScreenState
         return;
       }
     }
+    // iOS «önce plan» paketi: cinsiyet sihirbazda alınmadıysa ilk planda tek
+    // soru (Android'de kayıtta alınır, kapı hiç açılmaz).
+    if (!await ensureGenderSelected(context)) return;
+    if (!mounted) return;
     setState(() => _isPublishing = true);
     try {
       final client = Supabase.instance.client;

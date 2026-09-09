@@ -2381,4 +2381,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium unlocks unlimited access. An existing subscription is recognized automatically.';
+
+  @override
+  String get story_1_title => 'It all starts with a plan';
+
+  @override
+  String get story_1_desc =>
+      'Dinner, a concert, a walk. Post a plan: where, when and what you\'ll do.';
+
+  @override
+  String get story_2_title => 'People respond to the plan';
+
+  @override
+  String get story_2_desc =>
+      'Anyone who likes your plan applies. You see who wants to come along.';
+
+  @override
+  String get story_3_title => 'You pick one person';
+
+  @override
+  String get story_3_desc =>
+      'One plan, one companion. You choose, and the chat opens only after that.';
+
+  @override
+  String get story_4_title => 'Meet in real life';
+
+  @override
+  String get story_4_desc =>
+      'No endless messaging. Settle the details and see each other.';
+
+  @override
+  String get gender_sheet_title => 'Your gender';
+
+  @override
+  String get gender_sheet_body =>
+      'Needed once so your plans are shown to the right people.';
+
+  @override
+  String get feed_plans_nearby => 'PLANS NEARBY';
 }

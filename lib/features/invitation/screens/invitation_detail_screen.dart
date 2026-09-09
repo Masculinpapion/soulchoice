@@ -19,6 +19,9 @@ import '../../../core/providers/locale_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../shared/widgets/aurora_snackbar.dart';
 import '../../../core/services/photo_focus.dart';
+import '../../../core/utils/gender_gate.dart';
+import '../../../shared/widgets/plan_hero.dart';
+import '../../../core/utils/platform_x.dart';
 
 class InvitationDetailScreen extends ConsumerStatefulWidget {
   final String invitationId;
@@ -158,8 +161,16 @@ class _InvitationDetailScreenState
                       height: heroH,
                       child: Stack(
                         children: [
-                          // a. Ana fotoğraf — PageView
-                          if (sortedOwnerPhotos.isNotEmpty)
+                          // a. Ana görsel — iOS (planFirstMode): plan sahnesi,
+                          // kişi fotoğrafı aşağıdaki sahip kartında; Android:
+                          // fotoğraf galerisi (PageView).
+                          if (planFirstMode)
+                            PlanHero(
+                              category: category,
+                              glyphSize: 120,
+                              alignment: const Alignment(0, -0.15),
+                            )
+                          else if (sortedOwnerPhotos.isNotEmpty)
                             PageView.builder(
                               controller: _photoCtrl,
                               physics: const BouncingScrollPhysics(),
@@ -202,7 +213,7 @@ class _InvitationDetailScreenState
                             _FallbackBg(),
 
                           // a2. Foto dots
-                          if (sortedOwnerPhotos.length > 1)
+                          if (!planFirstMode && sortedOwnerPhotos.length > 1)
                             Positioned(
                               top: 12,
                               left: 0,
@@ -1377,6 +1388,10 @@ class _ApplyButtonState extends ConsumerState<_ApplyButton> {
   Future<void> _apply() async {
     if (widget.invStatus != 'active') return;
     if (widget.expiresAt != null && DateTime.now().isAfter(widget.expiresAt!)) return;
+    // iOS «önce plan» paketi: cinsiyet sihirbazda alınmadıysa ilk başvuruda
+    // tek soru (Android'de kayıtta alınır, kapı hiç açılmaz).
+    if (!await ensureGenderSelected(context)) return;
+    if (!mounted) return;
     setState(() => _loading = true);
     try {
       final client = Supabase.instance.client;

@@ -4287,6 +4287,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Premium unlocks unlimited access. An existing subscription is recognized automatically.'**
   String get paywall_subtitle_ios;
+
+  /// No description provided for @story_1_title.
+  ///
+  /// In en, this message translates to:
+  /// **'It all starts with a plan'**
+  String get story_1_title;
+
+  /// No description provided for @story_1_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner, a concert, a walk. Post a plan: where, when and what you\'ll do.'**
+  String get story_1_desc;
+
+  /// No description provided for @story_2_title.
+  ///
+  /// In en, this message translates to:
+  /// **'People respond to the plan'**
+  String get story_2_title;
+
+  /// No description provided for @story_2_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who likes your plan applies. You see who wants to come along.'**
+  String get story_2_desc;
+
+  /// No description provided for @story_3_title.
+  ///
+  /// In en, this message translates to:
+  /// **'You pick one person'**
+  String get story_3_title;
+
+  /// No description provided for @story_3_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'One plan, one companion. You choose, and the chat opens only after that.'**
+  String get story_3_desc;
+
+  /// No description provided for @story_4_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet in real life'**
+  String get story_4_title;
+
+  /// No description provided for @story_4_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'No endless messaging. Settle the details and see each other.'**
+  String get story_4_desc;
+
+  /// No description provided for @gender_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your gender'**
+  String get gender_sheet_title;
+
+  /// No description provided for @gender_sheet_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed once so your plans are shown to the right people.'**
+  String get gender_sheet_body;
+
+  /// No description provided for @feed_plans_nearby.
+  ///
+  /// In en, this message translates to:
+  /// **'PLANS NEARBY'**
+  String get feed_plans_nearby;
 }
 
 class _AppLocalizationsDelegate

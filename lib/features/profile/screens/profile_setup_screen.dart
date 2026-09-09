@@ -20,6 +20,7 @@ import '../../../core/services/push_token.dart';
 import '../../../shared/widgets/glass_card.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../shared/widgets/aurora_snackbar.dart';
+import '../../../core/utils/platform_x.dart';
 
 // 7-step profile setup wizard
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -60,7 +61,21 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   bool _profileVisibilityConsent = false;
   static const _consentVersion = '2026-07-08';
 
-  static const _stepCount = 9;
+  // iOS «önce plan» paketi (09.09.2026): sihirbazda cinsiyet ve yaş aralığı
+  // adımı YOK — cinsiyet ilk plan/başvuruda sorulur (gender_gate), yaş
+  // aralığı varsayılanda kalır (ayarlardan değişir). Android'de 9 adım aynen.
+  late final List<_SetupStep> _stepIds = planFirstMode
+      ? const [
+          _SetupStep.nameAge,
+          _SetupStep.city,
+          _SetupStep.bio,
+          _SetupStep.jobEdu,
+          _SetupStep.interests,
+          _SetupStep.prompts,
+          _SetupStep.consent,
+        ]
+      : _SetupStep.values;
+  int get _stepCount => _stepIds.length;
   static const _allInterestKeys = [
     'art',
     'music',
@@ -80,17 +95,20 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     'fashion',
   ];
 
-  List<String> _getSteps(AppLocalizations l10n) => [
-    l10n.profile_setup_step_name_age,
-    l10n.profile_setup_step_gender,
-    l10n.profile_setup_step_city,
-    l10n.profile_setup_step_bio,
-    l10n.profile_setup_step_job_edu,
-    l10n.profile_setup_step_interests,
-    l10n.profile_setup_step_prompts,
-    l10n.profile_setup_step_age_range,
-    l10n.profile_setup_step_consent,
-  ];
+  String _stepLabel(_SetupStep s, AppLocalizations l10n) => switch (s) {
+        _SetupStep.nameAge => l10n.profile_setup_step_name_age,
+        _SetupStep.gender => l10n.profile_setup_step_gender,
+        _SetupStep.city => l10n.profile_setup_step_city,
+        _SetupStep.bio => l10n.profile_setup_step_bio,
+        _SetupStep.jobEdu => l10n.profile_setup_step_job_edu,
+        _SetupStep.interests => l10n.profile_setup_step_interests,
+        _SetupStep.prompts => l10n.profile_setup_step_prompts,
+        _SetupStep.ageRange => l10n.profile_setup_step_age_range,
+        _SetupStep.consent => l10n.profile_setup_step_consent,
+      };
+
+  List<String> _getSteps(AppLocalizations l10n) =>
+      [for (final s in _stepIds) _stepLabel(s, l10n)];
 
   Map<String, String> _getPromptQuestions(AppLocalizations l10n) => {
     'favorite_restaurant': l10n.profile_setup_prompt_favorite_restaurant,
@@ -181,7 +199,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     // kalıp ekranı kesiyordu — adım geçişinde kapat.
     FocusManager.instance.primaryFocus?.unfocus();
     final l10n = AppLocalizations.of(context)!;
-    if (_step == 0) {
+    final cur = _stepIds[_step];
+    if (cur == _SetupStep.nameAge) {
       if (_nameController.text.trim().isEmpty) {
         showAuroraErrorSnack(context, l10n.profile_setup_validation_name);
         return;
@@ -199,11 +218,11 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
         return;
       }
     }
-    if (_step == 1 && (_gender == null || _gender!.isEmpty)) {
+    if (cur == _SetupStep.gender && (_gender == null || _gender!.isEmpty)) {
       showAuroraErrorSnack(context, l10n.profile_setup_validation_gender);
       return;
     }
-    if (_step == 2 && (_cityId == null || _cityId!.isEmpty)) {
+    if (cur == _SetupStep.city && (_cityId == null || _cityId!.isEmpty)) {
       showAuroraErrorSnack(context, l10n.profile_setup_validation_city);
       return;
     }
@@ -329,6 +348,62 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     }
   }
 
+  Widget _buildStep(_SetupStep s, AppLocalizations l10n) => switch (s) {
+        _SetupStep.nameAge => _StepNameAge(
+            nameController: _nameController,
+            age: _age,
+            onAgeChanged: (v) => setState(() => _age = v),
+          ),
+        _SetupStep.gender => _StepGender(
+            selected: _gender,
+            onSelected: (v) => setState(() => _gender = v),
+          ),
+        _SetupStep.city => _StepCity(
+            selectedCityId: _cityId,
+            onSelected: (v) => setState(() => _cityId = v),
+          ),
+        _SetupStep.bio => _StepBio(bioController: _bioController),
+        _SetupStep.jobEdu => _StepJobEducation(
+            jobController: _jobController,
+            educationController: _educationController,
+          ),
+        _SetupStep.interests => _StepInterests(
+            allInterests: _allInterestKeys,
+            selected: _interests,
+            onToggle: (v) => setState(() {
+              _interests.contains(v)
+                  ? _interests.remove(v)
+                  : _interests.add(v);
+            }),
+          ),
+        _SetupStep.prompts => _StepPrompts(
+            questions: _getPromptQuestions(l10n),
+            answers: _prompts,
+            onAnswered: (k, v) => setState(() => _prompts[k] = v),
+          ),
+        _SetupStep.ageRange => _StepAgeRange(
+            minAge: _minAge,
+            maxAge: _maxAge,
+            onChanged: (min, max) => setState(() {
+              _minAge = min;
+              _maxAge = max;
+            }),
+          ),
+        _SetupStep.consent => _StepConsent(
+            ageConfirmed: _ageConfirmed,
+            dataConsent: _dataConsent,
+            profileVisibilityConsent: _profileVisibilityConsent,
+            onAgeChanged: (v) => setState(() => _ageConfirmed = v),
+            onDataConsentChanged: (v) => setState(() => _dataConsent = v),
+            onProfileVisibilityChanged: (v) =>
+                setState(() => _profileVisibilityConsent = v),
+            emailController: _emailController,
+            marketingConsent: _marketingConsent,
+            onMarketingConsentChanged: (v) =>
+                setState(() => _marketingConsent = v),
+          ),
+      };
+
   void _back() {
     FocusManager.instance.primaryFocus?.unfocus();
     if (_step > 0) {
@@ -414,62 +489,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                 child: PageView(
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _StepNameAge(
-                      nameController: _nameController,
-                      age: _age,
-                      onAgeChanged: (v) => setState(() => _age = v),
-                    ),
-                    _StepGender(
-                      selected: _gender,
-                      onSelected: (v) => setState(() => _gender = v),
-                    ),
-                    _StepCity(
-                      selectedCityId: _cityId,
-                      onSelected: (v) => setState(() => _cityId = v),
-                    ),
-                    _StepBio(bioController: _bioController),
-                    _StepJobEducation(
-                      jobController: _jobController,
-                      educationController: _educationController,
-                    ),
-                    _StepInterests(
-                      allInterests: _allInterestKeys,
-                      selected: _interests,
-                      onToggle: (v) => setState(() {
-                        _interests.contains(v)
-                            ? _interests.remove(v)
-                            : _interests.add(v);
-                      }),
-                    ),
-                    _StepPrompts(
-                      questions: _getPromptQuestions(l10n),
-                      answers: _prompts,
-                      onAnswered: (k, v) => setState(() => _prompts[k] = v),
-                    ),
-                    _StepAgeRange(
-                      minAge: _minAge,
-                      maxAge: _maxAge,
-                      onChanged: (min, max) => setState(() {
-                        _minAge = min;
-                        _maxAge = max;
-                      }),
-                    ),
-                    _StepConsent(
-                      ageConfirmed: _ageConfirmed,
-                      dataConsent: _dataConsent,
-                      profileVisibilityConsent: _profileVisibilityConsent,
-                      onAgeChanged: (v) => setState(() => _ageConfirmed = v),
-                      onDataConsentChanged: (v) =>
-                          setState(() => _dataConsent = v),
-                      onProfileVisibilityChanged: (v) =>
-                          setState(() => _profileVisibilityConsent = v),
-                      emailController: _emailController,
-                      marketingConsent: _marketingConsent,
-                      onMarketingConsentChanged: (v) =>
-                          setState(() => _marketingConsent = v),
-                    ),
-                  ],
+                  children: [for (final s in _stepIds) _buildStep(s, l10n)],
                 ),
               ),
               Padding(
@@ -489,6 +509,19 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     ),
     );
   }
+}
+
+/// Sihirbaz adımları — sıra Android'deki 9 adımla birebir (`values`).
+enum _SetupStep {
+  nameAge,
+  gender,
+  city,
+  bio,
+  jobEdu,
+  interests,
+  prompts,
+  ageRange,
+  consent,
 }
 
 class _StepNameAge extends StatelessWidget {

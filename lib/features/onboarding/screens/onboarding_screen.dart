@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
+import '../../../core/utils/platform_x.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -27,7 +28,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final pages = [
+    // iOS (planFirstMode, 09.09.2026): kayıt öncesi mekanik hikâyesi —
+    // plan → başvuru → tek seçim → gerçek buluşma. Android'de 3 sayfa aynen.
+    final pages = planFirstMode
+        ? [
+            _OnboardingPageData(
+              pillColor: AuroraTheme.auroraRed,
+              pillGlow: AuroraTheme.auroraRed,
+              title: l10n.story_1_title,
+              subtitle: l10n.story_1_desc,
+            ),
+            _OnboardingPageData(
+              pillColor: AuroraTheme.auroraBlue,
+              pillGlow: AuroraTheme.auroraBlue,
+              title: l10n.story_2_title,
+              subtitle: l10n.story_2_desc,
+            ),
+            _OnboardingPageData(
+              pillColor: AuroraTheme.auroraGold,
+              pillGlow: AuroraTheme.auroraGold,
+              isGold: true,
+              title: l10n.story_3_title,
+              subtitle: l10n.story_3_desc,
+            ),
+            _OnboardingPageData(
+              pillColor: AuroraTheme.auroraRed,
+              pillGlow: AuroraTheme.auroraRed,
+              title: l10n.story_4_title,
+              subtitle: l10n.story_4_desc,
+            ),
+          ]
+        : [
       _OnboardingPageData(
         pillColor: AuroraTheme.auroraRed,
         pillGlow: AuroraTheme.auroraRed,

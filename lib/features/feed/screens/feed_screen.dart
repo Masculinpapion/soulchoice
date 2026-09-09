@@ -18,6 +18,8 @@ import '../providers/invitations_provider.dart';
 import '../../notifications/providers/notifications_provider.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import '../../../core/services/photo_focus.dart';
+import '../../../core/utils/platform_x.dart';
+import '../../../shared/widgets/plan_hero.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -166,13 +168,15 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                 onNotificationTap: () => context.push('/notifications'),
                 compact: compact,
               ),
-              _StoryBar(
-                flowType: _tabController.index == 0
-                    ? InvitationFlowType.invite
-                    : InvitationFlowType.request,
-                cityId: _selectedCityId,
-                compact: compact,
-              ),
+              // iOS (planFirstMode): yüz şeridi yok — akış planlarla açılır.
+              if (!planFirstMode)
+                _StoryBar(
+                  flowType: _tabController.index == 0
+                      ? InvitationFlowType.invite
+                      : InvitationFlowType.request,
+                  cityId: _selectedCityId,
+                  compact: compact,
+                ),
               _TabBar(controller: _tabController, compact: compact),
               _CategoryChips(
                 selected: _selectedCategory,
@@ -1270,7 +1274,9 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 children: [
                   Text(
                     flowType == InvitationFlowType.invite
-                        ? l10n.feed_todays_invitations
+                        ? (planFirstMode
+                            ? l10n.feed_plans_nearby
+                            : l10n.feed_todays_invitations)
                         : l10n.feed_todays_requests,
                     style: AuroraTheme.monoLabel,
                   ),
@@ -1455,8 +1461,11 @@ class InvitationCard extends StatelessWidget {
             return Stack(
             fit: StackFit.expand,
             children: [
-              // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
-              if (ownerPhotoUrl != null)
+              // 1. Arka plan — iOS (planFirstMode): plan sahnesi, fotoğraf
+              // yalnız üst pildeki avatarda; Android: tam kapak fotoğraf.
+              if (planFirstMode)
+                PlanHero(category: category, glyphSize: compact ? 60 : 76)
+              else if (ownerPhotoUrl != null)
                 CachedNetworkImage(
                   imageUrl: ownerPhotoUrl!,
                   fit: BoxFit.cover,

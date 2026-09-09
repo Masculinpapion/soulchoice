@@ -1124,5 +1124,16 @@
   "profile_setup_email_label": "Email (optional) — for receipts and news",
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.",
-  "paywall_subtitle_ios": "Premium unlocks unlimited access. An existing subscription is recognized automatically."
+  "paywall_subtitle_ios": "Premium unlocks unlimited access. An existing subscription is recognized automatically.",
+  "story_1_title": "It all starts with a plan",
+  "story_1_desc": "Dinner, a concert, a walk. Post a plan: where, when and what you'll do.",
+  "story_2_title": "People respond to the plan",
+  "story_2_desc": "Anyone who likes your plan applies. You see who wants to come along.",
+  "story_3_title": "You pick one person",
+  "story_3_desc": "One plan, one companion. You choose, and the chat opens only after that.",
+  "story_4_title": "Meet in real life",
+  "story_4_desc": "No endless messaging. Settle the details and see each other.",
+  "gender_sheet_title": "Your gender",
+  "gender_sheet_body": "Needed once so your plans are shown to the right people.",
+  "feed_plans_nearby": "PLANS NEARBY"
 }

@@ -2370,4 +2370,42 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.';
+
+  @override
+  String get story_1_title => 'Her şey bir planla başlar';
+
+  @override
+  String get story_1_desc =>
+      'Akşam yemeği, konser, yürüyüş. Planı yayınla: nerede, ne zaman, ne yapacaksınız.';
+
+  @override
+  String get story_2_title => 'İnsanlar plana başvurur';
+
+  @override
+  String get story_2_desc =>
+      'Planını beğenen başvurur. Kimin gelmek istediğini görürsün.';
+
+  @override
+  String get story_3_title => 'Bir kişiyi sen seçersin';
+
+  @override
+  String get story_3_desc =>
+      'Bir plan, bir yol arkadaşı. Seçim senin; sohbet ancak seçimden sonra açılır.';
+
+  @override
+  String get story_4_title => 'Gerçek hayatta buluşma';
+
+  @override
+  String get story_4_desc =>
+      'Sonsuz yazışma yok. Ayrıntıları konuşun ve görüşün.';
+
+  @override
+  String get gender_sheet_title => 'Cinsiyetin';
+
+  @override
+  String get gender_sheet_body =>
+      'Planlarının doğru kişilere gösterilmesi için bir kez gerekli.';
+
+  @override
+  String get feed_plans_nearby => 'YAKINDAKİ PLANLAR';
 }

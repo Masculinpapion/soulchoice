@@ -2425,4 +2425,42 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium открывает безлимит. Действующая подписка распознаётся автоматически.';
+
+  @override
+  String get story_1_title => 'Всё начинается с плана';
+
+  @override
+  String get story_1_desc =>
+      'Ужин, концерт, прогулка. Опубликуй план: где, когда и что будем делать.';
+
+  @override
+  String get story_2_title => 'Люди откликаются на план';
+
+  @override
+  String get story_2_desc =>
+      'Кому интересен твой план — подают заявку. Ты видишь, кто хочет пойти.';
+
+  @override
+  String get story_3_title => 'Ты выбираешь одного';
+
+  @override
+  String get story_3_desc =>
+      'Один план — один спутник. Выбираешь ты, и только после выбора открывается чат.';
+
+  @override
+  String get story_4_title => 'Встреча в реальной жизни';
+
+  @override
+  String get story_4_desc =>
+      'Никакой бесконечной переписки. Договорились о деталях — и увиделись.';
+
+  @override
+  String get gender_sheet_title => 'Укажи пол';
+
+  @override
+  String get gender_sheet_body =>
+      'Нужно один раз, чтобы показывать твои планы правильным людям.';
+
+  @override
+  String get feed_plans_nearby => 'ПЛАНЫ РЯДОМ';
 }

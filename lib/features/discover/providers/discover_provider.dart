@@ -7,6 +7,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
+import '../../../core/utils/platform_x.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
   if (city == null) return null;
@@ -112,8 +113,12 @@ final discoverProvider =
   List<Map<String, dynamic>> otherRows = const [];
   if (cityId != null) {
     cityRows = await fetchRows(onlyCity: cityId, limit: requested);
-    otherRows = await fetchRows(
-        excludeSelected: true, limit: requested - cityRows.length);
+    // iOS (planFirstMode, 09.09.2026): yalnız seçili şehir — «планы рядом»;
+    // Android'de diğer şehirler şehir tükenince akmaya devam eder.
+    otherRows = planFirstMode
+        ? const []
+        : await fetchRows(
+            excludeSelected: true, limit: requested - cityRows.length);
   } else {
     otherRows = await fetchRows(limit: requested);
   }

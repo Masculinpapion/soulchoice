@@ -90,6 +90,41 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
 
   Future<void> _loadMoskovaCityId() async {
     final prefs = await SharedPreferences.getInstance();
+    // iOS (planFirstMode, 09.09.2026): akış kullanıcının KENDİ şehriyle açılır
+    // (inceleme/demo hesabı dahil). Android'de Moskova varsayılanı aynen kalır.
+    if (planFirstMode) {
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      if (uid != null) {
+        try {
+          final lang = Localizations.localeOf(context).languageCode;
+          final me = await Supabase.instance.client
+              .from('users')
+              .select('city_id, cities(name_ru, name_en, name_tr)')
+              .eq('id', uid)
+              .maybeSingle();
+          final own = me?['city_id'] as String?;
+          if (own != null && own.isNotEmpty) {
+            final c = me?['cities'] as Map<String, dynamic>?;
+            final name = c == null
+                ? null
+                : (lang == 'ru'
+                    ? c['name_ru']
+                    : lang == 'tr'
+                        ? c['name_tr']
+                        : c['name_en']) as String?;
+            if (!mounted) return;
+            setState(() {
+              _selectedCityId = own;
+              _selectedCityName = name;
+            });
+            ref.read(selectedCityIdProvider.notifier).state = own;
+            return;
+          }
+        } catch (_) {
+          // sessiz: aşağıdaki Moskova yoluna düşer
+        }
+      }
+    }
     final cached = prefs.getString(_kCityCacheKey);
     if (cached != null && cached.isNotEmpty) {
       if (!mounted) return;

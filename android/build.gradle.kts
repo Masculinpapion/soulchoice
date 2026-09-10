@@ -7,6 +7,10 @@ allprojects {
         maven { url = uri("${rootProject.projectDir}/local-maven") }
         google()
         mavenCentral()
+        // 10.09.2026: RuStore duyurusu — eski artifactory-external.vkpartner.ru 01.10'da
+        // kapanıyor; yeni resmi depo. local-maven'da olmayan (ileride yükseltilen)
+        // RuStore/OK paketleri buradan çözülür.
+        maven { url = uri("https://nexus-external.rustore.ru/repository/maven-rustore-exposed") }
     }
 }
 

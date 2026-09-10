@@ -29,19 +29,39 @@ class SelfieScreen extends StatefulWidget {
   State<SelfieScreen> createState() => _SelfieScreenState();
 }
 
-class _SelfieScreenState extends State<SelfieScreen> {
+class _SelfieScreenState extends State<SelfieScreen>
+    with WidgetsBindingObserver {
   File? _selfie;
   bool _isUploading = false;
   final _picker = ImagePicker();
   bool _wasRejected = false;
   String? _rejectedReason;
   bool _isPending = false;
+  // 10.09: kamera izni reddedilince kalıcı "Ayarlar" yolu (tek seferlik
+  // diyalog kapatılınca düğme yine ölü kalıyordu — 782'de gerçek kullanıcı
+  // kaybı). Ayarlar'dan dönünce izin yeniden okunur.
+  bool _cameraDenied = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.fromOnboarding) funnelEvent('selfie_shown');
     _loadRejection();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || !_cameraDenied) return;
+    Permission.camera.status.then((s) {
+      if (mounted && s.isGranted) setState(() => _cameraDenied = false);
+    });
   }
 
   // Red bildirimi kaçmış olabilir — son red durumu ve preset sebebi
@@ -88,6 +108,8 @@ class _SelfieScreenState extends State<SelfieScreen> {
       // sistem diyaloğu bir daha çıkmaz, picker exception atar — buton sessiz
       // ölü kalıyordu. Kullanıcıya Ayarlar yolu gösterilir.
       if (e.code.contains('camera_access_denied')) {
+        funnelEvent('selfie_camera_denied');
+        if (mounted) setState(() => _cameraDenied = true);
         _showCameraDeniedDialog();
       } else if (mounted) {
         _showAuroraSnack(
@@ -463,6 +485,38 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     ),
                   ),
                 ),
+                if (_cameraDenied && _selfie == null) ...[
+                  const SizedBox(height: 16),
+                  GlassCard(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.no_photography_outlined,
+                          size: 18,
+                          color: AuroraTheme.auroraGold,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)!.perm_denied_hint,
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 13,
+                              color: AuroraTheme.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ScButton(
+                    label: AppLocalizations.of(context)!.perm_go_to_settings,
+                    onPressed: openAppSettings,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 GlassCard(
                   child: Column(

@@ -23,7 +23,7 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  final List<bool?> _results = [null, null, null, null];
+  final List<bool?> _results = [null, null];
 
   @override
   void initState() {
@@ -56,11 +56,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         title: l.perm_photos_title,
         description: l.perm_photos_desc,
       ),
-      _PermissionStep(
-        emoji: '🤳',
-        title: l.perm_camera_title,
-        description: l.perm_camera_desc,
-      ),
+      // 10.09: kamera adımı KALDIRILDI — izin yalnız selfie çekme anında
+      // istenir (image_picker kendisi sorar). Burada bir kez "hayır" diyen
+      // kullanıcı selfie'de ikinci kez reddedince Android'de kalıcı red oluyor
+      // ve sistem diyaloğu bir daha çıkmıyordu (10.09 gerçek kullanıcı vakası).
     ];
   }
 
@@ -80,8 +79,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
           return Permission.storage.request();
         }
         return status;
-      case 2:
-        return Permission.camera.request();
       default:
         return PermissionStatus.denied;
     }
@@ -117,10 +114,11 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
   Future<void> _finish() async {
     // 03.09 (D3): izin kabul/red ayrımı — push teslim oranını doğrudan belirliyor.
+    // 10.09: 'camera' anahtarı kaldırıldı — kamera izni artık bu ekranda
+    // sorulmuyor (selfie ekranında istenir).
     funnelEvent('permissions_done', {
       'notification': _results[0] == true,
       'photos': _results[1] == true,
-      'camera': _results[2] == true,
     });
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPermissionsRequestedKey, true);

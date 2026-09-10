@@ -38,7 +38,19 @@ declare
   v_var       record;
   v_evbase    timestamptz;
   v_evdate    timestamptz;
+  v_season    text;   -- 02.09: vitrin mevsimi (warm/cold)
 begin
+  -- 02.09.2026 (Mustafa): vitrin içeriği mevsime uyar — «Сап по Москве-реке» Eylül
+  -- yağmurunda sahte olduğunu ele veriyordu. feature_flags.test_content_season
+  -- {"mode":"auto"|"warm"|"cold"}; auto = Moskova takvimi: Mayıs–Ağustos warm, diğer cold.
+  -- 10.09: bu blok 07.09 v2.1 deploy'unda yanlışlıkla düşmüştü (yalnız migration'da
+  -- yaşıyordu) → geri kondu. KURAL: bu fonksiyonun TEK kaynağı bu dosyadır.
+  select coalesce(value->>'mode', 'auto') into v_season
+    from public.feature_flags where key = 'test_content_season';
+  if v_season is null or v_season not in ('warm','cold') then
+    v_season := case when extract(month from (v_now at time zone 'Europe/Moscow')) between 5 and 8
+                     then 'warm' else 'cold' end;
+  end if;
   -- ── 1) Davet rebirth: dolan kart ANINDA yenilenir (v2 — ölü bekleme yok) ──
   for r in
     select u.id as user_id, u.gender, u.city_id,
@@ -130,6 +142,7 @@ begin
              and ai.id <> r.inv_id
         ) cnt on true
        where v.owner_id = r.user_id
+         and (v.season = 'all' or v.season = v_season)   -- 02.09 mevsim filtresi
        order by (cnt.n::numeric / case v.category
                    when 'food'    then 6
                    when 'bar'     then 5

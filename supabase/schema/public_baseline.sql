@@ -2037,13 +2037,15 @@ declare
   v_cur       int;
   v_next      int;
   v_var       record;
-  v_season    text;   -- 02.09: vitrin mevsimi (warm/cold)
   v_evbase    timestamptz;
   v_evdate    timestamptz;
+  v_season    text;   -- 02.09: vitrin mevsimi (warm/cold)
 begin
   -- 02.09.2026 (Mustafa): vitrin içeriği mevsime uyar — «Сап по Москве-реке» Eylül
   -- yağmurunda sahte olduğunu ele veriyordu. feature_flags.test_content_season
   -- {"mode":"auto"|"warm"|"cold"}; auto = Moskova takvimi: Mayıs–Ağustos warm, diğer cold.
+  -- 10.09: bu blok 07.09 v2.1 deploy'unda yanlışlıkla düşmüştü (yalnız migration'da
+  -- yaşıyordu) → geri kondu. KURAL: bu fonksiyonun TEK kaynağı bu dosyadır.
   select coalesce(value->>'mode', 'auto') into v_season
     from public.feature_flags where key = 'test_content_season';
   if v_season is null or v_season not in ('warm','cold') then
@@ -2182,34 +2184,15 @@ begin
       end if;
     end if;
 
-    -- 0–4 taze test başvuranı ek (aynı şehir, karşı cinsiyet, davet doğumundan sonra damga)
-    n_apps := floor(random()*5)::int;
-    with fresh as (
-      insert into public.applications (invitation_id, applicant_id, status, created_at)
-      select r.inv_id, tu.id, 'pending',
-             v_created + (random() * (v_now - v_created))
-      from public.users tu
-      where tu.is_test_user = true
-        and tu.id <> r.user_id
-        and tu.id <> v_bypass
-        and tu.id <> v_demo
-        and tu.city_id = r.city_id
-        and tu.gender is distinct from r.gender
-        and tu.is_deleted = false
-        and tu.banned = false
-      order by random()
-      limit n_apps
-      on conflict (invitation_id, applicant_id) do nothing
-      returning applicant_id, created_at
-    )
-    -- Başvuranların keşfet tazeliği: last_active_at ≈ başvuru anı
-    update public.users u
-    set last_active_at = greatest(coalesce(u.last_active_at, f.created_at), f.created_at)
-    from fresh f
-    where u.id = f.applicant_id and u.is_test_user = true;
-
-    get diagnostics n_apps = row_count;  -- update edilen başvuran sayısı
-    v_apps := v_apps + n_apps;
+    -- BAŞVURU HAVUZU KAPATILDI (07.09.2026, Mustafa: «havuzu kapat»). Eskiden burada
+    -- 0–4 taze test başvuranı (aynı şehir, karşı cinsiyet) 'pending' olarak eklenir ve
+    -- last_active_at'i güncellenirdi. Kod denetimi (07.09): başvuran sayısı/yığını
+    -- YALNIZ kart sahibine çizilir (feed_screen `isOwner && applicationCount > 0`),
+    -- gerçek kullanıcı başkasının kartında başvuru görmez → havuzun kullanıcıya
+    -- görünür faydası yoktu; yalnız DB gürültüsü (push_log no_token ~170/gün) ve
+    -- «motor gerçek hesaba bulaşır mı» endişesi üretiyordu. Kart yenileme (yukarısı)
+    -- başvuruya bağlı değildir. Geri açmak = git geçmişindeki bloğu geri koymak.
+    n_apps := 0;
 
     -- Davet sahibinin tazeliği
     update public.users

@@ -74,38 +74,105 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_onTabChanged);
-    _loadMoskovaCityId();
+    _loadInitialCity();
     WidgetsBinding.instance.addObserver(this);
     _startTimer();
   }
 
   /// 31.07 PERFORMANS: şehir kimliği ağdan gelene kadar feed "tüm şehirler"
   /// anahtarıyla sorgu atıyor, kimlik gelince anahtar değişip AYNI ağır
-  /// sorguları BAŞTAN atıyordu → liste bir kez boşalıp yeniden yükleniyor,
-  /// kullanıcı bunu "feed geç geliyor" olarak görüyordu. Kimlik artık
-  /// önbellekten anında okunur; ağ sorgusu yalnız ilk kurulumda gerekir.
-  static const _kCityCacheKey = 'moscow_city_id';
+  /// sorguları BAŞTAN atıyordu → kimlik önbellekten anında okunur.
+  ///
+  /// 10.09 (Mustafa): feed PROFİL ŞEHRİYLE açılır; seçiciden yapılan seçim
+  /// kalıcıdır. 26.04'ten beri her açılış Moskova'ydı — Petersburg'lu ilk
+  /// gerçek kullanıcı (04.09) 7 oturumda hep Moskova kartlarını gördü, kendi
+  /// şehrindeki 70 kartı hiç görmedi. Öncelik: kalıcı seçim → profil şehri
+  /// (önbellek, sonra ağ) → Moskova (eski davranış, yalnız son çare).
+  static const _kChoiceIdKey = 'feed_city_choice_id'; // '' = tüm şehirler
+  static const _kChoiceNamesKey = 'feed_city_choice_names'; // "en|ru|tr"
+  static const _kProfileIdKey = 'feed_city_profile_id';
+  static const _kProfileNamesKey = 'feed_city_profile_names';
+  String? _cityNamesPacked; // "en|ru|tr" — dil değişince ad yeniden türetilir
 
-  Future<void> _loadMoskovaCityId() async {
+  String? _unpackName(String? packed) {
+    if (packed == null) return null;
+    final parts = packed.split('|');
+    if (parts.length < 3) return null;
+    final code = Localizations.localeOf(context).languageCode;
+    if (code == 'ru' && parts[1].isNotEmpty) return parts[1];
+    if (code == 'tr' && parts[2].isNotEmpty) return parts[2];
+    return parts[0].isNotEmpty ? parts[0] : null;
+  }
+
+  void _applyCity(String? id, String? packedNames) {
+    if (!mounted) return;
+    setState(() {
+      _selectedCityId = id;
+      _cityNamesPacked = packedNames;
+      _selectedCityName = _unpackName(packedNames);
+    });
+    ref.read(selectedCityIdProvider.notifier).state = id;
+  }
+
+  Future<void> _loadInitialCity() async {
     final prefs = await SharedPreferences.getInstance();
-    final cached = prefs.getString(_kCityCacheKey);
-    if (cached != null && cached.isNotEmpty) {
-      if (!mounted) return;
-      setState(() => _selectedCityId = cached);
-      ref.read(selectedCityIdProvider.notifier).state = cached;
+    if (!mounted) return;
+    // 1) Kullanıcının kendi seçimi (kalıcı)
+    final choiceId = prefs.getString(_kChoiceIdKey);
+    if (choiceId != null) {
+      _applyCity(choiceId.isEmpty ? null : choiceId,
+          prefs.getString(_kChoiceNamesKey));
       return;
     }
-    final data = await Supabase.instance.client
-        .from('cities')
-        .select('id')
-        .eq('name_en', 'Moscow')
-        .maybeSingle();
-    if (!mounted || data == null) return;
-    final id = data['id'] as String;
-    await prefs.setString(_kCityCacheKey, id);
-    if (!mounted) return;
-    setState(() => _selectedCityId = id);
-    ref.read(selectedCityIdProvider.notifier).state = id;
+    // 2) Profil şehri — önbellekten anında, sonra ağdan tazele
+    final cachedId = prefs.getString(_kProfileIdKey);
+    if (cachedId != null && cachedId.isNotEmpty) {
+      _applyCity(cachedId, prefs.getString(_kProfileNamesKey));
+    }
+    try {
+      final uid = Supabase.instance.client.auth.currentUser?.id;
+      Map<String, dynamic>? city;
+      if (uid != null) {
+        final row = await Supabase.instance.client
+            .from('users')
+            .select('city_id, cities(id, name_en, name_ru, name_tr)')
+            .eq('id', uid)
+            .maybeSingle();
+        city = row?['cities'] is Map
+            ? Map<String, dynamic>.from(row!['cities'] as Map)
+            : null;
+      }
+      // 3) Son çare: Moskova (eski varsayılan)
+      city ??= await Supabase.instance.client
+          .from('cities')
+          .select('id, name_en, name_ru, name_tr')
+          .eq('name_en', 'Moscow')
+          .maybeSingle();
+      if (!mounted || city == null) return;
+      final id = city['id'] as String;
+      final packed =
+          '${city['name_en'] ?? ''}|${city['name_ru'] ?? ''}|${city['name_tr'] ?? ''}';
+      await prefs.setString(_kProfileIdKey, id);
+      await prefs.setString(_kProfileNamesKey, packed);
+      if (!mounted) return;
+      // Kullanıcı bu arada seçiciden şehir seçtiyse ezme
+      if (prefs.getString(_kChoiceIdKey) != null) return;
+      if (id != _selectedCityId || _selectedCityName == null) {
+        _applyCity(id, packed);
+      }
+    } catch (_) {
+      // Ağ yoksa önbellek/eski değerle devam — feed bloklanmaz
+    }
+  }
+
+  Future<void> _saveCityChoice(String? id, String? packedNames) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kChoiceIdKey, id ?? '');
+    if (packedNames != null) {
+      await prefs.setString(_kChoiceNamesKey, packedNames);
+    } else {
+      await prefs.remove(_kChoiceNamesKey);
+    }
   }
 
   @override
@@ -124,14 +191,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
       isScrollControlled: true,
       builder: (sheetCtx) => _CityPickerSheet(
         selectedCityId: _selectedCityId,
-        onCitySelected: (id, name) {
+        onCitySelected: (id, packedNames) {
           Navigator.of(sheetCtx).pop();
           if (!mounted) return;
-          setState(() {
-            _selectedCityId = id;
-            _selectedCityName = name;
-          });
-          ref.read(selectedCityIdProvider.notifier).state = id;
+          _applyCity(id, packedNames);
+          _saveCityChoice(id, packedNames); // 10.09: seçim kalıcı
         },
       ),
     );
@@ -142,7 +206,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     ref.watch(photoFocusProvider); // yüz odak haritası — gelince rebuild
     ref.listen(localeProvider, (prev, next) {
       if (prev?.languageCode != next?.languageCode) {
-        setState(() => _selectedCityName = null);
+        setState(() => _selectedCityName = _unpackName(_cityNamesPacked));
       }
     });
     // 17.08 — Kompakt feed (kısa ekranlar): header sabit ölçülü (hikâye
@@ -1718,7 +1782,8 @@ class InvitationCard extends StatelessWidget {
 
 class _CityPickerSheet extends StatefulWidget {
   final String? selectedCityId;
-  final void Function(String? cityId, String? cityName) onCitySelected;
+  /// packedNames: "en|ru|tr" — çağıran dil değişiminde adı yeniden türetir (10.09)
+  final void Function(String? cityId, String? packedNames) onCitySelected;
   const _CityPickerSheet({this.selectedCityId, required this.onCitySelected});
 
   @override
@@ -1931,7 +1996,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                               name: displayName,
                               emoji: _cityEmoji(c.nameEn),
                               selected: widget.selectedCityId == c.id,
-                              onTap: () => widget.onCitySelected(c.id, displayName),
+                              onTap: () => widget.onCitySelected(
+                                  c.id, '${c.nameEn}|${c.nameRu}|${c.nameTr}'),
                             );
                           }),
                           if (filtered.isEmpty)

@@ -223,6 +223,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Too many wrong attempts — request a new code';
 
   @override
+  String get otp_error_wrong_code =>
+      'Wrong code — check the digits and try again';
+
+  @override
   String phone_error_too_soon(Object seconds) {
     return 'Too many tries — try again in $seconds s';
   }

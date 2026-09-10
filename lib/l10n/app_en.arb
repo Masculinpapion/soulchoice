@@ -73,6 +73,7 @@
   "otp_verify": "Verify",
   "otp_error_failed": "Verification failed",
   "otp_error_too_many": "Too many wrong attempts — request a new code",
+  "otp_error_wrong_code": "Wrong code — check the digits and try again",
   "phone_error_too_soon": "Too many tries — try again in {seconds} s",
   "@phone_error_too_soon": {
     "placeholders": {

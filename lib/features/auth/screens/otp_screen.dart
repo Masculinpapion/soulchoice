@@ -172,9 +172,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       // adımı en ölçümsüz olanıydı (otp_shown → otp_verified arası kapalı kutuydu).
       funnelEvent(code == 'too_many_attempts' ? 'otp_too_many' : 'otp_wrong_code');
       if (mounted) {
-        setState(() => _error = code == 'too_many_attempts'
-            ? AppLocalizations.of(context)!.otp_error_too_many
-            : AppLocalizations.of(context)!.otp_error_failed);
+        // 10.09: yanlış kod "Подтверждение не удалось" (sistem hatası gibi)
+        // okunuyordu — 09.09'da bir kullanıcı tek yanlış girişten sonra
+        // bir daha denemeden çıktı. Yanlış kod ayrı ve yönlendirici metin.
+        final l10n = AppLocalizations.of(context)!;
+        setState(() => _error = switch (code) {
+          'too_many_attempts' => l10n.otp_error_too_many,
+          'invalid_code' => l10n.otp_error_wrong_code,
+          _ => l10n.otp_error_failed,
+        });
       }
     } catch (e) {
       funnelEvent('otp_verify_error');

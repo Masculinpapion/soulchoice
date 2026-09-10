@@ -73,6 +73,7 @@
   "otp_verify": "Doğrula",
   "otp_error_failed": "Doğrulama başarısız",
   "otp_error_too_many": "Çok fazla yanlış deneme — yeni kod iste",
+  "otp_error_wrong_code": "Kod yanlış — rakamları kontrol edip tekrar dene",
   "phone_error_too_soon": "Çok sık denedin — {seconds} saniye sonra tekrar dene",
   "@phone_error_too_soon": {
     "placeholders": {

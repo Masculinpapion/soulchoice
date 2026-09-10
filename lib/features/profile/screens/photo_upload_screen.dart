@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,7 @@ import '../../../core/constants/supabase_constants.dart';
 import '../../../core/services/funnel_events.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
+import '../../../shared/widgets/glass_card.dart';
 import '../../../shared/widgets/sc_button.dart';
 import '../providers/profile_provider.dart';
 import '../../../core/services/native_uploader.dart';
@@ -56,6 +59,10 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
   final _picker = ImagePicker();
   bool _isUploading = false;
   bool _isLoading = false;
+  // 10.09: galeri izni reddedilince (Android ≤12 / iOS) picker exception atar,
+  // kullanıcı genel hata görüp zorunlu adımda kilitleniyordu — kalıcı Ayarlar
+  // yolu gösterilir (selfie kamera vakasıyla aynı sınıf).
+  bool _galleryDenied = false;
 
   int get _filledCount => _photos.where((p) => !p.isEmpty).length;
 
@@ -162,6 +169,7 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
       // ekranı ve yükleme hep dik görüntüyle çalışır.
       final picked = await _picker.pickImage(source: ImageSource.gallery);
       if (picked == null || !mounted) return;
+      if (_galleryDenied) setState(() => _galleryDenied = false);
 
       final rawBytes = await FlutterImageCompress.compressWithFile(
         picked.path,
@@ -182,8 +190,23 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
 
       // croppedBytes'ı direkt memory'de sakla — dosya yazmak yok, compression yok
       setState(() => _photos[index] = _PhotoEntry.local(croppedBytes));
-    } catch (e) {
+    } on PlatformException catch (e, stk) {
       if (!mounted) return;
+      if (e.code.contains('access_denied')) {
+        // photo_access_denied (galeri) / camera_access_denied — izin yolu.
+        funnelEvent('photo_gallery_denied');
+        setState(() => _galleryDenied = true);
+        return;
+      }
+      ErrorReporter.report(e, stack: stk, screen: 'photo_upload:pick'); // 10.09: sessiz hata Kovan'a
+      showAuroraErrorSnack(
+        context,
+        AppLocalizations.of(context)!
+            .photo_upload_pick_error(AppLocalizations.of(context)!.error_generic),
+      );
+    } catch (e, stk) {
+      if (!mounted) return;
+      ErrorReporter.report(e, stack: stk, screen: 'photo_upload:pick'); // 10.09: sessiz hata Kovan'a
       showAuroraErrorSnack(
         context,
         AppLocalizations.of(context)!
@@ -429,6 +452,38 @@ class _PhotoUploadScreenState extends ConsumerState<PhotoUploadScreen> {
                           letterSpacing: 0.3,
                         ),
                       ),
+                      if (_galleryDenied) ...[
+                        const SizedBox(height: 16),
+                        GlassCard(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(
+                                Icons.no_photography_outlined,
+                                size: 18,
+                                color: AuroraTheme.auroraGold,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  AppLocalizations.of(context)!.perm_denied_hint,
+                                  style: TextStyle(
+                                    fontFamily: 'Manrope',
+                                    fontSize: 13,
+                                    color: AuroraTheme.textSecondary,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ScButton(
+                          label: AppLocalizations.of(context)!.perm_go_to_settings,
+                          onPressed: openAppSettings,
+                        ),
+                      ],
                       const SizedBox(height: 32),
                       Expanded(
                         child: GridView.builder(

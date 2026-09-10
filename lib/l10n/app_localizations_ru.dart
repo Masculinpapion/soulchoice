@@ -222,6 +222,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Слишком много неверных попыток — запроси новый код';
 
   @override
+  String get otp_error_wrong_code =>
+      'Неверный код — проверь цифры и попробуй снова';
+
+  @override
   String phone_error_too_soon(Object seconds) {
     return 'Слишком часто — попробуй снова через $seconds сек';
   }

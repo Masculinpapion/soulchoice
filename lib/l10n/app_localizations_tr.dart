@@ -221,6 +221,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get otp_error_too_many => 'Çok fazla yanlış deneme — yeni kod iste';
 
   @override
+  String get otp_error_wrong_code =>
+      'Kod yanlış — rakamları kontrol edip tekrar dene';
+
+  @override
   String phone_error_too_soon(Object seconds) {
     return 'Çok sık denedin — $seconds saniye sonra tekrar dene';
   }

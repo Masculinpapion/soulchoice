@@ -73,6 +73,7 @@
   "otp_verify": "Подтвердить",
   "otp_error_failed": "Подтверждение не удалось",
   "otp_error_too_many": "Слишком много неверных попыток — запроси новый код",
+  "otp_error_wrong_code": "Неверный код — проверь цифры и попробуй снова",
   "phone_error_too_soon": "Слишком часто — попробуй снова через {seconds} сек",
   "@phone_error_too_soon": {
     "placeholders": {

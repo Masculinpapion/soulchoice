@@ -496,6 +496,12 @@ abstract class AppLocalizations {
   /// **'Too many wrong attempts — request a new code'**
   String get otp_error_too_many;
 
+  /// No description provided for @otp_error_wrong_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong code — check the digits and try again'**
+  String get otp_error_wrong_code;
+
   /// No description provided for @phone_error_too_soon.
   ///
   /// In en, this message translates to:

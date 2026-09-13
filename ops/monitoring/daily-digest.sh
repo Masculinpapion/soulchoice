@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # /root/monitoring/daily-digest.sh — günlük büyüme özeti (29.07.2026, Mustafa)
-# Her sabah 09:00 MSK Telegram'a tek mesaj; panele girmeden nabız tutulur.
+# Her sabah 09:00 MSK (cron 0 6 UTC) Telegram'a TEK mesaj; panele girmeden nabız tutulur.
+# 13.09.2026 (Mustafa): 5 ayrı mesaj tek mesajda birleştirildi — art arda gönderim Telegram
+# kuyruğuna düşüp 'gecikmeli' geliyordu; günde tek özet, gerisi yalnız gerçek alarm.
 set -u
 Q() { docker exec supabase-db psql -U postgres -t -A -c "$1" 2>/dev/null | head -1; }
 
@@ -14,7 +16,7 @@ PEND=$(Q "select count(*) from v_pending_selfies")
 REP=$(Q "select count(*) from v_open_reports")
 CITY=$(Q "select count(*) from city_requests where created_at > now()-interval '24 hours'")
 
-/root/monitoring/alert.sh INFO "📊 Günlük özet
+MSG="📊 Günlük özet (son 24 saat)
 • Yeni kayıt: ${NEW:-?} (toplam gerçek: ${TOTAL:-?})
 • Selfie onayı: ${SELFOK:-?} · Bekleyen selfie: ${PEND:-?}
 • Başvuru: ${APPS:-?} · Eşleşme: ${MATCH:-?}
@@ -25,16 +27,15 @@ CERR=$(Q "select count(*) from client_errors where created_at > now()-interval '
 CETOP=$(Q "select left(error,90)||' ('||count(*)||'x)' from client_errors where created_at > now()-interval '24 hours' and platform <> 'test' group by left(error,90) order by count(*) desc limit 1")
 SMSFAIL=$(docker logs supabase-edge-functions --since 24h 2>&1 | grep -c "send-call-otp SMS_FAILED")
 OTPOK=$(docker logs supabase-kong --since 24h 2>&1 | grep "send-call-otp" | grep -c '" 200 ')
-QLEN=$(cat /root/monitoring/state/alert.queue 2>/dev/null | wc -l)
+QLEN=$( [ -f /root/monitoring/state/alert.queue ] && wc -l < /root/monitoring/state/alert.queue || echo 0 )
 RSVER=$(curl -s -m 10 "https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice" | grep -oE '1\.0\.0\([0-9]+\)' | head -1)
 EKHATA=""
 if [ "${CERR:-0}" != "0" ]; then EKHATA=" - en sik: ${CETOP:-?}"; fi
-/root/monitoring/alert.sh INFO "🐝 Sabah Devriyesi
+MSG+=$'\n\n'"🐝 Sabah Devriyesi
 - Istemci hatasi (24s): ${CERR:-0}${EKHATA}
 - OTP: ${OTPOK:-?} basarili gonderim, ${SMSFAIL:-0} SMS reddi
 - RuStore gorunen surum: ${RSVER:-okunamadi}
-- Alarm kuyrugu: ${QLEN:-0} bekleyen
-- Apple maili + ASC + Play konsolu -> oturumda Fable bakar"
+- Alarm kuyrugu: ${QLEN:-0} bekleyen"
 
 # --- Yeni kullanici adim haritasi (04.09.2026, Mustafa: kisi bazinda nerede durdu) ---
 NEWU=$(docker exec supabase-db psql -U postgres -t -A -c "select string_agg(line, E'\n' order by created_at desc) from (
@@ -47,7 +48,7 @@ NEWU=$(docker exec supabase-db psql -U postgres -t -A -c "select string_agg(line
   from users u where not u.is_test_user and not u.is_deleted and u.created_at > now()-interval '24 hours') s" 2>/dev/null)
 ORPH=$(Q "select count(*) from auth.users a where a.created_at > now()-interval '24 hours' and not exists (select 1 from users u where u.id=a.id)")
 if [ -n "$NEWU" ] || [ "${ORPH:-0}" != "0" ]; then
-  /root/monitoring/alert.sh INFO "🧭 Son 24 saat yeni kullanicilar — adim haritasi
+  MSG+=$'\n\n'"🧭 Son 24 saat yeni kullanicilar — adim haritasi
 ${NEWU:--}
 OTP gecip profili bitirmeyen: ${ORPH:-0}"
 fi
@@ -60,7 +61,7 @@ F_APPR=$(Q "select count(*) from users where not is_test_user and not is_deleted
 F_APPLY=$(Q "select count(*) from users u where not is_test_user and not is_deleted and created_at > now()-interval '7 days' and (exists(select 1 from applications a where a.applicant_id=u.id) or exists(select 1 from invitations i where i.owner_id=u.id))")
 STUCK=$(Q "select count(*) from users where not is_test_user and not is_deleted and selfie_status='none' and created_at < now()-interval '24 hours'")
 STUCKNAMES=$(Q "select coalesce(string_agg(name||' ('||to_char(created_at at time zone 'Europe/Moscow','DD.MM')||')', ', ' order by created_at desc),'-') from (select name, created_at from users where not is_test_user and not is_deleted and selfie_status='none' and created_at < now()-interval '24 hours' order by created_at desc limit 5) t")
-/root/monitoring/alert.sh INFO "🪜 Kayit hunisi (son 7 gun kohortu)
+MSG+=$'\n\n'"🪜 Kayit hunisi (son 7 gun kohortu)
 kayit ${F_REG:-?} -> foto ${F_PHOTO:-?} -> selfie ${F_SELFIE:-?} -> onay ${F_APPR:-?} -> basvuru/ilan ${F_APPLY:-?}
 Selfie'de takili (24s+, toplam): ${STUCK:-?} - son: ${STUCKNAMES:-?}"
 
@@ -68,4 +69,6 @@ Selfie'de takili (24s+, toplam): ${STUCK:-?} - son: ${STUCKNAMES:-?}"
 RS_HTTP=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice || echo ERR)
 NOGMS=$(Q "select count(*) from users where not is_test_user and not is_deleted and fcm_token is null and rustore_token is not null")
 OLDBUILD=$(Q "select coalesce(string_agg(app_build||':'||c,' '),'-') from (select app_build, count(*) c from users where not is_test_user and not is_deleted and app_build is not null group by app_build order by app_build) t")
-/root/monitoring/alert.sh INFO "🏪 RuStore: katalog HTTP ${RS_HTTP:-?} | GMS'siz kullanici: ${NOGMS:-?} | surum dagilimi: ${OLDBUILD:-?}"
+MSG+=$'\n\n'"🏪 RuStore: katalog HTTP ${RS_HTTP:-?} | GMS'siz kullanici: ${NOGMS:-?} | surum dagilimi: ${OLDBUILD:-?}"
+
+/root/monitoring/alert.sh INFO "$MSG"

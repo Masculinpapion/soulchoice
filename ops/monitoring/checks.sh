@@ -359,11 +359,32 @@ fi
 # kontrolu sunucudan YAPILAMAZ (Timeweb ic agi DDG'ye cikmiyor, origin direkt
 # cevap veriyor) -> imza nobeti dis gozlemcide (soulchoice-ops uptime.yml).
 DDG_IP="104.171.129.167"
-DDG_A1=$(dig +short @8.8.8.8 soulchoice.app A 2>/dev/null | head -1)
-DDG_A2=$(dig +short @8.8.8.8 www.soulchoice.app A 2>/dev/null | head -1)
-if [ -n "$DDG_A1" ] && { [ "$DDG_A1" != "$DDG_IP" ] || [ "$DDG_A2" != "$DDG_IP" ]; }; then
-  report "ddg_dns_guard" WARN "DDoS korumasi: DNS korumali IP'den sapmis gorunuyor (apex=$DDG_A1 www=$DDG_A2, beklenen $DDG_IP) — site korumasiz olabilir!"
+# 13.09.2026: dig 9.18 zaman asiminda ";; communications error ..." metnini stdout'a basiyor ->
+# betik bunu "sapma" saniyordu (sahte UYARI/OK ciftleri). Artik: yalniz gecerli IPv4 cevap sayilir,
+# 3 cozumleyici sirayla denenir, hicbiri cevap vermezse Telegram'a hicbir sey gitmez (log'a satir),
+# gercek sapma ancak 2 ardisik kosuda (30 dk) gorulurse UYARI olur.
+ddg_resolve() { # <ad> -> ilk gecerli IPv4 (8.8.8.8 -> 1.1.1.1 -> 77.88.8.8)
+  local r ip
+  for r in 8.8.8.8 1.1.1.1 77.88.8.8; do
+    ip=$(dig +short +time=2 +tries=1 @"$r" "$1" A 2>/dev/null | grep -E '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' | head -1)
+    if [ -n "$ip" ]; then echo "$ip"; return 0; fi
+  done
+  return 1
+}
+DDG_A1=$(ddg_resolve soulchoice.app || true)
+DDG_A2=$(ddg_resolve www.soulchoice.app || true)
+DDG_PEND="$STATE/ddg_dns_guard.pending"
+if [ -z "$DDG_A1" ] || [ -z "$DDG_A2" ]; then
+  echo "$(date -Is) ddg_dns_guard: cozumleyiciler cevap vermedi (apex='$DDG_A1' www='$DDG_A2') — kontrol atlandi"
+elif [ "$DDG_A1" != "$DDG_IP" ] || [ "$DDG_A2" != "$DDG_IP" ]; then
+  if [ -f "$DDG_PEND" ]; then
+    report "ddg_dns_guard" WARN "DDoS korumasi: DNS korumali IP'den sapmis (2 ardisik kosu; apex=$DDG_A1 www=$DDG_A2, beklenen $DDG_IP) — site korumasiz olabilir!"
+  else
+    touch "$DDG_PEND"
+    echo "$(date -Is) ddg_dns_guard: ilk sapma goruldu (apex=$DDG_A1 www=$DDG_A2), 15 dk sonra teyit"
+  fi
 else
+  rm -f "$DDG_PEND"
   [ -f "$STATE/ddg_dns_guard" ] && report "ddg_dns_guard" OK "DNS yeniden korumali IP'de"
 fi
 

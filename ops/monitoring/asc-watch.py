@@ -41,10 +41,11 @@ out = {"checked_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "versio
 
 # 1) Mağaza sürümleri (appStoreState: WAITING_FOR_REVIEW, IN_REVIEW, REJECTED,
 #    PENDING_DEVELOPER_RELEASE, READY_FOR_SALE, DEVELOPER_REJECTED ...)
-v = get(f"/apps/{APP_ID}/appStoreVersions?limit=3&fields[appStoreVersions]=versionString,appStoreState,createdDate")
+v = get(f"/apps/{APP_ID}/appStoreVersions?limit=3&fields[appStoreVersions]=versionString,appStoreState")
 for d in v.get("data", []):
     a = d["attributes"]
-    out["versions"].append({"v": a.get("versionString"), "state": a.get("appStoreState"), "created": a.get("createdDate")})
+    # createdDate BİLEREK YOK: 17.09 nöbet rutini sürüm kaydı tarihini (11.05) gönderim tarihi sanıp «4 aydır bekliyor» dedi
+    out["versions"].append({"v": a.get("versionString"), "state": a.get("appStoreState")})
 
 # 2) İnceleme gönderimleri (state: READY_FOR_REVIEW, WAITING_FOR_REVIEW, IN_REVIEW,
 #    UNRESOLVED_ISSUES, CANCELING, COMPLETING, COMPLETE)

@@ -46,6 +46,16 @@ BAD=$(printf '%s\n' "$SUMMARY" | sed -n 2p)
 WAIT_H=$(printf '%s\n' "$SUMMARY" | sed -n 3p)
 echo "$(date -Is) asc-watch: $LINE ${BAD:+| BAD: $BAD} | wait_h=$WAIT_H"
 
+# asc_last.json'a bekleme süresini de yaz (nöbet rutini bu dosyayı okur; 17.09 «4 aydır bekliyor» yorum hatası)
+IN_JSON="$IN" WAIT_H="$WAIT_H" python3 - > "$STATE/asc_last.json" <<'PY'
+import os, json, sys
+d = json.loads(os.environ["IN_JSON"])
+d["wait_h"] = int(os.environ["WAIT_H"] or 0)
+d["wait_days"] = d["wait_h"] // 24
+d["note"] = "wait_h/wait_days = en eski açık gönderimin (submitted) bekleme süresi; başka hiçbir tarih alanı bekleme süresi DEĞİLDİR"
+json.dump(d, sys.stdout, ensure_ascii=False)
+PY
+
 # report() kopyası (checks.sh ile aynı semantik: değişimde bildir, CRIT günde 1 hatırlat)
 report() {
   local name=$1 status=$2 msg=$3
@@ -78,5 +88,5 @@ if [ -n "$BAD" ]; then report asc_issue CRIT "🍎 Apple aksiyon istiyor: $BAD �
 else report asc_issue OK "Apple'da açık sorun yok"; fi
 
 # 3) 72 saatten uzun bekleme → CRIT (günlük hatırlatma)
-if [ "${WAIT_H:-0}" -ge 72 ]; then report asc_wait CRIT "🍎 inceleme $((WAIT_H/24)) gündür bekliyor ($LINE) → ASC'de mesaj var mı bak; yoksa Contact Us → durum/hızlandırma"
+if [ "${WAIT_H:-0}" -ge 72 ]; then report asc_wait CRIT "🍎 inceleme $((WAIT_H/24)) gündür bekliyor ($LINE) → ASC'de Apple mesajı var mı bak (reviewsubmissions + son TestFlight thread); Apple İTTİRİLMEZ, yalnız soru gelirse aynı gün cevap"
 else report asc_wait OK "bekleme normal (${WAIT_H:-0} saat)"; fi

@@ -48,7 +48,8 @@ echo "$(date -Is) asc-watch: $LINE ${BAD:+| BAD: $BAD} | wait_h=$WAIT_H"
 
 # report() kopyası (checks.sh ile aynı semantik: değişimde bildir, CRIT günde 1 hatırlat)
 report() {
-  local name=$1 status=$2 msg=$3 f="$STATE/$name" prev="OK"
+  local name=$1 status=$2 msg=$3
+  local f="$STATE/$name" prev="OK"   # set -u: $name aynı local satırında henüz yok (17.09 ilk koşu dersi)
   [ -f "$f" ] && prev=$(cat "$f")
   if [ "$status" != "$prev" ]; then
     if [ "$status" = "OK" ]; then $ALERT OK "$name düzeldi: $msg"; rm -f "$f" "$STATE/$name.reminded"

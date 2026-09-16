@@ -56,15 +56,16 @@ try:
 except Exception as e:  # uç nokta yetki dışıysa özet yine üretilsin
     out["submissions_error"] = str(e)[:120]
 
-# 3) Son build'lerin beta (TestFlight) inceleme durumu (betaReviewState:
-#    WAITING_FOR_REVIEW, IN_REVIEW, REJECTED, APPROVED)
+# 3) Beta (TestFlight) inceleme gönderimleri — açık/sorunlu olanlar (betaReviewState:
+#    WAITING_FOR_REVIEW, IN_REVIEW, REJECTED). CI'ın her yüklediği build beta
+#    incelemesine girmez; 12.09'daki 273 gibi gönderilenler burada görünür.
 try:
-    b = get(f"/builds?filter[app]={APP_ID}&sort=-uploadedDate&limit=3&fields[builds]=version,uploadedDate&include=betaAppReviewSubmission&fields[betaAppReviewSubmissions]=betaReviewState")
-    states = {i["id"]: i["attributes"].get("betaReviewState") for i in b.get("included", []) if i["type"] == "betaAppReviewSubmissions"}
+    b = get("/betaAppReviewSubmissions?filter[betaReviewState]=WAITING_FOR_REVIEW,IN_REVIEW,REJECTED&include=build&fields[builds]=version,uploadedDate&limit=10")
+    builds = {i["id"]: i["attributes"] for i in b.get("included", []) if i["type"] == "builds"}
     for d in b.get("data", []):
-        a = d["attributes"]
-        rel = (d.get("relationships", {}).get("betaAppReviewSubmission", {}) or {}).get("data") or {}
-        out["betas"].append({"build": a.get("version"), "uploaded": a.get("uploadedDate"), "beta_state": states.get(rel.get("id"))})
+        rel = (d.get("relationships", {}).get("build", {}) or {}).get("data") or {}
+        ba = builds.get(rel.get("id"), {})
+        out["betas"].append({"build": ba.get("version"), "uploaded": ba.get("uploadedDate"), "beta_state": d["attributes"].get("betaReviewState")})
 except Exception as e:
     out["betas_error"] = str(e)[:120]
 

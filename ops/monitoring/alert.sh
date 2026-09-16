@@ -9,15 +9,15 @@ source /root/monitoring/.env
 
 QUEUE=/root/monitoring/state/alert.queue
 
-send_tg() { # send_tg <text> → 0 başarılı; 3 deneme, aralarda 5/10 sn
+send_tg() { # send_tg <text> → 0 başarılı; 4 deneme (6 sn tavan), aralarda 1/2/3 sn
   # 16.09: --http1.1 — Timeweb→Telegram HTTP/2 GET/POST bazen asılı kalıyor (DPI), 15 sn sonra kuyruğa düşüp 15 dk gecikiyordu; h1.1 0,15 sn
   local try
-  for try in 1 2 3; do
-    if curl -sS --http1.1 -m 15 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+  for try in 1 2 3 4; do  # 16.09: RKN akış düşürmesi ~1/6 denemede; 6 sn tavan × 4 deneme, aralar 1/2/3 sn
+    if curl -sS --http1.1 -m 6 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
       -d chat_id="${TELEGRAM_CHAT_ID}" --data-urlencode text="$1" >/dev/null 2>&1; then
       return 0
     fi
-    [ "$try" -lt 3 ] && sleep $(( try * 5 ))
+    [ "$try" -lt 4 ] && sleep "$try"
   done
   return 1
 }

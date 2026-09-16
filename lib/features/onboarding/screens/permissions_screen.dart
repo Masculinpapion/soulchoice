@@ -23,7 +23,7 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  final List<bool?> _results = [null, null];
+  final List<bool?> _results = [null];
 
   @override
   void initState() {
@@ -51,11 +51,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       ),
       // 11.08: konum adımı KALDIRILDI — kod hiçbir yerde konum okumuyor
       // (feed şehir seçimiyle çalışır); ölü izin = mağaza gizlilik riski.
-      _PermissionStep(
-        emoji: '📷',
-        title: l.perm_photos_title,
-        description: l.perm_photos_desc,
-      ),
+      // 16.09: fotoğraf/galeri adımı KALDIRILDI — Play «Photo and Video
+      // Permissions» politikası READ_MEDIA_IMAGES ile üretim gönderimini
+      // engelledi; image_picker sistem Photo Picker ile izinsiz çalışıyor,
+      // manifest'ten de izinler çıkarıldı. Bu ekran artık yalnız bildirim.
       // 10.09: kamera adımı KALDIRILDI — izin yalnız selfie çekme anında
       // istenir (image_picker kendisi sorar). Burada bir kez "hayır" diyen
       // kullanıcı selfie'de ikinci kez reddedince Android'de kalıcı red oluyor
@@ -73,12 +72,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     switch (step) {
       case 0:
         return Permission.notification.request();
-      case 1:
-        final status = await Permission.photos.request();
-        if (status.isDenied || status.isPermanentlyDenied) {
-          return Permission.storage.request();
-        }
-        return status;
       default:
         return PermissionStatus.denied;
     }
@@ -116,9 +109,9 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     // 03.09 (D3): izin kabul/red ayrımı — push teslim oranını doğrudan belirliyor.
     // 10.09: 'camera' anahtarı kaldırıldı — kamera izni artık bu ekranda
     // sorulmuyor (selfie ekranında istenir).
+    // 16.09: 'photos' anahtarı kaldırıldı — galeri izni artık sorulmuyor.
     funnelEvent('permissions_done', {
       'notification': _results[0] == true,
-      'photos': _results[1] == true,
     });
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPermissionsRequestedKey, true);

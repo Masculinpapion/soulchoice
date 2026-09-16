@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Galeri (Android 13+) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- Galeri (Android 12 ve altı) -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- 16.09: galeri izinleri (READ_MEDIA_IMAGES / READ_EXTERNAL_STORAGE) KALDIRILDI —
+         Play «Photo and Video Permissions» politikası üretim gönderimini engelledi;
+         image_picker Android 13+'ta sistem Photo Picker, altında GET_CONTENT kullanır,
+         ikisi de izin istemez. -->
     <!-- Kamera (selfie) -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Konum -->

@@ -1,0 +1,52 @@
+name: ASC Watch
+
+# 17.09.2026 — App Store Connect inceleme bekçisi.
+# Sebep: 12.09'da Apple beta 273'e 2.1 «Information Needed» yazdı, mail gelmedi,
+# ASC 5 gün açılmadı, 1.0.1 (275) kuyrukta bekledi. Bu iş 6 saatte bir ASC API'den
+# sürüm / gönderim / beta inceleme durumlarını okur, özeti sunucuya (asc-watch.sh)
+# akıtır; sunucu değişimi/red/uzun beklemeyi Telegram'a yazar (alert.sh).
+# Secrets: APPSTORE_API_* (iOS TestFlight ile aynı), TIMEWEB_SSH_KEY.
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'   # 00:17 / 06:17 / 12:17 / 18:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: asc-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: ops/monitoring
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bağımlılıklar
+        run: pip install -q "PyJWT[crypto]>=2.8"
+      - name: ASC durumunu oku
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          API_KEY_BASE64: ${{ secrets.APPSTORE_API_KEY_BASE64 }}
+          ASC_APP_ID: '6768422521'
+        run: |
+          export ASC_KEY_P8="$(echo "$API_KEY_BASE64" | base64 --decode)"
+          python3 ops/monitoring/asc-watch.py > summary.json
+          echo "--- özet ---"; cat summary.json
+      - name: Sunucuya akıt (asc-watch.sh → Telegram)
+        env:
+          SSH_KEY: ${{ secrets.TIMEWEB_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/timeweb && chmod 600 ~/.ssh/timeweb
+          ssh-keyscan -H 89.169.1.127 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh -i ~/.ssh/timeweb -o ConnectTimeout=20 root@89.169.1.127 '/root/monitoring/asc-watch.sh' < summary.json

@@ -7,6 +7,8 @@ on:
     # (01.09 docs commit'i tam APK/AAB derlemesi tetikledi, VK deposu kesikken kırmızıya düştü)
     paths-ignore:
       - 'docs/**'
+      - 'ops/**'      # 17.09: sunucu/izleme betikleri uygulama derlemesini tetiklemesin
+      - '.github/**'  # 17.09: workflow düzenlemesi de (iOS'ta zaten böyleydi)
   pull_request:
     branches: [ main ]
   workflow_dispatch:

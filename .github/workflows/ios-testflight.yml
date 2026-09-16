@@ -10,6 +10,7 @@ on:
       - '**.md'
       - 'landing/**'
       - 'supabase/**'
+      - 'ops/**'      # 17.09: sunucu/izleme betikleri TestFlight build'i tetiklemesin
 
 concurrency:
   group: ios-testflight

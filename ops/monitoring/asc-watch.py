@@ -60,12 +60,16 @@ except Exception as e:  # uç nokta yetki dışıysa özet yine üretilsin
 #    WAITING_FOR_REVIEW, IN_REVIEW, REJECTED). CI'ın her yüklediği build beta
 #    incelemesine girmez; 12.09'daki 273 gibi gönderilenler burada görünür.
 try:
-    b = get("/betaAppReviewSubmissions?filter[betaReviewState]=WAITING_FOR_REVIEW,IN_REVIEW,REJECTED&include=build&fields[builds]=version,uploadedDate&limit=10")
-    builds = {i["id"]: i["attributes"] for i in b.get("included", []) if i["type"] == "builds"}
+    # betaAppReviewSubmissions uç noktası filter[build] ister (400) → son 10 build
+    # üzerinden include ile alınır; beta incelemesine girmemiş build'ler atlanır.
+    b = get(f"/builds?filter[app]={APP_ID}&sort=-uploadedDate&limit=10&fields[builds]=version,uploadedDate,betaAppReviewSubmission&include=betaAppReviewSubmission&fields[betaAppReviewSubmissions]=betaReviewState")
+    states = {i["id"]: i["attributes"].get("betaReviewState") for i in b.get("included", []) if i["type"] == "betaAppReviewSubmissions"}
     for d in b.get("data", []):
-        rel = (d.get("relationships", {}).get("build", {}) or {}).get("data") or {}
-        ba = builds.get(rel.get("id"), {})
-        out["betas"].append({"build": ba.get("version"), "uploaded": ba.get("uploadedDate"), "beta_state": d["attributes"].get("betaReviewState")})
+        rel = (d.get("relationships", {}).get("betaAppReviewSubmission", {}) or {}).get("data") or {}
+        st = states.get(rel.get("id"))
+        if st:
+            a = d["attributes"]
+            out["betas"].append({"build": a.get("version"), "uploaded": a.get("uploadedDate"), "beta_state": st})
 except Exception as e:
     out["betas_error"] = str(e)[:120]
 

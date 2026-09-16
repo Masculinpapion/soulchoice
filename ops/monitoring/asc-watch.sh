@@ -32,7 +32,7 @@ for s in d.get("submissions", []):
         t = datetime.datetime.strptime(s["submitted"][:19], "%Y-%m-%dT%H:%M:%S")
         oldest_wait_h = max(oldest_wait_h, int((now - t).total_seconds() // 3600))
 for b in d.get("betas", []):
-    if b.get("beta_state"):
+    if b.get("beta_state") and b.get("beta_state") != "APPROVED":   # APPROVED = gürültü (her CI build'i)
         parts.append("beta%s=%s" % (b.get("build"), b.get("beta_state")))
         if b.get("beta_state") == "REJECTED":
             bad.append("beta %s REJECTED (ASC thread'inde mesaj olabilir)" % b.get("build"))

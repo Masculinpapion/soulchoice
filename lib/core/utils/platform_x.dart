@@ -27,3 +27,10 @@ bool get openFeedMode => isIOSDevice || _openFeedPreview;
 /// YALNIZ yerel önizleme: `flutter run --dart-define=OPEN_FEED=true` ile
 /// Android emülatörde iOS akışı görülür. Mağaza derlemelerinde tanımsız.
 const bool _openFeedPreview = bool.fromEnvironment('OPEN_FEED');
+
+/// Mağaza demo şehirleri DB'de «Moscow, Russia» / «Saint Petersburg, Russia»
+/// (TR: «…, Rusya») adını taşır — Android'in `name_en = 'Moscow'` tam eşleşme
+/// aramasıyla çakışmasın diye. iOS'ta EKRANDA ek gösterilmez (17.09.2026).
+String cleanCityName(String s) => openFeedMode
+    ? s.replaceFirst(RegExp(r',\s*(Russia|Rusya)$'), '')
+    : s;

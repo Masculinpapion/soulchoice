@@ -12,11 +12,13 @@ import '../../../data/models/user_model.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
   if (city == null) return null;
+  final String? raw;
   switch (lang) {
-    case 'ru': return city['name_ru'] as String? ?? city['name'] as String?;
-    case 'tr': return city['name_tr'] as String? ?? city['name'] as String?;
-    default:   return city['name_en'] as String? ?? city['name'] as String?;
+    case 'ru': raw = city['name_ru'] as String? ?? city['name'] as String?;
+    case 'tr': raw = city['name_tr'] as String? ?? city['name'] as String?;
+    default:   raw = city['name_en'] as String? ?? city['name'] as String?;
   }
+  return raw == null ? null : cleanCityName(raw);
 }
 
 /// 22.08 — SONSUZ KAYDIRMA (feed ile aynı ilke, bkz. invitations_provider):

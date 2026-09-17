@@ -100,9 +100,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     final parts = packed.split('|');
     if (parts.length < 3) return null;
     final code = Localizations.localeOf(context).languageCode;
-    if (code == 'ru' && parts[1].isNotEmpty) return parts[1];
-    if (code == 'tr' && parts[2].isNotEmpty) return parts[2];
-    return parts[0].isNotEmpty ? parts[0] : null;
+    if (code == 'ru' && parts[1].isNotEmpty) return cleanCityName(parts[1]);
+    if (code == 'tr' && parts[2].isNotEmpty) return cleanCityName(parts[2]);
+    return parts[0].isNotEmpty ? cleanCityName(parts[0]) : null;
   }
 
   void _applyCity(String? id, String? packedNames) {
@@ -1841,16 +1841,36 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
       final packed = prefs.getString('feed_city_profile_names');
       if (pid != null && pid.isNotEmpty && !list.any((c) => c.id == pid)) {
         final parts = (packed ?? '').split('|');
-        // Demo şehri gerçek «Moscow»un yerine geçer (çift Moscow olmasın);
-        // Saint Petersburg listede kalır → mağazaya sunulan «iki şehir».
+        // Demo hesabı: liste = mağaza DEMO şehirleri (pasif + country=RU:
+        // «Moscow, Russia», «Saint Petersburg, Russia» — içerik İngilizce).
+        // Gerçek (aktif) şehirler ve «All Cities» bu hesapta gösterilmez →
+        // inceleyici «iki şehir»i görür, Rusça içeriğe düşmez.
+        List<dynamic> demo = const [];
+        try {
+          demo = await Supabase.instance.client
+              .from('cities')
+              .select('id, name_en, name_ru, name_tr')
+              .eq('is_active', false)
+              .eq('country', 'RU')
+              .order('name_en') as List;
+        } catch (_) {/* ağ yoksa yalnız profil şehri */}
         list
-          ..removeWhere((c) => c.nameEn == 'Moscow')
-          ..insert(0, (
+          ..clear()
+          ..addAll(demo.map((r) => (
+                id: r['id'] as String,
+                nameEn: (r['name_en'] as String?) ?? '',
+                nameRu: (r['name_ru'] as String?) ?? '',
+                nameTr: (r['name_tr'] as String?) ?? '',
+              )));
+        if (!list.any((c) => c.id == pid)) {
+          list.insert(0, (
             id: pid,
             nameEn: parts.isNotEmpty ? parts[0] : '',
             nameRu: parts.length > 1 ? parts[1] : '',
             nameTr: parts.length > 2 ? parts[2] : '',
           ));
+        }
+        list.sort((a, b) => a.nameEn.compareTo(b.nameEn)); // Moscow, sonra Saint Petersburg
         onlyProfileCity = true;
       }
     }
@@ -1863,9 +1883,9 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
 
   String _locName({required String nameEn, required String nameRu, required String nameTr}) {
     final code = Localizations.localeOf(context).languageCode;
-    if (code == 'ru' && nameRu.isNotEmpty) return nameRu;
-    if (code == 'tr' && nameTr.isNotEmpty) return nameTr;
-    return nameEn;
+    if (code == 'ru' && nameRu.isNotEmpty) return cleanCityName(nameRu);
+    if (code == 'tr' && nameTr.isNotEmpty) return cleanCityName(nameTr);
+    return cleanCityName(nameEn);
   }
 
   List<({String id, String nameEn, String nameRu, String nameTr})> get _filtered {
@@ -1884,6 +1904,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
       case 'moscow':
       case 'moscow, russia':
       case 'saint petersburg':
+      case 'saint petersburg, russia':
         return '🇷🇺';
       case 'istanbul':
         return '🇹🇷';

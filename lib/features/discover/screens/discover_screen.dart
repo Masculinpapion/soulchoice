@@ -8,6 +8,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '../../../core/utils/platform_x.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -503,6 +504,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 32),
             ScButton(label: btnLabel, onPressed: onCreateTap),
             // Boş keşfetin en sık sebebi dar yaş filtresi (26.07 vakası)
+            // iOS açık akış: filtre yok → ipucu da yok (17.09.2026).
+            if (!openFeedMode) ...[
             const SizedBox(height: 18),
             Text(
               AppLocalizations.of(context)!.empty_filter_hint,
@@ -525,6 +528,7 @@ class _EmptyState extends StatelessWidget {
                 ),
               ),
             ),
+            ],
           ],
         ),
       ),

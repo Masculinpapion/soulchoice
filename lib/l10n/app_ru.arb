@@ -1003,5 +1003,15 @@
   "profile_setup_email_label": "E-mail (необязательно) — для чеков и новостей",
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "Согласен(на) получать новости и специальные предложения SoulChoice, в том числе рекламные, по e-mail. Отозвать согласие можно в любой момент — в настройках или письмом на support@soulchoice.app.",
-  "paywall_subtitle_ios": "Premium открывает безлимит. Действующая подписка распознаётся автоматически."
+  "paywall_subtitle_ios": "Premium открывает безлимит. Действующая подписка распознаётся автоматически.",
+  "feed_browse_hint": "· ЛИСТАЙ →",
+  "decision_selected_body_request_open": "Ты выбираешь {name} для запроса \"{title}\".\nПодтвердить выбор?",
+  "@decision_selected_body_request_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "decision_selected_body_open": "Ты выбираешь {name} для приглашения \"{title}\".\nПодтвердить выбор?",
+  "@decision_selected_body_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "messages_new_match_open": "Взаимный выбор ✨",
+  "notif_pref_match_open": "Выбор",
+  "decision_selected_title_open": "Подтверждение выбора",
+  "chat_noshow_too_early_open": "Сообщить о неявке можно после времени встречи и не раньше чем через 24 часа после взаимного выбора.",
+  "delete_account_body_open": "Если ты удалишь аккаунт, все твои данные, сообщения, выборы и фото будут безвозвратно удалены. Это действие нельзя отменить."
 }

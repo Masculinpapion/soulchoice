@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../messaging/providers/matches_provider.dart';
 import '../providers/applications_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -278,7 +279,7 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
                     ),
                     const SizedBox(height: 40),
                     Text(
-                      AppLocalizations.of(context)!.decision_selected_title,
+                      (openFeedMode ? AppLocalizations.of(context)!.decision_selected_title_open : AppLocalizations.of(context)!.decision_selected_title),
                       style: TextStyle(
                         fontFamily: 'Fraunces',
                         fontStyle: FontStyle.italic,
@@ -291,11 +292,18 @@ class _DecisionScreenState extends ConsumerState<DecisionScreen>
                     ),
                     const SizedBox(height: 12),
                     Text(
+                      // iOS açık akış: «совпадение» yerine «выбор» (17.09.2026)
                       _isRequestFlow
-                          ? AppLocalizations.of(context)!
-                              .decision_selected_body_request(name, title)
-                          : AppLocalizations.of(context)!
-                              .decision_selected_body(name, title),
+                          ? (openFeedMode
+                              ? AppLocalizations.of(context)!
+                                  .decision_selected_body_request_open(name, title)
+                              : AppLocalizations.of(context)!
+                                  .decision_selected_body_request(name, title))
+                          : (openFeedMode
+                              ? AppLocalizations.of(context)!
+                                  .decision_selected_body_open(name, title)
+                              : AppLocalizations.of(context)!
+                                  .decision_selected_body(name, title)),
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 16,

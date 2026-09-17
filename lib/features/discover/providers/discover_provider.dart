@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/utils/platform_x.dart';
+import '../../feed/logic/gender_interleave.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../data/models/invitation_model.dart';
@@ -60,6 +62,12 @@ final discoverProvider =
     targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
     minAge = userRow?['min_age'] as int? ?? 21;
     maxAge = userRow?['max_age'] as int? ?? 60;
+  }
+  // iOS açık akış (17.09.2026): cinsiyet/yaş süzgeci YOK — herkes görünür.
+  if (openFeedMode) {
+    targetGender = null;
+    minAge = 21;
+    maxAge = 60;
   }
 
   // Tek sorgu iskeleti — şehir kısıtı parametreyle. Kararlı sıralama
@@ -191,5 +199,9 @@ final discoverProvider =
 
   // Kullanıcı başına 1 kart — aynı kişinin birden fazla daveti olsa bile
   final seen = <String>{};
-  return list.where((inv) => inv.owner?.id != null && seen.add(inv.owner!.id)).toList();
+  final unique = list.where((inv) => inv.owner?.id != null && seen.add(inv.owner!.id)).toList();
+  // iOS açık akış (17.09.2026): ızgara K/E dönüşümlü — rastgele karıştırma
+  // aynı cinsiyeti art arda öne düşürebiliyordu (emülatör kanıtı).
+  if (!openFeedMode) return unique;
+  return interleaveByGender<InvitationModel>(unique, (inv) => inv.owner?.gender);
 });

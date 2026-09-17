@@ -1003,5 +1003,15 @@
   "profile_setup_email_label": "E-posta (isteğe bağlı) — çek ve haberler için",
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "SoulChoice haber ve özel tekliflerini (tanıtım dahil) e-posta ile almayı kabul ediyorum. Onayı istediğin zaman ayarlardan veya support@soulchoice.app adresine yazarak geri çekebilirsin.",
-  "paywall_subtitle_ios": "Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır."
+  "paywall_subtitle_ios": "Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.",
+  "feed_browse_hint": "· KAYDIR →",
+  "decision_selected_body_request_open": "{name} adlı kişiyi \"{title}\" isteğin için seçtin.\nSeçimini onaylamak ister misin?",
+  "@decision_selected_body_request_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "decision_selected_body_open": "{name} adlı kişiyi \"{title}\" davetin için seçtin.\nSeçimini onaylamak ister misin?",
+  "@decision_selected_body_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "messages_new_match_open": "Karşılıklı seçim ✨",
+  "notif_pref_match_open": "Seçimler",
+  "decision_selected_title_open": "Seçimini onayla",
+  "chat_noshow_too_early_open": "Gelmediğini, buluşma saati geçtikten ve karşılıklı seçimden en az 24 saat sonra bildirebilirsin.",
+  "delete_account_body_open": "Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz."
 }

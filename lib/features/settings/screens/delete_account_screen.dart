@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/auth/session_expiry.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
@@ -112,7 +113,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.delete_account_body,
+                (openFeedMode ? AppLocalizations.of(context)!.delete_account_body_open : AppLocalizations.of(context)!.delete_account_body),
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 16,

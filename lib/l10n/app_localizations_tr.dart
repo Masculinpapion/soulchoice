@@ -2374,4 +2374,34 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.';
+
+  @override
+  String get feed_browse_hint => '· KAYDIR →';
+
+  @override
+  String decision_selected_body_request_open(String name, String title) {
+    return '$name adlı kişiyi \"$title\" isteğin için seçtin.\nSeçimini onaylamak ister misin?';
+  }
+
+  @override
+  String decision_selected_body_open(String name, String title) {
+    return '$name adlı kişiyi \"$title\" davetin için seçtin.\nSeçimini onaylamak ister misin?';
+  }
+
+  @override
+  String get messages_new_match_open => 'Karşılıklı seçim ✨';
+
+  @override
+  String get notif_pref_match_open => 'Seçimler';
+
+  @override
+  String get decision_selected_title_open => 'Seçimini onayla';
+
+  @override
+  String get chat_noshow_too_early_open =>
+      'Gelmediğini, buluşma saati geçtikten ve karşılıklı seçimden en az 24 saat sonra bildirebilirsin.';
+
+  @override
+  String get delete_account_body_open =>
+      'Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz.';
 }

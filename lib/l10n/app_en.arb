@@ -1125,5 +1125,15 @@
   "profile_setup_email_label": "Email (optional) — for receipts and news",
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "I agree to receive SoulChoice news and special offers (including promotional) by email. You can withdraw consent at any time — in settings or by writing to support@soulchoice.app.",
-  "paywall_subtitle_ios": "Premium unlocks unlimited access. An existing subscription is recognized automatically."
+  "paywall_subtitle_ios": "Premium unlocks unlimited access. An existing subscription is recognized automatically.",
+  "feed_browse_hint": "· BROWSE →",
+  "decision_selected_body_request_open": "You selected {name} for your \"{title}\" request.\nConfirm your choice?",
+  "@decision_selected_body_request_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "decision_selected_body_open": "You selected {name} for your \"{title}\" invitation.\nConfirm your choice?",
+  "@decision_selected_body_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
+  "messages_new_match_open": "Mutual choice ✨",
+  "notif_pref_match_open": "Selections",
+  "decision_selected_title_open": "Confirm your choice",
+  "chat_noshow_too_early_open": "You can report a no-show once the meeting time has passed and at least 24 hours after the mutual choice.",
+  "delete_account_body_open": "If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone."
 }

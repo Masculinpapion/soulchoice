@@ -2429,4 +2429,34 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium открывает безлимит. Действующая подписка распознаётся автоматически.';
+
+  @override
+  String get feed_browse_hint => '· ЛИСТАЙ →';
+
+  @override
+  String decision_selected_body_request_open(String name, String title) {
+    return 'Ты выбираешь $name для запроса \"$title\".\nПодтвердить выбор?';
+  }
+
+  @override
+  String decision_selected_body_open(String name, String title) {
+    return 'Ты выбираешь $name для приглашения \"$title\".\nПодтвердить выбор?';
+  }
+
+  @override
+  String get messages_new_match_open => 'Взаимный выбор ✨';
+
+  @override
+  String get notif_pref_match_open => 'Выбор';
+
+  @override
+  String get decision_selected_title_open => 'Подтверждение выбора';
+
+  @override
+  String get chat_noshow_too_early_open =>
+      'Сообщить о неявке можно после времени встречи и не раньше чем через 24 часа после взаимного выбора.';
+
+  @override
+  String get delete_account_body_open =>
+      'Если ты удалишь аккаунт, все твои данные, сообщения, выборы и фото будут безвозвратно удалены. Это действие нельзя отменить.';
 }

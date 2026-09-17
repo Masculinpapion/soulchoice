@@ -1,5 +1,6 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
 import 'package:flutter/material.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/utils/prompt_hints.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -630,7 +631,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                         const SizedBox(height: 8),
 
-                        // ── Yaş aralığı ──
+                        // ── Yaş aralığı ── (iOS açık akış: yok, 17.09.2026)
+                        if (!openFeedMode) ...[
                         _sectionLabel(l10n.profile_setup_step_age_range),
                         Center(
                           child: Text(
@@ -664,6 +666,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             _maxAge = v.end.round();
                           }),
                         ),
+                        ],
                       ],
                     ),
                   ),

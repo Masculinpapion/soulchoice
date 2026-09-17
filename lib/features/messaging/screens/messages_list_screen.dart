@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import '../../../core/utils/platform_x.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
@@ -427,7 +428,9 @@ class _MatchTile extends StatelessWidget {
             ? '${match.lastMessage!.substring(0, 35)}…'
             : match.lastMessage!)
         : (isNew
-            ? AppLocalizations.of(context)!.messages_new_match
+            ? (openFeedMode
+                ? AppLocalizations.of(context)!.messages_new_match_open
+                : AppLocalizations.of(context)!.messages_new_match)
             : AppLocalizations.of(context)!.messages_no_preview);
     // Yeni eşleşme, okunmamış mesaj gibi vurgulanır — seçildiğini kaçırmasın
     final hasUnread = match.unreadCount > 0 || isNew;

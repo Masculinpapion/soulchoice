@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/services/notification_cleaner.dart';
 import '../../../core/services/review_request.dart';
 import '../../../core/utils/guard_errors.dart';
@@ -789,7 +790,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         final msg = e.toString().contains('meeting_not_yet')
-            ? l10n.chat_noshow_too_early
+            ? (openFeedMode ? l10n.chat_noshow_too_early_open : l10n.chat_noshow_too_early)
             : l10n.error_generic;
         _showAuroraSnack(
           msg,

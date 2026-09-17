@@ -14,3 +14,16 @@ bool get isAndroidDevice => !kIsWeb && Platform.isAndroid;
 
 /// Sunucuya yazılan kaynak etiketi (`users.last_platform`, ödeme `source`).
 String get platformTag => kIsWeb ? 'web' : (Platform.isIOS ? 'ios' : 'android');
+
+/// iOS «açık akış» paketi (17.09.2026, 6. Apple 4.3(b) reddi sonrası):
+/// iOS'ta akış / Обзор / yüz şeridi cinsiyet ve yaş aralığına göre SÜZÜLMEZ
+/// (herkes herkesi görür), sihirbazda yaş aralığı adımı ve ayarlarda yaş
+/// aralığı satırı yok, «совпадение/match» yerine «выбор/choice» metni.
+/// Derleme sabiti — uzaktan bayrak DEĞİL (2.3.1 bait-and-switch riski).
+/// Android/RuStore/Play davranışı değişmez. Mekanik aynı: plan → başvuru →
+/// tek kişiyi seç → sohbet.
+bool get openFeedMode => isIOSDevice || _openFeedPreview;
+
+/// YALNIZ yerel önizleme: `flutter run --dart-define=OPEN_FEED=true` ile
+/// Android emülatörde iOS akışı görülür. Mağaza derlemelerinde tanımsız.
+const bool _openFeedPreview = bool.fromEnvironment('OPEN_FEED');

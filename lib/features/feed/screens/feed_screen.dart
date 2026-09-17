@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -1287,6 +1288,8 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 ),
                 // Boş feed'in en sık sebebi dar yaş filtresi (26.07 vakası) —
                 // kullanıcı "uygulama boş" sanıp silmesin, sebebe yönlendir.
+                // iOS açık akış: filtre yok → ipucu da yok (17.09.2026).
+                if (!openFeedMode) ...[
                 const SizedBox(height: 18),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -1312,6 +1315,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                     ),
                   ),
                 ),
+                ],
               ],
             ),
           );
@@ -1342,7 +1346,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                   ShaderMask(
                     blendMode: BlendMode.srcIn,
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
-                    child: Text(l10n.feed_swipe_hint,
+                    child: Text(openFeedMode ? l10n.feed_browse_hint : l10n.feed_swipe_hint,
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
                   ),
                 ],

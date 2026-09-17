@@ -2415,4 +2415,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get delete_account_body_open =>
       'If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone.';
+
+  @override
+  String get onboarding_1_title_open =>
+      'You have the plan. Find company to go with';
+
+  @override
+  String get onboarding_1_desc_open =>
+      'A restaurant, a concert, an exhibition. Post your plan, see who wants to join and choose your company.';
+
+  @override
+  String get onboarding_2_title_open => 'Tell us where you\'d like to go';
+
+  @override
+  String get onboarding_2_desc_open =>
+      'A café, a theatre, a concert. Post a request, and someone planning the same thing can invite you.';
+
+  @override
+  String get onboarding_3_desc_open =>
+      'Every profile is verified with a selfie. Users who skip plans or behave inappropriately are blocked.';
 }

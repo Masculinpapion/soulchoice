@@ -1013,5 +1013,10 @@
   "notif_pref_match_open": "Seçimler",
   "decision_selected_title_open": "Seçimini onayla",
   "chat_noshow_too_early_open": "Gelmediğini, buluşma saati geçtikten ve karşılıklı seçimden en az 24 saat sonra bildirebilirsin.",
-  "delete_account_body_open": "Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz."
+  "delete_account_body_open": "Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz.",
+  "onboarding_1_title_open": "Planın hazır! Birlikte gidecek kişiyi bul",
+  "onboarding_1_desc_open": "Restoran, konser, sergi. Planını paylaş, katılmak isteyenleri gör ve kiminle gideceğini seç.",
+  "onboarding_2_title_open": "Nereye gitmek istediğini söyle",
+  "onboarding_2_desc_open": "Kafe, tiyatro, konser. İsteğini paylaş; benzer planı olan biri seni davet edebilsin.",
+  "onboarding_3_desc_open": "Her profil selfie ile onaylanır. Plana gelmeyen veya uygunsuz davranan kullanıcılar engellenir."
 }

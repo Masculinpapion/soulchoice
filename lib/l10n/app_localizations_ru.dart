@@ -2459,4 +2459,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get delete_account_body_open =>
       'Если ты удалишь аккаунт, все твои данные, сообщения, выборы и фото будут безвозвратно удалены. Это действие нельзя отменить.';
+
+  @override
+  String get onboarding_1_title_open => 'План готов! Осталось найти компанию';
+
+  @override
+  String get onboarding_1_desc_open =>
+      'Ресторан, концерт, выставка. Опубликуй план, посмотри, кто хочет присоединиться, и выбери компанию.';
+
+  @override
+  String get onboarding_2_title_open => 'Расскажи, куда хочешь пойти';
+
+  @override
+  String get onboarding_2_desc_open =>
+      'Кафе, театр, концерт. Оставь запрос — и тот, у кого похожий план, сможет тебя пригласить.';
+
+  @override
+  String get onboarding_3_desc_open =>
+      'Каждый профиль подтверждается через селфи. Те, кто не приходит или ведёт себя неподобающе, блокируются.';
 }

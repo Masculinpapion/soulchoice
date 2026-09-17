@@ -2404,4 +2404,23 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get delete_account_body_open =>
       'Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz.';
+
+  @override
+  String get onboarding_1_title_open =>
+      'Planın hazır! Birlikte gidecek kişiyi bul';
+
+  @override
+  String get onboarding_1_desc_open =>
+      'Restoran, konser, sergi. Planını paylaş, katılmak isteyenleri gör ve kiminle gideceğini seç.';
+
+  @override
+  String get onboarding_2_title_open => 'Nereye gitmek istediğini söyle';
+
+  @override
+  String get onboarding_2_desc_open =>
+      'Kafe, tiyatro, konser. İsteğini paylaş; benzer planı olan biri seni davet edebilsin.';
+
+  @override
+  String get onboarding_3_desc_open =>
+      'Her profil selfie ile onaylanır. Plana gelmeyen veya uygunsuz davranan kullanıcılar engellenir.';
 }

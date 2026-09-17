@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/sc_button.dart';
@@ -31,21 +32,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       _OnboardingPageData(
         pillColor: AuroraTheme.auroraRed,
         pillGlow: AuroraTheme.auroraRed,
-        title: l10n.onboarding_1_title,
-        subtitle: l10n.onboarding_1_desc,
+        title: openFeedMode ? l10n.onboarding_1_title_open : l10n.onboarding_1_title,
+        subtitle: openFeedMode ? l10n.onboarding_1_desc_open : l10n.onboarding_1_desc,
       ),
       _OnboardingPageData(
         pillColor: AuroraTheme.auroraBlue,
         pillGlow: AuroraTheme.auroraBlue,
-        title: l10n.onboarding_2_title,
-        subtitle: l10n.onboarding_2_desc,
+        title: openFeedMode ? l10n.onboarding_2_title_open : l10n.onboarding_2_title,
+        subtitle: openFeedMode ? l10n.onboarding_2_desc_open : l10n.onboarding_2_desc,
       ),
       _OnboardingPageData(
         pillColor: AuroraTheme.auroraGold,
         pillGlow: AuroraTheme.auroraGold,
         isGold: true,
         title: l10n.onboarding_3_title,
-        subtitle: l10n.onboarding_3_desc,
+        subtitle: openFeedMode ? l10n.onboarding_3_desc_open : l10n.onboarding_3_desc,
       ),
     ];
 

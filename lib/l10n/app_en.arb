@@ -1135,5 +1135,10 @@
   "notif_pref_match_open": "Selections",
   "decision_selected_title_open": "Confirm your choice",
   "chat_noshow_too_early_open": "You can report a no-show once the meeting time has passed and at least 24 hours after the mutual choice.",
-  "delete_account_body_open": "If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone."
+  "delete_account_body_open": "If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone.",
+  "onboarding_1_title_open": "You have the plan. Find company to go with",
+  "onboarding_1_desc_open": "A restaurant, a concert, an exhibition. Post your plan, see who wants to join and choose your company.",
+  "onboarding_2_title_open": "Tell us where you'd like to go",
+  "onboarding_2_desc_open": "A café, a theatre, a concert. Post a request, and someone planning the same thing can invite you.",
+  "onboarding_3_desc_open": "Every profile is verified with a selfie. Users who skip plans or behave inappropriately are blocked."
 }

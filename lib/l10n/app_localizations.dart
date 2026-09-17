@@ -4341,6 +4341,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone.'**
   String get delete_account_body_open;
+
+  /// No description provided for @onboarding_1_title_open.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the plan. Find company to go with'**
+  String get onboarding_1_title_open;
+
+  /// No description provided for @onboarding_1_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'A restaurant, a concert, an exhibition. Post your plan, see who wants to join and choose your company.'**
+  String get onboarding_1_desc_open;
+
+  /// No description provided for @onboarding_2_title_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us where you\'d like to go'**
+  String get onboarding_2_title_open;
+
+  /// No description provided for @onboarding_2_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'A café, a theatre, a concert. Post a request, and someone planning the same thing can invite you.'**
+  String get onboarding_2_desc_open;
+
+  /// No description provided for @onboarding_3_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Every profile is verified with a selfie. Users who skip plans or behave inappropriately are blocked.'**
+  String get onboarding_3_desc_open;
 }
 
 class _AppLocalizationsDelegate

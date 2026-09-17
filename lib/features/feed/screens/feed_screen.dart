@@ -1820,17 +1820,34 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
         .select('id, name_en, name_ru, name_tr')
         .eq('is_active', true)
         .order('name_en');
+    final list = (data as List)
+        .map((r) => (
+              id: r['id'] as String,
+              nameEn: (r['name_en'] as String?) ?? '',
+              nameRu: (r['name_ru'] as String?) ?? '',
+              nameTr: (r['name_tr'] as String?) ?? '',
+            ))
+        .toList();
+    // iOS açık akış (17.09.2026): kullanıcının KENDİ (profil) şehri pasif olsa
+    // bile listede en üstte durur. Demo şehri is_active=false → inceleyici
+    // başka şehir seçince geri dönemiyordu (emülatör kanıtı). Android'de
+    // liste aynen (yalnız aktif şehirler).
+    if (openFeedMode) {
+      final prefs = await SharedPreferences.getInstance();
+      final pid = prefs.getString('feed_city_profile_id');
+      final packed = prefs.getString('feed_city_profile_names');
+      if (pid != null && pid.isNotEmpty && !list.any((c) => c.id == pid)) {
+        final parts = (packed ?? '').split('|');
+        list.insert(0, (
+          id: pid,
+          nameEn: parts.isNotEmpty ? parts[0] : '',
+          nameRu: parts.length > 1 ? parts[1] : '',
+          nameTr: parts.length > 2 ? parts[2] : '',
+        ));
+      }
+    }
     if (!mounted) return;
-    setState(() {
-      _cities = (data as List)
-          .map((r) => (
-                id: r['id'] as String,
-                nameEn: (r['name_en'] as String?) ?? '',
-                nameRu: (r['name_ru'] as String?) ?? '',
-                nameTr: (r['name_tr'] as String?) ?? '',
-              ))
-          .toList();
-    });
+    setState(() => _cities = list);
   }
 
   String _locName({required String nameEn, required String nameRu, required String nameTr}) {

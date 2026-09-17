@@ -120,8 +120,22 @@ final discoverProvider =
   List<Map<String, dynamic>> otherRows = const [];
   if (cityId != null) {
     cityRows = await fetchRows(onlyCity: cityId, limit: requested);
-    otherRows = await fetchRows(
-        excludeSelected: true, limit: requested - cityRows.length);
+    // iOS açık akış (17.09.2026): seçili şehir PASİF ise (mağaza demo şehri)
+    // diğer şehirler akmaz — inceleyici yalnız demo şehrinin içeriğini görür.
+    // Gerçek kullanıcıların şehri aktiftir → onlarda davranış aynen.
+    var cityOnly = false;
+    if (openFeedMode) {
+      final c = await client
+          .from('cities')
+          .select('is_active')
+          .eq('id', cityId)
+          .maybeSingle();
+      cityOnly = c != null && c['is_active'] == false;
+    }
+    if (!cityOnly) {
+      otherRows = await fetchRows(
+          excludeSelected: true, limit: requested - cityRows.length);
+    }
   } else {
     otherRows = await fetchRows(limit: requested);
   }

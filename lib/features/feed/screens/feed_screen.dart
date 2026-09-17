@@ -1796,6 +1796,7 @@ class _CityPickerSheet extends StatefulWidget {
 
 class _CityPickerSheetState extends State<_CityPickerSheet> {
   List<({String id, String nameEn, String nameRu, String nameTr})>? _cities;
+  bool _onlyProfileCity = false; // iOS demo şehri: tek satır, «All Cities» yok
   final _searchController = TextEditingController();
   String _query = '';
 
@@ -1828,26 +1829,36 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               nameTr: (r['name_tr'] as String?) ?? '',
             ))
         .toList();
-    // iOS açık akış (17.09.2026): kullanıcının KENDİ (profil) şehri pasif olsa
-    // bile listede en üstte durur. Demo şehri is_active=false → inceleyici
-    // başka şehir seçince geri dönemiyordu (emülatör kanıtı). Android'de
-    // liste aynen (yalnız aktif şehirler).
+    // iOS açık akış (17.09.2026): kullanıcının profil şehri PASİF ise (mağaza
+    // demo şehri) seçici YALNIZ o şehri gösterir — «All Cities» ve diğer
+    // şehirler yok. İnceleyici başka şehre geçip Rusça içeriğe düşemez ve
+    // geri dönememe tuzağı kalmaz (emülatör kanıtı). Gerçek kullanıcının
+    // şehri aktiftir → onlarda ve Android'de liste aynen.
+    var onlyProfileCity = false;
     if (openFeedMode) {
       final prefs = await SharedPreferences.getInstance();
       final pid = prefs.getString('feed_city_profile_id');
       final packed = prefs.getString('feed_city_profile_names');
       if (pid != null && pid.isNotEmpty && !list.any((c) => c.id == pid)) {
         final parts = (packed ?? '').split('|');
-        list.insert(0, (
-          id: pid,
-          nameEn: parts.isNotEmpty ? parts[0] : '',
-          nameRu: parts.length > 1 ? parts[1] : '',
-          nameTr: parts.length > 2 ? parts[2] : '',
-        ));
+        // Demo şehri gerçek «Moscow»un yerine geçer (çift Moscow olmasın);
+        // Saint Petersburg listede kalır → mağazaya sunulan «iki şehir».
+        list
+          ..removeWhere((c) => c.nameEn == 'Moscow')
+          ..insert(0, (
+            id: pid,
+            nameEn: parts.isNotEmpty ? parts[0] : '',
+            nameRu: parts.length > 1 ? parts[1] : '',
+            nameTr: parts.length > 2 ? parts[2] : '',
+          ));
+        onlyProfileCity = true;
       }
     }
     if (!mounted) return;
-    setState(() => _cities = list);
+    setState(() {
+      _cities = list;
+      _onlyProfileCity = onlyProfileCity;
+    });
   }
 
   String _locName({required String nameEn, required String nameRu, required String nameTr}) {
@@ -1871,6 +1882,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   String _cityEmoji(String nameEn) {
     switch (nameEn.toLowerCase()) {
       case 'moscow':
+      case 'moscow, russia':
       case 'saint petersburg':
         return '🇷🇺';
       case 'istanbul':
@@ -2004,7 +2016,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                             bottom: bottomPad + 24, top: 4),
                         children: [
                           // "Tüm Şehirler" yalnızca arama yokken
-                          if (_query.isEmpty)
+                          if (_query.isEmpty && !_onlyProfileCity)
                             _CityRow(
                               name: AppLocalizations.of(context)!.feed_all_cities,
                               emoji: '🌍',

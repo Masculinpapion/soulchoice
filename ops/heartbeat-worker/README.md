@@ -10,7 +10,11 @@ Cloudflare Worker (Mustafa'nın Cloudflare hesabı, proje klasörü Mac'te `~/Pr
 - Deploy: `cd ~/Projects/soulchoice-heartbeat && npx -y wrangler@3 deploy` (Node 20).
 
 ## Nöbet köprüsü (03.09 akşam)
-- Telegram bot @soulchoice_nobet_bot webhook → `POST https://hb.ahmtransfer.com/tg` (custom domain; Telegram workers.dev'i çözemedi).
+- ~~Telegram bot @soulchoice_nobet_bot webhook → `POST /tg`~~ **GEÇERSİZ**: webhook 04.09'da kaldırıldı,
+  bot 04.09'da silindi. Köprü tek yönlü (Worker → Telegram).
+- **20.09.2026:** `hb.ahmtransfer.com` custom domain KALDIRILDI — SoulChoice altyapısı ilgisiz bir projenin
+  DNS bölgesine bağlı olmamalı. Tek adres: `https://soulchoice-heartbeat.mustafaaladag-ma.workers.dev`.
+  Sunucu ve bulut rutini bu adrese erişebiliyor (20.09 test: ikisi de 200).
 - Yalnız `ALLOWED_TG_ID` (Worker secret) gönderenin mesajları KV `inbox`'a yazılır, «⏳ Nöbet aldı» yanıtı gider.
 - Bulut rutini `GET /inbox?t=<INBOX_SECRET>` okur, `POST /inbox/ack {ids}` işaretler, cevabı Bot API ile yazar.
 - Secrets: TG_WEBHOOK_SECRET, INBOX_SECRET (Mac: ~/.claude/secrets/soulchoice_ops_worker.env), NOBET_TOKEN, ALLOWED_TG_ID.

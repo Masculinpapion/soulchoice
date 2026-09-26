@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// Platform sorgularının web-güvenli hâli.
 ///
@@ -14,3 +15,34 @@ bool get isAndroidDevice => !kIsWeb && Platform.isAndroid;
 
 /// Sunucuya yazılan kaynak etiketi (`users.last_platform`, ödeme `source`).
 String get platformTag => kIsWeb ? 'web' : (Platform.isIOS ? 'ios' : 'android');
+
+/// Kurulum kaynağı etiketi (`users.install_source`, AppMetrica profil özniteliği).
+/// 26.09.2026 (Play yayını): Telegram «yeni kullanıcı» mesajı ve huni, kullanıcının
+/// hangi mağazadan geldiğini göstersin. package_info_plus `installerStore`:
+/// Android → yükleyici paket adı, iOS → `com.apple` / `com.apple.testflight`,
+/// geliştirici kurulumunda null. Hata ürün akışını bozmaz → 'unknown'.
+Future<String> installSourceTag() async {
+  if (kIsWeb) return 'web';
+  try {
+    final store = (await PackageInfo.fromPlatform()).installerStore;
+    switch (store) {
+      case 'com.android.vending':
+        return 'play';
+      case 'ru.vk.store':
+        return 'rustore';
+      case 'com.apple':
+        return 'appstore';
+      case 'com.apple.testflight':
+        return 'testflight';
+      case null:
+      case '':
+        return Platform.isIOS ? 'unknown' : 'apk';
+      default:
+        // com.google.android.packageinstaller, com.android.packageinstaller,
+        // dosya yöneticileri, ADB → doğrudan APK
+        return store.contains('packageinstaller') ? 'apk' : 'other:$store';
+    }
+  } catch (_) {
+    return 'unknown';
+  }
+}

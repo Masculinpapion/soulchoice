@@ -37,9 +37,12 @@ Future<String> installSourceTag() async {
       case null:
       case '':
         return Platform.isIOS ? 'unknown' : 'apk';
+      case 'com.android.shell': // adb install (emülatör kanıtı 26.09: shell döndü)
+        return 'apk';
       default:
         // com.google.android.packageinstaller, com.android.packageinstaller,
-        // dosya yöneticileri, ADB → doğrudan APK
+        // dosya yöneticileri → doğrudan APK; başka mağaza (AppGallery, GetApps,
+        // Galaxy Store) ham paket adıyla kalır ki huni raporunda görünsün.
         return store.contains('packageinstaller') ? 'apk' : 'other:$store';
     }
   } catch (_) {

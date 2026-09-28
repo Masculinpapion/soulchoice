@@ -8,6 +8,7 @@ import android.util.Base64
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -24,6 +25,27 @@ class MainActivity : FlutterActivity() {
     companion object {
         private const val TAG = "SCUploader"
         private const val CHUNK = 65536 // 64 KB per PATCH — small enough to pass ISP DPI
+
+        // 28.09: Crashlytics efa47ac9 — SIGSEGV yalnız OnePlus 8 Pro / Android 11'de
+        // (830/844/849, 55 olay; frame 0 «Missing» = engine dışı, Adreno 650 Vulkan
+        // sürücüsü şüphesi). Impeller-Vulkan yalnız bu cihazda kapatılır (Skia/GL);
+        // diğer tüm cihazlar değişmez. Flutter 3.47'de ImpellerBackend release'te
+        // yok sayılıyor (flutter#192467), --enable-impeller ise release'te geçerli.
+        // Model kodları: IN2020/IN2021/IN2023/IN2025 = OnePlus 8 Pro (IN201x = OnePlus 8, dahil değil).
+        private fun isImpellerDenylisted(): Boolean {
+            if (android.os.Build.VERSION.SDK_INT != android.os.Build.VERSION_CODES.R) return false
+            val device = android.os.Build.DEVICE ?: ""
+            val model = android.os.Build.MODEL ?: ""
+            return device.equals("OnePlus8Pro", ignoreCase = true) ||
+                model.equals("OnePlus8Pro", ignoreCase = true) ||
+                model.uppercase().startsWith("IN202")
+        }
+    }
+
+    override fun getFlutterShellArgs(): FlutterShellArgs {
+        val args = super.getFlutterShellArgs()
+        if (isImpellerDenylisted()) args.add("--enable-impeller=false")
+        return args
     }
 
     private fun b64(s: String): String =

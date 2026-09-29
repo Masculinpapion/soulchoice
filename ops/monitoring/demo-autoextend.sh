@@ -21,6 +21,17 @@ if [ -z "$ROW" ]; then
   exit 0
 fi
 ID=${ROW%%|*}; REST=${ROW#*|}; EXP=${REST%%|*}; HOURS=${REST##*|}
+# 29.09: sahne bütünlüğü — RuStore moderatörü demo hesabıyla bir başvuranı seçti (onaysız
+# eşleşme kuruldu) ve ancak tesadüfen fark edildi. Beklenen: 5 pending / 0 eşleşme.
+# Değişince TEK KEZ CRIT (durum dosyası); Apple inceleyicisi de seçmiş olabilir → önce ASC.
+SCENE=$(Q "select (select count(*) from public.applications where invitation_id='${ID}' and status='pending')||'/'||(select count(*) from public.matches where invitation_id='${ID}');")
+SCENE_STATE=/root/monitoring/state/demo_scene
+PREV_SCENE=$(cat "$SCENE_STATE" 2>/dev/null)
+if [ -n "$SCENE" ] && [ "$SCENE" != "5/0" ] && [ "$SCENE" != "$PREV_SCENE" ] && [ $DRY -eq 0 ]; then
+  $ALERT CRIT "🍎 Demo sahnesi DEĞİŞTİ: White Rabbit pending/eşleşme = $SCENE (beklenen 5/0). Mağaza moderatörü ya da Apple inceleyicisi seçim yapmış olabilir — önce ASC'ye bak, sonra geri al (örnek: /root/backups/demo_selection_rollback_20260929.sql)."
+fi
+[ $DRY -eq 0 ] && [ -n "$SCENE" ] && echo "$SCENE" > "$SCENE_STATE"
+echo "$(date +%F_%T) demo sahnesi pending/eşleşme=$SCENE"
 if [ "$HOURS" -ge "$THRESHOLD_HOURS" ]; then
   echo "$(date +%F_%T) demo davet $ID bitiş $EXP MSK, kalan ${HOURS}s >= ${THRESHOLD_HOURS}s -> dokunma"
   exit 0

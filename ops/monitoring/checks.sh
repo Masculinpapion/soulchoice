@@ -13,13 +13,18 @@ ALERT=$DIR/alert.sh
 # Önce kuyruktaki gönderilememiş alarmları dene (Telegram kesintisi telafisi)
 $ALERT --flush
 
+# 23.09.2026 sessizlik politikasi (Mustafa: «surekli problem varmis havasi yaratiyor»):
+#  - WARN duzelince mesaj YOK (yalniz CRIT duzelince «duzeldi» yazilir)
+#  - reboot sonrasi ilk 15 dk yeni WARN gonderilmez (kalkis dalgalanmalari alarm degildir)
+UPTIME_S=$(cut -d. -f1 /proc/uptime)
 report() { # report <ad> <OK|WARN|CRIT> <mesaj>
   local name=$1 status=$2 msg=$3
   local f="$STATE/$name"
   local prev="OK"; [ -f "$f" ] && prev=$(cat "$f")
+  if [ "$status" = "WARN" ] && [ "$prev" = "OK" ] && [ "$UPTIME_S" -lt 900 ]; then return 0; fi
   if [ "$status" != "$prev" ]; then
     if [ "$status" = "OK" ]; then
-      $ALERT OK "$name düzeldi: $msg"
+      [ "$prev" = "CRIT" ] && $ALERT OK "$name düzeldi: $msg"
       rm -f "$f" "$STATE/$name.reminded"
     else
       $ALERT "$status" "$name: $msg"
@@ -461,7 +466,7 @@ DBC=$(docker exec supabase-db psql -U postgres -Atc "select count(*) from pg_sta
 DBMAX=$(docker exec supabase-db psql -U postgres -Atc "show max_connections" 2>/dev/null)
 if [ -n "$DBC" ] && [ -n "$DBMAX" ]; then
   if [ "$DBC" -ge $(( DBMAX * 85 / 100 )) ]; then report "db_conn" CRIT "DB baglantisi $DBC/$DBMAX (>=%85) — edge/PostgREST 500 vermeye baslar; Supavisor gecisi one alinmali"
-  elif [ "$DBC" -ge $(( DBMAX * 65 / 100 )) ]; then report "db_conn" WARN "DB baglantisi $DBC/$DBMAX (>=%65)"
+  elif [ "$DBC" -ge $(( DBMAX * 80 / 100 )) ]; then report "db_conn" WARN "DB baglantisi $DBC/$DBMAX (>=%80)"
   else [ -f "$STATE/db_conn" ] && report "db_conn" OK "DB baglantisi normal ($DBC/$DBMAX)"
   fi
 fi
@@ -550,6 +555,38 @@ if echo "$RS_OUT" | grep -q "^code: OK"; then
 else
   RS_FAILS=$(( $(cat "$STATE/rustore_api_fail" 2>/dev/null || echo 0) + 1 )); echo "$RS_FAILS" > "$STATE/rustore_api_fail"
   [ "$RS_FAILS" -ge 3 ] && report "rustore_api" WARN "RuStore API $RS_FAILS kosudur cevap vermiyor (anahtar/ag) — /root/bin/rustore-api.sh token"
+fi
+
+# §32 (20.09.2026) BAGIMLILIK NOBETCISI — 20.09 arizasinin onlemi.
+# O gun: nginx config'inde ILGISIZ bir projenin alan adi (hb.ahmtransfer.com) sabit
+# proxy_pass olarak duruyordu. Sunucu reboot oldu, boot'ta DNS henuz cevap vermiyordu,
+# nginx o adi cozemedi -> config testi patladi -> nginx HIC baslamadi -> site + uygulama
+# API'si 12 saat kapali kaldi. Iki kural artik makine tarafindan denetleniyor:
+#   (a) SoulChoice altyapisi yalniz IZINLI alan adlarina baglanir (baska projenin
+#       alan adi ASLA kullanilmaz — iki taraf da birbirini kirabilir),
+#   (b) nginx'te degiskensiz harici proxy_pass olmaz (boot'ta nginx'i dusurur).
+DEP_ALLOW="$DIR/allowed_hosts.txt"
+[ -d "$DIR" ] || DEP_ALLOW="/root/monitoring/allowed_hosts.txt"
+if [ ! -f "$DEP_ALLOW" ]; then
+  printf '%s\n' 127.0.0.1 localhost soulchoice.app www.soulchoice.app ops.soulchoice.app \
+    studio.soulchoice.app soulchoice-heartbeat.mustafaaladag-ma.workers.dev \
+    api.telegram.org sms.ru www.rustore.ru public-api.rustore.ru > "$DEP_ALLOW"
+fi
+DEP_SCAN=$(grep -rhoE "https?://[a-zA-Z0-9][a-zA-Z0-9._-]+" \
+  /etc/nginx/sites-enabled/ /root/bin/*.sh /root/monitoring/*.sh /root/monitoring/heartbeat.url \
+  2>/dev/null | sed -E 's#https?://##' | sort -u)
+DEP_NEW=$(echo "$DEP_SCAN" | grep -Fxv -f "$DEP_ALLOW" 2>/dev/null | tr '\n' ' ' | sed 's/ *$//')
+if [ -n "$DEP_NEW" ]; then
+  report "dis_bagimlilik" WARN "altyapida IZINSIZ alan adi: $DEP_NEW — SoulChoice yalniz kendi alan adlarina baglanmali (bkz 20.09 arizasi); mesruysa $DEP_ALLOW icine ekle"
+else
+  report "dis_bagimlilik" OK "altyapi yalniz izinli alan adlarina bagli"
+fi
+NGX_HARD=$(grep -rnE "proxy_pass[[:space:]]+https?://[a-zA-Z]" /etc/nginx/sites-enabled/ 2>/dev/null \
+  | grep -v "127\.0\.0\.1" | grep -v '\$' | head -3 | cut -c1-160 | tr '\n' ' ')
+if [ -n "$NGX_HARD" ]; then
+  report "nginx_sabit_upstream" CRIT "degiskensiz harici proxy_pass VAR -> sunucu reboot olursa nginx BASLAMAYABILIR (20.09 arizasi): $NGX_HARD"
+else
+  report "nginx_sabit_upstream" OK "harici proxy_pass yok veya degiskenli (boot guvenli)"
 fi
 
 # betik sonu: son blokun [ -f ] testi cron/dead-man icin exit 1 sizdirmasin (04.09)

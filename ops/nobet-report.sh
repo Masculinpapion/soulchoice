@@ -9,7 +9,7 @@ P() { docker exec supabase-db psql -U postgres -Atc "$1" 2>/dev/null; }
 mask() { sed -E 's/7[0-9]{6}([0-9]{4})/7******\1/g'; }
 j() { python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
 CONT=$(docker ps -a --format '{{.Names}}|{{.Status}}' | sort | python3 -c 'import sys,json; print(json.dumps(dict(l.strip().split("|",1) for l in sys.stdin if "|" in l)))')
-STATE=$(cd /root/monitoring/state 2>/dev/null && for f in *; do [ -f "$f" ] && [ "$(wc -l < "$f")" -le 1 ] && case "$f" in *.reminded|*.log) ;; *) printf '%s=%s\n' "$f" "$(head -c 120 "$f" | tr -d '\n')";; esac; done | mask | python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+STATE=$(cd /root/monitoring/state 2>/dev/null && for f in *; do [ -f "$f" ] && [ "$(wc -l < "$f")" -le 1 ] && case "$f" in *.reminded|*.log|asc_*) ;; *) printf '%s=%s\n' "$f" "$(head -c 120 "$f" | tr -d '\n')";; esac; done | mask | python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
 LOGT=$(tail -15 /root/monitoring/checks.log 2>/dev/null | cut -c1-200 | mask | j)
 K5=$(docker logs supabase-kong --since 60m 2>&1 | grep -cE '" 5[0-9]{2} '); K5=${K5:-0}
 EDGE=$(docker logs supabase-edge-functions --since 60m 2>&1 | grep -iE 'ERROR|FAIL|RPC_FAILED|OTP_CAP|STORE_CAP' | tail -15 | cut -c1-200 | mask | j)

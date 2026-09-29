@@ -3127,6 +3127,7 @@ CREATE TABLE public.users (
     free_applications_used integer DEFAULT 0 NOT NULL,
     rustore_token text,
     app_build integer,
+    install_source text,
     CONSTRAINT users_age_check CHECK (((age >= 21) AND (age <= 60))),
     CONSTRAINT users_bio_check CHECK ((char_length(bio) <= 200)),
     CONSTRAINT users_education_len_check CHECK (((education IS NULL) OR (char_length(education) <= 60))),
@@ -3139,6 +3140,13 @@ CREATE TABLE public.users (
     CONSTRAINT users_show_gender_check CHECK ((show_gender = ANY (ARRAY['opposite'::text, 'all'::text, 'male'::text, 'female'::text]))),
     CONSTRAINT users_subscription_status_check CHECK ((subscription_status = ANY (ARRAY['free'::text, 'active'::text])))
 );
+
+
+--
+-- Name: COLUMN users.install_source; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.users.install_source IS 'Kurulum kaynağı: play | rustore | apk | appstore | testflight | unknown (26.09.2026)';
 
 
 --
@@ -3244,6 +3252,26 @@ CREATE VIEW public.v_funnel AS
                    FROM public.matches) x
              JOIN public.users u ON ((u.id = x.uid)))
           WHERE (NOT u.is_test_user)) AS matched;
+
+
+--
+-- Name: v_funnel_by_source; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.v_funnel_by_source AS
+ SELECT COALESCE(u.install_source, 'unknown'::text) AS source,
+    (count(*))::integer AS registered,
+    (count(*) FILTER (WHERE (u.selfie_status = 'approved'::text)))::integer AS selfie_approved,
+    (count(*) FILTER (WHERE (EXISTS ( SELECT 1
+           FROM public.applications a
+          WHERE (a.applicant_id = u.id)))))::integer AS applied,
+    (count(*) FILTER (WHERE (EXISTS ( SELECT 1
+           FROM public.matches m
+          WHERE ((m.user1_id = u.id) OR (m.user2_id = u.id))))))::integer AS matched
+   FROM public.users u
+  WHERE ((NOT u.is_test_user) AND (NOT u.is_deleted))
+  GROUP BY COALESCE(u.install_source, 'unknown'::text)
+  ORDER BY ((count(*))::integer) DESC;
 
 
 --
@@ -5255,13 +5283,7 @@ CREATE POLICY invitations_insert ON public.invitations FOR INSERT WITH CHECK ((o
 -- Name: invitations invitations_select; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY invitations_select ON public.invitations FOR SELECT USING ((((status = 'active'::text) AND (owner_id <> '385ea0eb-2089-4fd2-8883-8a47a39da29a'::uuid) AND ((( SELECT u.gender
-   FROM public.users u
-  WHERE (u.id = auth.uid())) IS NULL) OR (( SELECT o.gender
-   FROM public.users o
-  WHERE (o.id = invitations.owner_id)) IS DISTINCT FROM ( SELECT u.gender
-   FROM public.users u
-  WHERE (u.id = auth.uid()))))) OR (owner_id = auth.uid()) OR public.has_application_to(id)));
+CREATE POLICY invitations_select ON public.invitations FOR SELECT USING ((((status = 'active'::text) AND (owner_id <> '385ea0eb-2089-4fd2-8883-8a47a39da29a'::uuid)) OR (owner_id = auth.uid()) OR public.has_application_to(id)));
 
 
 --

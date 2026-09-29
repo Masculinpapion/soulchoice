@@ -5,7 +5,7 @@
 # Emniyet: HARD_STOP tarihinden sonra uzatmaz, WARN atar. Kapatmak: crontab satırını sil.
 # Kullanım: demo-autoextend.sh [--dry-run]
 set -u
-HARD_STOP="2026-09-30"
+HARD_STOP="2026-10-31"
 THRESHOLD_HOURS=36
 EXTEND_DAYS=4
 DRY=0; [ "${1:-}" = "--dry-run" ] && DRY=1

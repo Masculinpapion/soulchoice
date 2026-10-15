@@ -2,6 +2,7 @@ import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/services/push_token.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -620,6 +621,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           onTap: () =>
                               context.push('/profile/photos', extra: 'edit'),
                         ),
+                        // iOS açık akış (17.09.2026): yaş aralığı satırı yok
+                        if (!openFeedMode)
                         _SettingsTile(
                           icon: Icons.people_outline,
                           label: l10n.settings_age_range_title,

@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart' show SchedulerBinding, SchedulerPhase;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/providers/city_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../core/theme/aurora_theme.dart';
@@ -99,9 +100,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     final parts = packed.split('|');
     if (parts.length < 3) return null;
     final code = Localizations.localeOf(context).languageCode;
-    if (code == 'ru' && parts[1].isNotEmpty) return parts[1];
-    if (code == 'tr' && parts[2].isNotEmpty) return parts[2];
-    return parts[0].isNotEmpty ? parts[0] : null;
+    if (code == 'ru' && parts[1].isNotEmpty) return cleanCityName(parts[1]);
+    if (code == 'tr' && parts[2].isNotEmpty) return cleanCityName(parts[2]);
+    return parts[0].isNotEmpty ? cleanCityName(parts[0]) : null;
   }
 
   void _applyCity(String? id, String? packedNames) {
@@ -1287,6 +1288,8 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                 ),
                 // Boş feed'in en sık sebebi dar yaş filtresi (26.07 vakası) —
                 // kullanıcı "uygulama boş" sanıp silmesin, sebebe yönlendir.
+                // iOS açık akış: filtre yok → ipucu da yok (17.09.2026).
+                if (!openFeedMode) ...[
                 const SizedBox(height: 18),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -1312,6 +1315,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                     ),
                   ),
                 ),
+                ],
               ],
             ),
           );
@@ -1342,7 +1346,7 @@ class _InvitationListState extends ConsumerState<_InvitationList> {
                   ShaderMask(
                     blendMode: BlendMode.srcIn,
                     shaderCallback: (b) => AuroraTheme.redBlueGradient.createShader(Rect.fromLTRB(b.left - 4, b.top - 2, b.right + 14, b.bottom + 4)),
-                    child: Text(l10n.feed_swipe_hint,
+                    child: Text(openFeedMode ? l10n.feed_browse_hint : l10n.feed_swipe_hint,
                         style: TextStyle(fontFamily: 'JetBrainsMono', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 1)),
                   ),
                 ],
@@ -1792,6 +1796,7 @@ class _CityPickerSheet extends StatefulWidget {
 
 class _CityPickerSheetState extends State<_CityPickerSheet> {
   List<({String id, String nameEn, String nameRu, String nameTr})>? _cities;
+  bool _onlyProfileCity = false; // iOS demo şehri: tek satır, «All Cities» yok
   final _searchController = TextEditingController();
   String _query = '';
 
@@ -1816,24 +1821,71 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
         .select('id, name_en, name_ru, name_tr')
         .eq('is_active', true)
         .order('name_en');
-    if (!mounted) return;
-    setState(() {
-      _cities = (data as List)
-          .map((r) => (
+    final list = (data as List)
+        .map((r) => (
+              id: r['id'] as String,
+              nameEn: (r['name_en'] as String?) ?? '',
+              nameRu: (r['name_ru'] as String?) ?? '',
+              nameTr: (r['name_tr'] as String?) ?? '',
+            ))
+        .toList();
+    // iOS açık akış (17.09.2026): kullanıcının profil şehri PASİF ise (mağaza
+    // demo şehri) seçici YALNIZ o şehri gösterir — «All Cities» ve diğer
+    // şehirler yok. İnceleyici başka şehre geçip Rusça içeriğe düşemez ve
+    // geri dönememe tuzağı kalmaz (emülatör kanıtı). Gerçek kullanıcının
+    // şehri aktiftir → onlarda ve Android'de liste aynen.
+    var onlyProfileCity = false;
+    if (openFeedMode) {
+      final prefs = await SharedPreferences.getInstance();
+      final pid = prefs.getString('feed_city_profile_id');
+      final packed = prefs.getString('feed_city_profile_names');
+      if (pid != null && pid.isNotEmpty && !list.any((c) => c.id == pid)) {
+        final parts = (packed ?? '').split('|');
+        // Demo hesabı: liste = mağaza DEMO şehirleri (pasif + country=RU:
+        // «Moscow, Russia», «Saint Petersburg, Russia» — içerik İngilizce).
+        // Gerçek (aktif) şehirler ve «All Cities» bu hesapta gösterilmez →
+        // inceleyici «iki şehir»i görür, Rusça içeriğe düşmez.
+        List<dynamic> demo = const [];
+        try {
+          demo = await Supabase.instance.client
+              .from('cities')
+              .select('id, name_en, name_ru, name_tr')
+              .eq('is_active', false)
+              .eq('country', 'RU')
+              .order('name_en') as List;
+        } catch (_) {/* ağ yoksa yalnız profil şehri */}
+        list
+          ..clear()
+          ..addAll(demo.map((r) => (
                 id: r['id'] as String,
                 nameEn: (r['name_en'] as String?) ?? '',
                 nameRu: (r['name_ru'] as String?) ?? '',
                 nameTr: (r['name_tr'] as String?) ?? '',
-              ))
-          .toList();
+              )));
+        if (!list.any((c) => c.id == pid)) {
+          list.insert(0, (
+            id: pid,
+            nameEn: parts.isNotEmpty ? parts[0] : '',
+            nameRu: parts.length > 1 ? parts[1] : '',
+            nameTr: parts.length > 2 ? parts[2] : '',
+          ));
+        }
+        list.sort((a, b) => a.nameEn.compareTo(b.nameEn)); // Moscow, sonra Saint Petersburg
+        onlyProfileCity = true;
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _cities = list;
+      _onlyProfileCity = onlyProfileCity;
     });
   }
 
   String _locName({required String nameEn, required String nameRu, required String nameTr}) {
     final code = Localizations.localeOf(context).languageCode;
-    if (code == 'ru' && nameRu.isNotEmpty) return nameRu;
-    if (code == 'tr' && nameTr.isNotEmpty) return nameTr;
-    return nameEn;
+    if (code == 'ru' && nameRu.isNotEmpty) return cleanCityName(nameRu);
+    if (code == 'tr' && nameTr.isNotEmpty) return cleanCityName(nameTr);
+    return cleanCityName(nameEn);
   }
 
   List<({String id, String nameEn, String nameRu, String nameTr})> get _filtered {
@@ -1850,7 +1902,9 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   String _cityEmoji(String nameEn) {
     switch (nameEn.toLowerCase()) {
       case 'moscow':
+      case 'moscow, russia':
       case 'saint petersburg':
+      case 'saint petersburg, russia':
         return '🇷🇺';
       case 'istanbul':
         return '🇹🇷';
@@ -1983,7 +2037,7 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
                             bottom: bottomPad + 24, top: 4),
                         children: [
                           // "Tüm Şehirler" yalnızca arama yokken
-                          if (_query.isEmpty)
+                          if (_query.isEmpty && !_onlyProfileCity)
                             _CityRow(
                               name: AppLocalizations.of(context)!.feed_all_cities,
                               emoji: '🌍',

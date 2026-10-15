@@ -4,16 +4,20 @@ import '../../../data/models/invitation_model.dart';
 import '../../../data/models/user_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
+import '../../../core/utils/platform_x.dart';
+import '../logic/gender_interleave.dart';
 import '../logic/feed_keyset.dart';
 import '../logic/feed_visibility_rules.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
   if (city == null) return null;
+  final String? raw;
   switch (lang) {
-    case 'ru': return city['name_ru'] as String? ?? city['name'] as String?;
-    case 'tr': return city['name_tr'] as String? ?? city['name'] as String?;
-    default:   return city['name_en'] as String? ?? city['name'] as String?;
+    case 'ru': raw = city['name_ru'] as String? ?? city['name'] as String?;
+    case 'tr': raw = city['name_tr'] as String? ?? city['name'] as String?;
+    default:   raw = city['name_en'] as String? ?? city['name'] as String?;
   }
+  return raw == null ? null : cleanCityName(raw);
 }
 
 /// 22.08 — SONSUZ KAYDIRMA: tek istekte inen dilim boyutu. Kullanıcı yüklü
@@ -88,6 +92,13 @@ final _feedViewerProvider = FutureProvider.autoDispose<_FeedViewer>((ref) async 
     myGender = userRow?['gender'] as String?;
     minAge = userRow?['min_age'] as int? ?? 21;
     maxAge = userRow?['max_age'] as int? ?? 60;
+  }
+  // iOS açık akış (17.09.2026): cinsiyet/yaş süzgeci YOK — herkes görünür.
+  // 21–60 kayıt sınırının kendisi; hiçbir kartı elemez.
+  if (openFeedMode) {
+    myGender = null;
+    minAge = 21;
+    maxAge = 60;
   }
   return _FeedViewer(
     userId: currentUserId,
@@ -270,7 +281,7 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
       }
     }
 
-    return rows.map((row) {
+    final visible = rows.map((row) {
       // ── Owner ─────────────────────────────────────────────────────────────
       final ownerRow = row['owner'] as Map<String, dynamic>?;
       if (ownerRow?['is_deleted'] == true) return null;
@@ -362,6 +373,14 @@ final invitationsProvider = FutureProvider.autoDispose.family<List<InvitationMod
           return age >= minAge && age <= maxAge;
         })
         .toList();
+    // iOS açık akış (17.09.2026): kartlar ve yüz şeridi K/E dönüşümlü;
+    // kendi kartım en başta kalır (feed_screen de ilk karta koyar).
+    if (!openFeedMode) return visible;
+    return interleaveByGender<InvitationModel>(
+      visible,
+      (inv) => inv.owner?.gender,
+      pinFirst: (inv) => inv.owner?.id == currentUserId,
+    );
   },
 );
 

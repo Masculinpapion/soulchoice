@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/utils/platform_x.dart';
+import '../../feed/logic/gender_interleave.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/locale_provider.dart';
 import '../../../data/models/invitation_model.dart';
@@ -10,11 +12,13 @@ import '../../../data/models/user_model.dart';
 
 String? _cityName(Map<String, dynamic>? city, String? lang) {
   if (city == null) return null;
+  final String? raw;
   switch (lang) {
-    case 'ru': return city['name_ru'] as String? ?? city['name'] as String?;
-    case 'tr': return city['name_tr'] as String? ?? city['name'] as String?;
-    default:   return city['name_en'] as String? ?? city['name'] as String?;
+    case 'ru': raw = city['name_ru'] as String? ?? city['name'] as String?;
+    case 'tr': raw = city['name_tr'] as String? ?? city['name'] as String?;
+    default:   raw = city['name_en'] as String? ?? city['name'] as String?;
   }
+  return raw == null ? null : cleanCityName(raw);
 }
 
 /// 22.08 — SONSUZ KAYDIRMA (feed ile aynı ilke, bkz. invitations_provider):
@@ -60,6 +64,12 @@ final discoverProvider =
     targetGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
     minAge = userRow?['min_age'] as int? ?? 21;
     maxAge = userRow?['max_age'] as int? ?? 60;
+  }
+  // iOS açık akış (17.09.2026): cinsiyet/yaş süzgeci YOK — herkes görünür.
+  if (openFeedMode) {
+    targetGender = null;
+    minAge = 21;
+    maxAge = 60;
   }
 
   // Tek sorgu iskeleti — şehir kısıtı parametreyle. Kararlı sıralama
@@ -112,8 +122,22 @@ final discoverProvider =
   List<Map<String, dynamic>> otherRows = const [];
   if (cityId != null) {
     cityRows = await fetchRows(onlyCity: cityId, limit: requested);
-    otherRows = await fetchRows(
-        excludeSelected: true, limit: requested - cityRows.length);
+    // iOS açık akış (17.09.2026): seçili şehir PASİF ise (mağaza demo şehri)
+    // diğer şehirler akmaz — inceleyici yalnız demo şehrinin içeriğini görür.
+    // Gerçek kullanıcıların şehri aktiftir → onlarda davranış aynen.
+    var cityOnly = false;
+    if (openFeedMode) {
+      final c = await client
+          .from('cities')
+          .select('is_active')
+          .eq('id', cityId)
+          .maybeSingle();
+      cityOnly = c != null && c['is_active'] == false;
+    }
+    if (!cityOnly) {
+      otherRows = await fetchRows(
+          excludeSelected: true, limit: requested - cityRows.length);
+    }
   } else {
     otherRows = await fetchRows(limit: requested);
   }
@@ -191,5 +215,9 @@ final discoverProvider =
 
   // Kullanıcı başına 1 kart — aynı kişinin birden fazla daveti olsa bile
   final seen = <String>{};
-  return list.where((inv) => inv.owner?.id != null && seen.add(inv.owner!.id)).toList();
+  final unique = list.where((inv) => inv.owner?.id != null && seen.add(inv.owner!.id)).toList();
+  // iOS açık akış (17.09.2026): ızgara K/E dönüşümlü — rastgele karıştırma
+  // aynı cinsiyeti art arda öne düşürebiliyordu (emülatör kanıtı).
+  if (!openFeedMode) return unique;
+  return interleaveByGender<InvitationModel>(unique, (inv) => inv.owner?.gender);
 });

@@ -785,7 +785,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_desc_ph_coffee =>
-      'Örn: Rahat bir kafede filtre kahve ve tatlı eşliğinde tanışma sohbeti.';
+      'Örn: Rahat bir kafede filtre kahve ve tatlı eşliğinde keyifli bir sohbet.';
 
   @override
   String get create_inv_desc_ph_cinema =>
@@ -835,7 +835,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_desc_ph_bar_req =>
-      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik eşliğinde tanışmak isterim.';
+      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik eşliğinde vakit geçirmek isterim.';
 
   @override
   String get create_inv_desc_ph_coffee_req =>
@@ -2374,4 +2374,53 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.';
+
+  @override
+  String get feed_browse_hint => '· GÖZ AT →';
+
+  @override
+  String decision_selected_body_request_open(String name, String title) {
+    return '$name adlı kişiyi \"$title\" isteğin için seçtin.\nSeçimini onaylamak ister misin?';
+  }
+
+  @override
+  String decision_selected_body_open(String name, String title) {
+    return '$name adlı kişiyi \"$title\" davetin için seçtin.\nSeçimini onaylamak ister misin?';
+  }
+
+  @override
+  String get messages_new_match_open => 'Karşılıklı seçim ✨';
+
+  @override
+  String get notif_pref_match_open => 'Seçimler';
+
+  @override
+  String get decision_selected_title_open => 'Seçimini onayla';
+
+  @override
+  String get chat_noshow_too_early_open =>
+      'Gelmediğini, buluşma saati geçtikten ve karşılıklı seçimden en az 24 saat sonra bildirebilirsin.';
+
+  @override
+  String get delete_account_body_open =>
+      'Hesabını silersen tüm veriler, mesajlar, seçimler ve fotoğraflar kalıcı olarak silinir. Bu işlem geri alınamaz.';
+
+  @override
+  String get onboarding_1_title_open =>
+      'Planın hazır! Birlikte gidecek kişiyi bul';
+
+  @override
+  String get onboarding_1_desc_open =>
+      'Restoran, konser, sergi. Planını paylaş, katılmak isteyenleri gör ve kiminle gideceğini seç.';
+
+  @override
+  String get onboarding_2_title_open => 'Nereye gitmek istediğini söyle';
+
+  @override
+  String get onboarding_2_desc_open =>
+      'Kafe, tiyatro, konser. İsteğini paylaş; benzer planı olan biri seni davet edebilsin.';
+
+  @override
+  String get onboarding_3_desc_open =>
+      'Her profil selfie ile onaylanır. Plana gelmeyen veya uygunsuz davranan kullanıcılar engellenir.';
 }

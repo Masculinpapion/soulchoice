@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../data/models/invitation_model.dart';
 import '../../../core/utils/guard_errors.dart';
@@ -2070,7 +2071,7 @@ class _MyApplicationsSectionState
               Padding(
                 padding: const EdgeInsets.only(left: 6),
                 child: Text(
-                  l10n.feed_swipe_hint,
+                  openFeedMode ? l10n.feed_browse_hint : l10n.feed_swipe_hint,
                   style: AuroraTheme.monoLabel.copyWith(
                     fontSize: 9,
                     letterSpacing: 1.2,

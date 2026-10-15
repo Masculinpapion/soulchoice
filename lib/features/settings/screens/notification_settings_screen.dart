@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:soulchoice/l10n/app_localizations.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/theme/aurora_theme.dart';
 import '../../../shared/widgets/ambient_background.dart';
 import '../../../shared/widgets/gradient_italic_title.dart';
@@ -276,7 +277,7 @@ class _NotificationSettingsScreenState
                           _save();
                         }),
                         _divider(),
-                        _toggle(l10n.notif_pref_match, l10n.notif_pref_match_sub,
+                        _toggle(openFeedMode ? l10n.notif_pref_match_open : l10n.notif_pref_match, l10n.notif_pref_match_sub,
                             _match, (v) {
                           setState(() => _match = v);
                           _save();

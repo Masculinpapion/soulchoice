@@ -2,6 +2,7 @@ import 'package:soulchoice/core/services/error_reporter.dart';
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import '../../../core/utils/platform_x.dart';
 import '../../../core/utils/prompt_hints.dart';
 import 'package:soulchoice/core/utils/legal_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,7 +61,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   bool _profileVisibilityConsent = false;
   static const _consentVersion = '2026-07-08';
 
-  static const _stepCount = 9;
+  // iOS açık akış (17.09.2026): yaş aralığı adımı YOK → 8 adım. Android 9.
+  int get _stepCount => openFeedMode ? 8 : 9;
   static const _allInterestKeys = [
     'art',
     'music',
@@ -88,7 +90,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
     l10n.profile_setup_step_job_edu,
     l10n.profile_setup_step_interests,
     l10n.profile_setup_step_prompts,
-    l10n.profile_setup_step_age_range,
+    if (!openFeedMode) l10n.profile_setup_step_age_range,
     l10n.profile_setup_step_consent,
   ];
 
@@ -447,7 +449,8 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       answers: _prompts,
                       onAnswered: (k, v) => setState(() => _prompts[k] = v),
                     ),
-                    _StepAgeRange(
+                    if (!openFeedMode)
+                      _StepAgeRange(
                       minAge: _minAge,
                       maxAge: _maxAge,
                       onChanged: (min, max) => setState(() {

@@ -2385,4 +2385,53 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paywall_subtitle_ios =>
       'Premium unlocks unlimited access. An existing subscription is recognized automatically.';
+
+  @override
+  String get feed_browse_hint => '· BROWSE →';
+
+  @override
+  String decision_selected_body_request_open(String name, String title) {
+    return 'You selected $name for your \"$title\" request.\nConfirm your choice?';
+  }
+
+  @override
+  String decision_selected_body_open(String name, String title) {
+    return 'You selected $name for your \"$title\" invitation.\nConfirm your choice?';
+  }
+
+  @override
+  String get messages_new_match_open => 'Mutual choice ✨';
+
+  @override
+  String get notif_pref_match_open => 'Selections';
+
+  @override
+  String get decision_selected_title_open => 'Confirm your choice';
+
+  @override
+  String get chat_noshow_too_early_open =>
+      'You can report a no-show once the meeting time has passed and at least 24 hours after the mutual choice.';
+
+  @override
+  String get delete_account_body_open =>
+      'If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone.';
+
+  @override
+  String get onboarding_1_title_open =>
+      'You have the plan. Find company to go with';
+
+  @override
+  String get onboarding_1_desc_open =>
+      'A restaurant, a concert, an exhibition. Post your plan, see who wants to join and choose your company.';
+
+  @override
+  String get onboarding_2_title_open => 'Tell us where you\'d like to go';
+
+  @override
+  String get onboarding_2_desc_open =>
+      'A café, a theatre, a concert. Post a request, and someone planning the same thing can invite you.';
+
+  @override
+  String get onboarding_3_desc_open =>
+      'Every profile is verified with a selfie. Users who skip plans or behave inappropriately are blocked.';
 }

@@ -4293,6 +4293,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Premium unlocks unlimited access. An existing subscription is recognized automatically.'**
   String get paywall_subtitle_ios;
+
+  /// No description provided for @feed_browse_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'· BROWSE →'**
+  String get feed_browse_hint;
+
+  /// No description provided for @decision_selected_body_request_open.
+  ///
+  /// In en, this message translates to:
+  /// **'You selected {name} for your \"{title}\" request.\nConfirm your choice?'**
+  String decision_selected_body_request_open(String name, String title);
+
+  /// No description provided for @decision_selected_body_open.
+  ///
+  /// In en, this message translates to:
+  /// **'You selected {name} for your \"{title}\" invitation.\nConfirm your choice?'**
+  String decision_selected_body_open(String name, String title);
+
+  /// No description provided for @messages_new_match_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Mutual choice ✨'**
+  String get messages_new_match_open;
+
+  /// No description provided for @notif_pref_match_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Selections'**
+  String get notif_pref_match_open;
+
+  /// No description provided for @decision_selected_title_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your choice'**
+  String get decision_selected_title_open;
+
+  /// No description provided for @chat_noshow_too_early_open.
+  ///
+  /// In en, this message translates to:
+  /// **'You can report a no-show once the meeting time has passed and at least 24 hours after the mutual choice.'**
+  String get chat_noshow_too_early_open;
+
+  /// No description provided for @delete_account_body_open.
+  ///
+  /// In en, this message translates to:
+  /// **'If you delete your account, all your data, messages, choices and photos will be permanently deleted. This cannot be undone.'**
+  String get delete_account_body_open;
+
+  /// No description provided for @onboarding_1_title_open.
+  ///
+  /// In en, this message translates to:
+  /// **'You have the plan. Find company to go with'**
+  String get onboarding_1_title_open;
+
+  /// No description provided for @onboarding_1_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'A restaurant, a concert, an exhibition. Post your plan, see who wants to join and choose your company.'**
+  String get onboarding_1_desc_open;
+
+  /// No description provided for @onboarding_2_title_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us where you\'d like to go'**
+  String get onboarding_2_title_open;
+
+  /// No description provided for @onboarding_2_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'A café, a theatre, a concert. Post a request, and someone planning the same thing can invite you.'**
+  String get onboarding_2_desc_open;
+
+  /// No description provided for @onboarding_3_desc_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Every profile is verified with a selfie. Users who skip plans or behave inappropriately are blocked.'**
+  String get onboarding_3_desc_open;
 }
 
 class _AppLocalizationsDelegate

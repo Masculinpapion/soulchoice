@@ -16,6 +16,25 @@ bool get isAndroidDevice => !kIsWeb && Platform.isAndroid;
 /// Sunucuya yazılan kaynak etiketi (`users.last_platform`, ödeme `source`).
 String get platformTag => kIsWeb ? 'web' : (Platform.isIOS ? 'ios' : 'android');
 
+/// «Açık akış» (17.09.2026 iOS paketi → 15.10.2026 TÜM PLATFORMLAR):
+/// akış / Обзор / yüz şeridi cinsiyet ve yaş aralığına göre SÜZÜLMEZ (herkes
+/// herkesi görür), sihirbazda yaş aralığı adımı ve ayarlarda yaş aralığı satırı
+/// yok, «совпадение/match» yerine «выбор/choice» metni. Mekanik aynı: plan →
+/// başvuru → tek kişiyi seç → sohbet.
+///
+/// 15.10.2026 kararı (Apple App Review randevusu 13.10): ürün her mağazada
+/// AYNI olmalı → iOS/Android/RuStore ayrımı kaldırıldı, bayrak sabit `true`.
+/// Derleme sabiti — uzaktan bayrak DEĞİL (2.3.1 bait-and-switch riski).
+/// `!openFeedMode` dalları eski (filtreli) davranışı taşır; ayrı temizlik işi.
+bool get openFeedMode => true;
+
+/// Mağaza demo şehirleri DB'de «Moscow, Russia» / «Saint Petersburg, Russia»
+/// (TR: «…, Rusya») adını taşır — eski Android'in `name_en = 'Moscow'` tam
+/// eşleşme aramasıyla çakışmasın diye. EKRANDA ek gösterilmez (17.09.2026).
+String cleanCityName(String s) => openFeedMode
+    ? s.replaceFirst(RegExp(r',\s*(Russia|Rusya)$'), '')
+    : s;
+
 /// Kurulum kaynağı etiketi (`users.install_source`, AppMetrica profil özniteliği).
 /// 26.09.2026 (Play yayını): Telegram «yeni kullanıcı» mesajı ve huni, kullanıcının
 /// hangi mağazadan geldiğini göstersin. package_info_plus `installerStore`:

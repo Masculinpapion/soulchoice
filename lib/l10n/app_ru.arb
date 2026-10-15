@@ -1004,7 +1004,7 @@
   "profile_setup_email_hint": "you@example.com",
   "profile_setup_marketing_consent": "Согласен(на) получать новости и специальные предложения SoulChoice, в том числе рекламные, по e-mail. Отозвать согласие можно в любой момент — в настройках или письмом на support@soulchoice.app.",
   "paywall_subtitle_ios": "Premium открывает безлимит. Действующая подписка распознаётся автоматически.",
-  "feed_browse_hint": "· ЛИСТАЙ →",
+  "feed_browse_hint": "· СМОТРИ →",
   "decision_selected_body_request_open": "Ты выбираешь {name} для запроса \"{title}\".\nПодтвердить выбор?",
   "@decision_selected_body_request_open": {"placeholders": {"name": {"type": "String"}, "title": {"type": "String"}}},
   "decision_selected_body_open": "Ты выбираешь {name} для приглашения \"{title}\".\nПодтвердить выбор?",

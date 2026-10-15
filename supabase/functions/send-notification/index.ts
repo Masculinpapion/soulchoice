@@ -75,9 +75,9 @@ const TEMPLATES: Record<string, Record<string, { t: string; b: string }>> = {
   // 26.07: davet sahibine eşleşme push'u (trg_notify_new_match) — "Eşleşmeler"
   // tercihi artık gerçek bir olayı yönetiyor; başvurana ikinci push atılmaz.
   match: {
-    ru: { t: 'Совпадение! 🎉', b: 'Чат с {name} открыт' },
-    tr: { t: 'Eşleşme! 🎉', b: '{name} ile sohbet açıldı' },
-    en: { t: "It's a match! 🎉", b: 'Chat with {name} is open' },
+    ru: { t: 'Тебя выбрали ✓', b: 'Чат с {name} открыт' },
+    tr: { t: 'Seçildin ✓', b: '{name} ile sohbet açıldı' },
+    en: { t: "You're chosen ✓", b: 'Chat with {name} is open' },
   },
   selection_reminder: {
     ru: { t: 'Заявки ждут ✨', b: 'Заявок: {count} — загляни в них, окно выбора скоро закроется' },

@@ -2431,7 +2431,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Premium открывает безлимит. Действующая подписка распознаётся автоматически.';
 
   @override
-  String get feed_browse_hint => '· ЛИСТАЙ →';
+  String get feed_browse_hint => '· СМОТРИ →';
 
   @override
   String decision_selected_body_request_open(String name, String title) {

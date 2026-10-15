@@ -785,7 +785,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_desc_ph_coffee =>
-      'Örn: Rahat bir kafede filtre kahve ve tatlı eşliğinde tanışma sohbeti.';
+      'Örn: Rahat bir kafede filtre kahve ve tatlı eşliğinde keyifli bir sohbet.';
 
   @override
   String get create_inv_desc_ph_cinema =>
@@ -835,7 +835,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get create_inv_desc_ph_bar_req =>
-      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik eşliğinde tanışmak isterim.';
+      'Örn: Şehir manzaralı bir barda kokteyl ve iyi müzik eşliğinde vakit geçirmek isterim.';
 
   @override
   String get create_inv_desc_ph_coffee_req =>
@@ -2376,7 +2376,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Premium sınırsızı açar. Mevcut aboneliğin otomatik tanınır.';
 
   @override
-  String get feed_browse_hint => '· KAYDIR →';
+  String get feed_browse_hint => '· GÖZ AT →';
 
   @override
   String decision_selected_body_request_open(String name, String title) {

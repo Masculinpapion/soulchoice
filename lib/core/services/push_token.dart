@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../utils/platform_x.dart';
+import 'funnel_events.dart';
 
 // Kullanıcının etkin dili (ayar > sistem) — push'lar alıcının dilinde gitsin
 // diye users.locale'e yazılır; send-notification şablon seçiminde okur.
@@ -68,6 +69,10 @@ Future<void> savePushToken() async {
   } catch (e, st) {
     ErrorReporter.report(e, stack: st, screen: 'push_token');
   }
+  // Kurulum kaynağı (26.09, Play yayını): Telegram yeni-kullanıcı mesajı ve
+  // huni kırılımı için — play | rustore | apk | appstore | testflight | unknown.
+  final installSource = await installSourceTag();
+  funnelProfileInstallSource(installSource);
 
   // 1) FCM — GMS'li Android + iOS
   try {
@@ -76,6 +81,7 @@ Future<void> savePushToken() async {
       await client.from('users').update({
         'fcm_token': token,
         'last_platform': platformTag,
+        'install_source': installSource,
         if (appBuild != null) 'app_build': appBuild,
       }).eq('id', uid);
       saved = true;
@@ -95,6 +101,7 @@ Future<void> savePushToken() async {
           await client.from('users').update({
             'rustore_token': rt,
             if (!saved) 'last_platform': platformTag,
+            if (!saved) 'install_source': installSource,
             if (!saved && appBuild != null) 'app_build': appBuild,
           }).eq('id', uid);
           saved = true;

@@ -17,13 +17,22 @@ fail() { echo "$(date -Is) FAIL: $1" >> "$LOG"; printf '{"date":"%s","ok":false,
 [ "$(stat -c %s "$DUMP")" -gt 1000000 ] || fail "dump çok küçük ($(stat -c %s "$DUMP") bayt)"
 docker rm -f $NAME >/dev/null 2>&1
 docker run -d --name $NAME --network none -e POSTGRES_PASSWORD=drill "$IMG" >/dev/null 2>&1 || fail "konteyner başlatılamadı"
-for i in $(seq 1 60); do docker exec $NAME pg_isready -U supabase_admin >/dev/null 2>&1 && break; sleep 2; done
-docker exec $NAME pg_isready -U supabase_admin >/dev/null 2>&1 || fail "postgres 120 sn'de hazır olmadı"
+# 02.10.2026: hazır kontrolü TCP'den (-h 127.0.0.1). İmaj ilk açılışta kurulumu yalnız unix soketi dinleyen
+# geçici sunucuda yapıp yeniden başlar; soketten pg_isready o arada "hazır" der (01.10 "drill db oluşturulamadı").
+for i in $(seq 1 60); do docker exec $NAME pg_isready -h 127.0.0.1 -U supabase_admin >/dev/null 2>&1 && break; sleep 2; done
+docker exec $NAME pg_isready -h 127.0.0.1 -U supabase_admin >/dev/null 2>&1 || fail "postgres 120 sn'de hazır olmadı"
 sleep 5
 # Taze "drill" veritabanı: imajın hazır auth/storage şemalarıyla çakışma olmaz. pg_cron yalnız
 # postgres db'de kurulabildiği için cron.* tabloları COPY için stub olarak açılır; eksik rol eklenir.
 PSQL="docker exec -e PGPASSWORD=drill $NAME psql -U supabase_admin"
-$PSQL -d postgres -Atc "create database drill" >/dev/null 2>&1 || fail "drill db oluşturulamadı"
+# 6 deneme (5 sn arayla); başarısızsa son hata metni log'a yazılır (01.10'da /dev/null'a gidip kök sebep okunamadı).
+CREATED=""; CERR=""
+for i in $(seq 1 6); do
+  CERR=$($PSQL -d postgres -Atc "create database drill" 2>&1 >/dev/null) && { CREATED=1; break; }
+  echo "$CERR" | grep -q "already exists" && { CREATED=1; break; }
+  sleep 5
+done
+[ -n "$CREATED" ] || { echo "$(date -Is) create database hata: $CERR" >> "$LOG"; fail "drill db oluşturulamadı"; }
 $PSQL -d drill -q -c "do \$\$ begin if not exists (select 1 from pg_roles where rolname='supabase_functions_admin') then create role supabase_functions_admin nologin; end if; end \$\$; create schema if not exists cron; create table if not exists cron.job(jobid bigint, schedule text, command text, nodename text, nodeport int, database text, username text, active boolean, jobname text); create table if not exists cron.job_run_details(jobid bigint, runid bigint, job_pid int, database text, username text, command text, status text, return_message text, start_time timestamptz, end_time timestamptz);" >/dev/null 2>&1
 ERRS=$(gunzip -c "$DUMP" | docker exec -i -e PGPASSWORD=drill $NAME psql -U supabase_admin -d drill -q 2>&1 | grep -c "^ERROR" || true)
 BAD=""; DETAIL=""

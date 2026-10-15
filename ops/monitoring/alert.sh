@@ -8,6 +8,10 @@ set -u
 source /root/monitoring/.env
 
 QUEUE=/root/monitoring/state/alert.queue
+# 26.09: gönderim defteri — «mesaj ne zaman üretildi, anında mı kuyruktan mı gitti»
+# sorusu cevaplanabilsin (миша bildirimi geç görüldü). Tek satır: zaman|seviye|yol|ilk 80 kr.
+SENDLOG=/root/monitoring/state/alert-send.log
+logsend() { printf '%s|%s|%s|%s\n' "$(date -Is)" "$1" "$2" "$(printf '%s' "$3" | tr '\n' ' ' | cut -c1-80)" >> "$SENDLOG" 2>/dev/null; }
 
 send_tg() { # send_tg <text> → 0 başarılı; 4 deneme (6 sn tavan), aralarda 1/2/3 sn
   # 16.09: --http1.1 — Timeweb→Telegram HTTP/2 GET/POST bazen asılı kalıyor (DPI), 15 sn sonra kuyruğa düşüp 15 dk gecikiyordu; h1.1 0,15 sn
@@ -35,7 +39,7 @@ if [ "${1:-}" = "--flush" ]; then
       [ -z "$TEXT" ] && continue
       FULL="${TEXT}
 ⏳ gecikmeli iletildi (üretim: $(TZ=Europe/Moscow date -d "@${TS}" '+%H:%M') MSK)"
-      send_tg "$FULL" || echo "$line" >> "$QUEUE"
+      if send_tg "$FULL"; then logsend FLUSH "kuyruktan($(TZ=Europe/Moscow date -d "@${TS}" '+%H:%M'))" "$TEXT"; else echo "$line" >> "$QUEUE"; fi
     else
       # eski düz-metin kuyruk kaydı (geriye uyum)
       send_tg "$line" || echo "$line" >> "$QUEUE"
@@ -56,7 +60,10 @@ esac
 # "[soulchoice]" etiketi kaldırıldı (31.07, Mustafa: görsel sadelik — kanal zaten tek)
 TEXT="${PREFIX} · ${MSG}"
 
-if ! send_tg "$TEXT"; then
+if send_tg "$TEXT"; then
+  logsend "$LEVEL" anında "$TEXT"
+else
+  logsend "$LEVEL" KUYRUK "$TEXT"
   echo "$(date +%s)|$(printf '%s' "$TEXT" | base64 -w0)" >> "$QUEUE"
   # Telegram 3 denemede de ulaşılamadı ve seviye CRIT: SMS fallback (gerçek para → sadece CRIT).
   # ALERT_SMS_TO /root/monitoring/.env'de tanımlı değilse atlanır.

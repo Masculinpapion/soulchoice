@@ -10,6 +10,7 @@ crons = ["*/10 * * * *"]
 binding = "HB"
 id = "<KV_ID — Cloudflare hesabında>"
 
-[[routes]]
-pattern = "hb.ahmtransfer.com"
-custom_domain = true
+# 20.09.2026: custom domain KULLANILMIYOR. SoulChoice altyapisi baska bir projenin
+# DNS bolgesine BAGLANMAZ (20.09 arizasi). Erisim yalnizca workers.dev uzerinden:
+#   https://soulchoice-heartbeat.mustafaaladag-ma.workers.dev
+workers_dev = true

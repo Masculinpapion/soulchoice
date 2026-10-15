@@ -9,7 +9,7 @@ P() { docker exec supabase-db psql -U postgres -Atc "$1" 2>/dev/null; }
 mask() { sed -E 's/7[0-9]{6}([0-9]{4})/7******\1/g'; }
 j() { python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
 CONT=$(docker ps -a --format '{{.Names}}|{{.Status}}' | sort | python3 -c 'import sys,json; print(json.dumps(dict(l.strip().split("|",1) for l in sys.stdin if "|" in l)))')
-STATE=$(cd /root/monitoring/state 2>/dev/null && for f in *; do [ -f "$f" ] && [ "$(wc -l < "$f")" -le 1 ] && case "$f" in *.reminded|*.log) ;; *) printf '%s=%s\n' "$f" "$(head -c 120 "$f" | tr -d '\n')";; esac; done | mask | python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
+STATE=$(cd /root/monitoring/state 2>/dev/null && for f in *; do [ -f "$f" ] && [ "$(wc -l < "$f")" -le 1 ] && case "$f" in *.reminded|*.log|asc_*) ;; *) printf '%s=%s\n' "$f" "$(head -c 120 "$f" | tr -d '\n')";; esac; done | mask | python3 -c 'import sys,json; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))')
 LOGT=$(tail -15 /root/monitoring/checks.log 2>/dev/null | cut -c1-200 | mask | j)
 K5=$(docker logs supabase-kong --since 60m 2>&1 | grep -cE '" 5[0-9]{2} '); K5=${K5:-0}
 EDGE=$(docker logs supabase-edge-functions --since 60m 2>&1 | grep -iE 'ERROR|FAIL|RPC_FAILED|OTP_CAP|STORE_CAP' | tail -15 | cut -c1-200 | mask | j)
@@ -35,7 +35,7 @@ ROW=$(P "select json_build_object(
 )")
 DISK=$(df --output=pcent / | tail -1 | tr -dc '0-9'); MEM=$(free -m | awk 'NR==2{printf "%d/%d", $3, $2}'); LOAD=$(cut -d' ' -f1-3 /proc/loadavg)
 SITE=$(curl -s -o /dev/null -m 10 -w '%{http_code}' https://soulchoice.app/); REST=$(curl -s -o /dev/null -m 10 -w '%{http_code}' "https://soulchoice.app/rest/v1/cities?select=id&limit=1")
-DM=$(curl -s -m 10 https://hb.ahmtransfer.com/status || echo '{}')
+DM=$(curl -s -m 10 https://soulchoice-heartbeat.mustafaaladag-ma.workers.dev/status || echo '{}')
 SMS=$(curl -s -m 10 "https://sms.ru/my/balance?api_id=$(grep -o '^SMS_RU_API_KEY=.*' /root/supabase/docker/.env | cut -d= -f2)&json=1" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("balance","?"))' 2>/dev/null || echo '?')
 python3 - "$CONT" "$STATE" "$LOGT" "$K5" "$EDGE" "$ROW" "$DISK" "$MEM" "$LOAD" "$SITE" "$REST" "$DM" "$SMS" > "$OUT_DIR/report.json.tmp" <<'PY'
 import sys,json,datetime

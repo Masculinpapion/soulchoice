@@ -11,6 +11,7 @@ on:
       - 'landing/**'
       - 'supabase/**'
       - 'ops/**'      # 17.09: sunucu/izleme betikleri TestFlight build'i tetiklemesin
+      - 'android/**'  # 28.09: yalnız Android değişikliği iOS build'i tetiklemesin (Apple dondurma)
 
 concurrency:
   group: ios-testflight

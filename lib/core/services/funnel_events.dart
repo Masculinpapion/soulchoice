@@ -29,3 +29,14 @@ Future<void> funnelEventOnce(String name) async {
     funnelEvent(name);
   } catch (_) {}
 }
+
+/// Kurulum kaynağı AppMetrica kullanıcı profiline yazılır (26.09.2026): huni
+/// raporları «Google Play / RuStore / APK / App Store» kırılımıyla okunabilsin.
+void funnelProfileInstallSource(String source) {
+  if (kIsWeb) return;
+  try {
+    AppMetrica.reportUserProfile(
+      UserProfile([StringAttribute.withValue('install_source', source)]),
+    );
+  } catch (_) {}
+}

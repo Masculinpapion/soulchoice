@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../../core/utils/image_url.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -218,10 +219,10 @@ class _FocusZoomPhoto extends StatelessWidget {
         : 1.0;
 
     final img = CachedNetworkImage(
-      imageUrl: url,
+      imageUrl: thumb(url, 800),
       fit: BoxFit.cover,
       alignment: align,
-      placeholder: (_, __) => Container(color: Colors.white.withOpacity(0.05)),
+      placeholder: (_, __) => const _CardShimmerBg(),
       errorWidget: (_, __, ___) => Container(
         color: Colors.white.withOpacity(0.05),
         child: const Icon(Icons.image_not_supported, color: Colors.white24),
@@ -282,7 +283,7 @@ class _DiscoverCard extends StatelessWidget {
                 // Fotoğraf
                 photoUrl != null
                     ? _FocusZoomPhoto(url: photoUrl)
-                    : Container(color: Colors.white.withOpacity(0.05)),
+                    : _CardShimmerBg(emoji: inv.category.emoji),
 
                 // Alt gradient
                 Positioned.fill(
@@ -375,7 +376,7 @@ class _DiscoverCard extends StatelessWidget {
                                 child: ClipOval(
                                   child: photoUrl != null
                                       ? CachedNetworkImage(
-                                          imageUrl: photoUrl,
+                                          imageUrl: thumb(photoUrl, 160),
                                           fit: BoxFit.cover,
                                           alignment: PhotoFocus.of(photoUrl,
                                               fallback: Alignment.center),
@@ -670,3 +671,32 @@ class _FilterChip extends StatelessWidget {
       );
 }
 
+
+/// 16.10: Keşfet kartı yüklenirken / fotoğraf yokken düz koyu kutu yerine
+/// marka gradyanı (akıştaki _CardFallbackGradient ile aynı tonlar).
+class _CardShimmerBg extends StatelessWidget {
+  final String? emoji;
+  const _CardShimmerBg({this.emoji});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A0510), Color(0xFF0A0B1A), Color(0xFF07080C)],
+          stops: [0.0, 0.55, 1.0],
+        ),
+      ),
+      child: emoji == null
+          ? const SizedBox.expand()
+          : Center(
+              child: Opacity(
+                opacity: 0.85,
+                child: Text(emoji!, style: const TextStyle(fontSize: 56)),
+              ),
+            ),
+    );
+  }
+}

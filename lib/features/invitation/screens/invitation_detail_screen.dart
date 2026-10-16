@@ -1,4 +1,5 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
+import '../../../core/utils/image_url.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -189,7 +190,7 @@ class _InvitationDetailScreenState
                                   },
                                   child: url != null
                                       ? CachedNetworkImage(
-                                          imageUrl: url,
+                                          imageUrl: thumb(url, 1080),
                                           fit: BoxFit.cover,
                                           alignment: PhotoFocus.of(url),
                                           errorWidget: (_, __, ___) => _FallbackBg(),
@@ -1027,7 +1028,7 @@ class _HostCard extends ConsumerWidget {
                   child: ClipOval(
                     child: ownerPhotoUrl != null
                         ? CachedNetworkImage(
-                            imageUrl: ownerPhotoUrl!,
+                            imageUrl: thumb(ownerPhotoUrl!, 1080),
                             fit: BoxFit.cover,
                             alignment: PhotoFocus.of(ownerPhotoUrl),
                             errorWidget: (_, __, ___) => Container(
@@ -1202,7 +1203,7 @@ class _HostRow extends StatelessWidget {
                     child: ClipOval(
                       child: ownerPhotoUrl != null
                           ? CachedNetworkImage(
-                              imageUrl: ownerPhotoUrl!,
+                              imageUrl: thumb(ownerPhotoUrl!, 256),
                               fit: BoxFit.cover,
                               alignment: PhotoFocus.of(ownerPhotoUrl),
                               errorWidget: (_, __, ___) => Container(

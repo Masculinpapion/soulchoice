@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/utils/image_url.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -222,7 +223,7 @@ class _ApplicantTile extends StatelessWidget {
           children: [
             if (primaryUrl.isNotEmpty)
               CachedNetworkImage(
-                imageUrl: primaryUrl,
+                imageUrl: thumb(primaryUrl, 600),
                 fit: BoxFit.cover,
                 alignment: PhotoFocus.of(primaryUrl),
                 errorWidget: (_, __, ___) => Container(

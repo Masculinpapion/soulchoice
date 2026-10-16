@@ -1,4 +1,5 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
+import '../../../core/utils/image_url.dart';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -581,7 +582,7 @@ class _Avatar extends StatelessWidget {
     if (photoUrl != null) {
       return ClipOval(
         child: CachedNetworkImage(
-          imageUrl: photoUrl!,
+          imageUrl: thumb(photoUrl!, 156),
           width: 52,
           height: 52,
           fit: BoxFit.cover,

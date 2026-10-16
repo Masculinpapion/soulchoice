@@ -1,4 +1,5 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
+import '../../../core/utils/image_url.dart';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -552,7 +553,7 @@ class _NotifTile extends StatelessWidget {
         child: ClipOval(
           child: photoUrl != null
               ? CachedNetworkImage(
-                  imageUrl: photoUrl,
+                  imageUrl: thumb(photoUrl, 156),
                   fit: BoxFit.cover,
                   memCacheWidth: 156,
                   fadeInDuration: const Duration(milliseconds: 150),

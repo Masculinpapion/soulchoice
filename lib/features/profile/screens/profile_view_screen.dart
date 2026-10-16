@@ -1,4 +1,5 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
+import '../../../core/utils/image_url.dart';
 import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -662,7 +663,7 @@ class _HeroSectionState extends State<_HeroSection> {
                   }
                 },
                 child: CachedNetworkImage(
-                  imageUrl: widget.photos[i]['url'] as String,
+                  imageUrl: thumb(widget.photos[i]['url'] as String, 1080),
                   fit: BoxFit.cover,
                   alignment: PhotoFocus.of(widget.photos[i]['url'] as String),
                   errorWidget: (_, __, ___) => _NoPhotoPlaceholder(),
@@ -1720,7 +1721,7 @@ class _MyInvitationSection extends ConsumerWidget {
                           height: 72,
                           child: photoUrl != null && photoUrl.isNotEmpty
                               ? CachedNetworkImage(
-                                  imageUrl: photoUrl,
+                                  imageUrl: thumb(photoUrl, 256),
                                   fit: BoxFit.cover,
                                   alignment: PhotoFocus.of(photoUrl),
                                   errorWidget: (_, __, ___) => Container(

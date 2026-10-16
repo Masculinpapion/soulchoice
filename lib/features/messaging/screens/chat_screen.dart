@@ -1,4 +1,5 @@
 import 'package:soulchoice/core/services/error_reporter.dart';
+import '../../../core/utils/image_url.dart';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -1489,7 +1490,7 @@ class _ChatAppBar extends StatelessWidget {
                             : ClipOval(
                                 child: photoUrl != null
                                     ? CachedNetworkImage(
-                                        imageUrl: photoUrl!,
+                                        imageUrl: thumb(photoUrl!, 156),
                                         fit: BoxFit.cover,
                                         // Liste avatarıyla aynı memCacheWidth → aynı
                                         // decode cache'i, başlık girişte hazır.

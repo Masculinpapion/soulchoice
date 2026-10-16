@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../core/utils/image_url.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -575,7 +576,7 @@ class _StoryAvatar extends StatelessWidget {
                 child: ClipOval(
                   child: photoUrl != null
                       ? CachedNetworkImage(
-                          imageUrl: photoUrl!,
+                          imageUrl: thumb(photoUrl!, 256),
                           fit: BoxFit.cover,
                           alignment: PhotoFocus.of(photoUrl),
                           // 03.09: avatar boyutunda decode — 1080px orijinal bellekte tutulmasın
@@ -1526,7 +1527,7 @@ class InvitationCard extends StatelessWidget {
               // 1. Arka plan fotoğrafı — tam kapak, yüz üstte
               if (ownerPhotoUrl != null)
                 CachedNetworkImage(
-                  imageUrl: ownerPhotoUrl!,
+                  imageUrl: thumb(ownerPhotoUrl!, 1080),
                   fit: BoxFit.cover,
                   alignment: PhotoFocus.of(ownerPhotoUrl),
                   // 03.09: kart genişliğinde decode (orijinal 1080px zaten tavan)
@@ -1583,7 +1584,7 @@ class InvitationCard extends StatelessWidget {
                             ),
                             child: ClipOval(
                               child: ownerPhotoUrl != null
-                                  ? CachedNetworkImage(imageUrl: ownerPhotoUrl!, fit: BoxFit.cover, alignment: PhotoFocus.of(ownerPhotoUrl), memCacheWidth: 256, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
+                                  ? CachedNetworkImage(imageUrl: thumb(ownerPhotoUrl!, 160), fit: BoxFit.cover, alignment: PhotoFocus.of(ownerPhotoUrl), memCacheWidth: 256, errorWidget: (_, __, ___) => _AvatarFallback(name: ownerName))
                                   : _AvatarFallback(name: ownerName),
                             ),
                           ),
@@ -2397,7 +2398,7 @@ class _ApplicantAvatarStack extends StatelessWidget {
                   ),
                   child: ClipOval(
                     child: CachedNetworkImage(
-                      imageUrl: shown[i],
+                      imageUrl: thumb(shown[i], 1080),
                       fit: BoxFit.cover,
                       alignment: PhotoFocus.of(shown[i], fallback: Alignment.center),
                       memCacheWidth: 256,

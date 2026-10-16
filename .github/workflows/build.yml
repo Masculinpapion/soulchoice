@@ -10,6 +10,7 @@ on:
       - 'ops/**'      # 17.09: sunucu/izleme betikleri uygulama derlemesini tetiklemesin
       - '.github/**'  # 17.09: workflow düzenlemesi de (iOS'ta zaten böyleydi)
       - 'supabase/schema/**'  # 29.09: baseline/şema dökümü uygulama derlemesini tetiklemesin (functions değişikliği HÂLÂ tetikler)
+      - 'supabase/migrations/**'  # 16.10: DB migration dosyaları da uygulama derlemesini tetiklemesin (853 boşuna derlendi)
   pull_request:
     branches: [ main ]
   workflow_dispatch:

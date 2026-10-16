@@ -1160,7 +1160,7 @@ BEGIN
       url := 'http://supabase-edge-functions:9000/send-notification',
       body := jsonb_build_object(
         'user_id', NEW.user1_id,
-        'title', 'Совпадение! 🎉',
+        'title', 'Тебя выбрали ✓',
         'body', 'Чат с ' || COALESCE(other_name, '') || ' открыт',
         'data', jsonb_build_object('type', 'match', 'match_id', NEW.id),
         'template', jsonb_build_object('name', COALESCE(other_name, ''))),

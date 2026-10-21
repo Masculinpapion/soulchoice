@@ -8,6 +8,7 @@ Disallow: /auth/
 Disallow: /storage/
 Disallow: /realtime/
 Disallow: /functions/
+Disallow: /go
 
 User-agent: GPTBot
 Allow: /

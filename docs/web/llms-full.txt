@@ -24,7 +24,7 @@ SoulChoice — социальная сеть для совместных пла�
 На старте (2026) — Москва и Санкт-Петербург. Другие города, включая Стамбул, Лондон, Дубай и Берлин, — в планах.
 
 ### Где скачать SoulChoice?
-Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) и RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — скоро.
+Android: Google Play (https://soulchoice.app/go?src=faq-ru&to=play) и RuStore (https://soulchoice.app/go?src=faq-ru&to=rustore). iOS (App Store) — скоро.
 
 ### Сколько стоит SoulChoice?
 Свои приглашения — без ограничений и бесплатно, первые 3 заявки на чужие приглашения тоже бесплатны. Premium — 1000 ₽ за 30 дней: заявки без лимита. Оплата: https://soulchoice.app/premium
@@ -65,7 +65,7 @@ SoulChoice is a social network for shared plans: concerts, dinners, exhibitions,
 At launch (2026): Moscow and Saint Petersburg. Istanbul, London, Dubai, Berlin and other cities are planned.
 
 ### Where can I download SoulChoice?
-Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) and RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — coming soon.
+Android: Google Play (https://soulchoice.app/go?src=faq-en&to=play) and RuStore (https://soulchoice.app/go?src=faq-en&to=rustore). iOS (App Store) — coming soon.
 
 ### How much does SoulChoice cost?
 Your own invitations are unlimited and free, and the first 3 applications to other people's invitations are free too. Premium is 1,000 ₽ per 30 days for unlimited applications: https://soulchoice.app/premium
@@ -106,7 +106,7 @@ SoulChoice, ortak planlar için bir sosyal ağdır: konser, akşam yemeği, serg
 Başlangıçta (2026) Moskova ve St. Petersburg. İstanbul, Londra, Dubai, Berlin ve diğer şehirler planda.
 
 ### SoulChoice nereden indirilir?
-Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) ve RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — yakında.
+Android: Google Play (https://soulchoice.app/go?src=faq-tr&to=play) ve RuStore (https://soulchoice.app/go?src=faq-tr&to=rustore). iOS (App Store) — yakında.
 
 ### SoulChoice ücretli mi?
 Kendi davetlerin sınırsız ve ücretsiz, başkalarının davetlerine ilk 3 başvuru da ücretsiz. Premium 30 gün için 1.000 ₽: sınırsız başvuru. https://soulchoice.app/premium
@@ -126,8 +126,8 @@ support@soulchoice.app — hesap, davetler, Premium ve verilerle ilgili sorular.
 
 ## Links / Ссылки
 - Site: https://soulchoice.app/ (RU), https://soulchoice.app/en/ (EN)
-- Google Play: https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice
-- RuStore: https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice
+- Google Play: https://soulchoice.app/go?src=llmsfull&to=play
+- RuStore: https://soulchoice.app/go?src=llmsfull&to=rustore
 - App Store: coming soon
 - Contact: support@soulchoice.app
 - Founder: Mustafa Aladağ (Мустафа Аладаг) — https://soulchoice.app/about

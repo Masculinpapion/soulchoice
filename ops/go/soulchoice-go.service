@@ -1,0 +1,17 @@
+[Unit]
+Description=SoulChoice /go click tracker (127.0.0.1:4921)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/soulchoice_go
+ExecStart=/usr/bin/python3 /root/soulchoice_go/go.py
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/root/soulchoice_go
+
+[Install]
+WantedBy=multi-user.target

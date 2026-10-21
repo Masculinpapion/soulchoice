@@ -18,7 +18,7 @@ SoulChoice — социальная сеть для совместных пла�
 От 6 до 48 часов — срок выбирает автор. В ленте только актуальные планы рядом.
 
 ### Какого типа приложение SoulChoice?
-SoulChoice — социальная сеть для совместных планов: концерты, ужины, выставки, прогулки, спорт — с компанией. Одна общая лента для всех, без фильтров по полу и возрасту и без подбора пар — в центре всегда событие, а не профили.
+SoulChoice — социальная сеть для совместных планов: концерты, ужины, выставки, прогулки, спорт — с компанией. Одна общая лента для всех, без фильтров по полу и возрасту — в центре всегда событие, а не профили.
 
 ### В каких городах работает SoulChoice?
 На старте (2026) — Москва и Санкт-Петербург. Другие города, включая Стамбул, Лондон, Дубай и Берлин, — в планах.
@@ -59,7 +59,7 @@ A user posts an open invitation to a specific event (category, place, date and t
 From 6 to 48 hours — the host chooses. The feed shows only current plans nearby.
 
 ### What kind of app is SoulChoice?
-SoulChoice is a social network for shared plans: concerts, dinners, exhibitions, walks, sports — with company. One shared feed for everyone, no gender or age filters and no matchmaking — the event is always at the centre, not profiles.
+SoulChoice is a social network for shared plans: concerts, dinners, exhibitions, walks, sports — with company. One shared feed for everyone, with no gender or age filters — the event is always at the centre, not profiles.
 
 ### Which cities does SoulChoice work in?
 At launch (2026): Moscow and Saint Petersburg. Istanbul, London, Dubai, Berlin and other cities are planned.
@@ -100,7 +100,7 @@ Kullanıcı belirli bir etkinliğe (kategori, yer, tarih ve saat) açık davet y
 6 ile 48 saat arasında — süreyi davet sahibi seçer. Akışta yalnız yakındaki güncel planlar görünür.
 
 ### SoulChoice ne tür bir uygulama?
-SoulChoice, ortak planlar için bir sosyal ağdır: konser, akşam yemeği, sergi, yürüyüş, spor — arkadaşlarla. Herkes için tek ortak akış; cinsiyet veya yaş filtresi yoktur, eşleştirme yapılmaz — merkezde her zaman etkinlik vardır, profiller değil.
+SoulChoice, ortak planlar için bir sosyal ağdır: konser, akşam yemeği, sergi, yürüyüş, spor — arkadaşlarla. Herkes için tek ortak akış; cinsiyet veya yaş filtresi yoktur — merkezde her zaman etkinlik vardır, profiller değil.
 
 ### SoulChoice hangi şehirlerde çalışıyor?
 Başlangıçta (2026) Moskova ve St. Petersburg. İstanbul, Londra, Dubai, Berlin ve diğer şehirler planda.

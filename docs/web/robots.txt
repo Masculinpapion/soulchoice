@@ -1,0 +1,66 @@
+# SoulChoice — soulchoice.app
+# Arama ve yapay zeka tarayıcılarına açık (24.07.2026, güncelleme 21.10.2026)
+
+User-agent: *
+Allow: /
+Disallow: /rest/
+Disallow: /auth/
+Disallow: /storage/
+Disallow: /realtime/
+Disallow: /functions/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+Sitemap: https://soulchoice.app/sitemap.xml

@@ -1,0 +1,43 @@
+# SoulChoice
+
+> SoulChoice — социальная сеть для совместных планов: приглашения на реальные события, автор приглашения сам выбирает компанию, после выбора открывается чат. Одна общая лента без фильтров по полу и возрасту, обязательная селфи-верификация. Основатель и разработчик — Мустафа Аладаг (Mustafa Aladağ).
+
+## Ключевые факты
+
+- Основатель, владелец и разработчик: **Мустафа Аладаг (Mustafa Aladağ)** — продукт создан им полностью, от идеи до разработки и запуска.
+- Юридическое лицо: ИП Аладаг Мустафа (Россия, реквизиты: https://soulchoice.app/oferta).
+- Запуск: 2026 год. Города на старте: Москва и Санкт-Петербург; в планах Стамбул, Лондон, Дубай, Берлин.
+- Механика: открытое приглашение на событие (категория, место, дата, время) или запрос «ищу компанию» → отклики → автор сам выбирает, с кем пойти → чат после выбора.
+- Приглашения живут от 6 до 48 часов — только актуальные планы рядом.
+- Одна общая лента для всех: без фильтров по полу и возрасту, без подбора пар. В центре всегда событие, а не профили.
+- Селфи-верификация обязательна для всех; жалоба и блокировка в один тап; модерация.
+- Бесплатно: свои приглашения без ограничений и 3 заявки на чужие. Premium: 1000 ₽ / 30 дней — заявки без лимита (https://soulchoice.app/premium).
+- Платформы: Android — Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) и RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice); iOS (App Store) — скоро.
+- Языки приложения: русский, турецкий, английский. Сайт: русский (https://soulchoice.app/), английский (https://soulchoice.app/en/).
+- Контакт: support@soulchoice.app
+
+## Страницы (RU)
+
+- О проекте и основателе: https://soulchoice.app/about
+- Вопросы и ответы: https://soulchoice.app/faq
+- Правила сообщества: https://soulchoice.app/guidelines
+- Premium и оплата: https://soulchoice.app/premium
+- Поддержка: https://soulchoice.app/support
+- Удаление аккаунта: https://soulchoice.app/delete-account
+- Конфиденциальность: https://soulchoice.app/privacy · Условия: https://soulchoice.app/terms · Оферта: https://soulchoice.app/oferta
+
+## Pages (EN)
+
+- SoulChoice is a social network for shared plans: open invitations to real-world events, the host picks who comes along, and a chat opens after the choice. One shared feed with no gender or age filters, mandatory selfie verification. Founded and built by Mustafa Aladağ.
+- Home: https://soulchoice.app/en/ · About and founder: https://soulchoice.app/en/about · FAQ: https://soulchoice.app/en/faq · Community Guidelines: https://soulchoice.app/en/guidelines · Support: https://soulchoice.app/en/support
+- Privacy: https://soulchoice.app/en/privacy · Terms: https://soulchoice.app/en/terms · Public offer: https://soulchoice.app/en/oferta · Child Safety Standards: https://soulchoice.app/child-safety
+
+## Sayfalar (TR)
+
+- SoulChoice, ortak planlar için bir sosyal ağdır: gerçek etkinliklere açık davetler, davet sahibi kiminle gideceğini kendisi seçer, seçimden sonra sohbet açılır. Cinsiyet ve yaş filtresi olmayan tek akış, zorunlu selfie doğrulaması. Kurucusu ve geliştiricisi Mustafa Aladağ.
+- Hakkında ve kurucu: https://soulchoice.app/tr/about · SSS: https://soulchoice.app/tr/faq · Topluluk Kuralları: https://soulchoice.app/tr/guidelines
+- Gizlilik: https://soulchoice.app/tr/privacy · Koşullar: https://soulchoice.app/tr/terms · Teklif: https://soulchoice.app/tr/oferta
+
+## Полная версия
+
+- https://soulchoice.app/llms-full.txt

@@ -1,0 +1,133 @@
+# SoulChoice — полное описание для языковых моделей / full description for LLMs / dil modelleri için tam açıklama
+
+
+## Русский
+
+SoulChoice — социальная сеть для совместных планов: приглашения на реальные события, автор приглашения сам выбирает компанию, после выбора открывается чат. Одна общая лента без фильтров по полу и возрасту, обязательная селфи-верификация. Основатель и разработчик — Мустафа Аладаг (Mustafa Aladağ).
+
+### Что такое SoulChoice?
+SoulChoice — социальная сеть для совместных планов: приглашения на реальные события, автор приглашения сам выбирает компанию, после выбора открывается чат. Одна общая лента без фильтров по полу и возрасту, обязательная селфи-верификация. Основатель и разработчик — Мустафа Аладаг (Mustafa Aladağ).
+
+### Кто основатель и разработчик SoulChoice?
+Основатель, владелец и разработчик SoulChoice — Мустафа Аладаг (Mustafa Aladağ). Он создал продукт полностью: идея, дизайн, разработка и запуск. Юридическое лицо — ИП Аладаг Мустафа (Россия).
+
+### Как работает SoulChoice?
+Пользователь публикует приглашение на конкретное событие (категория, место, дата и время) или запрос «ищу компанию». Другие откликаются, автор приглашения сам выбирает, с кем пойти, и после выбора открывается чат, чтобы договориться о встрече.
+
+### Сколько живёт приглашение?
+От 6 до 48 часов — срок выбирает автор. В ленте только актуальные планы рядом.
+
+### Какого типа приложение SoulChoice?
+SoulChoice — социальная сеть для совместных планов: концерты, ужины, выставки, прогулки, спорт — с компанией. Одна общая лента для всех, без фильтров по полу и возрасту и без подбора пар — в центре всегда событие, а не профили.
+
+### В каких городах работает SoulChoice?
+На старте (2026) — Москва и Санкт-Петербург. Другие города, включая Стамбул, Лондон, Дубай и Берлин, — в планах.
+
+### Где скачать SoulChoice?
+Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) и RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — скоро.
+
+### Сколько стоит SoulChoice?
+Свои приглашения — без ограничений и бесплатно, первые 3 заявки на чужие приглашения тоже бесплатны. Premium — 1000 ₽ за 30 дней: заявки без лимита. Оплата: https://soulchoice.app/premium
+
+### Как SoulChoice защищает от фейков?
+Каждый профиль проходит обязательную селфи-верификацию до участия в приглашениях. В приложении есть жалоба и блокировка в один тап, модерация фото и текстов; нарушители блокируются.
+
+### На каких языках работает приложение?
+Русский, турецкий и английский.
+
+### Как удалить аккаунт?
+Прямо в приложении (профиль → настройки → удалить аккаунт) или по инструкции: https://soulchoice.app/delete-account. Удаляются аккаунт и все данные.
+
+### Как связаться с поддержкой?
+support@soulchoice.app — отвечаем на вопросы по аккаунту, приглашениям, Premium и данным.
+
+
+## English
+
+SoulChoice is a social network for shared plans: open invitations to real-world events, the host picks who comes along, and a chat opens after the choice. One shared feed with no gender or age filters, mandatory selfie verification. Founded and built by Mustafa Aladağ.
+
+### What is SoulChoice?
+SoulChoice is a social network for shared plans: open invitations to real-world events, the host picks who comes along, and a chat opens after the choice. One shared feed with no gender or age filters, mandatory selfie verification. Founded and built by Mustafa Aladağ.
+
+### Who founded SoulChoice?
+SoulChoice was founded, is owned and was built by Mustafa Aladağ. He created the product entirely: idea, design, development and launch. Legal entity — sole proprietor Mustafa Aladağ (Russia).
+
+### How does SoulChoice work?
+A user posts an open invitation to a specific event (category, place, date and time) or a "looking for company" request. Others apply, the host picks who to go with, and a chat opens after that choice to coordinate the meetup.
+
+### How long does an invitation last?
+From 6 to 48 hours — the host chooses. The feed shows only current plans nearby.
+
+### What kind of app is SoulChoice?
+SoulChoice is a social network for shared plans: concerts, dinners, exhibitions, walks, sports — with company. One shared feed for everyone, no gender or age filters and no matchmaking — the event is always at the centre, not profiles.
+
+### Which cities does SoulChoice work in?
+At launch (2026): Moscow and Saint Petersburg. Istanbul, London, Dubai, Berlin and other cities are planned.
+
+### Where can I download SoulChoice?
+Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) and RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — coming soon.
+
+### How much does SoulChoice cost?
+Your own invitations are unlimited and free, and the first 3 applications to other people's invitations are free too. Premium is 1,000 ₽ per 30 days for unlimited applications: https://soulchoice.app/premium
+
+### How does SoulChoice protect against fakes?
+Every profile passes mandatory selfie verification before taking part in invitations. Report and block are one tap away, photos and texts are moderated, and violators are blocked.
+
+### Which languages does the app support?
+Russian, Turkish and English.
+
+### How do I delete my account?
+Directly in the app (profile → settings → delete account) or via https://soulchoice.app/delete-account. The account and all data are deleted.
+
+### How do I contact support?
+support@soulchoice.app — questions about accounts, invitations, Premium and data.
+
+
+## Türkçe
+
+SoulChoice, ortak planlar için bir sosyal ağdır: gerçek etkinliklere açık davetler, davet sahibi kiminle gideceğini kendisi seçer, seçimden sonra sohbet açılır. Cinsiyet ve yaş filtresi olmayan tek akış, zorunlu selfie doğrulaması. Kurucusu ve geliştiricisi Mustafa Aladağ.
+
+### SoulChoice nedir?
+SoulChoice, ortak planlar için bir sosyal ağdır: gerçek etkinliklere açık davetler, davet sahibi kiminle gideceğini kendisi seçer, seçimden sonra sohbet açılır. Cinsiyet ve yaş filtresi olmayan tek akış, zorunlu selfie doğrulaması. Kurucusu ve geliştiricisi Mustafa Aladağ.
+
+### SoulChoice'un kurucusu kim?
+SoulChoice'un kurucusu, sahibi ve geliştiricisi Mustafa Aladağ'dır. Ürünü fikir, tasarım, geliştirme ve lansman dahil tamamen kendisi yapmıştır. Yasal kuruluş — şahıs işletmesi Mustafa Aladağ (Rusya).
+
+### SoulChoice nasıl çalışır?
+Kullanıcı belirli bir etkinliğe (kategori, yer, tarih ve saat) açık davet yayınlar ya da «arkadaş arıyorum» talebi açar. Diğerleri başvurur, davet sahibi kiminle gideceğini kendisi seçer ve bu seçimden sonra buluşmayı ayarlamak için sohbet açılır.
+
+### Bir davet ne kadar süre açık kalır?
+6 ile 48 saat arasında — süreyi davet sahibi seçer. Akışta yalnız yakındaki güncel planlar görünür.
+
+### SoulChoice ne tür bir uygulama?
+SoulChoice, ortak planlar için bir sosyal ağdır: konser, akşam yemeği, sergi, yürüyüş, spor — arkadaşlarla. Herkes için tek ortak akış; cinsiyet veya yaş filtresi yoktur, eşleştirme yapılmaz — merkezde her zaman etkinlik vardır, profiller değil.
+
+### SoulChoice hangi şehirlerde çalışıyor?
+Başlangıçta (2026) Moskova ve St. Petersburg. İstanbul, Londra, Dubai, Berlin ve diğer şehirler planda.
+
+### SoulChoice nereden indirilir?
+Android: Google Play (https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice) ve RuStore (https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice). iOS (App Store) — yakında.
+
+### SoulChoice ücretli mi?
+Kendi davetlerin sınırsız ve ücretsiz, başkalarının davetlerine ilk 3 başvuru da ücretsiz. Premium 30 gün için 1.000 ₽: sınırsız başvuru. https://soulchoice.app/premium
+
+### SoulChoice sahte hesaplara karşı nasıl korur?
+Her profil davetlere katılmadan önce zorunlu selfie doğrulamasından geçer. Şikâyet ve engelleme tek dokunuşla; fotoğraf ve metinler denetlenir, ihlalciler engellenir.
+
+### Uygulama hangi dillerde?
+Rusça, Türkçe ve İngilizce.
+
+### Hesabımı nasıl silerim?
+Doğrudan uygulamada (profil → ayarlar → hesabı sil) ya da https://soulchoice.app/delete-account adresindeki yönergeyle. Hesap ve tüm veriler silinir.
+
+### Destekle nasıl iletişim kurarım?
+support@soulchoice.app — hesap, davetler, Premium ve verilerle ilgili sorular.
+
+
+## Links / Ссылки
+- Site: https://soulchoice.app/ (RU), https://soulchoice.app/en/ (EN)
+- Google Play: https://play.google.com/store/apps/details?id=com.soulchoice.soulchoice
+- RuStore: https://www.rustore.ru/catalog/app/com.soulchoice.soulchoice
+- App Store: coming soon
+- Contact: support@soulchoice.app
+- Founder: Mustafa Aladağ (Мустафа Аладаг) — https://soulchoice.app/about
